@@ -1,0 +1,1 @@
+console.log("This is Echo Yin's portfolio website.");
