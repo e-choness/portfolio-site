@@ -141,4 +141,7 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
+#.python rename scripts
+.py
+
 # End of https://www.toptal.com/developers/gitignore/api/node
