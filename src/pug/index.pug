@@ -1,0 +1,304 @@
+doctype html
+html(lang='en')
+
+    head
+
+        meta(charset='utf-8')
+        meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
+        meta(name='description' content='Personal Portfolio')
+        meta(name='author' content='Echo Yin')
+
+        title Portfolio - Echo Yin
+
+        link(rel='icon' type='image/x-icon' href='assets/img/favicon.png')
+
+        // Font Awesome icons (free version)
+        script(src='https://use.fontawesome.com/releases/v6.3.0/js/all.js' crossorigin='anonymous')
+        
+        // Dev Icons
+        link(href='https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css' rel='stylesheet')
+
+        // Google fonts
+        link(href='https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700' rel='stylesheet' type='text/css')
+        link(href='https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i' rel='stylesheet' type='text/css')
+
+        // Core theme CSS (includes Bootstrap)
+        link(href='css/styles.css' rel='stylesheet')
+
+    body#page-top
+
+        // Navigation
+        nav#sideNav.navbar.navbar-expand-lg.navbar-dark.bg-primary.fixed-top
+            a.navbar-brand.js-scroll-trigger(href='#page-top')
+                span.d-block.d-lg-none Echo Yin
+                span.d-none.d-lg-block
+                    img.img-fluid.img-profile.rounded-circle.mx-auto.mb-2(src='assets/img/Echo.jpg' alt='...')
+            button.navbar-toggler(type='button' data-bs-toggle='collapse' data-bs-target='#navbarResponsive' aria-controls='navbarResponsive' aria-expanded='false' aria-label='Toggle navigation')
+                span.navbar-toggler-icon
+            #navbarResponsive.collapse.navbar-collapse
+                ul.navbar-nav
+                    li.nav-item
+                        a.nav-link.js-scroll-trigger(href='#about') About Me
+                    li.nav-item
+                        a.nav-link.js-scroll-trigger(href='#experience') Experience
+                    li.nav-item
+                        a.nav-link.js-scroll-trigger(href='#projects') Projects
+                    li.nav-item
+                        a.nav-link.js-scroll-trigger(href='#education') Education
+                    li.nav-item
+                        a.nav-link.js-scroll-trigger(href='#skills') Skills
+                    li.nav-item
+                        a.nav-link.js-scroll-trigger(href='#interests') Projects
+                    li.nav-item
+                        a.nav-link.js-scroll-trigger(href='#awards') Volunteer Works
+
+        // Page Content
+        .container-fluid.p-0
+
+            // About
+            section#about.resume-section
+                .resume-section-content
+                    h1.mb-0
+                        | Echo 
+                        span.text-primary Yin
+                    .subheading.mb-5
+                        | Ontario, Canada · 
+                        a(href='mailto:name@email.com') eyinoverthinking@gmail.com
+                    p.lead.mb-5
+                        | As someone who truly enjoys gaming and has a keen interest in game development, I've had the opportunity to explore different tech stacks and even pursued a Master's degree in Computer Science at Lakehead University.
+                    p.lead.mb-5
+                        | Through my involvement in game development and journalism, I've gained valuable insights into the industry, which have helped me develop a genuine appreciation for the complexities of game design and development. 
+                    p.lead.mb-5
+                        | With my diverse experience in various tech stacks and my ability to effectively communicate and collaborate, I believe I have the potential to embark on a fulfilling journey in the field of game development.
+                    .social-icons
+                        a.social-icon(href='https://www.linkedin.com/in/echoyin0451/' target='_blank')
+                            i.fab.fa-linkedin-in
+                        a.social-icon(href='https://github.com/e-choness' target='_blank')
+                            i.fab.fa-github
+                        a.social-icon(href='https://medium.com/@echoness' target='_blank')
+                            i.fab.fa-medium
+                        a.social-icon(href='https://twitter.com/_echo_yin' target='_blank')
+                            i.fab.fa-twitter
+
+            hr.m-0
+
+            // Experience
+            section#experience.resume-section
+                .resume-section-content
+                    h2.mb-5 Experience
+
+                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5
+                        .flex-grow-1
+                            h3.mb-0 Game Developer
+                            .subheading.mb-3 Rec Room
+                            ul.mb-0 
+                                li Developed a tool for faster build downloading for our Quality Assurance using C#, MAUI (Xamarin), Azure Cloud Storage and Azure Authentication;
+                                li Integrated interactive custom protocols for internal communication tool andbuild pipelines (Azure DevOps, Jenkins);
+                                li Added cross-platform functionalities to internal UI framework using C# and Unity;
+                                li Maintenance and support of existing infrastructure.
+                            p.resume-section-content-sills.fw-light.mt-3
+                                | Skills: Unity · Jenkins · Full-Stack Development · Azure DevOps · Java · C#
+                        .flex-shrink-0
+                            span.text-primary January 2023 - May 2023
+
+                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5
+                        .flex-grow-1
+                            h3.mb-0 Software Engineer
+                            .subheading.mb-3 PointClickCare
+                            li Worked closely with senior developer for cloud-based machine learning servicesusing python and Java;
+                            li Successfully Resolving 6 security risks and vulnerabilities for the Docker micro-services;
+                            li Rapid test frameworks enhancement for five new features on across themachine learning core and API services using Flask, Springboot and SQL Server;
+                            li Effectively communicate with a team of ten on work sprint planning and scoring.
+                            p.resume-section-content-sills.fw-light.mt-3
+                                | Skills: Jenkins · Jira · DevOps · Maven · Spring Boot · Flask · Python (Programming Language) · Machine Learning · Java · Natural Language Processing (NLP) · Docker · Microsoft SQL Server
+                        .flex-shrink-0
+                            span.text-primary January 2022 - May 2022
+
+                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5
+                        .flex-grow-1
+                            h3.mb-0 Gaming Content Editor
+                            .subheading.mb-3 Gamecores
+                            li Responsible for news, translations, previews, reviews and retrospectives, mostly major western RPG titles;
+                            li Chronicled several biographies and conducted interviews for outstanding game developers;
+                            li Completed English gaming news and article translation with high quality and efficiency;
+                            li Maintained energy and enthusiasm in fast-paced environment.
+                            p.resume-section-content-sills.fw-light.mt-3
+                                | Skills: Social Media · Gaming News · Gaming Journalist · Translation · Content Editing · Gaming
+                        .flex-shrink-0
+                            span.text-primary September 2018 - September 2019
+
+            hr.m-0
+
+            // Projects
+            section#projects.resume-section
+                .resume-section-content
+                    h2.mb-5 Projects
+
+                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5
+                        .flex-grow-1
+                            h3.mb-0 Game Developer
+                            .subheading.mb-3 Rec Room
+                            ul.mb-0 
+                                li Developed a tool for faster build downloading for our Quality Assurance using C#, MAUI (Xamarin), Azure Cloud Storage and Azure Authentication;
+                                li Integrated interactive custom protocols for internal communication tool andbuild pipelines (Azure DevOps, Jenkins);
+                                li Added cross-platform functionalities to internal UI framework using C# and Unity;
+                                li Maintenance and support of existing infrastructure.
+                            p.resume-section-content-sills.fw-light.mt-3
+                                | Skills: Unity · Jenkins · Full-Stack Development · Azure DevOps · Java · C#
+                        .flex-shrink-0
+                            span.text-primary January 2023 - May 2023
+
+                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5
+                        .flex-grow-1
+                            h3.mb-0 Software Engineer
+                            .subheading.mb-3 PointClickCare
+                            li Worked closely with senior developer for cloud-based machine learning servicesusing python and Java;
+                            li Successfully Resolving 6 security risks and vulnerabilities for the Docker micro-services;
+                            li Rapid test frameworks enhancement for five new features on across themachine learning core and API services using Flask, Springboot and SQL Server;
+                            li Effectively communicate with a team of ten on work sprint planning and scoring.
+                            p.resume-section-content-sills.fw-light.mt-3
+                                | Skills: Jenkins · Jira · DevOps · Maven · Spring Boot · Flask · Python (Programming Language) · Machine Learning · Java · Natural Language Processing (NLP) · Docker · Microsoft SQL Server
+                        .flex-shrink-0
+                            span.text-primary January 2022 - May 2022
+
+                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5
+                        .flex-grow-1
+                            h3.mb-0 Gaming Content Editor
+                            .subheading.mb-3 Gamecores
+                            li Responsible for news, translations, previews, reviews and retrospectives, mostly major western RPG titles;
+                            li Chronicled several biographies and conducted interviews for outstanding game developers;
+                            li Completed English gaming news and article translation with high quality and efficiency;
+                            li Maintained energy and enthusiasm in fast-paced environment.
+                            p.resume-section-content-sills.fw-light.mt-3
+                                | Skills: Social Media · Gaming News · Gaming Journalist · Translation · Content Editing · Gaming
+                        .flex-shrink-0
+                            span.text-primary September 2018 - September 2019
+
+            hr.m-0
+
+            // Education
+            section#education.resume-section
+                .resume-section-content
+                    h2.mb-5 Education
+
+                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5
+                        .flex-grow-1
+                            h3.mb-0 Lakehead University
+                            .subheading.mb-3 Master of Science
+                            div Computer Science
+                            p   
+                                | GPA: 3.86
+                            p.lead
+                                | Relevant Coursework:
+                                li Machine Learning
+                                li Deep Learning
+                                li Pattern Recognition
+                                li Big Data
+                                li Natural Language Processing
+                            p.lead
+                                | Activities and societies: 
+                            p
+                                | A consistent volunteer for multiple campus events, clubs and departments.
+                        .flex-shrink-0
+                            span.text-primary September 2020 - May 2023
+
+            hr.m-0
+
+            // Skills
+            section#skills.resume-section
+                .resume-section-content
+                    h2.mb-5 Skills
+                    .subheading.mb-3 Programming Languages
+                    ul.list-inline.dev-icons
+                        li.list-inline-item
+                            i.devicon-cplusplus-plain-wordmark
+                        li.list-inline-item
+                            i.devicon-csharp-plain-wordmark
+                        li.list-inline-item
+                            i.devicon-python-plain-wordmark
+                    ul.list-inline.dev-icons
+                        li.list-inline-item
+                            i.devicon-html5-plain-wordmark
+                        li.list-inline-item
+                            i.devicon-css3-plain-wordmark
+                        li.list-inline-item
+                            i.devicon-sass-original
+                    .subheading.mb-3 Programming Frameworks & Tools
+                    ul.list-inline.dev-icons
+                        li.list-inline-item
+                            i.devicon-unity-original
+                        li.list-inline-item
+                            i.devicon-dot-net-plain-wordmark
+                        li.list-inline-item
+                            i.devicon-xamarin-original
+                        li.list-inline-item
+                            i.devicon-pytorch-original
+                        li.list-inline-item
+                            i.devicon-numpy-original
+                        li.list-inline-item
+                            i.devicon-tensorflow-original
+                        li.list-inline-item
+                            i.devicon-bootstrap-plain
+                    ul.list-inline.dev-icons
+                        li.list-inline-item
+                            i.devicon-confluence-original
+                        li.list-inline-item
+                            i.devicon-jira-plain
+                        li.list-inline-item
+                            i.devicon-azure-plain
+                        li.list-inline-item
+                            i.devicon-git-plain
+                        li.list-inline-item
+                            i.devicon-jenkins-plain
+                        li.list-inline-item
+                            i.devicon-mysql-plain
+                        li.list-inline-item
+                            i.devicon-sqlite-plain
+                    .subheading.mb-3 Strength
+                    ul.fa-ul.mb-0
+                        li
+                            span.fa-li
+                                i.fas.fa-comments
+                            | Open-mind to New Ideas
+                        li
+                            span.fa-li
+                                i.fas.fa-heart
+                            | Love Constructive Feedback
+                        li
+                            span.fa-li
+                                i.fas.fa-users
+                            | Learning Effective Communication with Functional Teams
+                        li
+                            span.fa-li
+                                i.fas.fa-hat-wizard
+                            | Strong Will & Thinking Outside Box
+
+            hr.m-0
+
+            // Interests
+            section#interests.resume-section
+                .resume-section-content
+                    h2.mb-5 Interests
+                    p
+                        | When I'm not immersed in lines of code, I find solace in the realm of games. They transport me to worlds of adventure and imagination, where I can explore, strategize, and connect with friends across virtual landscapes. Gaming provides a much-needed escape from the digital world I often find myself in. 
+                    p
+                        | Pets bring an abundance of joy and companionship to my life. Whether it's the excited wag of a dog's tail or the gentle purr of a cat nestled in my lap, their unconditional love reminds me of the simple pleasures that make life truly meaningful.
+                    p 
+                        | Books are my constant companions, offering a sanctuary from the chaos of everyday life. I lose myself in their pages, traveling to far-off places, meeting fascinating characters, and expanding my knowledge. The touch of a physical book and the scent of its pages bring a sense of grounding in an increasingly digital world.
+                    p 
+                        | But it is in the embrace of nature that I find true peace. Whether I'm hiking through serene forests or simply basking in the sunlight, the beauty of the natural world rejuvenates my spirit. I am acutely aware of the urgent need to protect and preserve our environment, and I strive to do my part by living a low-carbon life and reducing waste wherever possible.
+                    p 
+                        | In a world that often values excess and constant consumption, I have found contentment in simplicity. Through my love for games, pets, books, and the outdoors, I have discovered a rich tapestry of experiences that nourish my soul. Guided by my commitment to living sustainably, I hope to inspire others to embrace a minimalist lifestyle and join me in protecting the beauty of our planet.
+            hr.m-0
+
+            // Volunteer Works
+            section#awards.resume-section
+                .resume-section-content
+                    h2.mb-5 Volunteer Works
+                    
+
+        // Bootstrap core JS
+        script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js')
+
+        // Core theme JS
+        script(src='js/scripts.js')

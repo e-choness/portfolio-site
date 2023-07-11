@@ -1,0 +1,19 @@
+// 
+// Colors
+// 
+
+// Pre-state grayscale colors used in other variables
+
+$gray-800: #343a40;
+
+// Override Bootstrap color system
+$purple: #755686;
+$light-green: #718e4c;
+$dark-green: #1a6c84;
+
+// Override Bootstrap default state colors
+
+$primary: $purple;
+
+// Icon color
+$icon-color: $light-green;
