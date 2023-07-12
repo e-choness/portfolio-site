@@ -10935,6 +10935,35 @@ p.lead {
   font-size: 3rem;
 }
 
+.bg {
+  animation: slide 3s ease-in-out infinite alternate;
+  background-image: linear-gradient(-60deg, #E6E6FA 50%, #F6FAEE 50%);
+  bottom: 0;
+  left: -50%;
+  opacity: 0.5;
+  position: fixed;
+  right: -50%;
+  top: 0;
+  z-index: -1;
+}
+
+.bg2 {
+  animation-direction: alternate-reverse;
+  animation-duration: 4s;
+}
+
+.bg3 {
+  animation-duration: 5s;
+}
+
+@keyframes slide {
+  0% {
+    transform: translateX(-25%);
+  }
+  100% {
+    transform: translateX(25%);
+  }
+}
 section.resume-section {
   display: flex;
   align-items: center;
@@ -10946,6 +10975,9 @@ section.resume-section {
 }
 section.resume-section a {
   text-decoration: none;
+}
+section.resume-section a:hover {
+  outline-color: #9b7dac;
 }
 section.resume-section .resume-section-content {
   width: 100%;
@@ -10960,7 +10992,7 @@ section.resume-section .resume-section-content-sills {
 section.resume-section .img-profile {
   max-width: 5rem;
   max-height: 5rem;
-  border: 0.3rem solid rgba(117, 86, 134, 0.2);
+  border: 0.3rem solid rgba(113, 142, 76, 0.6);
 }
 
 @media (min-width: 768px) {

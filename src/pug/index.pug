@@ -60,20 +60,16 @@ html(lang='en')
 
             // About
             section#about.resume-section
+                .bg 
+                .bg.bg2 
+                .bg.bg3
                 .resume-section-content
                     h1.mb-0
                         | Echo 
                         span.text-primary Yin
                     .subheading.mb-5.mt-3
                         | I'm a 
-                        span.typed(data-typed-items='Developer., Software Engineer., Gamer., Pet Lover.')
-
-                    p.lead.mb-5
-                        | As someone who truly enjoys gaming and has a keen interest in game development, I've had the opportunity to explore different tech stacks and even pursued a Master's degree in Computer Science at Lakehead University.
-                    p.lead.mb-5
-                        | Through my involvement in game development and journalism, I've gained valuable insights into the industry, which have helped me develop a genuine appreciation for the complexities of game design and development. 
-                    p.lead.mb-5
-                        | With my diverse experience in various tech stacks and my ability to effectively communicate and collaborate, I believe I have the potential to embark on a fulfilling journey in the field of game development.
+                        span.typed(data-typed-items='Developer., Software Engineer., Gamer., Pet Lover.')          
                     .social-icons
                         a.social-icon(href='https://www.linkedin.com/in/echoyin0451/' target='_blank')
                             i.fab.fa-linkedin-in
@@ -91,7 +87,7 @@ html(lang='en')
                 .resume-section-content
                     h2.mb-5 Experience
 
-                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5
+                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5(data-aos="zoom-out-down" data-aos-duration="1000")
                         .flex-grow-1
                             h3.mb-0 Game Developer
                             .subheading.mb-3 Rec Room
@@ -105,7 +101,7 @@ html(lang='en')
                         .flex-shrink-0
                             span.text-primary January 2023 - May 2023
 
-                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5
+                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5(data-aos="zoom-out" data-aos-duration="1000")
                         .flex-grow-1
                             h3.mb-0 Software Engineer
                             .subheading.mb-3 PointClickCare
@@ -118,7 +114,7 @@ html(lang='en')
                         .flex-shrink-0
                             span.text-primary January 2022 - May 2022
 
-                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5
+                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5(data-aos="zoom-out-up" data-aos-duration="1000")
                         .flex-grow-1
                             h3.mb-0 Gaming Content Editor
                             .subheading.mb-3 Gamecores
@@ -139,7 +135,7 @@ html(lang='en')
                     h2.mb-5 Projects
                     .container
                         .row
-                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-down-right")
+                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-down-right" data-aos-duration="1000")
                                 .card.h-100
                                     a(href='https://www.youtube.com/watch?v=pDqL78mLw1w' target='_blank')
                                         img.card-img-top(src='assets/img/projects/project-vr.jpeg' alt='vr-space')
@@ -155,7 +151,7 @@ html(lang='en')
                                                 a(href='https://www.linkedin.com/in/jjmontes/' target='_blank')
                                                     img.img-fluid.img-profile.rounded-circle.mx-auto.mb-2(src='assets/img/projects/project-vr-space-mentor-jj.jpg' alt='mentor-jj')
 
-                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-down")
+                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-down" data-aos-duration="1000")
                                 .card.h-100
                                     a(href='https://medium.com/@echoness/studio-jojo-devlog-part-4-game-design-details-revealed-65f03787b111' target='_blank')
                                         img.card-img-top(src='assets/img/projects/project-cultural-heritage.jpg' alt='cultural-heritage')
@@ -173,7 +169,7 @@ html(lang='en')
                                                 a(href='https://www.linkedin.com/in/paola-de-jes%C3%BAs-robledo-mendoza-3b801b20a/' target='_blank')
                                                     img.img-fluid.img-profile.rounded-circle.mx-auto.mb-2(src='assets/img/projects/studio-jojo-paola.jpg' alt='jojo-paola')
                             
-                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-down-left")
+                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-down-left" data-aos-duration="1000")
                                 .card.h-100
                                     a(href='https://github.com/e-choness/project-egg' target='_blank')
                                         img.card-img-top(src='assets/img/projects/project-game-engine.png' alt='game-engine')
@@ -185,7 +181,7 @@ html(lang='en')
                                         p.resume-section-content-sills.fw-light.mt-3
                                         | Tech Stack: C++, CMAKE, SDL, tinyxml2
 
-                            .col-lg-4.col-sm-6.mb-4(data-aos='fade-right')
+                            .col-lg-4.col-sm-6.mb-4(data-aos='fade-right' data-aos-duration="1000")
                                 .card.h-100
                                     a(href='https://github.com/e-choness/book_cover_project' target='_blank')
                                         img.card-img-top(src='assets/img/projects/project-book-recommendation.jpg' alt='book-recommendation')
@@ -197,7 +193,7 @@ html(lang='en')
                                         p.resume-section-content-sills.fw-light.mt-3
                                         | Tech Stack: Python, Numpy, Pandas, Pytorch, Tensorflow, HTML, CSS, Javascript
                             
-                            .col-lg-4.col-sm-6.mb-4(data-aos="zoom-out")
+                            .col-lg-4.col-sm-6.mb-4(data-aos="zoom-out" data-aos-duration="1000")
                                 .card.h-100
                                     a(href='https://github.com/e-choness/pedestrian_detection_project' target='_blank')
                                         img.card-img-top(src='assets/img/projects/project-pedestrian.jpg' alt='pedestrian-detection')
@@ -209,7 +205,7 @@ html(lang='en')
                                         p.resume-section-content-sills.fw-light.mt-3
                                         | Tech Stack: Python, Numpy, Pandas, Pytorch, Tensorflow, Scikit-learn
                             
-                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-left")
+                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-left" data-aos-duration="1000")
                                 .card.h-100
                                     a(href='https://github.com/e-choness/kdd99_intrusion_detection' target='_blank')
                                         img.card-img-top(src='assets/img/projects/project-intrusion-detection.jpg' alt='intrusion-detection')
@@ -221,7 +217,7 @@ html(lang='en')
                                         p.resume-section-content-sills.fw-light.mt-3
                                         | Tech Stack: Python, Numpy, Pandas, Scikit-learn, kdd-99-dataset
 
-                            .col-lg-4.col-sm-6.mb-4(data-aos='fade-up-right')
+                            .col-lg-4.col-sm-6.mb-4(data-aos='fade-up-right' data-aos-duration="1000")
                                 .card.h-100
                                     a(href='https://github.com/e-choness/feature_extraction_cuda_elm' target='_blank')
                                         img.card-img-top(src='assets/img/projects/project-cuda.jpg' alt='project-cuda')
@@ -233,7 +229,7 @@ html(lang='en')
                                         p.resume-section-content-sills.fw-light.mt-3
                                         | Tech Stack: Cuda C, Python, Numpy, Pandas, Scikit-learn, Tensorflow, Cifar-10
 
-                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-up")
+                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-up" data-aos-duration="1000")
                                 .card.h-100
                                     a(href='https://github.com/e-choness/e-choenss.github.io' target='_blank')
                                         img.card-img-top(src='assets/img/projects/project-portfolio.jpg' alt='portfolio')
@@ -246,7 +242,7 @@ html(lang='en')
                                         | Tech Stack: PUG, SCSS, NPM, HTML, CSS, Javascript, Bootstrap, Typed, AOS
 
                             
-                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-up-left")
+                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-up-left" data-aos-duration="1000")
                                 .card.h-100
                                     a(href='https://github.com/e-choness/WebGIS-Application-for-House-Discovery')
                                         img.card-img-top(src='assets/img/projects/project-gis.jpg' alt='rental-discovery')

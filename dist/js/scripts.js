@@ -44,5 +44,7 @@ window.addEventListener('DOMContentLoaded', event => {
         });
     }
 
+    // Initialize animation on scroll scripts
     AOS.init();
+
 });

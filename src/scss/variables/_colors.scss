@@ -10,6 +10,8 @@ $gray-800: #343a40;
 $purple: #755686;
 $light-green: #718e4c;
 $dark-green: #1a6c84;
+$lavender: #E6E6FA;
+$subtle-green: #F6FAEE;
 
 // Override Bootstrap default state colors
 
@@ -17,3 +19,7 @@ $primary: $purple;
 
 // Icon color
 $icon-color: $light-green;
+
+
+$background-color-primary: $lavender;
+$background-color-secondary: $subtle-green;
