@@ -31,4 +31,7 @@ p.lead {
     font-family: $headings-font-family;
     font-weight: 500;
     font-size: 1.5rem;
+    span{
+        color:$gray-800;
+    }
 }
