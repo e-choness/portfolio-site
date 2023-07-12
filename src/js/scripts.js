@@ -39,4 +39,5 @@ window.addEventListener('DOMContentLoaded', event => {
         });
     }
 
+    AOS.init();
 });

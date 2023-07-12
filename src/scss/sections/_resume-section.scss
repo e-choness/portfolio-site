@@ -11,6 +11,9 @@ section.resume-section {
     padding-bottom: 5rem;
     max-width: 75rem;
 
+    a{
+        text-decoration: none;
+    }
     .resume-section-content {
         width: 100%;
     }
@@ -20,6 +23,11 @@ section.resume-section {
     }
     .resume-section-content-sills{
         color: $icon-color;
+    }
+    .img-profile {
+        max-width: 5rem;
+        max-height: 5rem;
+        border: 0.3rem solid fade-out($primary, 0.8);
     }
 }
 

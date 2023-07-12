@@ -10862,7 +10862,6 @@ p.lead {
 #sideNav {
   padding-left: 1rem;
   padding-right: 1rem;
-  background-image: url(/src/assets/img/background/hexagon_1.jpg);
 }
 #sideNav .navbar-nav .nav-item .nav-link {
   letter-spacing: 0.05rem;
@@ -10945,6 +10944,9 @@ section.resume-section {
   padding-bottom: 5rem;
   max-width: 75rem;
 }
+section.resume-section a {
+  text-decoration: none;
+}
 section.resume-section .resume-section-content {
   width: 100%;
 }
@@ -10954,6 +10956,11 @@ section.resume-section .subheading {
 }
 section.resume-section .resume-section-content-sills {
   color: #718e4c;
+}
+section.resume-section .img-profile {
+  max-width: 5rem;
+  max-height: 5rem;
+  border: 0.3rem solid rgba(117, 86, 134, 0.2);
 }
 
 @media (min-width: 768px) {

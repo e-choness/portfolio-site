@@ -22,6 +22,9 @@ html(lang='en')
         link(href='https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700' rel='stylesheet' type='text/css')
         link(href='https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i' rel='stylesheet' type='text/css')
 
+        // AOS CSS
+        link(href='https://unpkg.com/aos@2.3.1/dist/aos.css', rel='stylesheet')
+
         // Core theme CSS (includes Bootstrap)
         link(href='css/styles.css' rel='stylesheet')
 
@@ -136,66 +139,124 @@ html(lang='en')
                     h2.mb-5 Projects
                     .container
                         .row
-                            .col-lg-4.col-sm-6.mb-4
+                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-down-right")
                                 .card.h-100
-                                    a(href='#')
-                                    img.card-img-top(src='assets/img/background/hexagon_1.jpg' alt='')
+                                    a(href='https://www.youtube.com/watch?v=pDqL78mLw1w' target='_blank')
+                                        img.card-img-top(src='assets/img/projects/project-vr.jpeg' alt='vr-space')
                                     .card-body
                                         h4.card-title
-                                            a(href='#') Project One
-                                        p.card-text
-                                        | When I'm not immersed in lines of code, I find solace in the realm of games. They transport me to worlds of adventure and imagination, where I can explore, strategize, and connect with friends across virtual landscapes. Gaming provides a much-needed escape from the digital world I often find myself in. 
+                                            a(href='https://www.youtube.com/watch?v=pDqL78mLw1w' target='_blank') VR Space
+                                        p
+                                        | A work-in-progress proof-of-concept for a novel locomotion system for VR. It uses the physical space (previously mapped) around the user to generate the map. Joystick movement or teleporting are not used.
+                                        p.resume-section-content-sills.fw-light.mt-3
+                                        | Tech Stack: C#, Unity, XR famework
+                                        p.mt-3 
+                                            span.d-lg-block 
+                                                a(href='https://www.linkedin.com/in/jjmontes/' target='_blank')
+                                                    img.img-fluid.img-profile.rounded-circle.mx-auto.mb-2(src='assets/img/projects/project-vr-space-mentor-jj.jpg' alt='mentor-jj')
 
-                            .col-lg-4.col-sm-6.mb-4
+                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-down")
                                 .card.h-100
-                                    a(href='#')
-                                    img.card-img-top(src='https://via.placeholder.com/700x400' alt='')
+                                    a(href='https://medium.com/@echoness/studio-jojo-devlog-part-4-game-design-details-revealed-65f03787b111' target='_blank')
+                                        img.card-img-top(src='assets/img/projects/project-cultural-heritage.jpg' alt='cultural-heritage')
                                     .card-body
                                         h4.card-title
-                                            a(href='#') Project Two
+                                            a(href='https://medium.com/@echoness/studio-jojo-devlog-part-4-game-design-details-revealed-65f03787b111' target='_blank') Cultural Heritage Jam
                                         p.card-text
-                                        | Pets bring an abundance of joy and companionship to my life. Whether it's the excited wag of a dog's tail or the gentle purr of a cat nestled in my lap, their unconditional love reminds me of the simple pleasures that make life truly meaningful.
-
-                            .col-lg-4.col-sm-6.mb-4
+                                        | A 2D platformer runner where you could play as an art restorer who run and perform restoration action on the wonderful art pieces from legacies of Mexico, China and Portugal. Let's bring damaged masterpieces back to their former glory.
+                                        p.resume-section-content-sills.fw-light.mt-3
+                                        | Tech Stack: C#, Unity, FMOD
+                                        p.mt-3
+                                            span.d-lg-block 
+                                                a(href='https://www.linkedin.com/in/miguelnevessounds/' target='_blank')
+                                                    img.img-fluid.img-profile.rounded-circle.mx-auto.mb-2(src='assets/img/projects/studio-jojo-miguel-neves.jpg' alt='jojo-miguel')
+                                                a(href='https://www.linkedin.com/in/paola-de-jes%C3%BAs-robledo-mendoza-3b801b20a/' target='_blank')
+                                                    img.img-fluid.img-profile.rounded-circle.mx-auto.mb-2(src='assets/img/projects/studio-jojo-paola.jpg' alt='jojo-paola')
+                            
+                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-down-left")
                                 .card.h-100
-                                    a(href='#')
-                                    img.card-img-top(src='https://via.placeholder.com/700x400' alt='')
+                                    a(href='https://github.com/e-choness/project-egg' target='_blank')
+                                        img.card-img-top(src='assets/img/projects/project-game-engine.png' alt='game-engine')
                                     .card-body
                                         h4.card-title
-                                            a(href='#') Project Three
+                                            a(href='https://github.com/e-choness/project-egg' target='_blank') Game Engine Project
                                         p.card-text
-                                        | Books are my constant companions, offering a sanctuary from the chaos of everyday life. I lose myself in their pages, traveling to far-off places, meeting fascinating characters, and expanding my knowledge. The touch of a physical book and the scent of its pages bring a sense of grounding in an increasingly digital world.
+                                        | A humble self-taught project exploring the intricacies of game engine architecture and functionality. Utilizing C++ and CMAKE, delve into the world of game development, gaining valuable insights and honing your skills in this fascinating domain.
+                                        p.resume-section-content-sills.fw-light.mt-3
+                                        | Tech Stack: C++, CMAKE, SDL, tinyxml2
 
-                            .col-lg-4.col-sm-6.mb-4
+                            .col-lg-4.col-sm-6.mb-4(data-aos='fade-right')
                                 .card.h-100
-                                    a(href='#')
-                                    img.card-img-top(src='https://via.placeholder.com/700x400' alt='')
+                                    a(href='https://github.com/e-choness/book_cover_project' target='_blank')
+                                        img.card-img-top(src='assets/img/projects/project-book-recommendation.jpg' alt='book-recommendation')
                                     .card-body
                                         h4.card-title
-                                            a(href='#') Project Four
+                                            a(href='https://github.com/e-choness/book_cover_project' target='_blank') Book Recommender
                                         p.card-text
-                                        | But it is in the embrace of nature that I find true peace. Whether I'm hiking through serene forests or simply basking in the sunlight, the beauty of the natural world rejuvenates my spirit. I am acutely aware of the urgent need to protect and preserve our environment, and I strive to do my part by living a low-carbon life and reducing waste wherever possible.
-
-                            .col-lg-4.col-sm-6.mb-4
+                                        | A book recommender, which leverages the capabilities of a fine-tuned GPT-2 language model and Vision Transformer. Drawing insights from a diverse dataset of small-sized book covers and descriptions across thirty-three genres, we aim to provide unbiased and personalized recommendations.
+                                        p.resume-section-content-sills.fw-light.mt-3
+                                        | Tech Stack: Python, Numpy, Pandas, Pytorch, Tensorflow, HTML, CSS, Javascript
+                            
+                            .col-lg-4.col-sm-6.mb-4(data-aos="zoom-out")
                                 .card.h-100
-                                    a(href='#')
-                                    img.card-img-top(src='https://via.placeholder.com/700x400' alt='')
+                                    a(href='https://github.com/e-choness/pedestrian_detection_project' target='_blank')
+                                        img.card-img-top(src='assets/img/projects/project-pedestrian.jpg' alt='pedestrian-detection')
                                     .card-body
                                         h4.card-title
-                                            a(href='#') Project Five
+                                            a(href='https://github.com/e-choness/pedestrian_detection_project' target='_blank') Pedestrian Detection Classification
                                         p.card-text
-                                                | In a world that often values excess and constant consumption, I have found contentment in simplicity. Through my love for games, pets, books, and the outdoors, I have discovered a rich tapestry of experiences that nourish my soul. Guided by my commitment to living sustainably, I hope to inspire others to embrace a minimalist lifestyle and join me in protecting the beauty of our planet.
-
-                            .col-lg-4.col-sm-6.mb-4
+                                        | A humble demo project focused on pedestrian image analysis. Through the extraction of Haar features and experimentation with pattern recognition models, delve into classification tasks. Gain insights into the capabilities of different models in recognizing pedestrians based on their distinct visual patterns.
+                                        p.resume-section-content-sills.fw-light.mt-3
+                                        | Tech Stack: Python, Numpy, Pandas, Pytorch, Tensorflow, Scikit-learn
+                            
+                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-left")
                                 .card.h-100
-                                    a(href='#')
-                                    img.card-img-top(src='https://via.placeholder.com/700x400' alt='')
+                                    a(href='https://github.com/e-choness/kdd99_intrusion_detection' target='_blank')
+                                        img.card-img-top(src='assets/img/projects/project-intrusion-detection.jpg' alt='intrusion-detection')
                                     .card-body
                                         h4.card-title
-                                            a(href='#') Project Six
+                                            a(href='https://github.com/e-choness/kdd99_intrusion_detection' target='_blank') Intrusion Detection Classification
                                         p.card-text
-                                                | In a world that often values excess and constant consumption, I have found contentment in simplicity. Through my love for games, pets, books, and the outdoors, I have discovered a rich tapestry of experiences that nourish my soul. Guided by my commitment to living sustainably, I hope to inspire others to embrace a minimalist lifestyle and join me in protecting the beauty of our planet.
+                                        | A academic demo project showcasing the application of feature selection methods on the KDD99 intrusion dataset. Through the utilization of Random Forest and Support Vector Machine algorithms, gain insights into effective feature selection techniques for improving intrusion detection performance.
+                                        p.resume-section-content-sills.fw-light.mt-3
+                                        | Tech Stack: Python, Numpy, Pandas, Scikit-learn, kdd-99-dataset
 
+                            .col-lg-4.col-sm-6.mb-4(data-aos='fade-up-right')
+                                .card.h-100
+                                    a(href='https://github.com/e-choness/feature_extraction_cuda_elm' target='_blank')
+                                        img.card-img-top(src='assets/img/projects/project-cuda.jpg' alt='project-cuda')
+                                    .card-body
+                                        h4.card-title
+                                            a(href='https://github.com/e-choness/feature_extraction_cuda_elm' target='_blank') Cuda Extreme Learning Machine
+                                        p.card-text
+                                        | A academic demo project focused on enhancing the performance of image features extracted from the CIFAR-10 dataset. By implementing an Extreme Learning Machine using CUDA C, explore the potential for accelerated computation and improved results in image classification tasks.
+                                        p.resume-section-content-sills.fw-light.mt-3
+                                        | Tech Stack: Cuda C, Python, Numpy, Pandas, Scikit-learn, Tensorflow, Cifar-10
+
+                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-up")
+                                .card.h-100
+                                    a(href='https://github.com/e-choness/e-choenss.github.io' target='_blank')
+                                        img.card-img-top(src='assets/img/projects/project-portfolio.jpg' alt='portfolio')
+                                    .card-body
+                                        h4.card-title
+                                            a(href='https://github.com/e-choness/e-choenss.github.io' target='_blank') Portfolio Website
+                                        p.card-text
+                                        | Welcome to my portfolio website, crafted from a Resume template by Start Bootstrap. With the aid of advanced bootstrap snippets and third-party animation plugins, my humble site comes to life, showcasing my work in a captivating and engaging manner.
+                                        p.resume-section-content-sills.fw-light.mt-3
+                                        | Tech Stack: PUG, SCSS, NPM, HTML, CSS, Javascript, Bootstrap, Typed, AOS
+
+                            
+                            .col-lg-4.col-sm-6.mb-4(data-aos="fade-up-left")
+                                .card.h-100
+                                    a(href='https://github.com/e-choness/WebGIS-Application-for-House-Discovery')
+                                        img.card-img-top(src='assets/img/projects/project-gis.jpg' alt='rental-discovery')
+                                    .card-body
+                                        h4.card-title
+                                            a(href='https://github.com/e-choness/WebGIS-Application-for-House-Discovery') WebGIS Rental Discovery
+                                        p.card-text
+                                        | A full-stack demo project designed to assist you humbly in finding and comparing local rentals. Leveraging WebGIS technology, maven, Flask, and the native framework LayUI, explore a user-friendly web application that simplifies the rental search process, making it effortless and efficient.
+                                        p.resume-section-content-sills.fw-light.mt-3
+                                        | Tech Stack: Java, Python, Redis, Maven, Web GIS, LayUI, HTML, CSS, Javascript, JSON
             hr.m-0
 
             // Education
@@ -414,8 +475,8 @@ html(lang='en')
         // Bootstrap core JS
         script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js')
 
-        // JQuery core JS
-        //- script(src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js') 
+        // AOS JS
+        script(src='https://unpkg.com/aos@2.3.1/dist/aos.js') 
 
         //Typed JS
         script(src='https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.16/typed.umd.js') 
