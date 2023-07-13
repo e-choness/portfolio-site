@@ -47,4 +47,12 @@ window.addEventListener('DOMContentLoaded', event => {
     // Initialize animation on scroll scripts
     AOS.init();
 
+    // Initialize isotope animations
+    var elem = document.querySelector('.hcf-isotope-grid');
+    var iso = new Isotope( elem, {
+    // options
+    itemSelector: '.hcf-isotope-item',
+    layoutMode: 'fitRows'
+    });
+
 });
