@@ -259,27 +259,30 @@ html(lang='en')
             section#education.resume-section
                 .resume-section-content
                     h2.mb-5 Education
-
-                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5
-                        .flex-grow-1
-                            h3.mb-0 Lakehead University
-                            .subheading.mb-3 Master of Science
-                            div Computer Science
-                            p   
-                                | GPA: 3.86
-                            p.lead
-                                | Relevant Coursework:
-                                li Machine Learning
-                                li Deep Learning
-                                li Pattern Recognition
-                                li Big Data
-                                li Natural Language Processing
-                            p.lead
-                                | Activities and societies: 
-                            p
-                                | A consistent volunteer for multiple campus events, clubs and departments.
-                        .flex-shrink-0
-                            span.text-primary September 2020 - May 2023
+                    .container
+                        .row.justify-content-center.g-5.hcf-isotope-grid
+                            .col-md-4.hcf-isotope-item(data-aos="fade-right" data-aos-duration="1000")
+                                .lc-block
+                                    img.img-fluid.img-thumbnail.d-none.d-md-block(src='assets/img/img-graduation.jpg' alt='img-graduation')
+                            .col-md-8.hcf-isotope-item(data-aos="fade-left" data-aos-duration="1000")
+                                .lc-block
+                                    h3.mb-0 Lakehead University
+                                    .subheading.mb-3 Master of Science
+                                    div Computer Science
+                                    span.text-primary September 2020 - May 2023
+                                    p   
+                                        | GPA: 3.86
+                                    p.lead
+                                        | Relevant Coursework:
+                                        li Machine Learning
+                                        li Deep Learning
+                                        li Pattern Recognition
+                                        li Big Data
+                                        li Natural Language Processing
+                                    p.lead
+                                        | Activities and societies: 
+                                    p
+                                        | A consistent volunteer for multiple campus events, clubs and departments.                
 
             hr.m-0
 
@@ -287,70 +290,74 @@ html(lang='en')
             section#skills.resume-section
                 .resume-section-content
                     h2.mb-5 Skills
-                    .subheading.mb-3 Programming Languages
-                    ul.list-inline.dev-icons
-                        li.list-inline-item
-                            i.devicon-cplusplus-plain-wordmark
-                        li.list-inline-item
-                            i.devicon-csharp-plain-wordmark
-                        li.list-inline-item
-                            i.devicon-python-plain-wordmark
-                    ul.list-inline.dev-icons
-                        li.list-inline-item
-                            i.devicon-html5-plain-wordmark
-                        li.list-inline-item
-                            i.devicon-css3-plain-wordmark
-                        li.list-inline-item
-                            i.devicon-sass-original
-                    .subheading.mb-3 Programming Frameworks & Tools
-                    ul.list-inline.dev-icons
-                        li.list-inline-item
-                            i.devicon-unity-original
-                        li.list-inline-item
-                            i.devicon-dot-net-plain-wordmark
-                        li.list-inline-item
-                            i.devicon-xamarin-original
-                        li.list-inline-item
-                            i.devicon-pytorch-original
-                        li.list-inline-item
-                            i.devicon-numpy-original
-                        li.list-inline-item
-                            i.devicon-tensorflow-original
-                        li.list-inline-item
-                            i.devicon-bootstrap-plain
-                    ul.list-inline.dev-icons
-                        li.list-inline-item
-                            i.devicon-confluence-original
-                        li.list-inline-item
-                            i.devicon-jira-plain
-                        li.list-inline-item
-                            i.devicon-azure-plain
-                        li.list-inline-item
-                            i.devicon-git-plain
-                        li.list-inline-item
-                            i.devicon-jenkins-plain
-                        li.list-inline-item
-                            i.devicon-mysql-plain
-                        li.list-inline-item
-                            i.devicon-sqlite-plain
-                    .subheading.mb-3 Strength
-                    ul.fa-ul.mb-0
-                        li
-                            span.fa-li
-                                i.fas.fa-comments
-                            | Open-mind to New Ideas
-                        li
-                            span.fa-li
-                                i.fas.fa-heart
-                            | Love Constructive Feedback
-                        li
-                            span.fa-li
-                                i.fas.fa-users
-                            | Learning Effective Communication with Functional Teams
-                        li
-                            span.fa-li
-                                i.fas.fa-hat-wizard
-                            | Strong Will & Thinking Outside Box
+                    div(data-aos="zoom-out-down" data-aos-duration="1000")
+                        .subheading.mb-3(data-aos="zoom-out-up" data-aos-duration="1000") Programming Languages
+                        ul.list-inline.dev-icons
+                            li.list-inline-item
+                                i.devicon-cplusplus-plain-wordmark
+                            li.list-inline-item
+                                i.devicon-csharp-plain-wordmark
+                            li.list-inline-item
+                                i.devicon-python-plain-wordmark
+                        ul.list-inline.dev-icons
+                            li.list-inline-item
+                                i.devicon-html5-plain-wordmark
+                            li.list-inline-item
+                                i.devicon-css3-plain-wordmark
+                            li.list-inline-item
+                                i.devicon-sass-original
+                    div(data-aos="zoom-out" data-aos-duration="1000")
+                        .subheading.mb-3(data-aos="zoom-out-up" data-aos-duration="1000") Programming Frameworks & Tools
+                        ul.list-inline.dev-icons
+                            li.list-inline-item
+                                i.devicon-unity-original
+                            li.list-inline-item
+                                i.devicon-dot-net-plain-wordmark
+                            li.list-inline-item
+                                i.devicon-xamarin-original
+                            li.list-inline-item
+                                i.devicon-pytorch-original
+                            li.list-inline-item
+                                i.devicon-numpy-original
+                            li.list-inline-item
+                                i.devicon-tensorflow-original
+                            li.list-inline-item
+                                i.devicon-bootstrap-plain
+                    
+                        ul.list-inline.dev-icons
+                            li.list-inline-item
+                                i.devicon-confluence-original
+                            li.list-inline-item
+                                i.devicon-jira-plain
+                            li.list-inline-item
+                                i.devicon-azure-plain
+                            li.list-inline-item
+                                i.devicon-git-plain
+                            li.list-inline-item
+                                i.devicon-jenkins-plain
+                            li.list-inline-item
+                                i.devicon-mysql-plain
+                            li.list-inline-item
+                                i.devicon-sqlite-plain
+                    div(data-aos="zoom-out-up" data-aos-duration="1000")            
+                        .subheading.mb-3(data-aos="zoom-out-up" data-aos-duration="1000") Strength
+                        ul.fa-ul.mb-0
+                            li
+                                span.fa-li
+                                    i.fas.fa-comments
+                                | Open-mind to New Ideas
+                            li
+                                span.fa-li
+                                    i.fas.fa-heart
+                                | Love Constructive Feedback
+                            li
+                                span.fa-li
+                                    i.fas.fa-users
+                                | Learning Effective Communication with Functional Teams
+                            li
+                                span.fa-li
+                                    i.fas.fa-hat-wizard
+                                | Strong Will & Thinking Outside Box
 
             hr.m-0
 
@@ -358,68 +365,116 @@ html(lang='en')
             section#interests.resume-section
                 .resume-section-content
                     h2.mb-5 Interests
-                    // Interests
-                    .container
-                        .row
-                            .col-lg-4.col-sm-6.mb-4
-                                .card.h-100
-                                    a(href='#')
-                                    img.card-img-top(src='assets/img/background/hexagon_1.jpg' alt='')
-                                    .card-body
-                                        h4.card-title
-                                            a(href='#') Project One
-                                        p.card-text
-                                        | When I'm not immersed in lines of code, I find solace in the realm of games. They transport me to worlds of adventure and imagination, where I can explore, strategize, and connect with friends across virtual landscapes. Gaming provides a much-needed escape from the digital world I often find myself in. 
+                        // Interests
+                        .container.overflow-hidden.py-5.py-xl-6
+                            .row.gy-3.g-md-3.hcf-isotope-grid
+                                .col-12.col-md-6.col-lg-3.hcf-isotope-item(data-aos="fade-down-right" data-aos-duration="1000")
+                                    a.hcf-masonry-card.rounded.rounded-4(href='#!')
+                                        img.card-img.img-fluid(loading='lazy', src='/assets/img/interests/interests-pets-1.jpg', alt='pets')
+                                        |           
+                                        .card-overlay.d-flex.flex-column.justify-content-center.bg-dark.p-4(style='--bs-bg-opacity: .5;')
+                                            h3.card-title.text-white.text-center.mb-1 Fluffy BFF
+                                            |             
+                                            .card-category.text-white.text-center Pets
+                                |       
+                                .col-12.col-md-6.col-lg-6.hcf-isotope-item(data-aos="fade-down" data-aos-duration="1000")
+                                    a.hcf-masonry-card.rounded.rounded-4(href='#!')
+                                        img.card-img.img-fluid(loading='lazy', src='/assets/img/interests/interests-gamer.jpg', alt='games')
+                                        |           
+                                        .card-overlay.d-flex.flex-column.justify-content-center.bg-dark.p-4(style='--bs-bg-opacity: .5;')
+                                            h3.card-title.text-white.text-center.mb-1 Gaming For Live!
+                                            |             
+                                            .card-category.text-white.text-center Games
+                                |       
+                                .col-12.col-md-6.col-lg-3.hcf-isotope-item(data-aos="fade-down-left" data-aos-duration="1000")
+                                    a.hcf-masonry-card.rounded.rounded-4(href='#!')
+                                        img.card-img.img-fluid(loading='lazy', src='/assets/img/interests/interests-books.jpg', alt='books')
+                                        |           
+                                        .card-overlay.d-flex.flex-column.justify-content-center.bg-dark.p-4(style='--bs-bg-opacity: .5;')
+                                            h3.card-title.text-white.text-center.mb-1 Wisdom
+                                            |             
+                                            .card-category.text-white.text-center Books
+                                |       
+                                .col-12.col-md-6.col-lg-6.hcf-isotope-item(data-aos="fade-up-right" data-aos-duration="1000")
+                                    a.hcf-masonry-card.rounded.rounded-4(href='#!')
+                                        img.card-img.img-fluid(loading='lazy', src='/assets/img/interests/interests-crafts.jpg', alt='crafts')
+                                        |           
+                                        .card-overlay.d-flex.flex-column.justify-content-center.bg-dark.p-4(style='--bs-bg-opacity: .5;')
+                                            h3.card-title.text-white.text-center.mb-1 Creative Source
+                                            |             
+                                            .card-category.text-white.text-center Crafts
+                                |  
+                                   
+                                .col-12.col-md-6.col-lg-6.hcf-isotope-item(data-aos="fade-up-left" data-aos-duration="1000")
+                                    a.hcf-masonry-card.rounded.rounded-4(href='#!')
+                                        img.card-img.img-fluid(loading='lazy', src='/assets/img/interests/interests-nature-1.jpg', alt='nature')
+                                        |           
+                                        .card-overlay.d-flex.flex-column.justify-content-center.bg-dark.p-4(style='--bs-bg-opacity: .5;')
+                                            h3.card-title.text-white.text-center.mb-1 Ebony Vintage
+                                            |             
+                                            .card-category.text-white.text-center Nature
+ 
+                    //- .container
+                    //-     .row
+                    //-         .col-lg-4.col-sm-6.mb-4
+                    //-             .card.h-100
+                    //-                 a(href='#')
+                    //-                 img.card-img-top(src='assets/img/background/hexagon_1.jpg' alt='')
+                    //-                 .card-body
+                    //-                     h4.card-title
+                    //-                         a(href='#') Project One
+                    //-                     p.card-text
+                    //-                     | When I'm not immersed in lines of code, I find solace in the realm of games. They transport me to worlds of adventure and imagination, where I can explore, strategize, and connect with friends across virtual landscapes. Gaming provides a much-needed escape from the digital world I often find myself in. 
 
-                            .col-lg-4.col-sm-6.mb-4
-                                .card.h-100
-                                    a(href='#')
-                                    img.card-img-top(src='https://via.placeholder.com/700x400' alt='')
-                                    .card-body
-                                        h4.card-title
-                                            a(href='#') Project Two
-                                        p.card-text
-                                        | Pets bring an abundance of joy and companionship to my life. Whether it's the excited wag of a dog's tail or the gentle purr of a cat nestled in my lap, their unconditional love reminds me of the simple pleasures that make life truly meaningful.
+                    //-         .col-lg-4.col-sm-6.mb-4
+                    //-             .card.h-100
+                    //-                 a(href='#')
+                    //-                 img.card-img-top(src='https://via.placeholder.com/700x400' alt='')
+                    //-                 .card-body
+                    //-                     h4.card-title
+                    //-                         a(href='#') Project Two
+                    //-                     p.card-text
+                    //-                     | Pets bring an abundance of joy and companionship to my life. Whether it's the excited wag of a dog's tail or the gentle purr of a cat nestled in my lap, their unconditional love reminds me of the simple pleasures that make life truly meaningful.
 
-                            .col-lg-4.col-sm-6.mb-4
-                                .card.h-100
-                                    a(href='#')
-                                    img.card-img-top(src='https://via.placeholder.com/700x400' alt='')
-                                    .card-body
-                                        h4.card-title
-                                            a(href='#') Project Three
-                                        p.card-text
-                                        | Books are my constant companions, offering a sanctuary from the chaos of everyday life. I lose myself in their pages, traveling to far-off places, meeting fascinating characters, and expanding my knowledge. The touch of a physical book and the scent of its pages bring a sense of grounding in an increasingly digital world.
+                    //-         .col-lg-4.col-sm-6.mb-4
+                    //-             .card.h-100
+                    //-                 a(href='#')
+                    //-                 img.card-img-top(src='https://via.placeholder.com/700x400' alt='')
+                    //-                 .card-body
+                    //-                     h4.card-title
+                    //-                         a(href='#') Project Three
+                    //-                     p.card-text
+                    //-                     | Books are my constant companions, offering a sanctuary from the chaos of everyday life. I lose myself in their pages, traveling to far-off places, meeting fascinating characters, and expanding my knowledge. The touch of a physical book and the scent of its pages bring a sense of grounding in an increasingly digital world.
 
-                            .col-lg-4.col-sm-6.mb-4
-                                .card.h-100
-                                    a(href='#')
-                                    img.card-img-top(src='https://via.placeholder.com/700x400' alt='')
-                                    .card-body
-                                        h4.card-title
-                                            a(href='#') Project Four
-                                        p.card-text
-                                        | But it is in the embrace of nature that I find true peace. Whether I'm hiking through serene forests or simply basking in the sunlight, the beauty of the natural world rejuvenates my spirit. I am acutely aware of the urgent need to protect and preserve our environment, and I strive to do my part by living a low-carbon life and reducing waste wherever possible.
+                    //-         .col-lg-4.col-sm-6.mb-4
+                    //-             .card.h-100
+                    //-                 a(href='#')
+                    //-                 img.card-img-top(src='https://via.placeholder.com/700x400' alt='')
+                    //-                 .card-body
+                    //-                     h4.card-title
+                    //-                         a(href='#') Project Four
+                    //-                     p.card-text
+                    //-                     | But it is in the embrace of nature that I find true peace. Whether I'm hiking through serene forests or simply basking in the sunlight, the beauty of the natural world rejuvenates my spirit. I am acutely aware of the urgent need to protect and preserve our environment, and I strive to do my part by living a low-carbon life and reducing waste wherever possible.
 
-                            .col-lg-4.col-sm-6.mb-4
-                                .card.h-100
-                                    a(href='#')
-                                    img.card-img-top(src='https://via.placeholder.com/700x400' alt='')
-                                    .card-body
-                                        h4.card-title
-                                            a(href='#') Project Five
-                                        p.card-text
-                                                | In a world that often values excess and constant consumption, I have found contentment in simplicity. Through my love for games, pets, books, and the outdoors, I have discovered a rich tapestry of experiences that nourish my soul. Guided by my commitment to living sustainably, I hope to inspire others to embrace a minimalist lifestyle and join me in protecting the beauty of our planet.
+                    //-         .col-lg-4.col-sm-6.mb-4
+                    //-             .card.h-100
+                    //-                 a(href='#')
+                    //-                 img.card-img-top(src='https://via.placeholder.com/700x400' alt='')
+                    //-                 .card-body
+                    //-                     h4.card-title
+                    //-                         a(href='#') Project Five
+                    //-                     p.card-text
+                    //-                             | In a world that often values excess and constant consumption, I have found contentment in simplicity. Through my love for games, pets, books, and the outdoors, I have discovered a rich tapestry of experiences that nourish my soul. Guided by my commitment to living sustainably, I hope to inspire others to embrace a minimalist lifestyle and join me in protecting the beauty of our planet.
 
-                            .col-lg-4.col-sm-6.mb-4
-                                .card.h-100
-                                    a(href='#')
-                                    img.card-img-top(src='https://via.placeholder.com/700x400' alt='')
-                                    .card-body
-                                        h4.card-title
-                                            a(href='#') Project Six
-                                        p.card-text
-                                                | In a world that often values excess and constant consumption, I have found contentment in simplicity. Through my love for games, pets, books, and the outdoors, I have discovered a rich tapestry of experiences that nourish my soul. Guided by my commitment to living sustainably, I hope to inspire others to embrace a minimalist lifestyle and join me in protecting the beauty of our planet.
+                    //-         .col-lg-4.col-sm-6.mb-4
+                    //-             .card.h-100
+                    //-                 a(href='#')
+                    //-                 img.card-img-top(src='https://via.placeholder.com/700x400' alt='')
+                    //-                 .card-body
+                    //-                     h4.card-title
+                    //-                         a(href='#') Project Six
+                    //-                     p.card-text
+                    //-                             | In a world that often values excess and constant consumption, I have found contentment in simplicity. Through my love for games, pets, books, and the outdoors, I have discovered a rich tapestry of experiences that nourish my soul. Guided by my commitment to living sustainably, I hope to inspire others to embrace a minimalist lifestyle and join me in protecting the beauty of our planet.
             
             hr.m-0
 
@@ -427,46 +482,57 @@ html(lang='en')
             section#awards.resume-section
                 .resume-section-content
                     h2.mb-5 Volunteer Works
-                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5
+                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5(data-aos="zoom-out-down" data-aos-duration="1000")
                         .flex-grow-1
-                            h3.mb-0 Game Developer
-                            .subheading.mb-3 Rec Room
+                            h3.mb-0 Women in Games Ambassador
+                            .subheading.mb-3 Women in Games 
                             ul.mb-0 
-                                li Developed a tool for faster build downloading for our Quality Assurance using C#, MAUI (Xamarin), Azure Cloud Storage and Azure Authentication;
-                                li Integrated interactive custom protocols for internal communication tool andbuild pipelines (Azure DevOps, Jenkins);
-                                li Added cross-platform functionalities to internal UI framework using C# and Unity;
-                                li Maintenance and support of existing infrastructure.
-                            p.resume-section-content-sills.fw-light.mt-3
-                                | Skills: Unity · Jenkins · Full-Stack Development · Azure DevOps · Java · C#
+                                li To support all women, those identifying as women, non-binary individuals and allies, no matter what stage they are in their career or life journey;
+                                li To empower people to challenge gender inequality and discrimination by providing a safe space to socially connect, and to exchange knowledge and perspectives to activate change;
+                                li To celebrate and showcase the work and talent of women throughout the sector and provide unique opportunities for our Ambassadors to contribute to: our events programme, Awards, initiatives and research projects.
                         .flex-shrink-0
-                            span.text-primary January 2023 - May 2023
+                            span.text-primary July 2023 - Present
 
-                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5
+                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5(data-aos="zoom-out" data-aos-duration="1000")
                         .flex-grow-1
-                            h3.mb-0 Software Engineer
-                            .subheading.mb-3 PointClickCare
-                            li Worked closely with senior developer for cloud-based machine learning servicesusing python and Java;
-                            li Successfully Resolving 6 security risks and vulnerabilities for the Docker micro-services;
-                            li Rapid test frameworks enhancement for five new features on across themachine learning core and API services using Flask, Springboot and SQL Server;
-                            li Effectively communicate with a team of ten on work sprint planning and scoring.
-                            p.resume-section-content-sills.fw-light.mt-3
-                                | Skills: Jenkins · Jira · DevOps · Maven · Spring Boot · Flask · Python (Programming Language) · Machine Learning · Java · Natural Language Processing (NLP) · Docker · Microsoft SQL Server
+                            h3.mb-0 CHOICES Table Coach
+                            .subheading.mb-3 Thunder Bay Counselling
+                            li Facilitating Group Sessions: responsible for facilitating group sessions within the CHOICES program, using the curriculum provided by the Thunder Bay Counselling Centre;
+                            li Supporting Participants: provide support and encouragement to program participants, both during group sessions and in one-on-one interactions;
+                            li Attending Training: attend training sessions offered by the Thunder Bay Counselling Centre to ensure that they are equipped to perform their roles effectively;
+                            li Maintaining Records: maintaining accurate records of program participation and progress;
+                            
                         .flex-shrink-0
-                            span.text-primary January 2022 - May 2022
+                            span.text-primary January 2023 - April 2023
 
-                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5
+                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5(data-aos="zoom-out" data-aos-duration="1000")
                         .flex-grow-1
-                            h3.mb-0 Gaming Content Editor
-                            .subheading.mb-3 Gamecores
-                            li Responsible for news, translations, previews, reviews and retrospectives, mostly major western RPG titles;
-                            li Chronicled several biographies and conducted interviews for outstanding game developers;
-                            li Completed English gaming news and article translation with high quality and efficiency;
-                            li Maintained energy and enthusiasm in fast-paced environment.
-                            p.resume-section-content-sills.fw-light.mt-3
-                                | Skills: Social Media · Gaming News · Gaming Journalist · Translation · Content Editing · Gaming
+                            h3.mb-0 Community Volunteer
+                            .subheading.mb-3 Roots to Harvest
+                            li Food Preparation: responsible for helping with food preparation, such as chopping vegetables, preparing sauces, or cooking meals;
+                            li Serving Customers: serve customers and explain the different meal options available;
+                            li Sorting Donations: help with sorting and organizing donated items;
+                            li Follow Food Safety Protocols: follow all food safety protocols, including proper handwashing, wearing gloves, and following temperature guidelines.
                         .flex-shrink-0
-                            span.text-primary September 2018 - September 2019
+                            span.text-primary October 2022 - April 2023
+                            
+                    .d-flex.flex-column.flex-md-row.justify-content-between.mb-5(data-aos="zoom-out-up" data-aos-duration="1000")
+                        .flex-grow-1
+                            h3.mb-0 Student Volunteer
+                            .subheading.mb-3 Lakehead University Food Resource Center and Sustainability Office/ International Enrollment Office/ Nursing Association
+                            li Food Distribution: assist with the distribution of food to clients, including sorting, packing, and distributing food items;
+                            li Community Outreach: participate in community outreach efforts to raise awareness about the services provided by the Food Resource Center and recruit new volunteers;
+                            li Organizting and greeting event participants;
+                            li Event equipments safekeeping.
+                        .flex-shrink-0
+                            span.text-primary September 2022 - April 2023
                     
+            footer.p-5.text-center.position-relative
+                .container
+                    p.lead Copyright &copy; 2023 Echo Yin
+                    |         
+                    a.position-abusolute.bottom-0.end-0.p-5(href='#')
+                        i.fa-solid.fa-circle-arrow-up.fa-2xl
 
         // Bootstrap core JS
         script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js')
@@ -476,6 +542,9 @@ html(lang='en')
 
         //Typed JS
         script(src='https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.16/typed.umd.js') 
+
+        // Isotope JS
+        script(src='https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js') 
 
         // Core theme JS
         script(src='js/scripts.js')

@@ -1,0 +1,141 @@
+.g-6 {
+	--bs-gutter-x: 4.5rem;
+	--bs-gutter-y: 4.5rem;
+}
+.gx-6 {
+	--bs-gutter-x: 4.5rem;
+}
+.gy-6 {
+	--bs-gutter-y: 4.5rem;
+}
+.py-6 {
+	padding-top: 4.5rem !important;
+	padding-bottom: 4.5rem !important;
+}
+.hcf-masonry-card {
+	display: block;
+	position: relative;
+	overflow: hidden;
+	.card-img {
+		object-fit: cover;
+		transform: scale(1);
+		transition: transform 150ms linear;
+	}
+	.card-overlay {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		opacity: 0;
+		.card-title {
+			display: inline-block;
+			transform: translateY(10px);
+			opacity: 0;
+		}
+		.card-category {
+			transform: translateY(10px);
+			opacity: 0;
+		}
+	}
+	&:hover {
+		.card-img {
+			transform: scale(1.05);
+			transition: transform 150ms linear;
+		}
+		.card-overlay {
+			opacity: 1;
+			transition: opacity 150ms linear;
+			.card-title {
+				opacity: 1;
+				transform: translateY(0);
+				transition: transform 150ms linear 0.1s, opacity 150ms linear 0.1s;
+			}
+			.card-category {
+				opacity: 1;
+				transform: translateY(0);
+				transition: transform 150ms linear 0.2s, opacity 150ms linear 0.2s;
+			}
+		}
+	}
+}
+@media (min-width: 576px) {
+	.g-sm-6 {
+		--bs-gutter-x: 4.5rem;
+		--bs-gutter-y: 4.5rem;
+	}
+	.gx-sm-6 {
+		--bs-gutter-x: 4.5rem;
+	}
+	.gy-sm-6 {
+		--bs-gutter-y: 4.5rem;
+	}
+	.py-sm-6 {
+		padding-top: 4.5rem !important;
+		padding-bottom: 4.5rem !important;
+	}
+}
+@media (min-width: 768px) {
+	.g-md-6 {
+		--bs-gutter-x: 4.5rem;
+		--bs-gutter-y: 4.5rem;
+	}
+	.gx-md-6 {
+		--bs-gutter-x: 4.5rem;
+	}
+	.gy-md-6 {
+		--bs-gutter-y: 4.5rem;
+	}
+	.py-md-6 {
+		padding-top: 4.5rem !important;
+		padding-bottom: 4.5rem !important;
+	}
+}
+@media (min-width: 992px) {
+	.g-lg-6 {
+		--bs-gutter-x: 4.5rem;
+		--bs-gutter-y: 4.5rem;
+	}
+	.gx-lg-6 {
+		--bs-gutter-x: 4.5rem;
+	}
+	.gy-lg-6 {
+		--bs-gutter-y: 4.5rem;
+	}
+	.py-lg-6 {
+		padding-top: 4.5rem !important;
+		padding-bottom: 4.5rem !important;
+	}
+}
+@media (min-width: 1200px) {
+	.g-xl-6 {
+		--bs-gutter-x: 4.5rem;
+		--bs-gutter-y: 4.5rem;
+	}
+	.gx-xl-6 {
+		--bs-gutter-x: 4.5rem;
+	}
+	.gy-xl-6 {
+		--bs-gutter-y: 4.5rem;
+	}
+	.py-xl-6 {
+		padding-top: 4.5rem !important;
+		padding-bottom: 4.5rem !important;
+	}
+}
+@media (min-width: 1400px) {
+	.g-xxl-6 {
+		--bs-gutter-x: 4.5rem;
+		--bs-gutter-y: 4.5rem;
+	}
+	.gx-xxl-6 {
+		--bs-gutter-x: 4.5rem;
+	}
+	.gy-xxl-6 {
+		--bs-gutter-y: 4.5rem;
+	}
+	.py-xxl-6 {
+		padding-top: 4.5rem !important;
+		padding-bottom: 4.5rem !important;
+	}
+}
