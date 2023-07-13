@@ -1,6 +1,6 @@
 {
     "title": "Portfolio-website",
-    "name": "bootstrap-resume",
+    "name": "portfolio-site",
     "version": "1.0.2",
     "scripts": {
         "build": "npm run clean && npm run build:pug && npm run build:scss && npm run build:scripts && npm run build:assets",
