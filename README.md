@@ -9,7 +9,12 @@ My portfoio website adopted from [Resume](https://startbootstrap.com/theme/resum
 
 ## About
 
-This is a personal portfolio website for yours truly :)
+This is a personal portfolio website for yours truly :).
+
+- Responsive to screen width;
+- Animated slide diagonal background;
+- Animate on scroll effect;
+- Mansonary card visual.
 
 ## Third-Party Plugins
 
@@ -20,6 +25,7 @@ Some third-party plugins that were used to create this website. Please check the
 - [FontAwesome - v6.4.0](https://fontawesome.com/)
 - [Typed.js - v2.0.16](https://github.com/mattboldt/typed.js/releases/tag/v2.0.16)
 - [Animate On Scroll Library - v2.3.1](https://michalsnik.github.io/aos/)
+- [Isotope - v3.0.5](https://isotope.metafizzy.co/)
 
 ## Copyright and License
 
@@ -27,5 +33,6 @@ Some third-party plugins that were used to create this website. Please check the
 
 Copyright 2013-2023 Start Bootstrap LLC. Code released under the [MIT](https://github.com/StartBootstrap/startbootstrap-resume/blob/master/LICENSE) license.
 
+### License
 
-Copyright 2023 Echo Yin [MIT](https://github.com/e-choness/e-choenss.github.io/blob/main/LICENSE) license. 
+Copyright 2023 Echo Yin. Code released under the [MIT](https://github.com/e-choness/e-choenss.github.io/blob/main/LICENSE) license.
