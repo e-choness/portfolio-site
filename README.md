@@ -7,6 +7,11 @@ My portfoio website adopted from [Resume](https://startbootstrap.com/theme/resum
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/StartBootstrap/startbootstrap-resume/master/LICENSE)
 [![npm version](https://img.shields.io/npm/v/startbootstrap-resume.svg)](https://www.npmjs.com/package/startbootstrap-resume)
 
+## Deployment
+
+The site is live now!
+Please check it out [here](https://e-choness.github.io/portfolio-site/).
+
 ## About
 
 This is a personal portfolio website for yours truly :).
