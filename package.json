@@ -1,7 +1,7 @@
 {
-    "title": "Portfolio",
+    "title": "Portfolio-website",
     "name": "bootstrap-resume",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "scripts": {
         "build": "npm run clean && npm run build:pug && npm run build:scss && npm run build:scripts && npm run build:assets",
         "build:assets": "node scripts/build-assets.js",
@@ -10,7 +10,8 @@
         "build:scss": "node scripts/build-scss.js",
         "clean": "node scripts/clean.js",
         "start": "npm run build && node scripts/start.js",
-        "start:debug": "npm run build && node scripts/start-debug.js"
+        "start:debug": "npm run build && node scripts/start-debug.js",
+        "deploy": "gh-pages -d dist"
     },
     "description": "Resume is a simple, yet elegant resume and CV theme for Bootstrap 4.",
     "keywords": [
@@ -19,11 +20,11 @@
         "html",
         "responsive"
     ],
-    "homepage": "https://startbootstrap.com/theme/resume",
+    "homepage": "https://e-choness.github.io/portfolio-site",
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/e-choness/e-choenss.github.io"
+        "url": "https://github.com/e-choness/portfolio-site"
     },
     "dependencies": {
         "bootstrap": "5.2.3",
