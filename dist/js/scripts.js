@@ -1,7 +1,7 @@
 /*!
 * Start Bootstrap - Portfolio-website v1.0.2 (https://e-choness.github.io/portfolio-site)
 * Copyright 2013-2023 undefined
-* Licensed under MIT (https://github.com/StartBootstrap/bootstrap-resume/blob/master/LICENSE)
+* Licensed under MIT (https://github.com/StartBootstrap/portfolio-site/blob/master/LICENSE)
 */
 //
 // Scripts
@@ -55,4 +55,7 @@ window.addEventListener('DOMContentLoaded', event => {
     layoutMode: 'fitRows'
     });
 
+    // Initialize pooovers
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+    const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
 });

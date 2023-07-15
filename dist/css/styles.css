@@ -2,7 +2,7 @@
 /*!
 * Start Bootstrap - Portfolio-website v1.0.2 (https://e-choness.github.io/portfolio-site)
 * Copyright 2013-2023 undefined
-* Licensed under MIT (https://github.com/StartBootstrap/bootstrap-resume/blob/master/LICENSE)
+* Licensed under MIT (https://github.com/StartBootstrap/portfolio-site/blob/master/LICENSE)
 */
 /*!
  * Bootstrap  v5.2.3 (https://getbootstrap.com/)
@@ -10937,8 +10937,29 @@ footer {
   background-color: #755686;
 }
 
-.dev-icons {
+.dev-icons .dev-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 3.5rem;
+  width: 3.5rem;
   font-size: 3rem;
+  margin-right: 1.5rem;
+}
+.dev-icons .dev-icon:last-child {
+  margin-right: 0;
+}
+.dev-icons .dev-icon:hover {
+  color: #755686;
+}
+
+.custom-popover {
+  --bs-popover-max-width: 200px;
+  --bs-popover-border-color: var(--bs-purple);
+  --bs-popover-header-bg: var(--bs-purple);
+  --bs-popover-header-color: var(--bs-white);
+  --bs-popover-body-padding-x: 1rem;
+  --bs-popover-body-padding-y: .5rem;
 }
 
 .bg {
