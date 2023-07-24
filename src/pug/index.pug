@@ -67,9 +67,14 @@ html(lang='en')
                     h1.mb-0
                         | Echo 
                         span.text-primary Yin
-                    .subheading.mb-5.mt-3
+                    .subheading.mb-3.mt-3
                         | I'm a 
-                        span.typed(data-typed-items='Programmer., Game Developer., Software Engineer., Gamer., Pet Lover.')          
+                        span.typed(data-typed-items='Programmer., Game Developer., Software Engineer., Gamer., Pet Lover.')  
+                    .subheading.mb-5
+                        span Who is passionate about help people make
+                        | engaging video games 
+                        span and pushing
+                        | technical boundaries.         
                     .social-icons
                         a.social-icon(href='https://www.linkedin.com/in/echoyin0451/' target='_blank' title='LinkedIn')
                             i.fab.fa-linkedin-in
@@ -79,12 +84,17 @@ html(lang='en')
                             i.fab.fa-medium
                         a.social-icon(href='https://twitter.com/_echo_yin' target='_blank' title='Twitter')
                             i.fab.fa-twitter
+                    .social-icons.mt-4
                         a.social-icon(href='https://account.xbox.com/en-US/Profile?gamerTag=Echo%2BYin' target='_blank' title='Xbox')
                             i.fab.fa-xbox
                         a.social-icon(href='https://steamcommunity.com/id/echochaos/' target='_blank' title='Steam')
                             i.fab.fa-steam
+                        a.social-icon(href='https://www.dropbox.com/scl/fi/kl0cgntri6vl5xz1rtjea/Resume-Software-Engineer-Programmer.pdf?rlkey=z8aqdvvdl2jn37ylfb199rhs1&dl=0' target='_blank' title='Resume')
+                            i.fa-regular.fa-id-card
                         p.mt-3 
                             | · Please contact me via social media links!
+                        p.mt-3  
+                            | · Don't forget to download my resume!
 
             hr.m-0
 
@@ -96,7 +106,7 @@ html(lang='en')
                     .d-flex.flex-column.flex-md-row.justify-content-between.mb-5(data-aos="zoom-out-down" data-aos-duration="1000")
                         .flex-grow-1
                             h3.mb-0 Game Developer
-                            .subheading.mb-3 Rec Room
+                            .subheading.mb-3 Rec Room - A VR Multiplayer Online Game Company
                             ul.mb-0 
                                 li Developed a tool for faster build downloading for our Quality Assurance using C#, MAUI (Xamarin), Azure Cloud Storage and Azure Authentication;
                                 li Integrated interactive custom protocols for internal communication tool andbuild pipelines (Azure DevOps, Jenkins);
@@ -110,7 +120,7 @@ html(lang='en')
                     .d-flex.flex-column.flex-md-row.justify-content-between.mb-5(data-aos="zoom-out" data-aos-duration="1000")
                         .flex-grow-1
                             h3.mb-0 Software Engineer
-                            .subheading.mb-3 PointClickCare
+                            .subheading.mb-3 PointClickCare - A Cloud-based Healthcare Software Provider
                             li Worked closely with senior developer for cloud-based machine learning servicesusing python and Java;
                             li Successfully Resolving 6 security risks and vulnerabilities for the Docker micro-services;
                             li Rapid test frameworks enhancement for five new features on across themachine learning core and API services using Flask, Springboot and SQL Server;
@@ -123,7 +133,7 @@ html(lang='en')
                     .d-flex.flex-column.flex-md-row.justify-content-between.mb-5(data-aos="zoom-out-up" data-aos-duration="1000")
                         .flex-grow-1
                             h3.mb-0 Gaming Content Editor
-                            .subheading.mb-3 Gamecores
+                            .subheading.mb-3 Gamecores - A Gaming Social Media Company
                             li Responsible for news, translations, previews, reviews and retrospectives, mostly major western RPG titles;
                             li Chronicled several biographies and conducted interviews for outstanding game developers;
                             li Completed English gaming news and article translation with high quality and efficiency;
@@ -143,11 +153,11 @@ html(lang='en')
                         .row
                             .col-lg-4.col-sm-6.mb-4(data-aos="fade-down-right" data-aos-duration="1000")
                                 .card.h-100
-                                    a(href='https://www.youtube.com/watch?v=pDqL78mLw1w' target='_blank')
-                                        img.card-img-top(src='assets/img/projects/project-vr.jpeg' alt='vr-space')
+                                    a(href='https://www.youtube.com/watch?v=1e8t9bDqKxE' target='_blank')
+                                        img.card-img-top(src='assets/img/projects/project-vr-space.gif' alt='vr-space')
                                     .card-body
                                         h4.card-title
-                                            a(href='https://www.youtube.com/watch?v=pDqL78mLw1w' target='_blank') VR Space
+                                            a(href='https://www.youtube.com/watch?v=1e8t9bDqKxE' target='_blank') VR Space (WIP)
                                         p
                                             | A work-in-progress proof-of-concept for a novel locomotion system for VR. It uses the physical space (previously mapped) around the user to generate the map. Joystick movement or teleporting are not used.
                                         p.resume-section-content-sills.fw-light.mt-3
@@ -159,11 +169,11 @@ html(lang='en')
 
                             .col-lg-4.col-sm-6.mb-4(data-aos="fade-down" data-aos-duration="1000")
                                 .card.h-100
-                                    a(href='https://medium.com/@echoness/studio-jojo-devlog-part-4-game-design-details-revealed-65f03787b111' target='_blank')
-                                        img.card-img-top(src='assets/img/projects/project-cultural-heritage.jpg' alt='cultural-heritage')
+                                    a(href='https://github.com/e-choness/restoration-runner' target='_blank')
+                                        img.card-img-top(src='assets/img/projects/project-restoration-runner.gif' alt='cultural-heritage')
                                     .card-body
                                         h4.card-title
-                                            a(href='https://medium.com/@echoness/studio-jojo-devlog-part-4-game-design-details-revealed-65f03787b111' target='_blank') Cultural Heritage Jam
+                                            a(href='https://github.com/e-choness/restoration-runner' target='_blank') Cultural Heritage Jam (WIP)
                                         p.card-text
                                             | A 2D platformer runner where you could play as an art restorer who run and perform restoration action on the wonderful art pieces from legacies of Mexico, China and Portugal. Let's bring damaged masterpieces back to their former glory.
                                         p.resume-section-content-sills.fw-light.mt-3
@@ -176,14 +186,16 @@ html(lang='en')
                                                     img.img-fluid.img-profile.rounded-circle.mx-auto.mb-2(src='assets/img/projects/studio-jojo-paola.jpg' alt='jojo-paola')
                                                 a(href='https://www.linkedin.com/in/ockofficial/' target='_blank')
                                                     img.img-fluid.img-profile.rounded-circle.mx-auto.mb-2(src='assets/img/projects/studio-jojo-octavio.jpg' alt='jojo-ock')
+                                                a(href='https://jairm.itch.io/' target='_blank')
+                                                    img.img-fluid.img-profile.rounded-circle.mx-auto.mb-2(src='assets/img/projects/studio-jojo-jair.jpg' alt='jojo-jair')
                             
                             .col-lg-4.col-sm-6.mb-4(data-aos="fade-down-left" data-aos-duration="1000")
                                 .card.h-100
-                                    a(href='https://github.com/e-choness/project-egg' target='_blank')
+                                    a(href='https://github.com/e-choness/learning-vulkan-engine' target='_blank')
                                         img.card-img-top(src='assets/img/projects/project-game-engine.png' alt='game-engine')
                                     .card-body
                                         h4.card-title
-                                            a(href='https://github.com/e-choness/project-egg' target='_blank') Game Engine Project
+                                            a(href='https://github.com/e-choness/learning-vulkan-engine' target='_blank') Game Engine Project (WIP)
                                         p.card-text
                                             | A humble self-taught project exploring the intricacies of game engine architecture and functionality. Utilizing C++, Vulkan and CMAKE, delve into the world of game development, gaining valuable insights and honing your skills in this fascinating domain.
                                         p.resume-section-content-sills.fw-light.mt-3
@@ -245,7 +257,7 @@ html(lang='en')
                                         h4.card-title
                                             a(href='https://github.com/e-choness/e-choenss.github.io' target='_blank') Portfolio Website
                                         p.card-text
-                                            | Welcome to my portfolio website, crafted from a Resume template by Start Bootstrap. With the aid of advanced bootstrap snippets and third-party animation plugins, this site is for yours truly, showcasing my work in a captivating and engaging manner.
+                                            | Welcome to my portfolio website, crafted from a Resume template by Start Bootstrap. With the aid of advanced bootstrap snippets and third-party animation plugins, this website by yours truly, showcasing my work in a captivating and engaging manner.
                                         p.resume-section-content-sills.fw-light.mt-3
                                             | Tech Stack: PUG · SCSS · NPM · HTML · CSS · Javascript · Bootstrap · Typed · AOS
 
@@ -357,7 +369,7 @@ html(lang='en')
                             li.list-inline-item.dev-icon
                                 i.devicon-sqlite-plain(data-bs-toggle="popover" data-bs-placement="top" data-bs-custom-class="custom-popover" data-bs-title="SQLIte" data-bs-content="Lightweight and embedded.")
                     div(data-aos="zoom-out-up" data-aos-duration="1000")            
-                        .subheading.mb-3(data-aos="zoom-out-up" data-aos-duration="1000") Strength
+                        .subheading.mb-3(data-aos="zoom-out-up" data-aos-duration="1000") Strengths
                         ul.fa-ul.mb-3
                             li
                                 span.fa-li
