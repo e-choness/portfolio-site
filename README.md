@@ -50,8 +50,8 @@ Some third-party plugins that were used to create this website. Please check the
 
 ### Template License
 
-Copyright 2013-2023 Start Bootstrap LLC. Code released under the [MIT](https://github.com/StartBootstrap/startbootstrap-resume/blob/master/LICENSE) license.
+Copyright © 2013-2023 Start Bootstrap LLC. Code released under the [MIT](https://github.com/StartBootstrap/startbootstrap-resume/blob/master/LICENSE) license.
 
 ### License
 
-Copyright 2023 Echo Yin. Code released under the [MIT](https://github.com/e-choness/e-choenss.github.io/blob/main/LICENSE) license.
+Copyright © 2023 Echo Yin. Code released under the [MIT](https://github.com/e-choness/e-choenss.github.io/blob/main/LICENSE) license.
