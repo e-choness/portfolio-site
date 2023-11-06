@@ -16,9 +16,9 @@ Please check it out [here](https://e-choness.github.io/portfolio-site/).
 
 This is a personal portfolio website for yours truly :).
 
-- Responsive to screen width;
-- Animated slide diagonal background;
-- Animate on scroll effect;
+- Responsive to screen width.
+- Animated slide diagonal background.
+- Animate on scroll effect.
 - Mansonary card visual.
 
 ## Third-Party Plugins
@@ -31,6 +31,20 @@ Some third-party plugins that were used to create this website. Please check the
 - [Typed.js - v2.0.16](https://github.com/mattboldt/typed.js/releases/tag/v2.0.16)
 - [Animate On Scroll Library - v2.3.1](https://michalsnik.github.io/aos/)
 - [Isotope - v3.0.5](https://isotope.metafizzy.co/)
+
+## Usage
+
+### npm Scripts
+
+- `npm run build` builds the project - this builds assets, HTML, JS, and CSS into `dist`.
+- `npm run build:assets` copies the files in the `src/assets/` directory into `dist`.
+- `npm run build:pug` compiles the Pug located in the `src/pug/` directory into `dist`.
+- `npm run build:scripts` brings the `src/js/scripts.js` file into `dist`.
+- `npm run build:scss` compiles the SCSS files located in the `src/scss/` directory into `dist`.
+- `npm run clean` deletes the `dist` directory to prepare for rebuilding the project.
+- `npm run start:debug` runs the project in debug mode.
+- `npm start` or `npm run start` runs the project, launches a live preview in your default browser, and watches for changes made to files in `src`.
+- `npm run deploy` Deploys the `dist` directory to git action and runs the deployment pipeline.
 
 ## Copyright and License
 
