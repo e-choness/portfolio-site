@@ -1,6 +1,6 @@
 /*!
 * Start Bootstrap - Portfolio-website v1.0.2 (https://e-choness.github.io/portfolio-site)
-* Copyright 2013-2023 undefined
+* Copyright 2013-2024 undefined
 * Licensed under MIT (https://github.com/StartBootstrap/portfolio-site/blob/master/LICENSE)
 */
 //
