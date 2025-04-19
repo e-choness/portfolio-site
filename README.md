@@ -14,7 +14,7 @@ Please check it out [here](https://e-choness.github.io/portfolio-site/).
 
 ## About
 
-This is a personal portfolio website for yours truly :).
+This is a personal portfolio website for yours truly.
 
 - Responsive to screen width.
 - Animated slide diagonal background.
@@ -54,4 +54,4 @@ Copyright © 2013-2023 Start Bootstrap LLC. Code released under the [MIT](https:
 
 ### License
 
-Copyright © 2023 Echo Yin. Code released under the [MIT](https://github.com/e-choness/e-choenss.github.io/blob/main/LICENSE) license.
+Copyright © 2023 - 2025 Echo Yin. Code released under the [MIT](https://github.com/e-choness/e-choenss.github.io/blob/main/LICENSE) license.
