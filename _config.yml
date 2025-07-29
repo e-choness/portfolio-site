@@ -1,0 +1,74 @@
+# Site settings
+title: Echo Yin
+email: echoybl1123@gmail.com
+description: >-
+  Full-stack developer passionate about creating innovative web solutions.
+  Experienced in modern JavaScript frameworks, backend development, and UI/UX design.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "https://e-choness.github.io" # the base hostname & protocol for your site
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - README.md
+
+# Collections
+collections:
+  projects:
+    output: true
+    permalink: /:collection/:name/
+  posts:
+    output: true
+    permalink: /blog/:year/:month/:day/:title/
+
+# Pagination
+paginate: 6
+paginate_path: "/blog/page:num/"
+
+# Blog settings
+blog:
+  title: "Blog"
+  description: "Thoughts on web development, technology, and career insights"
+  author: "Echo Yin"
+
+projects:
+  title: "Projects"
+  description: "Explore my portfolio of projects showcasing various technologies and skills"
+  author: "Echo Yin"
+
+# Site data
+author:
+  name: Echo Yin
+  title: Software Engineer
+  location: "Edmonton, AB, Canada"
+  years_experience: 5
+  projects_completed: 25
+  happy_clients: 15
+
+# Social links
+social:
+  github: yourusername
+  linkedin: yourlinkedin
+  twitter: yourtwitter
+  email: echoybl1123@gmail.com
+
+# Google Analytics (optional)
+google_analytics: UA-XXXXXXXXX-X
+
+# Theme settings
+sass:
+  style: compressed

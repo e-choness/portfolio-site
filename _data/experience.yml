@@ -1,0 +1,59 @@
+- position: "Senior Full-Stack Developer"
+  company: "Tech Innovations Inc."
+  location: "Remote"
+  duration: "2022 - Present"
+  logo: "/assets/images/companies/tech-innovations.png"
+  description: |
+    Leading development of scalable web applications using React, Node.js, and cloud technologies. 
+    Mentoring junior developers and implementing best practices for code quality and performance optimization.
+  responsibilities:
+    - "Architected and developed 5+ enterprise-level web applications"
+    - "Reduced application load time by 60% through optimization techniques"
+    - "Mentored 3 junior developers and conducted code reviews"
+    - "Implemented CI/CD pipelines reducing deployment time by 80%"
+  technologies:
+    - React
+    - Node.js
+    - AWS
+    - Docker
+    - PostgreSQL
+
+- position: "Frontend Developer"
+  company: "Digital Solutions Ltd."
+  location: "New York, NY"
+  duration: "2020 - 2022"
+  logo: "/assets/images/companies/digital-solutions.png"
+  description: |
+    Developed responsive web applications with modern JavaScript frameworks. 
+    Collaborated with UX/UI designers to create intuitive user interfaces and improved application performance by 40%.
+  responsibilities:
+    - "Built 10+ responsive web applications using React and Vue.js"
+    - "Improved application performance by 40% through code optimization"
+    - "Collaborated with design team to implement pixel-perfect UI/UX"
+    - "Integrated RESTful APIs and third-party services"
+  technologies:
+    - React
+    - Vue.js
+    - JavaScript
+    - CSS3
+    - REST APIs
+
+- position: "Junior Web Developer"
+  company: "StartUp Hub"
+  location: "San Francisco, CA"
+  duration: "2019 - 2020"
+  logo: "/assets/images/companies/startup-hub.png"
+  description: |
+    Built and maintained multiple client websites using HTML, CSS, JavaScript, and PHP. 
+    Gained experience in database design and API integration while working in an agile development environment.
+  responsibilities:
+    - "Developed 15+ client websites from concept to deployment"
+    - "Maintained and updated existing web applications"
+    - "Collaborated in agile development sprints"
+    - "Implemented responsive design principles"
+  technologies:
+    - HTML5
+    - CSS3
+    - JavaScript
+    - PHP
+    - MySQL

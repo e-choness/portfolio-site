@@ -1,0 +1,69 @@
+categories:
+  - name: "Frontend Development"
+    skills:
+      - name: "JavaScript"
+        level: 95
+        years: 5
+        icon: "fab fa-js-square"
+      - name: "React"
+        level: 90
+        years: 4
+        icon: "fab fa-react"
+      - name: "CSS3"
+        level: 85
+        years: 5
+        icon: "fab fa-css3-alt"
+      - name: "TypeScript"
+        level: 80
+        years: 3
+        icon: "fas fa-code"
+      - name: "Vue.js"
+        level: 75
+        years: 2
+        icon: "fab fa-vuejs"
+
+  - name: "Backend Development"
+    skills:
+      - name: "Node.js"
+        level: 88
+        years: 4
+        icon: "fab fa-node-js"
+      - name: "Python"
+        level: 75
+        years: 3
+        icon: "fab fa-python"
+      - name: "Express.js"
+        level: 85
+        years: 4
+        icon: "fas fa-server"
+      - name: "REST APIs"
+        level: 90
+        years: 4
+        icon: "fas fa-exchange-alt"
+      - name: "GraphQL"
+        level: 70
+        years: 2
+        icon: "fas fa-project-diagram"
+
+  - name: "Database & Tools"
+    skills:
+      - name: "MongoDB"
+        level: 82
+        years: 3
+        icon: "fas fa-database"
+      - name: "PostgreSQL"
+        level: 78
+        years: 3
+        icon: "fas fa-database"
+      - name: "Git"
+        level: 92
+        years: 5
+        icon: "fab fa-git-alt"
+      - name: "Docker"
+        level: 70
+        years: 2
+        icon: "fab fa-docker"
+      - name: "AWS"
+        level: 65
+        years: 2
+        icon: "fab fa-aws"

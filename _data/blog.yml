@@ -1,0 +1,60 @@
+title: "Blog"
+description: "Sharing insights on web development, technology trends, and lessons learned from building modern applications."
+author: "Your Name"
+
+# Blog categories
+categories:
+  - name: "JavaScript"
+    slug: "javascript"
+    description: "Modern JavaScript techniques, frameworks, and best practices"
+    color: "#f7df1e"
+    
+  - name: "Backend"
+    slug: "backend"
+    description: "Server-side development, APIs, and database design"
+    color: "#68217a"
+    
+  - name: "CSS"
+    slug: "css"
+    description: "Styling, layouts, and modern CSS techniques"
+    color: "#1572b6"
+    
+  - name: "React"
+    slug: "react"
+    description: "React ecosystem, hooks, and component patterns"
+    color: "#61dafb"
+    
+  - name: "Node.js"
+    slug: "nodejs"
+    description: "Server-side JavaScript and Node.js development"
+    color: "#339933"
+    
+  - name: "Frontend"
+    slug: "frontend"
+    description: "User interface development and frontend architecture"
+    color: "#ff6b6b"
+
+# Featured topics
+featured_topics:
+  - "JavaScript Frameworks"
+  - "API Development"
+  - "CSS Layout"
+  - "Performance Optimization"
+  - "Testing Strategies"
+  - "Developer Tools"
+
+# Blog settings
+posts_per_page: 6
+excerpt_length: 150
+show_reading_time: true
+show_author: true
+show_categories: true
+show_tags: true
+enable_comments: false
+
+# Social sharing
+social_sharing:
+  twitter: true
+  linkedin: true
+  facebook: false
+  reddit: true
