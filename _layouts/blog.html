@@ -13,7 +13,7 @@
     <meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
     <meta property="og:description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}">
     <meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}">
-    <meta property="og:url" content="{{ page.url | absolute_url }}">
+    <meta property="og:url" content="{{ site.baseurl }}{{ page.url | absolute_url }}">
     {% if page.image %}<meta property="og:image" content="{{ page.image | absolute_url }}">{% endif %}
     
     <!-- CSS Libraries -->
@@ -542,16 +542,16 @@
     <!-- Header -->
     <header class="header">
         <nav class="nav-container">
-            <a href="/" class="logo">Your Name</a>
+            <a href="{{ site.baseurl }}/" class="logo">Your Name</a>
             
             <ul class="nav-menu">
-                <li><a href="/#home">Home</a></li>
-                <li><a href="/#about">About</a></li>
-                <li><a href="/#experience">Experience</a></li>
-                <li><a href="/#projects">Projects</a></li>
-                <li><a href="/#skills">Skills</a></li>
-                <li><a href="/blog/" class="active">Blog</a></li>
-                <li><a href="/#contact">Contact</a></li>
+                <li><a href="{{ site.baseurl }}/#home">Home</a></li>
+                <li><a href="{{ site.baseurl }}/#about">About</a></li>
+                <li><a href="{{ site.baseurl }}/#experience">Experience</a></li>
+                <li><a href="{{ site.baseurl }}/#projects">Projects</a></li>
+                <li><a href="{{ site.baseurl }}/#skills">Skills</a></li>
+                <li><a href="{{ site.baseurl }}/blog/" class="active">Blog</a></li>
+                <li><a href="{{ site.baseurl }}/#contact">Contact</a></li>
             </ul>
             
             <button class="theme-toggle" aria-label="Toggle theme">

@@ -35,7 +35,7 @@ layout: blog
                 </div>
                 
                 <h2 class="blog-card-title">
-                    <a href="{{ post.url }}">{{ post.title }}</a>
+                    <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
                 </h2>
                 
                 <p class="blog-excerpt">
@@ -46,7 +46,7 @@ layout: blog
                     {% endif %}
                 </p>
                 
-                <a href="{{ post.url }}" class="blog-read-more">
+                <a href="{{ post.url | relative_url }}" class="blog-read-more">
                     Read More <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
@@ -55,7 +55,7 @@ layout: blog
     </div>
 
     <div style="text-align: center; margin-top: 3rem;" data-aos="fade-up">
-        <a href="/blog/" class="view-all-posts">
+        <a href="{{ site.baseurl }}/blog/" class="view-all-posts">
             <i class="fas fa-arrow-left"></i> Back to All Posts
         </a>
     </div>

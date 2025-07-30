@@ -1,13 +1,13 @@
 <div class="project-navigation" data-aos="fade-up">
     <div class="container">
         <div class="project-nav-links">
-            <a href="/projects/" class="nav-link {% if page.url == '/projects/' or page.url == '/projects/index.html' %}active{% endif %}">
+            <a href="{{ site.baseurl }}/projects/" class="nav-link {% if page.url == '/projects/' or page.url == '/projects/index.html' %}active{% endif %}">
                 <i class="fas fa-home"></i> All Projects
             </a>
-            <a href="/projects/categories/" class="nav-link {% if page.url contains '/projects/categories' %}active{% endif %}">
+            <a href="{{ site.baseurl }}/projects/categories/" class="nav-link {% if page.url contains '/projects/categories' %}active{% endif %}">
                 <i class="fas fa-folder"></i> Categories
             </a>
-            <a href="/projects/search/" class="nav-link {% if page.url == '/projects/search/' %}active{% endif %}">
+            <a href="{{ site.baseurl }}/projects/search/" class="nav-link {% if page.url == '/projects/search/' %}active{% endif %}">
                 <i class="fas fa-search"></i> Search
             </a>
         </div>

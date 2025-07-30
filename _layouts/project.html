@@ -13,7 +13,7 @@
     <meta property="og:title" content="{{ page.title }} - {{ site.data.profile.name }}">
     <meta property="og:description" content="{{ page.description }}">
     <meta property="og:type" content="article">
-    <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+    <meta property="og:url" content="{{ site.url }}{{ site.baseurl }}{{ page.url }}">
     <meta property="og:image" content="{{ page.image }}">
     
     <!-- CSS Libraries -->
@@ -350,16 +350,16 @@
     <!-- Header -->
     <header class="header">
         <nav class="nav-container">
-            <a href="/" class="logo">{{ site.data.profile.name }}</a>
+            <a href="{{ site.baseurl }}/" class="logo">{{ site.data.profile.name }}</a>
             
             <ul class="nav-menu">
-                <li><a href="/#home" class="nav-link">Home</a></li>
-                <li><a href="/#about" class="nav-link">About</a></li>
-                <li><a href="/#experience" class="nav-link">Experience</a></li>
-                <li><a href="/#projects" class="nav-link active">Projects</a></li>
-                <li><a href="/#skills" class="nav-link">Skills</a></li>
-                <li><a href="/#blog" class="nav-link">Blog</a></li>
-                <li><a href="/#contact" class="nav-link">Contact</a></li>
+                <li><a href="{{ site.baseurl }}/#home" class="nav-link">Home</a></li>
+                <li><a href="{{ site.baseurl }}/#about" class="nav-link">About</a></li>
+                <li><a href="{{ site.baseurl }}/#experience" class="nav-link">Experience</a></li>
+                <li><a href="{{ site.baseurl }}/#projects" class="nav-link active">Projects</a></li>
+                <li><a href="{{ site.baseurl }}/#skills" class="nav-link">Skills</a></li>
+                <li><a href="{{ site.baseurl }}/#blog" class="nav-link">Blog</a></li>
+                <li><a href="{{ site.baseurl }}/#contact" class="nav-link">Contact</a></li>
             </ul>
             
             <div class="nav-controls">
@@ -418,7 +418,7 @@
             </a>
             {% endif %}
             
-            <a href="/#projects" class="project-link secondary">
+            <a href="{{ site.baseurl }}/#projects" class="project-link secondary">
                 <i class="fas fa-arrow-left"></i> Back to Projects
             </a>
         </div>

@@ -1,16 +1,16 @@
 <div class="blog-navigation" data-aos="fade-up">
     <div class="container">
         <div class="blog-nav-links">
-            <a href="/blog/" class="nav-link {% if page.url == '/blog/' or page.url == '/blog/index.html' %}active{% endif %}">
+            <a href="{{ site.baseurl }}/blog/" class="nav-link {% if page.url == '/blog/' or page.url == '/blog/index.html' %}active{% endif %}">
                 <i class="fas fa-home"></i> All Posts
             </a>
-            <a href="/blog/categories/" class="nav-link {% if page.url contains '/blog/categories' %}active{% endif %}">
+            <a href="{{ site.baseurl }}/blog/categories/" class="nav-link {% if page.url contains '/blog/categories' %}active{% endif %}">
                 <i class="fas fa-folder"></i> Categories
             </a>
-            <a href="/blog/archive/" class="nav-link {% if page.url == '/blog/archive/' %}active{% endif %}">
+            <a href="{{ site.baseurl }}/blog/archive/" class="nav-link {% if page.url == '/blog/archive/' %}active{% endif %}">
                 <i class="fas fa-archive"></i> Archive
             </a>
-            <a href="/blog/search/" class="nav-link {% if page.url == '/blog/search/' %}active{% endif %}">
+            <a href="{{ site.baseurl }}/blog/search/" class="nav-link {% if page.url == '/blog/search/' %}active{% endif %}">
                 <i class="fas fa-search"></i> Search
             </a>
         </div>

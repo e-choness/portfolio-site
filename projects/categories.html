@@ -21,7 +21,7 @@ description: "Browse projects by category to find work that interests you most"
         <div class="category-card">
             <div class="category-header category-{{ category_data.slug }}">
                 <h3 class="category-name">
-                    <a href="/projects/categories/{{ category_data.slug }}/" class="category-link-{{ category_data.slug }}">
+                    <a href="{{ site.baseurl }}/projects/categories/{{ category_data.slug }}/" class="category-link-{{ category_data.slug }}">
                         {{ category_data.name }}
                     </a>
                 </h3>
@@ -37,7 +37,7 @@ description: "Browse projects by category to find work that interests you most"
             <div class="category-projects">
                 {% for project in category_projects limit: 3 %}
                 <div class="category-project-item">
-                    <a href="{{ project.url }}" class="project-link">
+                    <a href="{{ project.url | relative_url }}" class="project-link">
                         <h4 class="project-title">{{ project.title }}</h4>
                         <span class="project-technologies">
                             {% for tech in project.technologies limit: 3 %}
@@ -50,7 +50,7 @@ description: "Browse projects by category to find work that interests you most"
                 
                 {% if category_projects.size > 3 %}
                 <div class="view-more">
-                    <a href="/projects/categories/{{ category_data.slug }}/" class="view-more-link">
+                    <a href="{{ site.baseurl }}/projects/categories/{{ category_data.slug }}/" class="view-more-link">
                         View all {{ category_projects.size }} projects <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>

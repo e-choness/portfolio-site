@@ -5,7 +5,8 @@ description: >-
   Full-stack developer passionate about creating innovative web solutions.
   Experienced in modern JavaScript frameworks, backend development, and UI/UX design.
 baseurl: "/portfolio-site" # the subpath of your site, e.g. /blog
-repository: e-choness/ctrl-alt-deploy # Change to <your-username>/<your-username>.github.io (or remove it if you don't need remote projects) # the base hostname & protocol for your site
+repository: e-choness/portfolio-site # Change to <your-username>/<your-username>.github.io (or remove it if you don't need remote projects) # the base hostname & protocol for your site
+url: "https://e-choness.github.io" # the base hostname & protocol for your site
 
 # Build settings
 markdown: kramdown
@@ -61,9 +62,9 @@ author:
 
 # Social links
 social:
-  github: yourusername
-  linkedin: yourlinkedin
-  twitter: yourtwitter
+  github: e-choness
+  linkedin: echoybl0451
+  twitter: _echo_yin
   email: echoybl1123@gmail.com
 
 # Google Analytics (optional)

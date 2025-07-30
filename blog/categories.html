@@ -21,7 +21,7 @@ description: "Browse posts by category to find content that interests you most"
         <div class="category-card">
             <div class="category-header" style="background-color: {{ category_data.color }}15; border-left: 4px solid {{ category_data.color }};">
                 <h3 class="category-name">
-                    <a href="/blog/categories/{{ category_data.slug }}/" style="color: {{ category_data.color }};">
+                    <a href="{{ site.baseurl }}/blog/categories/{{ category_data.slug }}/" style="color: {{ category_data.color }};">
                         {{ category_data.name }}
                     </a>
                 </h3>
@@ -37,7 +37,7 @@ description: "Browse posts by category to find content that interests you most"
             <div class="category-posts">
                 {% for post in category_posts limit: 3 %}
                 <div class="category-post-item">
-                    <a href="{{ post.url }}" class="post-link">
+                    <a href="{{ post.url | relative_url }}" class="post-link">
                         <h4 class="post-title">{{ post.title }}</h4>
                         <span class="post-date">{{ post.date | date: "%B %d, %Y" }}</span>
                     </a>
@@ -46,7 +46,7 @@ description: "Browse posts by category to find content that interests you most"
                 
                 {% if category_posts.size > 3 %}
                 <div class="view-more">
-                    <a href="/blog/categories/{{ category_data.slug }}/" class="view-more-link">
+                    <a href="{{ site.baseurl }}/blog/categories/{{ category_data.slug }}/" class="view-more-link">
                         View all {{ category_posts.size }} posts <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>

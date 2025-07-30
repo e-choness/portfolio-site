@@ -38,29 +38,29 @@ layout: blog
 <div class="post-content" data-aos="fade-up">
     {{ content }}
     
-    {% if page.tags %}
-    <div class="post-tags">
-        {% for tag in page.tags %}
-        <a href="/blog/tags/{{ tag | slugify }}/" class="tag">#{{ tag }}</a>
-        {% endfor %}
-    </div>
-    {% endif %}
+            {% if page.tags %}
+        <div class="post-tags">
+            {% for tag in page.tags %}
+            <a href="{{ site.baseurl }}/blog/tags/{{ tag | slugify }}/" class="tag">#{{ tag }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
     
     <div class="post-navigation">
         {% if page.previous.url %}
-        <a href="{{ page.previous.url }}" class="nav-link">
+        <a href="{{ page.previous.url | relative_url }}" class="nav-link">
             <i class="fas fa-chevron-left"></i>
             <span>{{ page.previous.title | truncate: 30 }}</span>
         </a>
         {% endif %}
         
-        <a href="/blog/" class="nav-link">
+        <a href="{{ site.baseurl }}/blog/" class="nav-link">
             <i class="fas fa-th-large"></i>
             All Posts
         </a>
         
         {% if page.next.url %}
-        <a href="{{ page.next.url }}" class="nav-link">
+        <a href="{{ page.next.url | relative_url }}" class="nav-link">
             <span>{{ page.next.title | truncate: 30 }}</span>
             <i class="fas fa-chevron-right"></i>
         </a>

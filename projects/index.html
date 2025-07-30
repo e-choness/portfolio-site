@@ -23,7 +23,7 @@ description: "Explore my portfolio of projects showcasing various technologies a
             {% assign project_files = site.projects | sort: 'order' %}
             {% for project in project_files %}
             <div class="project-card" data-category="{{ project.categories | join: ' ' }}" data-aos="fade-up" data-aos-delay="{{ forloop.index | times: 200 }}">
-                <img src="{{ project.image }}" alt="{{ project.title }}" class="project-image">
+                <img src="{{ project.image | relative_url}}" alt="{{ project.title }}" class="project-image">
                 <div class="project-content">
                     <h3 class="project-title">{{ project.title }}</h3>
                     <p class="project-description">
@@ -35,7 +35,7 @@ description: "Explore my portfolio of projects showcasing various technologies a
                         {% endfor %}
                     </div>
                     <div class="project-links">
-                        <a href="{{ project.url }}" class="project-link"><i class="fas fa-info-circle"></i> View Details</a>
+                        <a href="{{ site.baseurl}}{{ project.url | relative_url }}" class="project-link"><i class="fas fa-info-circle"></i> View Details</a>
                         {% if project.live_url %}
                         <a href="{{ project.live_url }}" class="project-link" target="_blank"><i class="fas fa-external-link-alt"></i> Live Demo</a>
                         {% endif %}
