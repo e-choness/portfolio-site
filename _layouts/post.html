@@ -30,7 +30,7 @@ layout: blog
             </span>
         </div>
         {% if page.image %}
-        <img src="{{ page.image }}" alt="{{ page.title }}" style="max-width: 100%; height: 300px; object-fit: cover; border-radius: 15px; margin-top: 2rem; box-shadow: var(--shadow-lg);">
+        <img src="{{ page.image | relative_url }}" alt="{{ page.title }}" style="max-width: 100%; height: 300px; object-fit: cover; border-radius: 15px; margin-top: 2rem; box-shadow: var(--shadow-lg);">
         {% endif %}
     </div>
 </div>

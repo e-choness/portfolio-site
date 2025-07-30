@@ -14,7 +14,7 @@
     <meta property="og:description" content="{{ page.description }}">
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{ site.url }}{{ site.baseurl }}{{ page.url }}">
-    <meta property="og:image" content="{{ page.image }}">
+    <meta property="og:image" content="{{ page.image | relative_url }}">
     
     <!-- CSS Libraries -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
@@ -427,7 +427,7 @@
     <!-- Project Content -->
     <main class="project-content">
         {% if page.image %}
-        <img src="{{ page.image }}" alt="{{ page.title }}" class="project-image">
+        <img src="{{ page.image | relative_url }}" alt="{{ page.title }}" class="project-image">
         {% endif %}
         
         {{ content }}
