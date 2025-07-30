@@ -4,8 +4,8 @@ email: echoybl1123@gmail.com
 description: >-
   Full-stack developer passionate about creating innovative web solutions.
   Experienced in modern JavaScript frameworks, backend development, and UI/UX design.
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://e-choness.github.io" # the base hostname & protocol for your site
+baseurl: "/portfolio-site" # the subpath of your site, e.g. /blog
+repository: e-choness/ctrl-alt-deploy # Change to <your-username>/<your-username>.github.io (or remove it if you don't need remote projects) # the base hostname & protocol for your site
 
 # Build settings
 markdown: kramdown
