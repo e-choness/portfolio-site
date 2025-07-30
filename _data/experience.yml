@@ -1,59 +1,107 @@
-- position: "Senior Full-Stack Developer"
-  company: "Tech Innovations Inc."
-  location: "Remote"
-  duration: "2022 - Present"
-  logo: "/assets/images/companies/tech-innovations.png"
+- position: "Online Programmer"
+  company: "Brass Lion Entertainment"
+  location: "Edmonton, Alberta (Remote)"
+  duration: "Jul. 2024 – Apr. 2025"
+  logo: "/assets/images/companies/brasslionen_logo.jpg"
   description: |
-    Leading development of scalable web applications using React, Node.js, and cloud technologies. 
-    Mentoring junior developers and implementing best practices for code quality and performance optimization.
+    Brass Lion Entertainment is a game development studio dedicated to creating original fictional universes, characters, stories, and themes.
+    Contributed to the development of online systems and live-ops features to enhance game operations.
   responsibilities:
-    - "Architected and developed 5+ enterprise-level web applications"
-    - "Reduced application load time by 60% through optimization techniques"
-    - "Mentored 3 junior developers and conducted code reviews"
-    - "Implemented CI/CD pipelines reducing deployment time by 80%"
+    - "Developed an item migration tool, optimizing item management by 96%"
+    - "Created a server log download tool, reducing QA bug reporting time by 95%"
+    - "Implemented a matchmaking system and data timer for server-side requests"
+    - "Supported the Character Creation group with essential online features"
+    - "Delivered various live-ops features to enhance game operations"
   technologies:
-    - React
-    - Node.js
+    - C++
+    - C#
+    - Unreal Engine
+    - Azure
+    - Server/Client Architecture
+    - Live-Ops
+    - .NET Framework
+
+- position: "Back End Engineer"
+  company: "Froglet Games"
+  location: "Edmonton, Alberta (Remote)"
+  duration: "Sep. 2023 – Jun. 2024"
+  logo: "/assets/images/companies/froglet_logo.jpg"
+  description: |
+    Froglet Games is an emerging game development company known for creating engaging and innovative gaming experiences.
+    Focused on backend systems and live-ops features for gaming platforms.
+  responsibilities:
+    - "Engineered in-game user authentication, leaderboard, and in-game economy systems"
+    - "Managed telemetry systems and Unity Engine upgrades"
+    - "Worked under the mentorship of a former Senior Director of Engineering at Roblox"
+  technologies:
+    - C#
+    - Unity Engine
+    - Azure
     - AWS
-    - Docker
-    - PostgreSQL
+    - Live-Ops
+    - Firebase
+    - .NET Framework
 
-- position: "Frontend Developer"
-  company: "Digital Solutions Ltd."
-  location: "New York, NY"
-  duration: "2020 - 2022"
-  logo: "/assets/images/companies/digital-solutions.png"
+- position: "Tools Engineer Intern"
+  company: "Rec Room"
+  location: "Thunder Bay, Ontario (Remote)"
+  duration: "Jan. 2023 – Apr. 2023"
+  logo: "/assets/images/companies/recroominc_logo.jpg"
   description: |
-    Developed responsive web applications with modern JavaScript frameworks. 
-    Collaborated with UX/UI designers to create intuitive user interfaces and improved application performance by 40%.
+    Rec Room is a virtual reality multiplayer game that enables users to create and share games and experiences collaboratively.
+    Focused on tooling and UI development to improve developer workflows.
   responsibilities:
-    - "Built 10+ responsive web applications using React and Vue.js"
-    - "Improved application performance by 40% through code optimization"
-    - "Collaborated with design team to implement pixel-perfect UI/UX"
-    - "Integrated RESTful APIs and third-party services"
+    - "Built an in-house build download tool that reduced build download time by 70%"
+    - "Provided UI development and tooling support"
   technologies:
-    - React
-    - Vue.js
-    - JavaScript
-    - CSS3
-    - REST APIs
+    - C#
+    - Unity Engine
+    - Azure
+    - Jenkins
+    - MAUI
+    - Full-Stack Development
+    - .NET Framework
 
-- position: "Junior Web Developer"
-  company: "StartUp Hub"
-  location: "San Francisco, CA"
-  duration: "2019 - 2020"
-  logo: "/assets/images/companies/startup-hub.png"
+- position: "MLOps Engineer Intern"
+  company: "PointClickCare"
+  location: "Thunder Bay, Ontario (Remote)"
+  duration: "Jan. 2022 – Apr. 2022"
+  logo: "/assets/images/companies/pointclickcare_logo.jpg"
   description: |
-    Built and maintained multiple client websites using HTML, CSS, JavaScript, and PHP. 
-    Gained experience in database design and API integration while working in an agile development environment.
+    PointClickCare is a leading cloud-based healthcare technology provider for long-term and post-acute care facilities.
+    Worked on MLOps pipelines and infrastructure to support machine learning operations.
   responsibilities:
-    - "Developed 15+ client websites from concept to deployment"
-    - "Maintained and updated existing web applications"
-    - "Collaborated in agile development sprints"
-    - "Implemented responsive design principles"
+    - "Supported MLOps data pipeline features and infrastructure"
+    - "Created comprehensive test cases for data pipeline validation"
+    - "Monitored and responded to security vulnerabilities"
   technologies:
-    - HTML5
-    - CSS3
-    - JavaScript
-    - PHP
-    - MySQL
+    - Python
+    - Java
+    - AWS
+    - Azure
+    - Jenkins
+    - Terraform
+    - NLP
+    - Machine Learning
+    - Microsoft SQL Server
+
+- position: "Software Engineer"
+  company: "Hubei Xinyegang Co., Ltd."
+  location: "Huangshi, China (On-site)"
+  duration: "Jul. 2012 – Feb. 2020"
+  logo: "/assets/images/companies/xinyegang_logo.jpg"
+  description: |
+    Hubei Xinyegang is a historic specialty steel producer originally established during WWII.
+    Contributed to the development and maintenance of internal enterprise systems.
+  responsibilities:
+    - "Handled software submission and maintenance cycles and led system analysis and review"
+    - "Assessed and executed process and system change requests, ensuring necessary data updates"
+    - "Supported external training programs through material creation and coordination"
+    - "Participated in the entire lifecycle of finance and accounting system projects"
+    - "Designed and implemented new modules to expand system capabilities"
+  technologies:
+    - C#
+    - .NET Framework
+    - Oracle
+    - SQL
+    - Internal Enterprise Frameworks

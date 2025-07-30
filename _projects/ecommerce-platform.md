@@ -1,7 +1,7 @@
 ---
 layout: project
-title: "E-commerce Platform"
-description: "A full-featured e-commerce platform built with React, Node.js, and MongoDB. Features include user authentication, payment processing, and admin dashboard."
+title: "EcoManage"
+description: "A full-stack renewable energy and resource management dashboard to monitor, analyze, and optimize consumption. Built with React, Node.js, and TypeScript."
 image: "/assets/images/projects/ecomanage-landing.gif"
 technologies:
   - Typescript
@@ -11,7 +11,7 @@ technologies:
 categories:
   - Typescript
   - node.js
-  - fullstack
+  - Fullstack
 live_url: "https://github.com/e-choness/eco-manage"
 github_url: "https://github.com/e-choness/eco-manage"
 featured: true

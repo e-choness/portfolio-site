@@ -4,7 +4,7 @@ title: "Building Scalable REST APIs with Node.js"
 date: 2025-01-08 14:30:00 -0000
 category: backend
 tags: [nodejs, api, rest, backend, scalability]
-author: "Your Name"
+author: "Echo Yin"
 image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop"
 excerpt: "A comprehensive guide to building robust and scalable REST APIs using Node.js, Express, and modern best practices for enterprise applications."
 ---

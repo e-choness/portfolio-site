@@ -4,7 +4,7 @@ title: "The Evolution of Modern JavaScript Frameworks"
 date: 2025-01-15 10:00:00 -0000
 category: javascript
 tags: [javascript, react, vue, angular, frontend]
-author: "Your Name"
+author: "Echo Yin"
 image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=400&fit=crop"
 excerpt: "Exploring how JavaScript frameworks have evolved over the years and what the future holds for web development. From jQuery to React, Vue, and beyond."
 ---
