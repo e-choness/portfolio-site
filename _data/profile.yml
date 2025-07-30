@@ -10,12 +10,13 @@ about:
   description: |
     I'm a passionate full-stack developer with over 5 years of experience creating digital solutions that make a difference. 
     My journey in technology began with curiosity and has evolved into a love for crafting elegant, efficient code that solves real-world problems.
-    
+
     I specialize in modern web technologies and have a strong background in both frontend and backend development. 
     When I'm not coding, you can find me exploring new technologies, contributing to open-source projects, or sharing knowledge with the developer community.
-  
+
   image: assets/images/profile/portrait-small.jpg
   resume_url: assets/resume.pdf
+  ctrl_url: "https://e-choness.github.io/ctrl-alt-deploy/blog/"
 
 # Statistics
 stats:
