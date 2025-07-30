@@ -555,6 +555,11 @@ body {
     width: 0%;
     transition: width 2s ease;
     border-radius: 4px;
+    
+    // Ensure minimum visibility on mobile
+    @media (max-width: 768px) {
+        min-width: 5px; // Show a small progress bar even before animation
+    }
 }
 
 // Blog Section
@@ -794,6 +799,29 @@ body {
     
     .skills-categories {
         grid-template-columns: 1fr;
+    }
+    
+    // Mobile-specific animation improvements
+    .stat-number {
+        font-size: 2rem; // Slightly smaller on mobile
+    }
+    
+    .skill-progress {
+        transition: width 1.5s ease; // Faster transition on mobile
+    }
+    
+    // Ensure animations work on mobile
+    .fade-in,
+    .slide-in-left,
+    .slide-in-right {
+        opacity: 1;
+        transform: none;
+        transition: none;
+        
+        &.visible {
+            opacity: 1;
+            transform: none;
+        }
     }
 }
 
