@@ -2,66 +2,55 @@
 layout: project
 title: "E-commerce Platform"
 description: "A full-featured e-commerce platform built with React, Node.js, and MongoDB. Features include user authentication, payment processing, and admin dashboard."
-image: "/assets/images/projects/ecommerce-platform.jpg"
+image: "/assets/images/projects/ecomanage-landing.gif"
 technologies:
+  - Typescript
   - React
   - Node.js
   - MongoDB
-  - Stripe API
-  - Redux
-  - Express.js
 categories:
-  - react
-  - nodejs
+  - Typescript
+  - node.js
   - fullstack
-live_url: "https://ecommerce-demo.example.com"
-github_url: "https://github.com/yourusername/ecommerce-platform"
+live_url: "https://github.com/e-choness/eco-manage"
+github_url: "https://github.com/e-choness/eco-manage"
 featured: true
 order: 1
 ---
 
 ## Project Overview
 
-This e-commerce platform represents a comprehensive solution for online retail businesses. Built with modern web technologies, it provides a seamless shopping experience for customers while offering powerful management tools for administrators.
+EcoManage is a full-stack web application designed to help users monitor, analyze, and optimize their resource consumption. It provides a comprehensive dashboard for tracking key metrics related to energy, finance, and environmental impact, enabling informed decision-making for better sustainability and cost-efficiency.
 
-## Key Features
+The application features a secure backend API built with Node.js and a responsive, modern frontend built with React and TypeScript.
 
-- **User Authentication**: Secure login/register system with JWT tokens
-- **Product Management**: Full CRUD operations for products with image uploads
-- **Shopping Cart**: Persistent cart functionality with real-time updates
-- **Payment Processing**: Integrated Stripe payment gateway
-- **Order Management**: Complete order tracking and history
-- **Admin Dashboard**: Comprehensive admin panel for managing users, products, and orders
-- **Responsive Design**: Mobile-first approach ensuring compatibility across all devices
+## Features
 
-## Technical Implementation
+- **Secure User Authentication**: Safe and secure registration and login system.
+- **Interactive Dashboard**: A central hub to visualize key metrics and system status at a glance.
+- **Resource Monitoring**: Track real-time data on resource usage.
+- **In-depth Analytics**: Visualize historical data and trends with interactive charts and graphs.
+- **Optimization Suggestions**: Receive actionable insights to improve efficiency and reduce costs.
+- **Customizable Alerts**: Set up and receive notifications for important events or when metrics cross a certain threshold.
+- **Financial Tracking**: Monitor costs and financial performance related to resource management.
+- **User & System Settings**: Easily configure your account and application preferences.
+- **Light & Dark Theme**: Switch between light and dark theme with ease.
 
-### Frontend Architecture
+## Tech Stack
 
-- **React 18** with functional components and hooks
-- **Redux Toolkit** for state management
-- **React Router** for client-side routing
-- **Styled Components** for component-level styling
-- **Axios** for API communication
+### Frontend
 
-### Backend Architecture
+- **Framework**: [React](https://reactjs.org/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **UI Components**: [Shadcn/UI](https://ui.shadcn.com/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Routing**: [React Router](https://reactrouter.com/)
+- **State Management**: React Context API
 
-- **Node.js** with Express.js framework
-- **MongoDB** with Mongoose ODM
-- **JWT** for authentication
-- **Multer** for file uploads
-- **Bcrypt** for password hashing
+### Backend
 
-### Key Challenges Solved
-
-1. **Performance Optimization**: Implemented lazy loading and code splitting, reducing initial bundle size by 40%
-2. **Security**: Implemented comprehensive input validation and sanitization to prevent XSS and injection attacks
-3. **Scalability**: Designed modular architecture supporting horizontal scaling
-4. **User Experience**: Created intuitive navigation and smooth checkout process resulting in 25% higher conversion rates
-
-## Results & Impact
-
-- **Performance**: 95+ Lighthouse score across all categories
-- **User Engagement**: 60% increase in user session duration
-- **Conversion Rate**: 25% improvement in checkout completion
-- **Load Time**: Sub-2-second page load times on 3G networks
+- **Runtime**: [Node.js](https://nodejs.org/)
+- **Framework**: [Express.js](https://expressjs.com/)
+- **Authentication**: JSON Web Tokens (JWT) for stateless authentication.
+- **Security**: `bcrypt` for secure password hashing.
+- **Database**: MongoDB

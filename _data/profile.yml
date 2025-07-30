@@ -14,8 +14,8 @@ about:
     I specialize in modern web technologies and have a strong background in both frontend and backend development. 
     When I'm not coding, you can find me exploring new technologies, contributing to open-source projects, or sharing knowledge with the developer community.
   
-  image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"
-  resume_url: "/assets/resume.pdf"
+  image: assets/images/profile/portrait-small.jpg
+  resume_url: /assets/resume.pdf
 
 # Statistics
 stats:
@@ -28,9 +28,9 @@ stats:
 
 # Social Media Links
 social:
-  github: "https://github.com/yourusername"
-  linkedin: "https://linkedin.com/in/yourlinkedin"
-  twitter: "https://twitter.com/yourtwitter"
+  github: "https://github.com/e-choness/"
+  linkedin: "https://www.linkedin.com/in/echoyin0451/"
+  twitter: "https://x.com/_echo_yin"
   email: "mailto:echoybl1123@gmail.com"
 
 # Typing animation texts
