@@ -385,7 +385,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 Planned features:
 
-- [ ] Full-text search functionality
+- [x] Full-text search functionality
 - [ ] Comment system integration
 - [ ] Newsletter subscription
 - [ ] Related posts suggestions

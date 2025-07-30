@@ -3,7 +3,8 @@ AOS.init({
     duration: 800,
     easing: 'ease-in-out',
     once: true,
-    offset: 100
+    offset: 100,
+    disable: 'mobile' // Disable AOS on mobile to prevent conflicts
 });
 
 // Typed.js initialization
@@ -113,20 +114,27 @@ const animateCounters = () => {
     
     counters.forEach(counter => {
         const target = parseInt(counter.getAttribute('data-count'));
-        const increment = target / 100;
-        let current = 0;
+        const duration = 2000; // 2 seconds
+        const startTime = performance.now();
         
-        const updateCounter = () => {
-            if (current < target) {
-                current += increment;
-                counter.textContent = Math.ceil(current);
+        const updateCounter = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Use easing function for smoother animation
+            const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+            const current = Math.floor(target * easeOutQuart);
+            
+            counter.textContent = current;
+            
+            if (progress < 1) {
                 requestAnimationFrame(updateCounter);
             } else {
                 counter.textContent = target;
             }
         };
         
-        updateCounter();
+        requestAnimationFrame(updateCounter);
     });
 };
 
@@ -134,26 +142,44 @@ const animateCounters = () => {
 const animateSkillBars = () => {
     const skillBars = document.querySelectorAll('.skill-progress');
     
-    skillBars.forEach(bar => {
+    skillBars.forEach((bar, index) => {
         const width = bar.getAttribute('data-width');
-        bar.style.width = width + '%';
+        // Stagger the animations slightly
+        setTimeout(() => {
+            bar.style.width = width + '%';
+        }, index * 100);
     });
 };
 
-// Intersection Observer for animations
+// Check if element is in viewport
+const isInViewport = (element) => {
+    const rect = element.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+};
+
+// Intersection Observer for animations with mobile-friendly settings
 const observerOptions = {
-    threshold: 0.5,
-    rootMargin: '0px 0px -100px 0px'
+    threshold: 0.1, // Lower threshold for mobile
+    rootMargin: '0px 0px -50px 0px' // Smaller margin for mobile
 };
 
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             if (entry.target.id === 'about') {
-                setTimeout(animateCounters, 500);
+                // Add a small delay for mobile devices
+                const delay = window.innerWidth <= 768 ? 100 : 500;
+                setTimeout(animateCounters, delay);
             }
             if (entry.target.id === 'skills') {
-                setTimeout(animateSkillBars, 500);
+                // Add a small delay for mobile devices
+                const delay = window.innerWidth <= 768 ? 100 : 500;
+                setTimeout(animateSkillBars, delay);
             }
         }
     });
@@ -162,6 +188,60 @@ const observer = new IntersectionObserver((entries) => {
 // Observe sections
 document.querySelectorAll('section').forEach(section => {
     observer.observe(section);
+});
+
+// Fallback for mobile devices - trigger animations on scroll
+let aboutAnimated = false;
+let skillsAnimated = false;
+
+const handleScroll = () => {
+    const aboutSection = document.getElementById('about');
+    const skillsSection = document.getElementById('skills');
+    
+    if (aboutSection && !aboutAnimated && isInViewport(aboutSection)) {
+        animateCounters();
+        aboutAnimated = true;
+    }
+    
+    if (skillsSection && !skillsAnimated && isInViewport(skillsSection)) {
+        animateSkillBars();
+        skillsAnimated = true;
+    }
+};
+
+// Add scroll listener for mobile fallback
+window.addEventListener('scroll', handleScroll);
+
+// Add touch event listener for mobile devices
+window.addEventListener('touchstart', handleScroll);
+window.addEventListener('touchmove', handleScroll);
+
+// Trigger animations on page load if sections are already visible
+window.addEventListener('load', () => {
+    const aboutSection = document.getElementById('about');
+    const skillsSection = document.getElementById('skills');
+    
+    if (aboutSection && isInViewport(aboutSection)) {
+        setTimeout(animateCounters, 500);
+        aboutAnimated = true;
+    }
+    
+    if (skillsSection && isInViewport(skillsSection)) {
+        setTimeout(animateSkillBars, 500);
+        skillsAnimated = true;
+    }
+    
+    // Fallback: If animations haven't triggered after 2 seconds, force them
+    setTimeout(() => {
+        if (!aboutAnimated && aboutSection) {
+            animateCounters();
+            aboutAnimated = true;
+        }
+        if (!skillsAnimated && skillsSection) {
+            animateSkillBars();
+            skillsAnimated = true;
+        }
+    }, 2000);
 });
 
 // Project Filtering
