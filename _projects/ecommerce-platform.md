@@ -2,7 +2,7 @@
 layout: project
 title: "EcoManage"
 description: "A full-stack renewable energy and resource management dashboard to monitor, analyze, and optimize consumption. Built with React, Node.js, and TypeScript."
-image: "/assets/images/projects/ecomanage-landing.gif"
+image: "assets/images/projects/ecomanage-landing.gif"
 technologies:
   - Typescript
   - React

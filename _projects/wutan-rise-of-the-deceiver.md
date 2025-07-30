@@ -2,7 +2,7 @@
 layout: project
 title: "Wu-Tang: Rise of the Deceiver"
 description: "An online co-op Action RPG where players team up with the legendary Wu-Tang Clan. Built with Unreal Engine 5, C++, and Node.js, this game features a robust 3-player multiplayer system set in a unique Afro-surrealist world."
-image: "/assets/images/projects/wutan-rise-of-the-deceiver.jpg"
+image: "assets/images/projects/wutan-rise-of-the-deceiver.jpg"
 technologies:
   - Unreal Engine 5
   - C++

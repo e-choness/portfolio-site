@@ -15,7 +15,7 @@ about:
     When I'm not coding, you can find me exploring new technologies, contributing to open-source projects, or sharing knowledge with the developer community.
   
   image: assets/images/profile/portrait-small.jpg
-  resume_url: /assets/resume.pdf
+  resume_url: assets/resume.pdf
 
 # Statistics
 stats:
