@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site.data.profile.name }} - {{ site.data.profile.title }}</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="{{ site.data.profile.tagline }}. View my portfolio of projects and experience.">
+    <meta name="keywords" content="developer, full-stack, portfolio, javascript, react, node.js">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="{{ site.data.profile.name }} - {{ site.data.profile.title }} Portfolio">
+    <meta property="og:description" content="{{ site.data.profile.tagline }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site.url }}">
+    <meta property="og:image" content="{{ site.url }}{{ site.data.profile.about.image }}">
+    
+    <!-- CSS Libraries -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="{{ '/assets/main.css' | relative_url }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <a href="#home" class="logo">{{ site.data.profile.name }}</a>
+            
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link active">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#experience" class="nav-link">Experience</a></li>
+                <li><a href="#projects" class="nav-link">Projects</a></li>
+                <li><a href="#skills" class="nav-link">Skills</a></li>
+                <li><a href="#blog" class="nav-link">Blog</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            
+            <div class="nav-controls">
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="particles-container"></div>
+        <div class="hero-content">
+            <img src="{{ site.data.profile.about.image }}" alt="{{ site.data.profile.name }}" class="hero-image" data-aos="fade-up">
+            <h1 class="hero-title" data-aos="fade-up" data-aos-delay="200">{{ site.data.profile.name }}</h1>
+            <div class="hero-subtitle" data-aos="fade-up" data-aos-delay="400">
+                <span id="typed-text"></span>
+            </div>
+            <a href="#about" class="cta-button" data-aos="fade-up" data-aos-delay="600">
+                Get to Know Me <i class="fas fa-arrow-down"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section">
+        <h2 class="section-title" data-aos="fade-up">About Me</h2>
+        <div class="about-content">
+            <div data-aos="fade-right">
+                <img src="{{ site.data.profile.about.image }}" alt="About {{ site.data.profile.name }}" class="about-image">
+            </div>
+            <div data-aos="fade-left">
+                {% assign paragraphs = site.data.profile.about.description | split: '    ' %}
+                {% for paragraph in paragraphs %}
+                    <p class="about-text">{{ paragraph | strip }}</p>
+                {% endfor %}
+                <a href="{{ site.data.profile.about.resume_url }}" class="cta-button" target="_blank">
+                    <i class="fas fa-download"></i> Download Resume
+                </a>
+            </div>
+        </div>
+        
+        <div class="stats-grid" data-aos="fade-up" data-aos-delay="200">
+            {% for stat in site.data.profile.stats %}
+            <div class="stat-item">
+                <span class="stat-number" data-count="{{ stat.value }}">0</span>
+                <span class="stat-label">{{ stat.label }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="section">
+        <h2 class="section-title" data-aos="fade-up">Experience</h2>
+        <div class="timeline">
+            {% for experience in site.data.experience %}
+            <div class="timeline-item" data-aos="{% cycle 'fade-right', 'fade-left' %}">
+                <div class="timeline-content">
+                    <div class="timeline-date">{{ experience.duration }}</div>
+                    <h3 class="timeline-title">{{ experience.position }}</h3>
+                    <div class="timeline-company">{{ experience.company }}</div>
+                    <p class="timeline-description">
+                        {{ experience.description }}
+                    </p>
+                    {% if experience.responsibilities %}
+                    <ul class="timeline-responsibilities">
+                        {% for responsibility in experience.responsibilities %}
+                        <li>{{ responsibility }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="section">
+        <h2 class="section-title" data-aos="fade-up">Projects</h2>
+        
+        <div class="projects-filter" data-aos="fade-up" data-aos-delay="200">
+            <button class="filter-btn active" data-filter="all">All</button>
+            {% assign all_categories = site.projects | map: 'categories' | join: ',' | split: ',' | uniq | sort %}
+            {% for category in all_categories %}
+            <button class="filter-btn" data-filter="{{ category }}">{{ category | capitalize }}</button>
+            {% endfor %}
+        </div>
+        
+        <div class="projects-grid">
+            {% assign project_files = site.projects | sort: 'order' %}
+            {% for project in project_files %}
+            <div class="project-card" data-category="{{ project.categories | join: ' ' }}" data-project-url="{{ project.url }}" data-aos="fade-up" data-aos-delay="{{ forloop.index | times: 200 }}">
+                <img src="{{ project.image }}" alt="{{ project.title }}" class="project-image">
+                <div class="project-content">
+                    <h3 class="project-title">{{ project.title }}</h3>
+                    <p class="project-description">
+                        {{ project.description }}
+                    </p>
+                    <div class="project-tags">
+                        {% for technology in project.technologies %}
+                        <span class="project-tag">{{ technology }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="project-links">
+                        <a href="{{ project.url }}" class="project-link"><i class="fas fa-info-circle"></i> View Details</a>
+                        {% if project.live_url %}
+                        <a href="{{ project.live_url }}" class="project-link" target="_blank"><i class="fas fa-external-link-alt"></i> Live Demo</a>
+                        {% endif %}
+                        {% if project.github_url %}
+                        <a href="{{ project.github_url }}" class="project-link" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div style="text-align: center;" data-aos="fade-up" data-aos-delay="600">
+            <a href="/projects/" class="view-all-projects">
+                Show All Projects <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="section">
+        <h2 class="section-title" data-aos="fade-up">Skills</h2>
+        <div class="skills-categories">
+            {% for category in site.data.skills.categories %}
+            <div class="skill-category" data-aos="fade-up" data-aos-delay="{{ forloop.index | times: 200 }}">
+                <h3>{{ category.name }}</h3>
+                {% for skill in category.skills %}
+                <div class="skill-item">
+                    <div class="skill-info">
+                        <span class="skill-name">{{ skill.name }}</span>
+                        <span class="skill-percentage">{{ skill.level }}%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-width="{{ skill.level }}"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blog" class="section">
+        <h2 class="section-title" data-aos="fade-up">Latest Blog Posts</h2>
+        <div class="blog-preview">
+            {% assign recent_posts = site.posts | limit: 3 %}
+            {% for post in recent_posts %}
+            <article class="blog-card" data-aos="fade-up" data-aos-delay="{{ forloop.index | times: 200 }}">
+                <img src="{{ post.image }}" alt="{{ post.title }}" class="blog-image">
+                <div class="blog-content">
+                    <div class="blog-meta">
+                        <span class="blog-date">
+                            <i class="fas fa-calendar"></i>
+                            {{ post.date | date: "%B %d, %Y" }}
+                        </span>
+                        <span class="blog-category">{{ post.category | capitalize }}</span>
+                    </div>
+                    <h3 class="blog-title">{{ post.title }}</h3>
+                    <p class="blog-excerpt">
+                        {{ post.excerpt }}
+                    </p>
+                    <a href="{{ post.url }}" class="blog-read-more">
+                        Read More <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        
+        <div style="text-align: center;" data-aos="fade-up" data-aos-delay="600">
+            <a href="/blog/" class="view-all-posts">
+                View All Posts <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer/Contact Section -->
+    <footer id="contact" class="footer">
+        <div class="footer-content">
+            <h2 class="section-title" data-aos="fade-up">Let's Connect</h2>
+            <p data-aos="fade-up" data-aos-delay="200" style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.1rem;">
+                I'm always interested in new opportunities and exciting projects. 
+                Let's discuss how we can work together!
+            </p>
+            
+            <div class="social-links" data-aos="fade-up" data-aos-delay="400">
+                <a href="{{ site.data.profile.social.email }}" class="social-link" title="Email">
+                    <i class="fas fa-envelope"></i>
+                </a>
+                <a href="{{ site.data.profile.social.github }}" class="social-link" title="GitHub" target="_blank">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="{{ site.data.profile.social.linkedin }}" class="social-link" title="LinkedIn" target="_blank">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="{{ site.data.profile.social.twitter }}" class="social-link" title="Twitter" target="_blank">
+                    <i class="fab fa-twitter"></i>
+                </a>
+            </div>
+            
+            <p style="color: var(--text-secondary); margin-top: 2rem;">
+                © {{ 'now' | date: "%Y" }} {{ site.data.profile.name }}. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    
+    <!-- Typed.js Data -->
+    <script>
+        window.typedStrings = {{ site.data.profile.typed_strings | jsonify }};
+    </script>
+    
+    <!-- Custom JavaScript -->
+    <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
+</body>
+</html> 

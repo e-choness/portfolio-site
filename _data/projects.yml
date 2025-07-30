@@ -1,0 +1,54 @@
+title: "Projects"
+description: "Explore my portfolio of projects showcasing various technologies and skills."
+author: "Echo Yin"
+
+# Project categories
+categories:
+  - name: "React"
+    slug: "react"
+    description: "Modern React applications with hooks, context, and advanced patterns"
+    color: "#61dafb"
+    
+  - name: "Node.js"
+    slug: "nodejs"
+    description: "Server-side JavaScript applications and APIs"
+    color: "#339933"
+    
+  - name: "Fullstack"
+    slug: "fullstack"
+    description: "Complete applications with frontend and backend integration"
+    color: "#2563eb"
+    
+  - name: "Frontend"
+    slug: "frontend"
+    description: "User interface development and frontend architecture"
+    color: "#ff6b6b"
+    
+  - name: "Backend"
+    slug: "backend"
+    description: "Server-side development, APIs, and database design"
+    color: "#68217a"
+
+# Featured technologies
+featured_technologies:
+  - "React"
+  - "Node.js"
+  - "MongoDB"
+  - "Express.js"
+  - "JavaScript"
+  - "CSS3"
+
+# Project settings
+projects_per_page: 6
+show_technologies: true
+show_categories: true
+show_live_demo: true
+show_github: true
+enable_filtering: true
+enable_search: true
+
+# Social sharing
+social_sharing:
+  twitter: true
+  linkedin: true
+  github: true

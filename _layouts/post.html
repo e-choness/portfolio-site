@@ -1,0 +1,69 @@
+---
+layout: blog
+---
+
+<div class="post-header" data-aos="fade-up">
+    <div class="container">
+        <h1 class="post-title">{{ page.title }}</h1>
+        <div class="post-meta">
+            <span class="blog-date">
+                <i class="fas fa-calendar"></i>
+                {{ page.date | date: "%B %d, %Y" }}
+            </span>
+            {% if page.author %}
+            <span class="blog-author">
+                <i class="fas fa-user"></i>
+                {{ page.author }}
+            </span>
+            {% endif %}
+            {% if page.category %}
+            <span class="blog-category">{{ page.category | capitalize }}</span>
+            {% endif %}
+            <span class="read-time">
+                <i class="fas fa-clock"></i>
+                {% assign words = content | number_of_words %}
+                {% if words < 250 %}
+                1 min read
+                {% else %}
+                {{ words | divided_by: 250 }} min read
+                {% endif %}
+            </span>
+        </div>
+        {% if page.image %}
+        <img src="{{ page.image }}" alt="{{ page.title }}" style="max-width: 100%; height: 300px; object-fit: cover; border-radius: 15px; margin-top: 2rem; box-shadow: var(--shadow-lg);">
+        {% endif %}
+    </div>
+</div>
+
+<div class="post-content" data-aos="fade-up">
+    {{ content }}
+    
+    {% if page.tags %}
+    <div class="post-tags">
+        {% for tag in page.tags %}
+        <a href="/blog/tags/{{ tag | slugify }}/" class="tag">#{{ tag }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="post-navigation">
+        {% if page.previous.url %}
+        <a href="{{ page.previous.url }}" class="nav-link">
+            <i class="fas fa-chevron-left"></i>
+            <span>{{ page.previous.title | truncate: 30 }}</span>
+        </a>
+        {% endif %}
+        
+        <a href="/blog/" class="nav-link">
+            <i class="fas fa-th-large"></i>
+            All Posts
+        </a>
+        
+        {% if page.next.url %}
+        <a href="{{ page.next.url }}" class="nav-link">
+            <span>{{ page.next.title | truncate: 30 }}</span>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+</div>

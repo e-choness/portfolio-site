@@ -1,0 +1,41 @@
+# Personal Information
+name: "Echo Yin"
+title: "Software Engineer"
+email: "echoybl1123@gmail.com"
+location: "Edmonton, AB, Canada"
+tagline: "Passionate about creating innovative web solutions"
+
+# About section
+about:
+  description: |
+    I'm a passionate full-stack developer with over 5 years of experience creating digital solutions that make a difference. 
+    My journey in technology began with curiosity and has evolved into a love for crafting elegant, efficient code that solves real-world problems.
+    
+    I specialize in modern web technologies and have a strong background in both frontend and backend development. 
+    When I'm not coding, you can find me exploring new technologies, contributing to open-source projects, or sharing knowledge with the developer community.
+  
+  image: assets/images/profile/portrait-small.jpg
+  resume_url: /assets/resume.pdf
+
+# Statistics
+stats:
+  - label: "Years Experience"
+    value: 7
+  - label: "Projects Completed"
+    value: 38
+  - label: "Happy Clients"
+    value: 66
+
+# Social Media Links
+social:
+  github: "https://github.com/e-choness/"
+  linkedin: "https://www.linkedin.com/in/echoyin0451/"
+  twitter: "https://x.com/_echo_yin"
+  email: "mailto:echoybl1123@gmail.com"
+
+# Typing animation texts
+typed_strings:
+  - "Full-Stack Engineer"
+  - "Problem Solver"
+  - "Tech Enthusiast"
+  - "Creative Thinker"

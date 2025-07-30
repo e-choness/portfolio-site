@@ -1,0 +1,247 @@
+---
+layout: project
+title: "Project Categories"
+description: "Browse projects by category to find work that interests you most"
+---
+
+<div class="project-header" data-aos="fade-up">
+    <div class="container">
+        <h1 class="project-title">Categories</h1>
+        <p class="project-subtitle">
+            Browse projects by category to find work that interests you most
+        </p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="categories-grid" data-aos="fade-up" data-aos-delay="200">
+        {% for category_data in site.data.projects.categories %}
+        {% assign category_projects = site.projects | where_exp: "project", "project.categories contains category_data.slug" %}
+        {% if category_projects.size > 0 %}
+        <div class="category-card">
+            <div class="category-header category-{{ category_data.slug }}">
+                <h3 class="category-name">
+                    <a href="/projects/categories/{{ category_data.slug }}/" class="category-link-{{ category_data.slug }}">
+                        {{ category_data.name }}
+                    </a>
+                </h3>
+                <p class="category-description">{{ category_data.description }}</p>
+                <div class="category-stats">
+                    <span class="project-count">{{ category_projects.size }} projects</span>
+                    <span class="latest-project">
+                        Latest: {{ category_projects.first.date | date: "%b %Y" | default: "Recent" }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="category-projects">
+                {% for project in category_projects limit: 3 %}
+                <div class="category-project-item">
+                    <a href="{{ project.url }}" class="project-link">
+                        <h4 class="project-title">{{ project.title }}</h4>
+                        <span class="project-technologies">
+                            {% for tech in project.technologies limit: 3 %}
+                                {{ tech }}{% unless forloop.last %}, {% endunless %}
+                            {% endfor %}
+                        </span>
+                    </a>
+                </div>
+                {% endfor %}
+                
+                {% if category_projects.size > 3 %}
+                <div class="view-more">
+                    <a href="/projects/categories/{{ category_data.slug }}/" class="view-more-link">
+                        View all {{ category_projects.size }} projects <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.category-card {
+    background: var(--bg-secondary);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.category-header {
+    padding: 2rem;
+    background: var(--bg-primary);
+    border-radius: 15px 15px 0 0;
+}
+
+.category-name {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.category-name a {
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.category-name a:hover {
+    opacity: 0.8;
+}
+
+.category-description {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.category-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.project-count {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-weight: 500;
+}
+
+.latest-project {
+    font-style: italic;
+}
+
+.category-projects {
+    padding: 1.5rem;
+}
+
+.category-project-item {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.category-project-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.category-project-item .project-link {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s ease;
+}
+
+.category-project-item .project-link:hover {
+    color: var(--primary-color);
+}
+
+.category-project-item .project-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text-primary);
+}
+
+.category-project-item .project-technologies {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.view-more {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.view-more-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.view-more-link:hover {
+    transform: translateX(5px);
+}
+
+/* Category-specific styles */
+.category-react {
+    background-color: #61dafb15;
+    border-left: 4px solid #61dafb;
+}
+
+.category-link-react {
+    color: #61dafb;
+}
+
+.category-nodejs {
+    background-color: #33993315;
+    border-left: 4px solid #339933;
+}
+
+.category-link-nodejs {
+    color: #339933;
+}
+
+.category-fullstack {
+    background-color: #2563eb15;
+    border-left: 4px solid #2563eb;
+}
+
+.category-link-fullstack {
+    color: #2563eb;
+}
+
+.category-frontend {
+    background-color: #ff6b6b15;
+    border-left: 4px solid #ff6b6b;
+}
+
+.category-link-frontend {
+    color: #ff6b6b;
+}
+
+.category-backend {
+    background-color: #68217a15;
+    border-left: 4px solid #68217a;
+}
+
+.category-link-backend {
+    color: #68217a;
+}
+
+@media (max-width: 768px) {
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .category-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+}
+</style> 

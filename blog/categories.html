@@ -1,0 +1,189 @@
+---
+layout: blog
+title: "Blog Categories"
+description: "Browse posts by category to find content that interests you most"
+---
+
+<div class="blog-header" data-aos="fade-up">
+    <div class="container">
+        <h1 class="blog-title">Categories</h1>
+        <p class="blog-subtitle">
+            Browse posts by category to find content that interests you most
+        </p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="categories-grid" data-aos="fade-up" data-aos-delay="200">
+        {% for category_data in site.data.blog.categories %}
+        {% assign category_posts = site.categories[category_data.slug] %}
+        {% if category_posts.size > 0 %}
+        <div class="category-card">
+            <div class="category-header" style="background-color: {{ category_data.color }}15; border-left: 4px solid {{ category_data.color }};">
+                <h3 class="category-name">
+                    <a href="/blog/categories/{{ category_data.slug }}/" style="color: {{ category_data.color }};">
+                        {{ category_data.name }}
+                    </a>
+                </h3>
+                <p class="category-description">{{ category_data.description }}</p>
+                <div class="category-stats">
+                    <span class="post-count">{{ category_posts.size }} posts</span>
+                    <span class="latest-post">
+                        Latest: {{ category_posts.first.date | date: "%b %Y" }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="category-posts">
+                {% for post in category_posts limit: 3 %}
+                <div class="category-post-item">
+                    <a href="{{ post.url }}" class="post-link">
+                        <h4 class="post-title">{{ post.title }}</h4>
+                        <span class="post-date">{{ post.date | date: "%B %d, %Y" }}</span>
+                    </a>
+                </div>
+                {% endfor %}
+                
+                {% if category_posts.size > 3 %}
+                <div class="view-more">
+                    <a href="/blog/categories/{{ category_data.slug }}/" class="view-more-link">
+                        View all {{ category_posts.size }} posts <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.category-card {
+    background: var(--bg-secondary);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.category-header {
+    padding: 2rem;
+    background: var(--bg-primary);
+    border-radius: 15px 15px 0 0;
+}
+
+.category-name {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.category-name a {
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.category-name a:hover {
+    opacity: 0.8;
+}
+
+.category-description {
+    color: var(--text-secondary);
+    margin: 0 0 1rem 0;
+    line-height: 1.6;
+}
+
+.category-stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.category-posts {
+    padding: 1.5rem 2rem 2rem;
+}
+
+.category-post-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.category-post-item:last-child {
+    border-bottom: none;
+}
+
+.post-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: color 0.3s ease;
+}
+
+.post-link:hover {
+    color: var(--primary-color);
+}
+
+.post-title {
+    margin: 0 0 0.25rem 0;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.post-date {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.view-more {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.view-more-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.view-more-link:hover {
+    color: var(--accent-color);
+}
+
+.tag-small {
+    background: var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    margin-right: 0.25rem;
+}
+
+@media (max-width: 768px) {
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .category-stats {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+}
+</style>

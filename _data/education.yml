@@ -1,0 +1,71 @@
+- degree: "Bachelor of Science in Computer Science"
+  institution: "University of Technology"
+  location: "City, State"
+  duration: "2015 - 2019"
+  gpa: "3.8/4.0"
+  logo: "/assets/images/education/university-tech.png"
+  description: |
+    Comprehensive computer science program focusing on software engineering, algorithms, and system design. 
+    Graduated Magna Cum Laude with specialization in web technologies and database systems.
+  coursework:
+    - "Data Structures and Algorithms"
+    - "Software Engineering"
+    - "Database Systems"
+    - "Web Development"
+    - "Computer Networks"
+    - "Operating Systems"
+  achievements:
+    - "Dean's List - 6 semesters"
+    - "Outstanding Student in Computer Science"
+    - "President of Computer Science Club"
+
+- degree: "Full-Stack Web Development Bootcamp"
+  institution: "Code Academy"
+  location: "Online"
+  duration: "2019"
+  logo: "/assets/images/education/code-academy.png"
+  description: |
+    Intensive 6-month full-stack web development program covering modern JavaScript frameworks, 
+    backend development, and deployment strategies. Completed with honors.
+  coursework:
+    - "HTML5, CSS3, JavaScript ES6+"
+    - "React.js and Redux"
+    - "Node.js and Express.js"
+    - "MongoDB and PostgreSQL"
+    - "RESTful API Development"
+    - "Git Version Control"
+  achievements:
+    - "Graduated with Honors"
+    - "Best Final Project Award"
+    - "Peer Mentor"
+
+- degree: "AWS Solutions Architect Certification"
+  institution: "Amazon Web Services"
+  location: "Online"
+  duration: "2021"
+  logo: "/assets/images/education/aws.png"
+  description: |
+    Professional certification demonstrating expertise in designing distributed systems 
+    and applications on the AWS platform.
+  skills:
+    - "Cloud Architecture Design"
+    - "AWS Services Implementation"
+    - "Security Best Practices"
+    - "Cost Optimization"
+    - "Performance Optimization"
+  verification_url: "https://aws.amazon.com/verification"
+
+- degree: "Google Analytics Certified"
+  institution: "Google"
+  location: "Online"
+  duration: "2020"
+  logo: "/assets/images/education/google.png"
+  description: |
+    Certification in Google Analytics demonstrating proficiency in web analytics, 
+    data analysis, and digital marketing insights.
+  skills:
+    - "Web Analytics"
+    - "Data Analysis"
+    - "Performance Tracking"
+    - "Conversion Optimization"
+  verification_url: "https://skillshop.exceedlms.com/student/award/"
