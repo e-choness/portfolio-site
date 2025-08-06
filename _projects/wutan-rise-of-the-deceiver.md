@@ -30,7 +30,7 @@ order: 3
 
 **1. Online Multiplayer System Architecture & Development**
 
-- **Role:** Lead Developer, Online Systems
+- **Role:** Online Programmer
 - **Description:** Designed, implemented, and optimized the robust online multiplayer framework enabling seamless 3-player cooperative gameplay. This involved architecting the client-server communication, managing session states, and ensuring low-latency interactions crucial for a real-time action RPG.
 - **Technologies Utilized:**
   - **Unreal Engine:** Integrated multiplayer functionalities within the engine's networking framework.
