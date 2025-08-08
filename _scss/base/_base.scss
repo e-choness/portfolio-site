@@ -1,22 +1,62 @@
-
 // Global Styles
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 html {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-optical-sizing: auto;
-    font-style: normal;
-    font-variation-settings: "wdth" 100;
-    line-height: 1.6;
-    color: var(--text-primary);
-    background-color: var(--bg-primary);
-    transition: all 0.3s ease;
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  transition: all 0.3s ease;
+}
+
+/* Offset content for fixed header */
+main {
+  padding-top: calc(var(--header-height) + 1rem);
+  min-height: calc(100vh - var(--header-height));
+}
+
+/* Ensure in-page anchors are not hidden behind fixed header */
+section[id] {
+  scroll-margin-top: calc(var(--header-height) + 16px);
+}
+
+/* Responsive media */
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+iframe {
+  max-width: 100%;
+}
+
+:where(button, [role="button"], .cta-button, .filter-btn) {
+  cursor: pointer;
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

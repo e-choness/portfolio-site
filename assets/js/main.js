@@ -31,41 +31,79 @@ if (document.querySelector("#typed-text") && typeof Typed !== "undefined") {
 
 // Theme Toggle
 const themeToggle = document.querySelector(".theme-toggle");
-const themeIcon = themeToggle.querySelector("i");
+const themeIcon = themeToggle ? themeToggle.querySelector("i") : null;
 
 // Check for saved theme preference or default to light
 const currentTheme = localStorage.getItem("theme") || "light";
 document.documentElement.setAttribute("data-theme", currentTheme);
 
-if (currentTheme === "dark") {
+if (themeIcon && currentTheme === "dark") {
   themeIcon.classList.replace("fa-moon", "fa-sun");
 }
 
-themeToggle.addEventListener("click", () => {
-  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-  const newTheme = isDark ? "light" : "dark";
+if (themeToggle) {
+  themeToggle.addEventListener("click", () => {
+    const isDark =
+      document.documentElement.getAttribute("data-theme") === "dark";
+    const newTheme = isDark ? "light" : "dark";
 
-  document.documentElement.setAttribute("data-theme", newTheme);
-  localStorage.setItem("theme", newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
 
-  // Toggle icon
-  if (newTheme === "dark") {
-    themeIcon.classList.replace("fa-moon", "fa-sun");
-  } else {
-    themeIcon.classList.replace("fa-sun", "fa-moon");
-  }
-});
+    // Toggle icon
+    if (themeIcon) {
+      if (newTheme === "dark") {
+        themeIcon.classList.replace("fa-moon", "fa-sun");
+      } else {
+        themeIcon.classList.replace("fa-sun", "fa-moon");
+      }
+    }
+  });
+}
 
 // Mobile Menu Toggle
 const mobileMenuToggle = document.querySelector(".mobile-menu-toggle");
 const navMenu = document.querySelector(".nav-menu");
+const headerEl = document.querySelector(".header");
 
-mobileMenuToggle.addEventListener("click", () => {
-  navMenu.classList.toggle("active");
-  const icon = mobileMenuToggle.querySelector("i");
-  icon.classList.toggle("fa-bars");
-  icon.classList.toggle("fa-times");
-});
+if (mobileMenuToggle && navMenu) {
+  mobileMenuToggle.addEventListener("click", () => {
+    const isOpen = navMenu.classList.toggle("active");
+    const icon = mobileMenuToggle.querySelector("i");
+    if (icon) {
+      icon.classList.toggle("fa-bars", !isOpen);
+      icon.classList.toggle("fa-times", isOpen);
+    }
+    mobileMenuToggle.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  // Close on Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && navMenu.classList.contains("active")) {
+      navMenu.classList.remove("active");
+      const icon = mobileMenuToggle.querySelector("i");
+      if (icon) {
+        icon.classList.add("fa-bars");
+        icon.classList.remove("fa-times");
+      }
+      mobileMenuToggle.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  // Close when clicking outside the navigation
+  document.addEventListener("click", (e) => {
+    const withinNav = e.target.closest(".nav-container");
+    if (!withinNav && navMenu.classList.contains("active")) {
+      navMenu.classList.remove("active");
+      const icon = mobileMenuToggle.querySelector("i");
+      if (icon) {
+        icon.classList.add("fa-bars");
+        icon.classList.remove("fa-times");
+      }
+      mobileMenuToggle.setAttribute("aria-expanded", "false");
+    }
+  });
+}
 
 // Smooth Scrolling Navigation
 const navLinks = document.querySelectorAll(".nav-link");
@@ -96,11 +134,16 @@ navLinks.forEach((link) => {
       }
 
       // Close mobile menu if open
-      navMenu.classList.remove("active");
-      const mobileIcon = mobileMenuToggle.querySelector("i");
-      if (mobileIcon) {
-        mobileIcon.classList.add("fa-bars");
-        mobileIcon.classList.remove("fa-times");
+      if (navMenu) {
+        navMenu.classList.remove("active");
+      }
+      if (mobileMenuToggle) {
+        const mobileIcon = mobileMenuToggle.querySelector("i");
+        if (mobileIcon) {
+          mobileIcon.classList.add("fa-bars");
+          mobileIcon.classList.remove("fa-times");
+        }
+        mobileMenuToggle.setAttribute("aria-expanded", "false");
       }
     }
   });
@@ -125,6 +168,15 @@ window.addEventListener("scroll", () => {
       });
     }
   });
+
+  // Toggle header shadow when scrolled
+  if (headerEl) {
+    if (window.scrollY > 10) {
+      headerEl.classList.add("scrolled");
+    } else {
+      headerEl.classList.remove("scrolled");
+    }
+  }
 });
 
 // Animated Counters

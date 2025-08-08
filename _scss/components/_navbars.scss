@@ -79,7 +79,8 @@
   border-bottom: 1px solid var(--border-color);
   padding: 1rem 0;
   margin-bottom: 2rem;
-  margin-top: 80px; /* account for fixed header */
+  /* Global main padding now offsets fixed header */
+  margin-top: 0;
 }
 
 .project-navigation .container {

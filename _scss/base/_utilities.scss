@@ -15,14 +15,35 @@
   color: var(--text-secondary);
 }
 .is-hidden {
-  display: none;
+  display: none !important;
+}
+
+/* Screen-reader only */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
 }
 
 // Global container utility (DRY)
 .container {
-  max-width: 1200px;
+  max-width: var(--content-max-width);
   margin: 0 auto;
-  padding: 0 2rem;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding-left: var(--container-padding-sm);
+    padding-right: var(--container-padding-sm);
+  }
 }
 
 // Unified cards grid (3 per row, responsive)
