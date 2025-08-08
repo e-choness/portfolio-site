@@ -3,70 +3,76 @@ layout: blog
 ---
 
 <div class="blog-header" data-aos="fade-up">
-    <div class="container">
-        <h1 class="blog-title">Posts tagged "{{ page.tag }}"</h1>
-        <p class="blog-subtitle">
-            Exploring topics related to {{ page.tag }}
-        </p>
-        <div class="category-meta">
-            <span class="post-count">{{ site.tags[page.tag] | size }} posts</span>
-        </div>
+  <div class="container">
+    <h1 class="blog-title">Posts tagged "{{ page.tag }}"</h1>
+    <p class="blog-subtitle">Exploring topics related to {{ page.tag }}</p>
+    <div class="category-meta">
+      <span class="post-count">{{ site.tags[page.tag] | size }} posts</span>
     </div>
+  </div>
 </div>
 
 <div class="container">
-    <div class="blog-grid">
-        {% assign posts = site.tags[page.tag] %}
-        {% for post in posts %}
-        <article class="blog-card" data-aos="fade-up" data-aos-delay="{{ forloop.index | times: 100 }}">
-            {% if post.image %}
-            <img src="{{ post.image }}" alt="{{ post.title }}" class="blog-image">
-            {% else %}
-            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=200&fit=crop" alt="{{ post.title }}" class="blog-image">
-            {% endif %}
-            
-            <div class="blog-content">
-                <div class="blog-meta">
-                    <span class="blog-date">
-                        <i class="fas fa-calendar"></i>
-                        {{ post.date | date: "%B %d, %Y" }}
-                    </span>
-                    {% if post.category %}
-                    <span class="blog-category">{{ post.category | capitalize }}</span>
-                    {% endif %}
-                </div>
-                
-                <h2 class="blog-card-title">
-                    <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-                </h2>
-                
-                <p class="blog-excerpt">
-                    {% if post.excerpt %}
-                        {{ post.excerpt | strip_html | truncate: 150 }}
-                    {% else %}
-                        {{ post.content | strip_html | truncate: 150 }}
-                    {% endif %}
-                </p>
-                
-                {% if post.tags %}
-                <div class="post-tags-preview">
-                    {% for tag in post.tags limit: 3 %}
-                    <span class="tag-small">#{{ tag }}</span>
-                    {% endfor %}
-                </div>
-                {% endif %}
-                
-                <a href="{{ post.url | relative_url }}" class="blog-read-more">
-                    Read More <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-        </article>
-        {% endfor %}
-    </div>
+  <div class="blog-grid">
+    {% assign posts = site.tags[page.tag] %} {% for post in posts %}
+    <article
+      class="blog-card"
+      data-aos="fade-up"
+      data-aos-delay="{{ forloop.index | times: 100 }}"
+    >
+      {% if post.image %}
+      <img
+        src="{{ post.image | relative_url }}"
+        alt="{{ post.title }}"
+        class="blog-image"
+      />
+      {% else %}
+      <img
+        src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=200&fit=crop"
+        alt="{{ post.title }}"
+        class="blog-image"
+      />
+      {% endif %}
 
-    <div style="text-align: center; margin-top: 3rem;" data-aos="fade-up">
-        <a href="{{ site.baseurl }}/blog/" class="view-all-posts">
-            <i class="fas fa-arrow-left"></i> Back to All Posts
+      <div class="blog-content">
+        <div class="blog-meta">
+          <span class="blog-date">
+            <i class="fas fa-calendar"></i>
+            {{ post.date | date: "%B %d, %Y" }}
+          </span>
+          {% if post.category %}
+          <span class="blog-category">{{ post.category | capitalize }}</span>
+          {% endif %}
+        </div>
+
+        <h2 class="blog-card-title">
+          <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        </h2>
+
+        <p class="blog-excerpt">
+          {% if post.excerpt %} {{ post.excerpt | strip_html | truncate: 150 }}
+          {% else %} {{ post.content | strip_html | truncate: 150 }} {% endif %}
+        </p>
+
+        {% if post.tags %}
+        <div class="post-tags-preview">
+          {% for tag in post.tags limit: 3 %}
+          <span class="tag-small">#{{ tag }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <a href="{{ post.url | relative_url }}" class="blog-read-more">
+          Read More <i class="fas fa-arrow-right"></i>
         </a>
-    </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+
+  <div class="text-center mt-3" data-aos="fade-up">
+    <a href="{{ '/blog/' | relative_url }}" class="view-all-posts">
+      <i class="fas fa-arrow-left"></i> Back to All Posts
+    </a>
+  </div>
 </div>

@@ -6,481 +6,111 @@ permalink: /projects/search/
 ---
 
 <div class="project-header" data-aos="fade-up">
-    <div class="container">
-        <h1 class="project-title">Search</h1>
-        <p class="project-subtitle">
-            Search through all projects to find exactly what you're looking for
-        </p>
-    </div>
+  <div class="container">
+    <h1 class="project-title">Search</h1>
+    <p class="project-subtitle">
+      Search through all projects to find exactly what you're looking for
+    </p>
+  </div>
 </div>
 
 <div class="container">
-    <div class="search-container" data-aos="fade-up" data-aos-delay="200">
-        <div class="search-form">
-            <div class="search-input-wrapper">
-                <input type="text" id="search-input" placeholder="Search projects, technologies, or categories..." autocomplete="off">
-                <button type="button" id="search-button" aria-label="Search">
-                    <i class="fas fa-search"></i>
-                </button>
-                <button type="button" id="clear-search" style="display: none;" aria-label="Clear search">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <div class="search-filters">
-                <select id="category-filter">
-                    <option value="">All Categories</option>
-                    {% for category in site.data.projects.categories %}
-                    <option value="{{ category.slug }}">{{ category.name }}</option>
-                    {% endfor %}
-                </select>
-                
-                <select id="sort-filter">
-                    <option value="order-asc">Featured First</option>
-                    <option value="title-asc">Title A-Z</option>
-                    <option value="title-desc">Title Z-A</option>
-                    <option value="date-desc">Newest First</option>
-                    <option value="date-asc">Oldest First</option>
-                </select>
-            </div>
-        </div>
-        
-        <div class="search-stats">
-            <span id="search-results-count"></span>
-        </div>
-        
-        <div id="search-results" class="projects-grid">
-            <!-- Results will be populated by JavaScript -->
-        </div>
-        
-        <div id="no-results" class="no-results" style="display: none;">
-            <i class="fas fa-search fa-3x"></i>
-            <h3>No projects found</h3>
-            <p>Try adjusting your search terms or browse by category.</p>
-            <a href="{{ site.baseurl }}/projects/categories/" class="view-all-projects">Browse Categories</a>
-        </div>
-        
-        <div id="search-suggestions" class="search-suggestions">
-            <h3>Popular Technologies</h3>
-            <div class="tag-cloud">
-                {% assign all_technologies = site.projects | map: 'technologies' | join: ',' | split: ',' | uniq | sort %}
-                {% for tech in all_technologies limit: 20 %}
-                {% if tech != '' %}
-                <button class="tag-suggestion" data-tech="{{ tech }}">{{ tech }}</button>
-                {% endif %}
-                {% endfor %}
-            </div>
-        </div>
+  <div class="search-container" data-aos="fade-up" data-aos-delay="200">
+    <div class="search-form">
+      <div class="search-input-wrapper">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Search projects, technologies, or categories..."
+          autocomplete="off"
+        />
+        <button type="button" id="search-button" aria-label="Search">
+          <i class="fas fa-search"></i>
+        </button>
+        <button
+          type="button"
+          id="clear-search"
+          class="is-hidden"
+          aria-label="Clear search"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="search-filters">
+        <select id="category-filter">
+          <option value="">All Categories</option>
+          {% for category in site.data.projects.categories %}
+          <option value="{{ category.slug }}">{{ category.name }}</option>
+          {% endfor %}
+        </select>
+
+        <select id="sort-filter">
+          <option value="order-asc">Featured First</option>
+          <option value="title-asc">Title A-Z</option>
+          <option value="title-desc">Title Z-A</option>
+          <option value="date-desc">Newest First</option>
+          <option value="date-asc">Oldest First</option>
+        </select>
+      </div>
     </div>
+
+    <div class="search-stats">
+      <span id="search-results-count"></span>
+    </div>
+
+    <div id="search-results" class="projects-grid">
+      <!-- Results will be populated by JavaScript -->
+    </div>
+
+    <div id="no-results" class="no-results is-hidden">
+      <i class="fas fa-search fa-3x"></i>
+      <h3>No projects found</h3>
+      <p>Try adjusting your search terms or browse by category.</p>
+      <a
+        href="{{ '/projects/categories/' | relative_url }}"
+        class="view-all-projects"
+        >Browse Categories</a
+      >
+    </div>
+
+    <div id="search-suggestions" class="search-suggestions">
+      <h3>Popular Technologies</h3>
+      <div class="tag-cloud">
+        {% assign all_technologies = site.projects | map: 'technologies' | join:
+        ',' | split: ',' | uniq | sort %} {% for tech in all_technologies limit:
+        20 %} {% if tech != '' %}
+        <button class="tag-suggestion" data-tech="{{ tech }}">
+          {{ tech }}
+        </button>
+        {% endif %} {% endfor %}
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- JSON data for search -->
-<script>
-    window.searchData = [
-        {% for project in site.projects %}
-        {
-            "title": "{{ project.title | escape }}",
-            "url": "{{ project.url | escape }}",
-            "date": "{{ project.date | date: '%Y-%m-%d' | default: '2024-01-01' }}",
-            "dateFormatted": "{{ project.date | date: '%B %d, %Y' | default: 'January 1, 2024' }}",
-            "categories": {{ project.categories | jsonify }},
-            "technologies": {{ project.technologies | jsonify }},
-            "description": "{{ project.description | escape }}",
-            "image": "{{ project.image | default: '' | escape }}",
-            "live_url": "{{ project.live_url | default: '' | escape }}",
-            "github_url": "{{ project.github_url | default: '' | escape }}",
-            "featured": {{ project.featured | default: false }},
-            "order": {{ project.order | default: 999 }}
-        }{% unless forloop.last %},{% endunless %}
-        {% endfor %}
-    ];
+<script type="application/json" id="project-search-data">
+  [
+  {% for project in site.projects %}
+  {
+    "title": {{ project.title | jsonify }},
+    "url": {{ project.url | jsonify }},
+    "date": {{ project.date | date: '%Y-%m-%d' | jsonify | default: "2024-01-01" }},
+    "dateFormatted": {{ project.date | date: '%B %d, %Y' | jsonify | default: "January 1, 2024" }},
+    "categories": {{ project.categories | jsonify }},
+    "technologies": {{ project.technologies | jsonify }},
+    "description": {{ project.description | jsonify }},
+    "image": {{ project.image | default: "" | jsonify }},
+    "live_url": {{ project.live_url | default: "" | jsonify }},
+    "github_url": {{ project.github_url | default: "" | jsonify }},
+    "featured": {{ project.featured | default: false }},
+    "order": {{ project.order | default: 999 }}
+  }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+  ]
 </script>
 
-<style>
-.search-container {
-    max-width: 900px;
-    margin: 0 auto;
-}
+<!-- styles moved to SCSS: _scss/pages/_project-search.scss -->
 
-.search-form {
-    background: var(--bg-secondary);
-    padding: 2rem;
-    border-radius: 15px;
-    margin-bottom: 2rem;
-    box-shadow: var(--shadow);
-}
-
-.search-input-wrapper {
-    position: relative;
-    margin-bottom: 1rem;
-}
-
-#search-input {
-    width: 100%;
-    padding: 1rem 3rem 1rem 1rem;
-    border: 2px solid var(--border-color);
-    border-radius: 10px;
-    font-size: 1rem;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    transition: all 0.3s ease;
-}
-
-#search-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px var(--primary-color)20;
-}
-
-#search-button,
-#clear-search {
-    position: absolute;
-    right: 0.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-}
-
-#search-button:hover,
-#clear-search:hover {
-    color: var(--primary-color);
-    background: var(--bg-secondary);
-}
-
-.search-filters {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.search-filters select {
-    padding: 0.75rem 1rem;
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.search-filters select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-}
-
-.search-stats {
-    margin-bottom: 2rem;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-}
-
-.projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
-    margin-bottom: 3rem;
-}
-
-.project-card {
-    background: var(--bg-secondary);
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.project-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-}
-
-.project-image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-}
-
-.project-content {
-    padding: 1.5rem;
-}
-
-.project-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
-}
-
-.project-description {
-    color: var(--text-secondary);
-    margin-bottom: 1rem;
-    line-height: 1.6;
-}
-
-.project-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.project-tag {
-    background: var(--primary-color);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.project-links {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.project-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: var(--primary-color);
-    color: white;
-    text-decoration: none;
-    border-radius: 25px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.project-link:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
-}
-
-.no-results {
-    text-align: center;
-    padding: 4rem 2rem;
-    color: var(--text-secondary);
-}
-
-.no-results i {
-    margin-bottom: 1rem;
-    color: var(--text-secondary);
-}
-
-.no-results h3 {
-    margin-bottom: 1rem;
-    color: var(--text-primary);
-}
-
-.view-all-projects {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    padding: 0.75rem 1.5rem;
-    background: var(--primary-color);
-    color: white;
-    text-decoration: none;
-    border-radius: 25px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.view-all-projects:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
-}
-
-.search-suggestions {
-    background: var(--bg-secondary);
-    padding: 2rem;
-    border-radius: 15px;
-    box-shadow: var(--shadow);
-}
-
-.search-suggestions h3 {
-    margin-bottom: 1rem;
-    color: var(--text-primary);
-}
-
-.tag-cloud {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.tag-suggestion {
-    padding: 0.5rem 1rem;
-    background: var(--bg-primary);
-    color: var(--text-secondary);
-    border: 2px solid var(--border-color);
-    border-radius: 25px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.tag-suggestion:hover {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
-
-@media (max-width: 768px) {
-    .search-filters {
-        flex-direction: column;
-    }
-    
-    .projects-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .tag-cloud {
-        justify-content: center;
-    }
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('search-input');
-    const searchButton = document.getElementById('search-button');
-    const clearSearch = document.getElementById('clear-search');
-    const categoryFilter = document.getElementById('category-filter');
-    const sortFilter = document.getElementById('sort-filter');
-    const searchResults = document.getElementById('search-results');
-    const noResults = document.getElementById('no-results');
-    const searchSuggestions = document.getElementById('search-suggestions');
-    const resultsCount = document.getElementById('search-results-count');
-    
-    let currentResults = [];
-    
-    // Search functionality
-    function performSearch() {
-        const query = searchInput.value.toLowerCase();
-        const category = categoryFilter.value;
-        const sortBy = sortFilter.value;
-        
-        // Filter projects
-        currentResults = window.searchData.filter(project => {
-            const matchesQuery = !query || 
-                project.title.toLowerCase().includes(query) ||
-                project.description.toLowerCase().includes(query) ||
-                project.technologies.some(tech => tech.toLowerCase().includes(query)) ||
-                project.categories.some(cat => cat.toLowerCase().includes(query));
-            
-            const matchesCategory = !category || project.categories.includes(category);
-            
-            return matchesQuery && matchesCategory;
-        });
-        
-        // Sort results
-        currentResults.sort((a, b) => {
-            switch(sortBy) {
-                case 'order-asc':
-                    return a.order - b.order;
-                case 'title-asc':
-                    return a.title.localeCompare(b.title);
-                case 'title-desc':
-                    return b.title.localeCompare(a.title);
-                case 'date-desc':
-                    return new Date(b.date) - new Date(a.date);
-                case 'date-asc':
-                    return new Date(a.date) - new Date(b.date);
-                default:
-                    return 0;
-            }
-        });
-        
-        displayResults();
-    }
-    
-    // Display results
-    function displayResults() {
-        if (currentResults.length === 0) {
-            searchResults.style.display = 'none';
-            noResults.style.display = 'block';
-            searchSuggestions.style.display = 'block';
-            resultsCount.textContent = 'No projects found';
-        } else {
-            searchResults.style.display = 'grid';
-            noResults.style.display = 'none';
-            searchSuggestions.style.display = 'none';
-            resultsCount.textContent = `${currentResults.length} project${currentResults.length !== 1 ? 's' : ''} found`;
-            
-            searchResults.innerHTML = currentResults.map(project => `
-                <div class="project-card" data-category="${project.categories.join(' ')}">
-                    <img src="${project.image}" alt="${project.title}" class="project-image">
-                    <div class="project-content">
-                        <h3 class="project-title">${project.title}</h3>
-                        <p class="project-description">${project.description}</p>
-                        <div class="project-tags">
-                            ${project.technologies.map(tech => `<span class="project-tag">${tech}</span>`).join('')}
-                        </div>
-                        <div class="project-links">
-                            <a href="${project.url}" class="project-link"><i class="fas fa-info-circle"></i> View Details</a>
-                            ${project.live_url ? `<a href="${project.live_url}" class="project-link" target="_blank"><i class="fas fa-external-link-alt"></i> Live Demo</a>` : ''}
-                            ${project.github_url ? `<a href="${project.github_url}" class="project-link" target="_blank"><i class="fab fa-github"></i> GitHub</a>` : ''}
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-    }
-    
-    // Event listeners
-    searchInput.addEventListener('input', performSearch);
-    searchButton.addEventListener('click', performSearch);
-    categoryFilter.addEventListener('change', performSearch);
-    sortFilter.addEventListener('change', performSearch);
-    
-    // Clear search
-    clearSearch.addEventListener('click', () => {
-        searchInput.value = '';
-        categoryFilter.value = '';
-        sortFilter.value = 'order-asc';
-        performSearch();
-        clearSearch.style.display = 'none';
-    });
-    
-    // Show/hide clear button
-    searchInput.addEventListener('input', () => {
-        clearSearch.style.display = searchInput.value ? 'block' : 'none';
-    });
-    
-    // Tag suggestions
-    document.querySelectorAll('.tag-suggestion').forEach(button => {
-        button.addEventListener('click', () => {
-            const tech = button.getAttribute('data-tech');
-            searchInput.value = tech;
-            performSearch();
-            clearSearch.style.display = 'block';
-        });
-    });
-    
-    // Project card click handlers
-    document.addEventListener('click', (e) => {
-        if (e.target.closest('.project-card') && !e.target.closest('.project-link')) {
-            const card = e.target.closest('.project-card');
-            const viewDetailsLink = card.querySelector('a[href*="/projects/"]');
-            if (viewDetailsLink) {
-                window.location.href = viewDetailsLink.href;
-            }
-        }
-    });
-    
-    // Initial search
-    performSearch();
-});
-</script> 
+<!-- search behavior moved to assets/js/main.js -->

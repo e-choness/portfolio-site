@@ -1,56 +1,48 @@
 <footer id="contact" class="footer">
-      <div class="footer-content">
-        <h2 class="section-title" data-aos="fade-up">Let's Connect</h2>
-        <p
-          data-aos="fade-up"
-          data-aos-delay="200"
-          style="
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-          "
-        >
-          I'm always interested in new opportunities and exciting projects.
-          Let's discuss how we can work together!
-        </p>
+  <div class="footer-content">
+    <h2 class="section-title" data-aos="fade-up">Let's Connect</h2>
+    <p data-aos="fade-up" data-aos-delay="200" class="color-secondary mb-2">
+      I'm always interested in new opportunities and exciting projects. Let's
+      discuss how we can work together!
+    </p>
 
-        <div class="social-links" data-aos="fade-up" data-aos-delay="400">
-          <a
-            href="{{ site.data.profile.social.email }}"
-            class="social-link"
-            title="Email"
-          >
-            <i class="fas fa-envelope"></i>
-          </a>
-          <a
-            href="{{ site.data.profile.social.github }}"
-            class="social-link"
-            title="GitHub"
-            target="_blank"
-          >
-            <i class="fab fa-github"></i>
-          </a>
-          <a
-            href="{{ site.data.profile.social.linkedin }}"
-            class="social-link"
-            title="LinkedIn"
-            target="_blank"
-          >
-            <i class="fab fa-linkedin"></i>
-          </a>
-          <a
-            href="{{ site.data.profile.social.twitter }}"
-            class="social-link"
-            title="Twitter"
-            target="_blank"
-          >
-            <i class="fab fa-twitter"></i>
-          </a>
-        </div>
+    <div class="social-links" data-aos="fade-up" data-aos-delay="400">
+      <a
+        href="{{ site.data.profile.social.email }}"
+        class="social-link"
+        title="Email"
+      >
+        <i class="fas fa-envelope"></i>
+      </a>
+      <a
+        href="{{ site.data.profile.social.github }}"
+        class="social-link"
+        title="GitHub"
+        target="_blank"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+      <a
+        href="{{ site.data.profile.social.linkedin }}"
+        class="social-link"
+        title="LinkedIn"
+        target="_blank"
+      >
+        <i class="fab fa-linkedin"></i>
+      </a>
+      <a
+        href="{{ site.data.profile.social.twitter }}"
+        class="social-link"
+        title="Twitter"
+        target="_blank"
+      >
+        <i class="fab fa-twitter"></i>
+      </a>
+    </div>
 
-        <p style="color: var(--text-secondary); margin-top: 2rem">
-          © {{ 'now' | date: "%Y" }} {{ site.data.profile.name }}. All rights
-          reserved.
-        </p>
-      </div>
-    </footer>
+    <p class="color-secondary mt-2">
+      © {{ 'now' | date: "%Y" }} {{ site.data.profile.name }}. All rights
+      reserved.
+    </p>
+  </div>
+</footer>

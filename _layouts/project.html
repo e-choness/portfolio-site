@@ -1,483 +1,171 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ page.title }} - {{ site.data.profile.name }}</title>
-    
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="{{ page.description }}">
-    <meta name="keywords" content="{{ page.technologies | join: ', ' }}, portfolio, project">
-    
+    <meta name="description" content="{{ page.description }}" />
+    <meta
+      name="keywords"
+      content="{{ page.technologies | join: ', ' }}, portfolio, project"
+    />
+
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="{{ page.title }} - {{ site.data.profile.name }}">
-    <meta property="og:description" content="{{ page.description }}">
-    <meta property="og:type" content="article">
-    <meta property="og:url" content="{{ site.url }}{{ site.baseurl }}{{ page.url }}">
-    <meta property="og:image" content="{{ page.image | relative_url }}">
-    
+    <meta
+      property="og:title"
+      content="{{ page.title }} - {{ site.data.profile.name }}"
+    />
+    <meta property="og:description" content="{{ page.description }}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="{{ page.url | absolute_url }}" />
+    <meta property="og:image" content="{{ page.image | relative_url }}" />
+
     <!-- CSS Libraries -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
-    
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+
     <!-- Custom CSS -->
-    <link href="{{ '/assets/main.css' | relative_url }}" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary-color: #2563eb;
-            --secondary-color: #64748b;
-            --accent-color: #06b6d4;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8fafc;
-            --border-color: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-        }
-        
-        [data-theme="dark"] {
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --border-color: #334155;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
-            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.3);
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: var(--text-primary);
-            background-color: var(--bg-primary);
-            transition: all 0.3s ease;
-        }
-        
-        /* Header & Navigation */
-        .header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            transition: all 0.3s ease;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        [data-theme="dark"] .header {
-            background: rgba(15, 23, 42, 0.95);
-        }
-        
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            text-decoration: none;
-            transition: transform 0.3s ease;
-        }
-        
-        .logo:hover {
-            transform: scale(1.05);
-        }
-        
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-        
-        .nav-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        
-        .nav-link:hover,
-        .nav-link.active {
-            color: var(--primary-color);
-        }
-        
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--primary-color);
-            transition: width 0.3s ease;
-        }
-        
-        .nav-link:hover::after,
-        .nav-link.active::after {
-            width: 100%;
-        }
-        
-        .nav-controls {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .theme-toggle {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-        
-        .theme-toggle:hover {
-            color: var(--primary-color);
-            background: var(--bg-secondary);
-        }
-        
-        .mobile-menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-        
-        .mobile-menu-toggle:hover {
-            color: var(--primary-color);
-            background: var(--bg-secondary);
-        }
-        
-        /* Project Header */
-        .project-header {
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-            padding: 4rem 2rem;
-            text-align: center;
-        }
-        
-        .project-title {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-        
-        .project-subtitle {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .project-meta {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .meta-section {
-            text-align: center;
-        }
-        
-        .meta-section strong {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.25rem;
-            justify-content: center;
-        }
-        
-        .project-links {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        .project-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            background: var(--primary-color);
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        
-        .project-link:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .project-link.secondary {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 2px solid var(--border-color);
-        }
-        
-        .project-content {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 4rem 2rem;
-        }
-        
-        .project-image {
-            width: 100%;
-            max-width: 600px;
-            height: auto;
-            border-radius: 15px;
-            margin: 2rem auto;
-            display: block;
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .project-content h2 {
-            font-size: 2rem;
-            font-weight: 600;
-            margin: 2rem 0 1rem;
-            color: var(--text-primary);
-        }
-        
-        .project-content h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin: 1.5rem 0 0.75rem;
-            color: var(--text-primary);
-        }
-        
-        .project-content p {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-        }
-        
-        .project-content ul {
-            margin: 1rem 0;
-            padding-left: 2rem;
-        }
-        
-        .project-content li {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-        }
-        
-        .project-tag {
-            display: inline-block;
-            background: var(--primary-color);
-            color: white;
-            padding: 0.2rem 0.6rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        
-        @media (max-width: 768px) {
-            .nav-menu {
-                display: none;
-            }
-            
-            .mobile-menu-toggle {
-                display: block;
-            }
-            
-            .project-title {
-                font-size: 2rem;
-            }
-            
-            .project-meta {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .project-links {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-    </style>
-</head>
-<body>
+    <link
+      href="{{ '/assets/css/style.css' | relative_url }}"
+      rel="stylesheet"
+    />
+
+    <!-- styles moved to SCSS: _scss/pages/_project.scss -->
+  </head>
+  <body>
     <!-- Header -->
     <header class="header">
-        <nav class="nav-container">
-            <a href="{{ site.baseurl }}/" class="logo">{{ site.data.profile.name }}</a>
-            
-            <ul class="nav-menu">
-                <li><a href="{{ site.baseurl }}/#home" class="nav-link">Home</a></li>
-                <li><a href="{{ site.baseurl }}/#about" class="nav-link">About</a></li>
-                <li><a href="{{ site.baseurl }}/#experience" class="nav-link">Experience</a></li>
-                <li><a href="{{ site.baseurl }}/#projects" class="nav-link active">Projects</a></li>
-                <li><a href="{{ site.baseurl }}/#skills" class="nav-link">Skills</a></li>
-                <li><a href="{{ site.baseurl }}/#blog" class="nav-link">Blog</a></li>
-                <li><a href="{{ site.baseurl }}/#contact" class="nav-link">Contact</a></li>
-            </ul>
-            
-            <div class="nav-controls">
-                <button class="theme-toggle" aria-label="Toggle theme">
-                    <i class="fas fa-moon"></i>
-                </button>
-                <button class="mobile-menu-toggle" aria-label="Toggle menu">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
-        </nav>
+      <nav class="nav-container">
+        <a href="{{ '/' | relative_url }}" class="logo"
+          >{{ site.data.profile.name }}</a
+        >
+
+        <ul class="nav-menu">
+          <li>
+            <a href="{{ '/#home' | relative_url }}" class="nav-link">Home</a>
+          </li>
+          <li>
+            <a href="{{ '/#about' | relative_url }}" class="nav-link">About</a>
+          </li>
+          <li>
+            <a href="{{ '/#experience' | relative_url }}" class="nav-link"
+              >Experience</a
+            >
+          </li>
+          <li>
+            <a href="{{ '/#projects' | relative_url }}" class="nav-link active"
+              >Projects</a
+            >
+          </li>
+          <li>
+            <a href="{{ '/#skills' | relative_url }}" class="nav-link"
+              >Skills</a
+            >
+          </li>
+          <li>
+            <a href="{{ '/#blog' | relative_url }}" class="nav-link">Blog</a>
+          </li>
+          <li>
+            <a href="{{ '/#contact' | relative_url }}" class="nav-link"
+              >Contact</a
+            >
+          </li>
+        </ul>
+
+        <div class="nav-controls">
+          <button class="theme-toggle" aria-label="Toggle theme">
+            <i class="fas fa-moon"></i>
+          </button>
+          <button class="mobile-menu-toggle" aria-label="Toggle menu">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+      </nav>
     </header>
-    
+
     <!-- Project Navigation -->
     {% include project-nav.html %}
-    
+
     <!-- Project Header -->
     <header class="project-header">
-        <h1 class="project-title">{{ page.title }}</h1>
-        <p class="project-subtitle">{{ page.description }}</p>
-        
-        <div class="project-meta">
-            {% if page.technologies %}
-            <div class="meta-section">
-                <strong>Technologies:</strong>
-                <div class="tags-container">
-                    {% for tech in page.technologies %}
-                        <span class="project-tag">{{ tech }}</span>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-            
-            {% if page.categories %}
-            <div class="meta-section">
-                <strong>Categories:</strong>
-                <div class="tags-container">
-                    {% for category in page.categories %}
-                        <span class="project-tag">{{ category | capitalize }}</span>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
+      <h1 class="project-title">{{ page.title }}</h1>
+      <p class="project-subtitle">{{ page.description }}</p>
+
+      <div class="project-meta">
+        {% if page.technologies %}
+        <div class="meta-section">
+          <strong>Technologies:</strong>
+          <div class="tags-container">
+            {% for tech in page.technologies %}
+            <span class="project-tag">{{ tech }}</span>
+            {% endfor %}
+          </div>
         </div>
-        
-        <div class="project-links">
-            {% if page.live_url %}
-            <a href="{{ page.live_url }}" class="project-link" target="_blank">
-                <i class="fas fa-external-link-alt"></i> Live Demo
-            </a>
-            {% endif %}
-            
-            {% if page.github_url %}
-            <a href="{{ page.github_url }}" class="project-link" target="_blank">
-                <i class="fab fa-github"></i> GitHub
-            </a>
-            {% endif %}
-            
-            <a href="{{ site.baseurl }}/#projects" class="project-link secondary">
-                <i class="fas fa-arrow-left"></i> Back to Projects
-            </a>
+        {% endif %} {% if page.categories %}
+        <div class="meta-section">
+          <strong>Categories:</strong>
+          <div class="tags-container">
+            {% for category in page.categories %}
+            <span class="project-tag">{{ category | capitalize }}</span>
+            {% endfor %}
+          </div>
         </div>
+        {% endif %}
+      </div>
+
+      <div class="project-links">
+        {% if page.live_url %}
+        <a href="{{ page.live_url }}" class="project-link" target="_blank">
+          <i class="fas fa-external-link-alt"></i> Live Demo
+        </a>
+        {% endif %} {% if page.github_url %}
+        <a href="{{ page.github_url }}" class="project-link" target="_blank">
+          <i class="fab fa-github"></i> GitHub
+        </a>
+        {% endif %}
+
+        <a
+          href="{{ '/#projects' | relative_url }}"
+          class="project-link secondary"
+        >
+          <i class="fas fa-arrow-left"></i> Back to Projects
+        </a>
+      </div>
     </header>
-    
+
     <!-- Project Content -->
     <main class="project-content">
-        {% if page.image %}
-        <img src="{{ page.image | relative_url }}" alt="{{ page.title }}" class="project-image">
-        {% endif %}
-        
-        {{ content }}
+      {% if page.image %}
+      <img
+        src="{{ page.image | relative_url }}"
+        alt="{{ page.title }}"
+        class="project-image"
+      />
+      {% endif %} {{ content }}
     </main>
-    
+
     <!-- JavaScript Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    
+
     <!-- Custom JavaScript -->
     <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
-    
-    <script>
-        // Theme switching functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const themeToggle = document.querySelector('.theme-toggle');
-            const html = document.documentElement;
-            
-            // Load saved theme
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            html.setAttribute('data-theme', savedTheme);
-            
-            // Update theme toggle icon
-            updateThemeIcon(savedTheme);
-            
-            // Theme toggle event
-            themeToggle.addEventListener('click', function() {
-                const currentTheme = html.getAttribute('data-theme');
-                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                
-                html.setAttribute('data-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-                updateThemeIcon(newTheme);
-            });
-            
-            function updateThemeIcon(theme) {
-                const icon = themeToggle.querySelector('i');
-                if (theme === 'dark') {
-                    icon.className = 'fas fa-sun';
-                } else {
-                    icon.className = 'fas fa-moon';
-                }
-            }
-            
-            // Initialize AOS
-            AOS.init({
-                duration: 800,
-                easing: 'ease-in-out',
-                once: true
-            });
-        });
-    </script>
-</body>
-</html> 
+
+    <!-- behavior handled by assets/js/main.js -->
+  </body>
+</html>

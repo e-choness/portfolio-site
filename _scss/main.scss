@@ -4,13 +4,24 @@
 @forward "base/base";
 @forward "base/typography";
 @forward "base/animations";
+@forward "base/utilities";
 
 @forward "components/buttons";
 @forward "components/cards";
 @forward "components/timeline";
+@forward "components/navbars";
 
 @forward "layout/header";
 @forward "layout/footer";
 @forward "layout/navigation";
 
 @forward "pages/home";
+@forward "pages/blog-search";
+@forward "pages/project-search";
+@forward "pages/blog-categories";
+@forward "pages/project-categories";
+@forward "pages/projects-index";
+@forward "pages/blog";
+@forward "pages/project";
+
+@forward "pages/post";
