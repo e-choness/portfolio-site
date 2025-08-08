@@ -366,3 +366,20 @@
     transform: translateX(3px);
   }
 }
+
+// About: mobile layout + actions spacing
+.about-actions {
+  margin-top: 1rem; // space above buttons group
+}
+
+@media (max-width: 768px) {
+  .about-content {
+    grid-template-columns: 1fr; // stack image above text
+    gap: 1.5rem; // tighter spacing on mobile
+  }
+
+  .about-image {
+    max-width: 420px; // keep image from becoming too large
+    margin: 0 auto; // center the image
+  }
+}
