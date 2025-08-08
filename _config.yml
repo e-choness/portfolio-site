@@ -73,3 +73,8 @@ google_analytics: UA-XXXXXXXXX-X
 # Theme settings
 sass:
   style: compressed
+  load_paths:
+    - _scss
+  quiet_deps: true
+  quiet: true
+  sass_dir: _scss

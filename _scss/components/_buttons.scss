@@ -1,0 +1,51 @@
+
+// Buttons
+.cta-button {
+    display: inline-block;
+    background: var(--primary-color);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow);
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        background: #1d4ed8;
+    }
+}
+
+.filter-btn {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    
+    &:hover,
+    &.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+}
+
+.view-all-posts,
+.view-all-projects {
+    display: inline-block;
+    margin-top: 2rem;
+    background: var(--primary-color);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow);
+}

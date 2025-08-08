@@ -7,6 +7,7 @@ group :jekyll_plugins do
   gem "jekyll-sitemap"
   gem "jekyll-seo-tag"
   gem "jekyll-paginate"
+  gem "jekyll-sass-converter"
 end
 
 # Add csv gem to silence Ruby 3.4.0 warning

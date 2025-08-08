@@ -1,0 +1,83 @@
+
+// Timeline
+.timeline {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    
+    &::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--primary-color);
+        transform: translateX(-50%);
+    }
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 3rem;
+    width: calc(80% - 2rem);
+    
+    &:nth-child(even) {
+        margin-left: auto;
+        margin-right: 0;
+    }
+    
+    &:nth-child(odd) {
+        margin-left: 0;
+        margin-right: auto;
+    }
+}
+
+.timeline-content {
+    background: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    position: relative;
+    transition: all 0.3s ease;
+    
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+}
+
+.timeline-date {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.timeline-company {
+    color: var(--accent-color);
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.timeline-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.timeline-responsibilities {
+    margin-top: 1rem;
+    padding-left: 1.5rem;
+    
+    li {
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+        line-height: 1.5;
+    }
+}

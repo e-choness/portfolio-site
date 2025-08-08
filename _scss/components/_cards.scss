@@ -1,0 +1,29 @@
+
+// Cards
+.project-card {
+    background: var(--bg-secondary);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    
+    &:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-lg);
+    }
+}
+
+.blog-card {
+    background: var(--bg-secondary);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    
+    &:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-lg);
+    }
+}
