@@ -22,14 +22,14 @@
 }
 
 [data-theme="dark"] {
-  --primary-color: #b48cf8fe;
-  --secondary-color: #7d47fa;
-  --accent-color: #7c3aed;
-  --text-primary: #f4f3f6;
-  --text-secondary: #a29caf;
-  --bg-primary: #010003;
-  --bg-secondary: #0a0016;
-  --border-color: #504b63;
+  --primary-color: #662DAA; // A rich, deep purple
+  --secondary-color: #4C3575; // A muted, blue-ish purple
+  --accent-color: #C77DFF; // A vibrant, pink-ish purple
+  --text-primary: #FFFFFF; // White for primary text
+  --text-secondary: #B3B3B3; // A light gray for secondary text
+  --bg-primary: #1A1D23;//linear-gradient(135deg, #1A1D23 0%, #2F343A 100%); // Gradient background
+  --bg-secondary: #2F343A; // A dark gray for secondary background
+  --border-color: #5C5C5C; // A medium gray for borders
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
 }
