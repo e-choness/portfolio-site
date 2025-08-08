@@ -1,51 +1,68 @@
-
 // Buttons
 .cta-button {
-    display: inline-block;
-    background: var(--primary-color);
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 50px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: var(--shadow);
-    
-    &:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-lg);
-        background: var(--accent-color);
-    }
+  display: inline-block;
+  background: var(--primary-color);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    background: var(--accent-color);
+  }
 }
 
 .filter-btn {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    border: 2px solid var(--border-color);
-    padding: 0.75rem 1.5rem;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    
-    &:hover,
-    &.active {
-        background: var(--primary-color);
-        color: white;
-        border-color: var(--primary-color);
-    }
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+
+  &:hover,
+  &.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+  }
 }
 
 .view-all-posts,
 .view-all-projects {
-    display: inline-block;
-    margin-top: 2rem;
-    background: var(--primary-color);
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 50px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: var(--shadow);
+  display: inline-block;
+  margin-top: 2rem;
+  background: var(--primary-color);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow);
+}
+
+// Button groups (spacing and responsiveness)
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem; // consistent spacing between buttons
+}
+
+.button-group .cta-button {
+  white-space: nowrap; // prevent awkward line breaks on larger screens
+}
+
+@media (max-width: 480px) {
+  .button-group .cta-button {
+    width: 100%; // full-width buttons for better tap targets on small screens
+    text-align: center; // align icons/text nicely
+  }
 }

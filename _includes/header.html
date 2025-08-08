@@ -4,7 +4,7 @@
       >{{ site.data.profile.name }}</a
     >
 
-    <ul class="nav-menu">
+    <ul id="primary-menu" class="nav-menu">
       <li>
         <a href="{{ '/#home' | relative_url }}" class="nav-link">Home</a>
       </li>
@@ -34,7 +34,12 @@
       <button class="theme-toggle" aria-label="Toggle theme">
         <i class="fas fa-moon"></i>
       </button>
-      <button class="mobile-menu-toggle" aria-label="Toggle menu">
+      <button
+        class="mobile-menu-toggle"
+        aria-label="Toggle menu"
+        aria-controls="primary-menu"
+        aria-expanded="false"
+      >
         <i class="fas fa-bars"></i>
       </button>
     </div>

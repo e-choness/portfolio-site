@@ -1,2 +1,40 @@
+// Mixins and breakpoints
+$bp-xs: 480px;
+$bp-sm: 640px;
+$bp-md: 768px;
+$bp-lg: 1024px;
+$bp-xl: 1280px;
 
-// Mixins
+// Media query helpers
+@mixin down($bp) {
+  @media (max-width: $bp) {
+    @content;
+  }
+}
+@mixin up($bp) {
+  @media (min-width: $bp) {
+    @content;
+  }
+}
+@mixin between($min, $max) {
+  @media (min-width: $min) and (max-width: $max) {
+    @content;
+  }
+}
+
+// Focus ring utility
+@mixin focus-ring {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+// Container utility
+@mixin container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+
+  @include down($bp-sm) {
+    padding: 0 1rem;
+  }
+}
