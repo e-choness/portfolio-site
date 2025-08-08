@@ -59,7 +59,7 @@ This is a classic use case where Flexbox shines, making perfect centering trivia
 }
 ```
 
-```html5
+```javascript
 <div class="center-container">
   <div class="centered-content">
     <h1>Perfectly Centered</h1>
@@ -125,7 +125,7 @@ Flexbox is ideal for navigation due to its ability to distribute space and align
 }
 ```
 
-```html5
+```javascript
 <nav class="navbar">
   <div class="logo">MyBrand</div>
   <ul class="nav-links">
@@ -209,7 +209,7 @@ A common design challenge is ensuring cards in a row have the same height, even 
 }
 ```
 
-```html5
+```javascript
 <div class="card-container">
   <div class="card">
     <div class="card-content">
@@ -351,7 +351,7 @@ A common use case for Grid is laying out the main structure of a webpage, making
 }
 ```
 
-```html5
+```javascript
 <div class="page-layout">
   <header class="header"><h1>Website Header</h1></header>
   <nav class="sidebar">
@@ -436,7 +436,7 @@ Grid is perfect for creating masonry-like or image gallery layouts where items c
 }
 ```
 
-```html5
+```javascript
 <div class="gallery">
   <div class="gallery-item featured">
     <img
@@ -570,7 +570,7 @@ Grids are perfect for creating complex dashboards with varying widget sizes and 
 }
 ```
 
-```html5
+```javascript
 <div class="dashboard">
   <div class="widget widget-large">
     <h3>Revenue Chart</h3>
@@ -747,7 +747,7 @@ Here, Grid defines the overall arrangement of cards, and each individual card us
 }
 ```
 
-```html5
+```javascript
 <div class="cards-grid">
   <article class="card">
     <img

@@ -70,7 +70,9 @@ Facebook's React, released in 2013, introduced a paradigm shift with its compone
 - **Unidirectional data flow**: Predictable state management
 - **Virtual DOM**: Efficient updates and rendering
 
-```jsx
+{% raw %}
+
+```javascript
 // React Component
 function UserProfile({ user }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -85,6 +87,8 @@ function UserProfile({ user }) {
 }
 ```
 
+{% endraw %}
+
 React's influence on the JavaScript ecosystem cannot be overstated. It popularized:
 
 - JSX syntax
@@ -96,7 +100,9 @@ React's influence on the JavaScript ecosystem cannot be overstated. It populariz
 
 Vue.js, created by Evan You in 2014, took a different approach. It aimed to be incrementally adoptable while providing the power of a full framework when needed.
 
-```vue
+{% raw %}
+
+```javascript
 <template>
   <div class="user-profile">
     <h2>{{ user.name }}</h2>
@@ -124,6 +130,8 @@ export default {
 </script>
 ```
 
+{% endraw %}
+
 Vue's strengths include:
 
 - **Gentle learning curve**: Easy for beginners
@@ -135,6 +143,7 @@ Vue's strengths include:
 
 When Google rewrote AngularJS as Angular 2 (now just "Angular"), they created a framework designed for large-scale applications:
 
+{% raw %}
 ```typescript
 // Angular Component
 @Component({
@@ -158,6 +167,7 @@ export class UserProfileComponent {
   }
 }
 ```
+{% endraw %}
 
 Angular's enterprise focus includes:
 
@@ -172,7 +182,7 @@ Angular's enterprise focus includes:
 
 Svelte, created by Rich Harris, takes a unique approach by moving work from runtime to build time:
 
-```svelte
+```javascript
 <script>
     export let user;
     let isEditing = false;
@@ -201,7 +211,9 @@ Svelte's advantages:
 
 React continues to evolve with hooks (2018) and concurrent features:
 
-```jsx
+{% raw %}
+
+```javascript
 // Modern React with Hooks
 function UserProfile({ user }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -221,6 +233,8 @@ function UserProfile({ user }) {
   );
 }
 ```
+
+{% endraw %}
 
 ## Looking Forward: What's Next?
 
