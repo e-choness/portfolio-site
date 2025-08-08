@@ -1,29 +1,31 @@
+// Cards (unified)
+.project-card,
+.blog-card {
+  background: var(--bg-secondary);
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+  cursor: pointer;
 
-// Cards
-.project-card {
-    background: var(--bg-secondary);
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    
-    &:hover {
-        transform: translateY(-10px);
-        box-shadow: var(--shadow-lg);
-    }
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+  }
 }
 
-.blog-card {
-    background: var(--bg-secondary);
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    
-    &:hover {
-        transform: translateY(-10px);
-        box-shadow: var(--shadow-lg);
-    }
+.blog-image,
+.projects-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+.blog-card:hover .blog-image .project-card:hover .projects-image {
+  transform: scale(1.1);
 }

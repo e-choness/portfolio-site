@@ -1,103 +1,38 @@
 <div class="project-navigation" data-aos="fade-up">
-    <div class="container">
-        <div class="project-nav-links">
-            <a href="{{ site.baseurl }}/projects/" class="nav-link {% if page.url == '/projects/' or page.url == '/projects/index.html' %}active{% endif %}">
-                <i class="fas fa-home"></i> All Projects
-            </a>
-            <a href="{{ site.baseurl }}/projects/categories/" class="nav-link {% if page.url contains '/projects/categories' %}active{% endif %}">
-                <i class="fas fa-folder"></i> Categories
-            </a>
-            <a href="{{ site.baseurl }}/projects/search/" class="nav-link {% if page.url == '/projects/search/' %}active{% endif %}">
-                <i class="fas fa-search"></i> Search
-            </a>
-        </div>
-        
-        <div class="project-stats">
-            <span class="stat-item">
-                <i class="fas fa-code"></i>
-                {{ site.projects.size }} Projects
-            </span>
-            <span class="stat-item">
-                <i class="fas fa-tags"></i>
-                {% assign all_categories = site.projects | map: 'categories' | join: ',' | split: ',' | uniq %}
-                {{ all_categories.size }} Categories
-            </span>
-        </div>
+  <div class="container">
+    <div class="project-nav-links">
+      <a
+        href="{{ '/projects/' | relative_url }}"
+        class="nav-link {% if page.url == '/projects/' or page.url == '/projects/index.html' %}active{% endif %}"
+      >
+        <i class="fas fa-home"></i> All Projects
+      </a>
+      <a
+        href="{{ '/projects/categories/' | relative_url }}"
+        class="nav-link {% if page.url contains '/projects/categories' %}active{% endif %}"
+      >
+        <i class="fas fa-folder"></i> Categories
+      </a>
+      <a
+        href="{{ '/projects/search/' | relative_url }}"
+        class="nav-link {% if page.url == '/projects/search/' %}active{% endif %}"
+      >
+        <i class="fas fa-search"></i> Search
+      </a>
     </div>
+
+    <div class="project-stats">
+      <span class="stat-item">
+        <i class="fas fa-code"></i>
+        {{ site.projects.size }} Projects
+      </span>
+      <span class="stat-item">
+        <i class="fas fa-tags"></i>
+        {% assign all_categories = site.projects | map: 'categories' | join: ','
+        | split: ',' | uniq %} {{ all_categories.size }} Categories
+      </span>
+    </div>
+  </div>
 </div>
 
-<style>
-.project-navigation {
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-color);
-    padding: 1rem 0;
-    margin-bottom: 2rem;
-    margin-top: 80px; /* Add margin to account for fixed header */
-}
-
-.project-navigation .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.project-nav-links {
-    display: flex;
-    gap: 1.5rem;
-}
-
-.project-nav-links .nav-link {
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.project-nav-links .nav-link:hover,
-.project-nav-links .nav-link.active {
-    color: var(--primary-color);
-    background: var(--bg-primary);
-}
-
-.project-stats {
-    display: flex;
-    gap: 1.5rem;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-}
-
-.stat-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.stat-item i {
-    color: var(--primary-color);
-}
-
-@media (max-width: 768px) {
-    .project-navigation .container {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .project-nav-links {
-        order: 2;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .project-stats {
-        order: 1;
-    }
-}
-</style> 
+<!-- styles extracted to _scss/components/_navbars.scss -->

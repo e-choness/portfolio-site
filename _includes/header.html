@@ -1,24 +1,42 @@
 <header class="header">
-      <nav class="nav-container">
-        <a href="#home" class="logo">{{ site.data.profile.name }}</a>
+  <nav class="nav-container">
+    <a href="{{ '/' | relative_url }}" class="logo"
+      >{{ site.data.profile.name }}</a
+    >
 
-        <ul class="nav-menu">
-          <li><a href="#home" class="nav-link active">Home</a></li>
-          <li><a href="#about" class="nav-link">About</a></li>
-          <li><a href="#experience" class="nav-link">Experience</a></li>
-          <li><a href="#projects" class="nav-link">Projects</a></li>
-          <li><a href="#skills" class="nav-link">Skills</a></li>
-          <li><a href="#blog" class="nav-link">Blog</a></li>
-          <li><a href="#contact" class="nav-link">Contact</a></li>
-        </ul>
+    <ul class="nav-menu">
+      <li>
+        <a href="{{ '/#home' | relative_url }}" class="nav-link">Home</a>
+      </li>
+      <li>
+        <a href="{{ '/#about' | relative_url }}" class="nav-link">About</a>
+      </li>
+      <li>
+        <a href="{{ '/#experience' | relative_url }}" class="nav-link"
+          >Experience</a
+        >
+      </li>
+      <li>
+        <a href="{{ '/#projects' | relative_url }}" class="nav-link"
+          >Projects</a
+        >
+      </li>
+      <li>
+        <a href="{{ '/#skills' | relative_url }}" class="nav-link">Skills</a>
+      </li>
+      <li><a href="{{ '/blog/' | relative_url }}" class="nav-link">Blog</a></li>
+      <li>
+        <a href="{{ '/#contact' | relative_url }}" class="nav-link">Contact</a>
+      </li>
+    </ul>
 
-        <div class="nav-controls">
-          <button class="theme-toggle" aria-label="Toggle theme">
-            <i class="fas fa-moon"></i>
-          </button>
-          <button class="mobile-menu-toggle" aria-label="Toggle menu">
-            <i class="fas fa-bars"></i>
-          </button>
-        </div>
-      </nav>
-    </header>
+    <div class="nav-controls">
+      <button class="theme-toggle" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+      </button>
+      <button class="mobile-menu-toggle" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+</header>

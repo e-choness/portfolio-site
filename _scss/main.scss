@@ -1,16 +1,26 @@
-@forward "abstracts/variables";
-@forward "abstracts/mixins";
+@import "abstracts/variables";
+@import "abstracts/mixins";
 
-@forward "base/base";
-@forward "base/typography";
-@forward "base/animations";
+@import "base/base";
+@import "base/typography";
+@import "base/animations";
+@import "base/utilities";
 
-@forward "components/buttons";
-@forward "components/cards";
-@forward "components/timeline";
+@import "components/buttons";
+@import "components/cards";
+@import "components/timeline";
+@import "components/navbars";
 
-@forward "layout/header";
-@forward "layout/footer";
-@forward "layout/navigation";
+@import "layout/header";
+@import "layout/footer";
+@import "layout/navigation";
 
-@forward "pages/home";
+@import "pages/home";
+@import "pages/blog-search";
+@import "pages/project-search";
+@import "pages/blog-categories";
+@import "pages/project-categories";
+@import "pages/projects-index";
+@import "pages/blog";
+@import "pages/project";
+@import "pages/post";

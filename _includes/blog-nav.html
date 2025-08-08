@@ -1,105 +1,44 @@
 <div class="blog-navigation" data-aos="fade-up">
-    <div class="container">
-        <div class="blog-nav-links">
-            <a href="{{ site.baseurl }}/blog/" class="nav-link {% if page.url == '/blog/' or page.url == '/blog/index.html' %}active{% endif %}">
-                <i class="fas fa-home"></i> All Posts
-            </a>
-            <a href="{{ site.baseurl }}/blog/categories/" class="nav-link {% if page.url contains '/blog/categories' %}active{% endif %}">
-                <i class="fas fa-folder"></i> Categories
-            </a>
-            <a href="{{ site.baseurl }}/blog/archive/" class="nav-link {% if page.url == '/blog/archive/' %}active{% endif %}">
-                <i class="fas fa-archive"></i> Archive
-            </a>
-            <a href="{{ site.baseurl }}/blog/search/" class="nav-link {% if page.url == '/blog/search/' %}active{% endif %}">
-                <i class="fas fa-search"></i> Search
-            </a>
-        </div>
-        
-        <div class="blog-stats">
-            <span class="stat-item">
-                <i class="fas fa-newspaper"></i>
-                {{ site.posts.size }} Posts
-            </span>
-            <span class="stat-item">
-                <i class="fas fa-tags"></i>
-                {% assign all_tags = site.posts | map: 'tags' | join: ',' | split: ',' | uniq %}
-                {{ all_tags.size }} Tags
-            </span>
-        </div>
+  <div class="container">
+    <div class="blog-nav-links">
+      <a
+        href="{{ '/blog/' | relative_url }}"
+        class="nav-link {% if page.url == '/blog/' or page.url == '/blog/index.html' %}active{% endif %}"
+      >
+        <i class="fas fa-home"></i> All Posts
+      </a>
+      <a
+        href="{{ '/blog/categories/' | relative_url }}"
+        class="nav-link {% if page.url contains '/blog/categories' %}active{% endif %}"
+      >
+        <i class="fas fa-folder"></i> Categories
+      </a>
+      <a
+        href="{{ '/blog/archive/' | relative_url }}"
+        class="nav-link {% if page.url == '/blog/archive/' %}active{% endif %}"
+      >
+        <i class="fas fa-archive"></i> Archive
+      </a>
+      <a
+        href="{{ '/blog/search/' | relative_url }}"
+        class="nav-link {% if page.url == '/blog/search/' %}active{% endif %}"
+      >
+        <i class="fas fa-search"></i> Search
+      </a>
     </div>
+
+    <div class="blog-stats">
+      <span class="stat-item">
+        <i class="fas fa-newspaper"></i>
+        {{ site.posts.size }} Posts
+      </span>
+      <span class="stat-item">
+        <i class="fas fa-tags"></i>
+        {% assign all_tags = site.posts | map: 'tags' | join: ',' | split: ',' |
+        uniq %} {{ all_tags.size }} Tags
+      </span>
+    </div>
+  </div>
 </div>
 
-<style>
-.blog-navigation {
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-color);
-    padding: 1rem 0;
-    margin-bottom: 2rem;
-}
-
-.blog-navigation .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.blog-nav-links {
-    display: flex;
-    gap: 1.5rem;
-}
-
-.blog-nav-links .nav-link {
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.blog-nav-links .nav-link:hover,
-.blog-nav-links .nav-link.active {
-    color: var(--primary-color);
-    background: var(--bg-primary);
-}
-
-.blog-stats {
-    display: flex;
-    gap: 1.5rem;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-}
-
-.stat-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.stat-item i {
-    color: var(--primary-color);
-}
-
-@media (max-width: 768px) {
-    .blog-navigation .container {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .blog-nav-links {
-        order: 2;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .blog-stats {
-        order: 1;
-    }
-}
-</style>
+<!-- styles extracted to _scss/components/_navbars.scss -->

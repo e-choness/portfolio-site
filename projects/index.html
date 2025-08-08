@@ -5,246 +5,74 @@ description: "Explore my portfolio of projects showcasing various technologies a
 ---
 
 <div class="projects-page" data-aos="fade-up">
-    <div class="container">
-        <h1 class="page-title">All Projects</h1>
-        <p class="page-subtitle">Explore my portfolio of projects showcasing various technologies and skills.</p>
-        
-        <!-- Projects Filter -->
-        <div class="projects-filter" data-aos="fade-up" data-aos-delay="200">
-            <button class="filter-btn active" data-filter="all">All</button>
-            {% assign all_categories = site.projects | map: 'categories' | join: ',' | split: ',' | uniq | sort %}
-            {% for category in all_categories %}
-            <button class="filter-btn" data-filter="{{ category }}">{{ category | capitalize }}</button>
-            {% endfor %}
-        </div>
-        
-        <!-- Projects Grid -->
-        <div class="projects-grid">
-            {% assign project_files = site.projects | sort: 'order' %}
-            {% for project in project_files %}
-            <div class="project-card" data-category="{{ project.categories | join: ' ' }}" data-aos="fade-up" data-aos-delay="{{ forloop.index | times: 200 }}">
-                <img src="{{ project.image | relative_url}}" alt="{{ project.title }}" class="project-image">
-                <div class="project-content">
-                    <h3 class="project-title">{{ project.title }}</h3>
-                    <p class="project-description">
-                        {{ project.description }}
-                    </p>
-                    <div class="project-tags">
-                        {% for technology in project.technologies %}
-                        <span class="project-tag">{{ technology }}</span>
-                        {% endfor %}
-                    </div>
-                    <div class="project-links">
-                        <a href="{{ site.baseurl}}{{ project.url | relative_url }}" class="project-link"><i class="fas fa-info-circle"></i> View Details</a>
-                        {% if project.live_url %}
-                        <a href="{{ project.live_url }}" class="project-link" target="_blank"><i class="fas fa-external-link-alt"></i> Live Demo</a>
-                        {% endif %}
-                        {% if project.github_url %}
-                        <a href="{{ project.github_url }}" class="project-link" target="_blank"><i class="fab fa-github"></i> GitHub</a>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+  <div class="container">
+    <h1 class="page-title">All Projects</h1>
+    <p class="page-subtitle">
+      Explore my portfolio of projects showcasing various technologies and
+      skills.
+    </p>
+
+    <!-- Projects Filter -->
+    <div class="projects-filter" data-aos="fade-up" data-aos-delay="200">
+      <button class="filter-btn active" data-filter="all">All</button>
+      {% assign all_categories = site.projects | map: 'categories' | join: ',' |
+      split: ',' | uniq | sort %} {% for category in all_categories %}
+      <button class="filter-btn" data-filter="{{ category }}">
+        {{ category | capitalize }}
+      </button>
+      {% endfor %}
     </div>
+
+    <!-- Projects Grid -->
+    <div class="projects-grid">
+      {% assign project_files = site.projects | sort: 'order' %} {% for project
+      in project_files %}
+      <div
+        class="project-card"
+        data-category="{{ project.categories | join: ' ' }}"
+        data-aos="fade-up"
+        data-aos-delay="{{ forloop.index | times: 200 }}"
+      >
+        <img
+          src="{{ project.image | relative_url}}"
+          alt="{{ project.title }}"
+          class="project-image"
+        />
+        <div class="project-content">
+          <h3 class="project-title">{{ project.title }}</h3>
+          <p class="project-description">{{ project.description }}</p>
+          <div class="project-tags">
+            {% for technology in project.technologies %}
+            <span class="project-tag">{{ technology }}</span>
+            {% endfor %}
+          </div>
+          <div class="project-links">
+            <a href="{{ project.url | relative_url }}" class="project-link"
+              ><i class="fas fa-info-circle"></i> View Details</a
+            >
+            {% if project.live_url %}
+            <a
+              href="{{ project.live_url }}"
+              class="project-link"
+              target="_blank"
+              ><i class="fas fa-external-link-alt"></i> Live Demo</a
+            >
+            {% endif %} {% if project.github_url %}
+            <a
+              href="{{ project.github_url }}"
+              class="project-link"
+              target="_blank"
+              ><i class="fab fa-github"></i> GitHub</a
+            >
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 </div>
 
-<style>
-.projects-page {
-    padding: 2rem;
-    margin-top: 80px;
-}
+<!-- styles moved to SCSS: _scss/pages/_projects-index.scss -->
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.page-title {
-    font-size: 3rem;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
-}
-
-.page-subtitle {
-    font-size: 1.2rem;
-    text-align: center;
-    color: var(--text-secondary);
-    margin-bottom: 3rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.projects-filter {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 3rem;
-    flex-wrap: wrap;
-}
-
-.filter-btn {
-    padding: 0.75rem 1.5rem;
-    background: var(--bg-secondary);
-    color: var(--text-secondary);
-    border: 2px solid var(--border-color);
-    border-radius: 50px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.filter-btn:hover,
-.filter-btn.active {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
-
-.projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
-}
-
-.project-card {
-    background: var(--bg-secondary);
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.project-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-}
-
-.project-image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-}
-
-.project-content {
-    padding: 1.5rem;
-}
-
-.project-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
-}
-
-.project-description {
-    color: var(--text-secondary);
-    margin-bottom: 1rem;
-    line-height: 1.6;
-}
-
-.project-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.project-tag {
-    background: var(--primary-color);
-    color: white;
-    padding: 0.2rem 0.6rem;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.project-links {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.project-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: var(--primary-color);
-    color: white;
-    text-decoration: none;
-    border-radius: 25px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.project-link:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
-}
-
-@media (max-width: 768px) {
-    .projects-page {
-        padding: 1rem;
-    }
-    
-    .page-title {
-        font-size: 2rem;
-    }
-    
-    .projects-grid {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
-
-<script>
-// Project filtering functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    const projectCards = document.querySelectorAll('.project-card');
-    
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Remove active class from all buttons
-            filterBtns.forEach(b => b.classList.remove('active'));
-            // Add active class to clicked button
-            btn.classList.add('active');
-            
-            const filter = btn.getAttribute('data-filter');
-            
-            projectCards.forEach(card => {
-                const categories = card.getAttribute('data-category');
-                
-                if (filter === 'all' || (categories && categories.toLowerCase().includes(filter.toLowerCase()))) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
-    });
-    
-    // Project card click handlers
-    projectCards.forEach(card => {
-        card.addEventListener('click', (e) => {
-            // Don't trigger if clicking on links
-            if (e.target.closest('.project-link')) {
-                return;
-            }
-            
-            // Get the project URL from the View Details link
-            const viewDetailsLink = card.querySelector('a[href*="/projects/"]');
-            if (viewDetailsLink) {
-                window.location.href = viewDetailsLink.href;
-            }
-        });
-    });
-});
-</script> 
+<!-- behavior moved to assets/js/main.js -->

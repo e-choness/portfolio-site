@@ -5,79 +5,92 @@ description: "Thoughts on web development, technology, and career insights"
 ---
 
 <div class="blog-header" data-aos="fade-up">
-    <div class="container">
-        <h1 class="blog-title">Blog</h1>
-        <p class="blog-subtitle">
-            Sharing insights on web development, technology trends, and lessons learned from building modern applications.
-        </p>
-    </div>
+  <div class="container">
+    <h1 class="blog-title">Blog</h1>
+    <p class="blog-subtitle">
+      Sharing insights on web development, technology trends, and lessons
+      learned from building modern applications.
+    </p>
+  </div>
 </div>
 
 <div class="container">
-    <div class="blog-grid">
-        {% for post in paginator.posts %}
-        <article class="blog-card" data-aos="fade-up" data-aos-delay="{{ forloop.index | times: 200 }}">
-            {% if post.image %}
-            <img src="{{ post.image }}" alt="{{ post.title }}" class="blog-image">
-            {% else %}
-            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=200&fit=crop" alt="{{ post.title }}" class="blog-image">
-            {% endif %}
-            
-            <div class="blog-content">
-                <div class="blog-meta">
-                    <span class="blog-date">
-                        <i class="fas fa-calendar"></i>
-                        {{ post.date | date: "%B %d, %Y" }}
-                    </span>
-                    {% if post.category %}
-                    <span class="blog-category">{{ post.category | capitalize }}</span>
-                    {% endif %}
-                </div>
-                
-                <h2 class="blog-card-title">
-                    <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-                </h2>
-                
-                <p class="blog-excerpt">
-                    {% if post.excerpt %}
-                        {{ post.excerpt | strip_html | truncate: 150 }}
-                    {% else %}
-                        {{ post.content | strip_html | truncate: 150 }}
-                    {% endif %}
-                </p>
-                
-                <a href="{{ post.url | relative_url }}" class="blog-read-more">
-                    Read More <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-        </article>
-        {% endfor %}
-    </div>
+  <div class="blog-grid">
+    {% for post in paginator.posts %}
+    <article
+      class="blog-card"
+      data-aos="fade-up"
+      data-aos-delay="{{ forloop.index | times: 200 }}"
+    >
+      {% if post.image %}
+      <img
+        src="{{ post.image | relative_url }}"
+        alt="{{ post.title }}"
+        class="blog-image"
+      />
+      {% else %}
+      <img
+        src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=200&fit=crop"
+        alt="{{ post.title }}"
+        class="blog-image"
+      />
+      {% endif %}
 
-    <!-- Pagination -->
-    {% if paginator.total_pages > 1 %}
-    <div class="pagination">
-        {% if paginator.previous_page %}
-        <a href="{{ paginator.previous_page_path | relative_url }}" class="pagination-link">
-            <i class="fas fa-chevron-left"></i> Previous
+      <div class="blog-content">
+        <div class="blog-meta">
+          <span class="blog-date">
+            <i class="fas fa-calendar"></i>
+            {{ post.date | date: "%B %d, %Y" }}
+          </span>
+          {% if post.category %}
+          <span class="blog-category">{{ post.category | capitalize }}</span>
+          {% endif %}
+        </div>
+
+        <h2 class="blog-card-title">
+          <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        </h2>
+
+        <p class="blog-excerpt">
+          {% if post.excerpt %} {{ post.excerpt | strip_html | truncate: 150 }}
+          {% else %} {{ post.content | strip_html | truncate: 150 }} {% endif %}
+        </p>
+
+        <a href="{{ post.url | relative_url }}" class="blog-read-more">
+          Read More <i class="fas fa-arrow-right"></i>
         </a>
-        {% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  </div>
 
-        {% for page in (1..paginator.total_pages) %}
-        {% if page == paginator.page %}
-        <span class="current">{{ page }}</span>
-        {% elsif page == 1 %}
-        <a href="{{ site.baseurl }}/blog/">{{ page }}</a>
-        {% else %}
-        <a href="{{ site.paginate_path | replace: ':num', page | relative_url }}">{{ page }}</a>
-        {% endif %}
-        {% endfor %}
-
-        {% if paginator.next_page %}
-        <a href="{{ paginator.next_page_path | relative_url }}" class="pagination-link">
-            Next <i class="fas fa-chevron-right"></i>
-        </a>
-        {% endif %}
-    </div>
+  <!-- Pagination -->
+  {% if paginator.total_pages > 1 %}
+  <div class="pagination">
+    {% if paginator.previous_page %}
+    <a
+      href="{{ paginator.previous_page_path | relative_url }}"
+      class="pagination-link"
+    >
+      <i class="fas fa-chevron-left"></i> Previous
+    </a>
+    {% endif %} {% for page in (1..paginator.total_pages) %} {% if page ==
+    paginator.page %}
+    <span class="current">{{ page }}</span>
+    {% elsif page == 1 %}
+    <a href="{{ '/blog/' | relative_url }}">{{ page }}</a>
+    {% else %}
+    <a href="{{ site.paginate_path | replace: ':num', page | relative_url }}"
+      >{{ page }}</a
+    >
+    {% endif %} {% endfor %} {% if paginator.next_page %}
+    <a
+      href="{{ paginator.next_page_path | relative_url }}"
+      class="pagination-link"
+    >
+      Next <i class="fas fa-chevron-right"></i>
+    </a>
     {% endif %}
+  </div>
+  {% endif %}
 </div>
