@@ -12,5 +12,5 @@
 }
 
 [data-theme="dark"] .header {
-    background: rgba(15, 23, 42, 0.95);
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
 }
