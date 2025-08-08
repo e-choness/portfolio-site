@@ -1,6 +1,6 @@
 <section id="blog" class="section">
   <h2 class="section-title" data-aos="fade-up">Latest Blog Posts</h2>
-  <div class="blog-preview">
+  <div class="blog-grid">
     {% assign recent_posts = site.posts | limit: 3 %} {% for post in
     recent_posts %}
     <article
@@ -8,17 +8,34 @@
       data-aos="fade-up"
       data-aos-delay="{{ forloop.index | times: 200 }}"
     >
-      <img src="{{ post.image }}" alt="{{ post.title }}" class="blog-image" />
+    {% if post.image %}
+    <img
+      src="{{ post.image | relative_url }}"
+      alt="{{ post.title }}"
+      class="blog-image"
+    />
+    {% else %}
+    <img
+      src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=200&fit=crop"
+      alt="{{ post.title }}"
+      class="blog-image"
+    />
+    {% endif %}
       <div class="blog-content">
         <div class="blog-meta">
           <span class="blog-date">
             <i class="fas fa-calendar"></i>
             {{ post.date | date: "%B %d, %Y" }}
           </span>
+          {% if post.category %}
           <span class="blog-category">{{ post.category | capitalize }}</span>
+          {% endif %}
         </div>
-        <h3 class="blog-title">{{ post.title }}</h3>
-        <p class="blog-excerpt">{{ post.excerpt }}</p>
+        <h2 class="blog-card-title">{{ post.title }}</h2>
+        <p class="blog-excerpt">
+          {% if post.excerpt %} {{ post.excerpt | strip_html | truncate: 150 }}
+          {% else %} {{ post.content | strip_html | truncate: 150 }} {% endif %}
+        </p>
         <a href="{{ post.url | relative_url }}" class="blog-read-more">
           Read More <i class="fas fa-arrow-right"></i>
         </a>

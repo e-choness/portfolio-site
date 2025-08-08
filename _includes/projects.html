@@ -24,28 +24,28 @@
       <img
         src="{{ project.image | relative_url}}"
         alt="{{ project.title }}"
-        class="project-image"
+        class="projects-image"
       />
-      <div class="project-content">
-        <h3 class="project-title">{{ project.title }}</h3>
+      <div class="blog-content">
+        <h2 class="blog-card-title">{{ project.title }}</h2>
         <p class="project-description">{{ project.description }}</p>
         <div class="project-tags">
           {% for technology in project.technologies %}
-          <span class="project-tag">{{ technology }}</span>
+          <span class="blog-category">{{ technology }}</span>
           {% endfor %}
         </div>
         <div class="project-links">
-          <a href="{{ project.url | relative_url }}" class="project-link"
+          <a href="{{ project.url | relative_url }}" class="blog-category"
             ><i class="fas fa-info-circle"></i> View Details</a
           >
           {% if project.live_url %}
-          <a href="{{ project.live_url }}" class="project-link" target="_blank"
+          <a href="{{ project.live_url }}" class="blog-category" target="_blank"
             ><i class="fas fa-external-link-alt"></i> Live Demo</a
           >
           {% endif %} {% if project.github_url %}
           <a
             href="{{ project.github_url }}"
-            class="project-link"
+            class="blog-category"
             target="_blank"
             ><i class="fab fa-github"></i> GitHub</a
           >

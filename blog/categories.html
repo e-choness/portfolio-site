@@ -42,7 +42,7 @@ permalink: /blog/categories/
         {% for post in category_posts limit: 3 %}
         <div class="category-post-item">
           <a href="{{ post.url | relative_url }}" class="post-link">
-            <h4 class="post-title">{{ post.title }}</h4>
+            <h2 class="blog-card-title">{{ post.title }}</h2>
             <span class="post-date">{{ post.date | date: "%B %d, %Y" }}</span>
           </a>
         </div>
