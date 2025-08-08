@@ -1,0 +1,45 @@
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ site.data.profile.name }} - {{ site.data.profile.title }}</title>
+
+    <!-- SEO Meta Tags -->
+    <meta
+      name="description"
+      content="{{ site.data.profile.tagline }}. View my portfolio of projects and experience."
+    />
+    <meta
+      name="keywords"
+      content="developer, full-stack, portfolio, javascript, react, node.js"
+    />
+
+    <!-- Open Graph Meta Tags -->
+    <meta
+      property="og:title"
+      content="{{ site.data.profile.name }} - {{ site.data.profile.title }} Portfolio"
+    />
+    <meta property="og:description" content="{{ site.data.profile.tagline }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ site.url }}" />
+    <meta
+      property="og:image"
+      content="{{ site.url }}{{ site.data.profile.about.image }}"
+    />
+
+    <!-- CSS Libraries -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS -->
+    <link href="{{ '/assets/css/style.css' | relative_url }}" rel="stylesheet" />
+  </head>

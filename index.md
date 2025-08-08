@@ -2,5 +2,10 @@
 layout: default
 title: Home
 ---
- 
-<!-- This file is intentionally empty as all content is in the layout --> 
+
+{%- include hero.html -%}
+{%- include about.html -%}
+{%- include experience.html -%}
+{%- include projects.html -%}
+{%- include skills.html -%}
+{%- include blog.html -%}

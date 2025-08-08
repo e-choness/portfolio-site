@@ -1,0 +1,68 @@
+<section id="projects" class="section">
+      <h2 class="section-title" data-aos="fade-up">Projects</h2>
+
+      <div class="projects-filter" data-aos="fade-up" data-aos-delay="200">
+        <button class="filter-btn active" data-filter="all">All</button>
+        {% assign all_categories = site.projects | map: 'categories' | join: ',' | split: ',' | uniq | sort %}
+        {% for category in all_categories %}
+        <button class="filter-btn" data-filter="{{ category }}">
+          {{ category | capitalize }}
+        </button>
+        {% endfor %}
+      </div>
+
+      <div class="projects-grid">
+        {% assign project_files = site.projects | sort: 'order' %}
+        {% for project in project_files %}
+        <div
+          class="project-card"
+          data-category="{{ project.categories | join: ' ' }}"
+          data-project-url="{{ site.baseurl }}{{ project.url }}"
+          data-aos="fade-up"
+          data-aos-delay="{{ forloop.index | times: 200 }}"
+        >
+          <img
+            src="{{ project.image | relative_url}}"
+            alt="{{ project.title }}"
+            class="project-image"
+          />
+          <div class="project-content">
+            <h3 class="project-title">{{ project.title }}</h3>
+            <p class="project-description">{{ project.description }}</p>
+            <div class="project-tags">
+              {% for technology in project.technologies %}
+              <span class="project-tag">{{ technology }}</span>
+              {% endfor %}
+            </div>
+            <div class="project-links">
+              <a href="{{ project.url | relative_url }}" class="project-link"
+                ><i class="fas fa-info-circle"></i> View Details</a
+              >
+              {% if project.live_url %}
+              <a
+                href="{{ project.live_url }}"
+                class="project-link"
+                target="_blank"
+                ><i class="fas fa-external-link-alt"></i> Live Demo</a
+              >
+              {% endif %}
+              {% if project.github_url %}
+              <a
+                href="{{ project.github_url }}"
+                class="project-link"
+                target="_blank"
+                ><i class="fab fa-github"></i> GitHub</a
+              >
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div style="text-align: center" data-aos="fade-up" data-aos-delay="600">
+        <a href="{{ site.baseurl }}/projects/" class="view-all-projects">
+          Show All Projects <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </section>

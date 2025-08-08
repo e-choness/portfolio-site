@@ -1,0 +1,25 @@
+<section id="experience" class="section">
+      <h2 class="section-title" data-aos="fade-up">Experience</h2>
+      <div class="timeline">
+        {% for experience in site.data.experience %}
+        <div
+          class="timeline-item"
+          data-aos="{% cycle 'fade-right', 'fade-left' %}"
+        >
+          <div class="timeline-content">
+            <div class="timeline-date">{{ experience.duration }}</div>
+            <h3 class="timeline-title">{{ experience.position }}</h3>
+            <div class="timeline-company">{{ experience.company }}</div>
+            <p class="timeline-description">{{ experience.description }}</p>
+            {% if experience.responsibilities %}
+            <ul class="timeline-responsibilities">
+              {% for responsibility in experience.responsibilities %}
+              <li>{{ responsibility }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>

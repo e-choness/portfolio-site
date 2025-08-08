@@ -1,0 +1,25 @@
+<section id="skills" class="section">
+      <h2 class="section-title" data-aos="fade-up">Skills</h2>
+      <div class="skills-categories">
+        {% for category in site.data.skills.categories %}
+        <div
+          class="skill-category"
+          data-aos="fade-up"
+          data-aos-delay="{{ forloop.index | times: 200 }}"
+        >
+          <h3>{{ category.name }}</h3>
+          {% for skill in category.skills %}
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">{{ skill.name }}</span>
+              <span class="skill-percentage">{{ skill.level }}%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" data-width="{{ skill.level }}"></div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+    </section>

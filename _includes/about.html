@@ -1,0 +1,41 @@
+<section id="about" class="section">
+      <h2 class="section-title" data-aos="fade-up">About Me</h2>
+      <div class="about-content">
+        <div data-aos="fade-right">
+          <img
+            src="{{ site.data.profile.about.image }}"
+            alt="About {{ site.data.profile.name }}"
+            class="about-image"
+          />
+        </div>
+        <div data-aos="fade-left">
+          {% assign paragraphs = site.data.profile.about.description | split: '\r\n' %}
+          {% for paragraph in paragraphs %}
+          <p class="about-text">{{ paragraph | strip }}</p>
+          {% endfor %}
+          <a
+            href="{{ site.data.profile.about.resume_url }}"
+            class="cta-button"
+            target="_blank"
+          >
+            <i class="fas fa-download"></i> Download Resume
+          </a>
+          <a
+            href="{{ site.data.profile.about.ctrl_url }}"
+            class="cta-button"
+            target="_blank"
+          >
+            <i class="fas fa-rocket"></i> Ctrl Alt Deploy
+          </a>
+        </div>
+      </div>
+
+      <div class="stats-grid" data-aos="fade-up" data-aos-delay="200">
+        {% for stat in site.data.profile.stats %}
+        <div class="stat-item">
+          <span class="stat-number" data-count="{{ stat.value }}">0</span>
+          <span class="stat-label">{{ stat.label }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </section>

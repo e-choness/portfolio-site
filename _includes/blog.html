@@ -1,0 +1,41 @@
+<section id="blog" class="section">
+      <h2 class="section-title" data-aos="fade-up">Latest Blog Posts</h2>
+      <div class="blog-preview">
+        {% assign recent_posts = site.posts | limit: 3 %}
+        {% for post in recent_posts %}
+        <article
+          class="blog-card"
+          data-aos="fade-up"
+          data-aos-delay="{{ forloop.index | times: 200 }}"
+        >
+          <img
+            src="{{ post.image }}"
+            alt="{{ post.title }}"
+            class="blog-image"
+          />
+          <div class="blog-content">
+            <div class="blog-meta">
+              <span class="blog-date">
+                <i class="fas fa-calendar"></i>
+                {{ post.date | date: "%B %d, %Y" }}
+              </span>
+              <span class="blog-category"
+                >{{ post.category | capitalize }}</span
+              >
+            </div>
+            <h3 class="blog-title">{{ post.title }}</h3>
+            <p class="blog-excerpt">{{ post.excerpt }}</p>
+            <a href="{{ post.url | relative_url }}" class="blog-read-more">
+              Read More <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+
+      <div style="text-align: center" data-aos="fade-up" data-aos-delay="600">
+        <a href="{{ site.baseurl }}/blog/" class="view-all-posts">
+          View All Posts <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </section>
