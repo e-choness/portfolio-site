@@ -101,7 +101,7 @@ permalink: /projects/search/
     "categories": {{ project.categories | jsonify }},
     "technologies": {{ project.technologies | jsonify }},
     "description": {{ project.description | jsonify }},
-    "image": {{ project.image | default: "" | jsonify }},
+    "image": "{{ project.image | relative_url | jsonify }}",
     "live_url": {{ project.live_url | default: "" | jsonify }},
     "github_url": {{ project.github_url | default: "" | jsonify }},
     "featured": {{ project.featured | default: false }},
