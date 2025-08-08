@@ -1,9 +1,7 @@
 /* Moved from blog/categories.html inline <style> */
 
 .categories-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
+  @extend .cards-grid;
   margin-top: 2rem;
 }
 

@@ -32,7 +32,7 @@
 #search-input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px var(--primary-color) 20;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 #search-button,
@@ -86,25 +86,13 @@
 }
 
 .projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
+  @extend .cards-grid !optional;
   margin-bottom: 3rem;
 }
 
-.project-card {
-  background: var(--bg-secondary);
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
+/* unified in components/_cards.scss */
 
-.project-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-lg);
-}
+/* unified hover in components/_cards.scss */
 
 .project-image {
   width: 100%;

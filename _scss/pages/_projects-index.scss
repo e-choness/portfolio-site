@@ -5,11 +5,6 @@
   margin-top: 80px;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
 .page-title {
   font-size: 3rem;
   font-weight: 700;
@@ -55,23 +50,7 @@
 }
 
 .projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
-}
-
-.project-card {
-  background: var(--bg-secondary);
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-  transition: all 0.3s ease;
-  cursor: pointer;
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-  }
+  @extend .cards-grid !optional;
 }
 
 .project-image {

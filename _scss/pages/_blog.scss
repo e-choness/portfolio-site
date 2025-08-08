@@ -5,12 +5,6 @@
   min-height: 100vh;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-}
-
 /* Blog Header */
 .blog-header {
   text-align: center;
@@ -38,9 +32,7 @@
 
 /* Blog Grid */
 .blog-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
+  @extend .cards-grid !optional;
   padding: 3rem 0;
 }
 

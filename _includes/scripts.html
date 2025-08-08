@@ -1,16 +1,42 @@
 <!-- Back to Top Button -->
-    <button class="back-to-top" id="backToTop" aria-label="Back to top">
-      <i class="fas fa-arrow-up"></i>
-    </button>
+<button class="back-to-top" id="backToTop" aria-label="Back to top">
+  <i class="fas fa-arrow-up"></i>
+</button>
 
-    <!-- JavaScript Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+<!-- JavaScript Libraries -->
+<script
+  defer
+  src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"
+></script>
+<script
+  defer
+  src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"
+></script>
+{% if page.layout == 'post' %}
+<script
+  defer
+  src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"
+></script>
+<script
+  defer
+  src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"
+></script>
+{% endif %}
 
-    <!-- Typed.js Data -->
-    <script>
-      window.typedStrings = {{ site.data.profile.typed_strings | jsonify }};
-    </script>
+<!-- Typed.js Data -->
+<script type="application/json" id="typed-strings">
+  {{ site.data.profile.typed_strings | jsonify }}
+</script>
+<script>
+  (function () {
+    try {
+      var el = document.getElementById("typed-strings");
+      window.typedStrings = el ? JSON.parse(el.textContent) : [];
+    } catch (e) {
+      window.typedStrings = [];
+    }
+  })();
+</script>
 
-    <!-- Custom JavaScript -->
-    <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
+<!-- Custom JavaScript -->
+<script defer src="{{ '/assets/js/main.js' | relative_url }}"></script>

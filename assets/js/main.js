@@ -19,13 +19,15 @@ const typedStrings =
         "Creative Thinker",
       ];
 
-const typed = new Typed("#typed-text", {
-  strings: typedStrings,
-  typeSpeed: 100,
-  backSpeed: 60,
-  backDelay: 2000,
-  loop: true,
-});
+if (document.querySelector("#typed-text") && typeof Typed !== "undefined") {
+  const typed = new Typed("#typed-text", {
+    strings: typedStrings,
+    typeSpeed: 100,
+    backSpeed: 60,
+    backDelay: 2000,
+    loop: true,
+  });
+}
 
 // Theme Toggle
 const themeToggle = document.querySelector(".theme-toggle");
@@ -70,23 +72,37 @@ const navLinks = document.querySelectorAll(".nav-link");
 
 navLinks.forEach((link) => {
   link.addEventListener("click", (e) => {
-    e.preventDefault();
-    const targetId = link.getAttribute("href");
-    const targetSection = document.querySelector(targetId);
+    const href = link.getAttribute("href") || "";
+    const url = new URL(href, window.location.origin);
 
-    if (targetSection) {
-      const offsetTop = targetSection.offsetTop - 80;
-      window.scrollTo({
-        top: offsetTop,
-        behavior: "smooth",
-      });
+    const isSamePageHash =
+      url.origin === window.location.origin &&
+      url.pathname === window.location.pathname &&
+      url.hash &&
+      url.hash.startsWith("#");
+
+    // Only intercept same-page hash links for smooth scroll; otherwise let browser navigate
+    if (href.startsWith("#") || isSamePageHash) {
+      e.preventDefault();
+      const targetId = href.startsWith("#") ? href : url.hash;
+      const targetSection = document.querySelector(targetId);
+
+      if (targetSection) {
+        const offsetTop = targetSection.offsetTop - 80;
+        window.scrollTo({
+          top: offsetTop,
+          behavior: "smooth",
+        });
+      }
+
+      // Close mobile menu if open
+      navMenu.classList.remove("active");
+      const mobileIcon = mobileMenuToggle.querySelector("i");
+      if (mobileIcon) {
+        mobileIcon.classList.add("fa-bars");
+        mobileIcon.classList.remove("fa-times");
+      }
     }
-
-    // Close mobile menu if open
-    navMenu.classList.remove("active");
-    const mobileIcon = mobileMenuToggle.querySelector("i");
-    mobileIcon.classList.add("fa-bars");
-    mobileIcon.classList.remove("fa-times");
   });
 });
 
@@ -343,6 +359,7 @@ backToTopButton.addEventListener("click", () => {
 // Particle Animation (Simple)
 const createParticles = () => {
   const particlesContainer = document.querySelector(".particles-container");
+  if (!particlesContainer) return;
   const particleCount = 50;
 
   for (let i = 0; i < particleCount; i++) {

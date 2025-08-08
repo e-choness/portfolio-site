@@ -1,116 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      {% if page.title %}{{ page.title }} | {% endif %}{{ site.title }} Blog
-    </title>
-
-    <!-- SEO Meta Tags -->
-    <meta
-      name="description"
-      content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}"
-    />
-    <meta
-      name="keywords"
-      content="{% if page.tags %}{{ page.tags | join: ', ' }}{% endif %}"
-    />
-
-    <!-- Open Graph Meta Tags -->
-    <meta
-      property="og:title"
-      content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}"
-    />
-    <meta
-      property="og:description"
-      content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}"
-    />
-    <meta
-      property="og:type"
-      content="{% if page.layout == 'post' %}article{% else %}website{% endif %}"
-    />
-    <meta property="og:url" content="{{ page.url | absolute_url }}" />
-    {% if page.image %}
-    <meta property="og:image" content="{{ page.image | absolute_url }}" />
-    {% endif %}
-
-    <!-- CSS Libraries -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
-      rel="stylesheet"
-    />
-    <!-- Custom CSS -->
-    <link
-      href="{{ '/assets/css/style.css' | relative_url }}"
-      rel="stylesheet"
-    />
-
-    <!-- styles moved to SCSS: _scss/pages/_blog.scss -->
-  </head>
+  {%- include head.html -%}
   <body>
-    <!-- Header -->
-    <header class="header">
-      <nav class="nav-container">
-        <a href="{{ '/' | relative_url }}" class="logo"
-          >{{ site.data.profile.name }}</a
-        >
-
-        <ul class="nav-menu">
-          <li><a href="{{ '/#home' | relative_url }}">Home</a></li>
-          <li><a href="{{ '/#about' | relative_url }}">About</a></li>
-          <li><a href="{{ '/#experience' | relative_url }}">Experience</a></li>
-          <li><a href="{{ '/#projects' | relative_url }}">Projects</a></li>
-          <li><a href="{{ '/#skills' | relative_url }}">Skills</a></li>
-          <li>
-            <a href="{{ '/blog/' | relative_url }}" class="active">Blog</a>
-          </li>
-          <li><a href="{{ '/#contact' | relative_url }}">Contact</a></li>
-        </ul>
-
-        <button class="theme-toggle" aria-label="Toggle theme">
-          <i class="fas fa-moon"></i>
-        </button>
-      </nav>
-    </header>
-
-    <!-- Main Content -->
+    {%- include header.html -%}
     <main class="main-content">
       {% unless page.url == '/blog/' or page.url == '/blog/index.html' %} {%
       include blog-nav.html %} {% endunless %} {{ content }}
     </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-      <p>&copy; 2025 Your Name. All rights reserved.</p>
-    </footer>
-
-    <!-- JavaScript Libraries -->
-    <script
-      defer
-      src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"
-    ></script>
-    <script
-      defer
-      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"
-    ></script>
-    <script
-      defer
-      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"
-    ></script>
-    <!-- Centralized site scripts -->
-    <script defer src="{{ '/assets/js/main.js' | relative_url }}"></script>
+    {%- include footer.html -%} {%- include scripts.html -%}
   </body>
 </html>

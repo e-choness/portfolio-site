@@ -17,3 +17,29 @@
 .is-hidden {
   display: none;
 }
+
+// Global container utility (DRY)
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+// Unified cards grid (3 per row, responsive)
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
