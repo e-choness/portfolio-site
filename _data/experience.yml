@@ -1,3 +1,18 @@
+- position: "Senior A.I. Developer"
+  company: "Impact Assessment Agency of Canada / Agence d'évaluation d'impact du Canada"
+  location: "Edmonton, Alberta (Remote)"
+  duration: "Nov. 2025 – Present"
+  logo: "/assets/images/companies/iaac_logo.jpg"
+  description: |
+    Impact Assessment Agency of Canada conducts federal impact assessments of major projects, like mines, ports, and dams, in federal jurisdiction
+  responsibilities:
+    - "Build A.I. enabled public services and internal tools to improve efficiency and accessibility of impact assessments"
+  technologies:
+    - C#
+    - Python
+    - Azure AI Foundry
+    - .NET Framework
+
 - position: "Online Programmer"
   company: "Brass Lion Entertainment"
   location: "Edmonton, Alberta (Remote)"
