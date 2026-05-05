@@ -2,7 +2,10 @@
 <html lang="en" data-theme="light">
   {%- include head.html -%}
   <body>
-    {%- include header.html -%} {% include project-nav.html %}
+    {%- include header.html -%}
+    {% unless page.url == '/projects/' or page.url == '/projects/index.html' %}
+      {% include project-nav.html %}
+    {% endunless %}
 
     {% unless page.header == false %}
     <!-- Project Header -->

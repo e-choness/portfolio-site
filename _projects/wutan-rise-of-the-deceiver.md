@@ -1,14 +1,13 @@
 ---
 layout: project
 title: "Wu-Tang: Rise of the Deceiver"
-description: "An online co-op Action RPG where players team up with the legendary Wu-Tang Clan. Built with Unreal Engine 5, C++, and Node.js, this game features a robust 3-player multiplayer system set in a unique Afro-surrealist world."
+description: "An online co-op Action RPG where players team up with the legendary Wu-Tang Clan. Built with Unreal Engine 5, C++, and C#. This game features a robust 3-player multiplayer system set in a unique Afro-surrealist world."
 image: "assets/images/projects/wutan-rise-of-the-deceiver.jpg"
 technologies:
   - Unreal Engine 5
   - C++
   - C#
   - .Net Framework
-  - Node.js
 categories:
   - Game Development
   - Network Programming
@@ -44,7 +43,7 @@ order: 3
 - **Description:** Established and maintained systems for monitoring game performance, identifying and resolving real-time issues, and ensuring continuous service availability. This included proactive error detection, patch deployment strategies, and managing live game environments to provide a stable and engaging player experience.
 - **Key Responsibilities:** Incident response, performance monitoring, deployment pipeline management, and data analysis for live service improvements.
 
-3. **Game Tools Development**
+**3. Game Tools Development**
 
 - **Role:** Tools Engineer
 - **Description:** Developed essential in-house tools to streamline various aspects of game development, content creation, and live service management. These tools significantly improved iteration speed, reduced manual effort, and enhanced team productivity.
