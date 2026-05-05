@@ -898,27 +898,27 @@ window.addEventListener("load", () => {
         ).join(" ")}">
           <img src="${project.image}" alt="${
             project.title
-          }" class="project-image">
-          <div class="project-content">
-            <h3 class="project-title">${project.title}</h3>
-            <p class="project-description">${project.description}</p>
-            <div class="project-tags">
+          }" class="project-card-image">
+          <div class="project-card-content">
+            <h3 class="project-card-title">${project.title}</h3>
+            <p class="project-card-description">${project.description ? project.description.substring(0, 150) + (project.description.length > 150 ? '...' : '') : ''}</p>
+            <div class="project-card-tags">
               ${(project.technologies || [])
-                .map((tech) => `<span class="project-tag">${tech}</span>`)
+                .map((tech) => `<span class="project-card-tag">${tech}</span>`)
                 .join("")}
             </div>
-            <div class="project-links">
+            <div class="project-card-links">
               <a href="${
                 project.url
-              }" class="project-link"><i class="fas fa-info-circle"></i> View Details</a>
+              }" class="project-card-link"><i class="fas fa-info-circle"></i> View Details</a>
               ${
                 project.live_url
-                  ? `<a href="${project.live_url}" class="project-link" target="_blank"><i class="fas fa-external-link-alt"></i> Live Demo</a>`
+                  ? `<a href="${project.live_url}" class="project-card-link" target="_blank"><i class="fas fa-external-link-alt"></i> Live Demo</a>`
                   : ""
               }
               ${
                 project.github_url
-                  ? `<a href="${project.github_url}" class="project-link" target="_blank"><i class="fab fa-github"></i> GitHub</a>`
+                  ? `<a href="${project.github_url}" class="project-card-link" target="_blank"><i class="fab fa-github"></i> GitHub</a>`
                   : ""
               }
             </div>
