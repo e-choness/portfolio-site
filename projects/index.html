@@ -47,7 +47,7 @@ wide: true
         <h3 class="project-card-title">
           <a href="{{ project.url | relative_url }}">{{ project.title }}</a>
         </h3>
-        <p class="project-card-description">{{ project.description | truncate: 150 }}</p>
+        <p class="project-card-description">{{ project.description }}</p>
         <div class="project-card-tags">
           {% for technology in project.technologies %}
           <span class="project-card-tag">{{ technology }}</span>

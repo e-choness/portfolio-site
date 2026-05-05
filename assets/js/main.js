@@ -900,8 +900,12 @@ window.addEventListener("load", () => {
             project.title
           }" class="project-card-image">
           <div class="project-card-content">
-            <h3 class="project-card-title">${project.title}</h3>
-            <p class="project-card-description">${project.description ? project.description.substring(0, 150) + (project.description.length > 150 ? '...' : '') : ''}</p>
+            <h3 class="project-card-title">${
+              project.title
+            }</h3>
+            <p class="project-card-description">${
+              project.description || ""
+            }</p>
             <div class="project-card-tags">
               ${(project.technologies || [])
                 .map((tech) => `<span class="project-card-tag">${tech}</span>`)
