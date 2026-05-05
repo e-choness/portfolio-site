@@ -79,7 +79,8 @@
   border-bottom: 1px solid var(--border-color);
   padding: 1rem 0;
   margin-bottom: 2rem;
-  /* Global main padding now offsets fixed header */
+  /* Offset for fixed header - matches blog's behavior where nav sits inside padded main */
+  padding-top: calc(var(--header-height) + 1rem);
   margin-top: 0;
 }
 

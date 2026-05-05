@@ -2,66 +2,67 @@
 <html lang="en" data-theme="light">
   {%- include head.html -%}
   <body>
-    {%- include header.html -%} {% include project-nav.html %}
+    {%- include header.html -%}
+    {% unless page.url == '/projects/' or page.url == '/projects/index.html' %}
+      {% include project-nav.html %}
+    {% endunless %}
 
     {% unless page.header == false %}
     <!-- Project Header -->
     <header class="project-header">
-      <h1 class="project-title">{{ page.title }}</h1>
-      <p class="project-subtitle">{{ page.description }}</p>
+      <div class="container">
+        <h1 class="project-title">{{ page.title }}</h1>
+        <p class="project-subtitle">{{ page.description }}</p>
 
-      <div class="project-meta">
-        {% if page.technologies %}
-        <div class="meta-section">
-          <strong>Technologies:</strong>
-          <div class="tags-container">
-            {% for tech in page.technologies %}
-            <span class="project-tag">{{ tech }}</span>
-            {% endfor %}
-          </div>
+        <!-- Primary Action Buttons (Live Demo & GitHub) -->
+        <div class="project-actions">
+          {% if page.live_url %}
+          <a href="{{ page.live_url }}" class="project-action-link" target="_blank">
+            <i class="fas fa-external-link-alt"></i> Live Demo
+          </a>
+          {% endif %} {% if page.github_url %}
+          <a href="{{ page.github_url }}" class="project-action-link" target="_blank">
+            <i class="fab fa-github"></i> GitHub
+          </a>
+          {% endif %}
         </div>
-        {% endif %} {% if page.categories %}
-        <div class="meta-section">
-          <strong>Categories:</strong>
-          <div class="tags-container">
-            {% for category in page.categories %}
-            <span class="project-tag">{{ category | capitalize }}</span>
-            {% endfor %}
-          </div>
-        </div>
-        {% endif %}
       </div>
+    </header>
+    {% endunless %}
 
-      <div class="project-links">
-        {% if page.live_url %}
-        <a href="{{ page.live_url }}" class="project-link" target="_blank">
-          <i class="fas fa-external-link-alt"></i> Live Demo
-        </a>
-        {% endif %} {% if page.github_url %}
-        <a href="{{ page.github_url }}" class="project-link" target="_blank">
-          <i class="fab fa-github"></i> GitHub
-        </a>
-        {% endif %}
-        <a
-          href="{{ '/#projects' | relative_url }}"
-          class="project-link secondary"
-        >
-          <i class="fas fa-arrow-left"></i> Back to Projects
-        </a>
-      </div>
-     </header>
-     {% endunless %}
+     <!-- Project Content -->
+     <main class="{% if page.wide %}projects-listing{% else %}project-content{% endif %}">
+       {% if page.image %}
+       <img
+         src="{{ page.image | relative_url }}"
+         alt="{{ page.title }}"
+         class="project-image"
+       />
+       {% endif %}
+       {{ content }}
 
-    <!-- Project Content -->
-    <main class="{% if page.wide %}projects-listing{% else %}project-content{% endif %}">
-      {% if page.image %}
-      <img
-        src="{{ page.image | relative_url }}"
-        alt="{{ page.title }}"
-        class="project-image"
-      />
-      {% endif %} {{ content }}
-    </main>
+       {% unless page.header == false %}
+       <!-- Project Footer: Tags (left) + Back link (right) -->
+       <div class="project-footer">
+         <div class="project-footer-tags">
+           {% if page.technologies %}
+             {% for tech in page.technologies %}
+               <span class="tag">{{ tech }}</span>
+             {% endfor %}
+           {% endif %}
+           {% if page.categories %}
+             {% for category in page.categories %}
+               <span class="tag">{{ category | capitalize }}</span>
+             {% endfor %}
+           {% endif %}
+         </div>
+
+         <a href="{{ '/projects/' | relative_url }}" class="back-to-projects">
+           <i class="fas fa-arrow-left"></i> Back to Projects
+         </a>
+       </div>
+       {% endunless %}
+     </main>
 
     {%- include footer.html -%} {%- include scripts.html -%}
   </body>

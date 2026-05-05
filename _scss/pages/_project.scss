@@ -1,12 +1,13 @@
-/* Extracted from _layouts/project.html inline <style> (project-specific rules) */
+/* Individual Project page styles – aligned with blog post patterns */
 
+/* Header */
 .project-header {
   background: linear-gradient(
     135deg,
     var(--bg-primary) 0%,
     var(--bg-secondary) 100%
   );
-  padding: 4rem 2rem;
+  padding: 3rem 0;
   text-align: center;
 }
 
@@ -15,88 +16,72 @@
   font-weight: 700;
   margin-bottom: 1rem;
   color: var(--text-primary);
+  line-height: 1.2;
 }
 
 .project-subtitle {
   font-size: 1.2rem;
   color: var(--text-secondary);
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  line-height: 1.6;
 }
 
-.project-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.meta-section {
-  text-align: center;
-}
-
-.meta-section strong {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.tags-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  justify-content: center;
-}
-
-.project-links {
+/* Compact action buttons (Live Demo + GitHub) */
+.project-actions {
   display: flex;
   justify-content: center;
   gap: 1rem;
+  margin-top: 1.5rem;
   flex-wrap: wrap;
 }
 
-.project-link {
+.project-action-link {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   background: var(--primary-color);
   color: white;
   text-decoration: none;
   border-radius: 50px;
   font-weight: 500;
+  font-size: 0.9rem;
   transition: all 0.3s ease;
-
-  &.secondary {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    border: 2px solid var(--border-color);
-  }
+  border: 2px solid var(--primary-color);
 
   &:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
+    background: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: white;
+  }
+
+  i {
+    font-size: 0.85rem;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover i {
+    transform: translateX(2px);
   }
 }
 
+/* Project Content (article body) */
 .project-content {
   max-width: 800px;
   margin: 0 auto;
-  padding: 4rem 2rem;
+  padding: 3rem 2rem;
 
   h2 {
     font-size: 2rem;
     font-weight: 600;
     margin: 2rem 0 1rem;
     color: var(--text-primary);
+    line-height: 1.3;
   }
 
   h3 {
@@ -104,6 +89,7 @@
     font-weight: 600;
     margin: 1.5rem 0 0.75rem;
     color: var(--text-primary);
+    line-height: 1.4;
   }
 
   p {
@@ -113,7 +99,7 @@
     margin-bottom: 1rem;
   }
 
-  ul {
+  ul, ol {
     margin: 1rem 0;
     padding-left: 2rem;
   }
@@ -123,6 +109,10 @@
     line-height: 1.8;
     color: var(--text-secondary);
     margin-bottom: 0.5rem;
+  }
+
+  strong {
+    color: var(--text-primary);
   }
 }
 
@@ -136,28 +126,108 @@
   box-shadow: var(--shadow-lg);
 }
 
-.project-tag {
-  display: inline-block;
-  background: var(--primary-color);
-  color: white;
-  padding: 0.2rem 0.6rem;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 500;
+/* Project Footer – tags (left) + back link (right) */
+.project-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 0;
+  margin-top: 3rem;
+  border-top: 1px solid var(--border-color);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
 }
 
+.project-footer-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.back-to-projects {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    color: var(--accent-color);
+  }
+
+  i {
+    transition: transform 0.3s ease;
+    font-size: 0.9rem;
+  }
+
+  &:hover i {
+    transform: translateX(3px);
+  }
+}
+
+/* Muted tag styling – reuse .tag from blog */
+.project-footer-tags .tag {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+
+  &:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+  }
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
+  .project-header {
+    padding: 2rem 1rem;
+  }
+
   .project-title {
     font-size: 2rem;
   }
 
-  .project-meta {
-    flex-direction: column;
-    gap: 1rem;
+  .project-subtitle {
+    font-size: 1.1rem;
   }
 
-  .project-links {
+  .project-actions {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
+  }
+
+  .project-action-link {
+    justify-content: center;
+  }
+
+  .project-content {
+    padding: 2rem 1rem;
+  }
+
+  .project-footer {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  .back-to-projects {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
   }
 }
