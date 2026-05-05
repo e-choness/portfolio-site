@@ -4,39 +4,34 @@ author: "Echo Yin"
 
 # Project categories
 categories:
-  - name: "React"
-    slug: "react"
-    description: "Modern React applications with hooks, context, and advanced patterns"
+  - name: "Machine Learning Frameworks"
+    slug: "ml-frameworks"
+    description: "Projects built with PyTorch, TensorFlow, Hugging Face, and scikit-learn"
     color: "#61dafb"
     
-  - name: "Node.js"
-    slug: "nodejs"
-    description: "Server-side JavaScript applications and APIs"
+  - name: "AI Specializations"
+    slug: "ai-specializations"
+    description: "Natural language processing, computer vision, and LLM applications"
     color: "#339933"
     
-  - name: "Fullstack"
-    slug: "fullstack"
-    description: "Complete applications with frontend and backend integration"
-    color: "#2563eb"
+  - name: "AI Infrastructure"
+    slug: "ai-infrastructure"
+    description: "RAG systems, MCP implementations, vector databases, and model deployment"
+    color: "#f5a623"
     
-  - name: "Frontend"
-    slug: "frontend"
-    description: "User interface development and frontend architecture"
-    color: "#ff6b6b"
-    
-  - name: "Backend"
-    slug: "backend"
-    description: "Server-side development, APIs, and database design"
+  - name: "MLOps & Cloud"
+    slug: "mlops-cloud"
+    description: "Production ML systems, Docker/Kubernetes, and cloud AI services"
     color: "#68217a"
 
 # Featured technologies
 featured_technologies:
-  - "React"
-  - "Node.js"
-  - "MongoDB"
-  - "Express.js"
-  - "JavaScript"
-  - "CSS3"
+  - "RAG Systems"
+  - "MCP"
+  - "LLMs"
+  - "Python"
+  - "PyTorch"
+  - "MLOps"
 
 # Project settings
 projects_per_page: 6

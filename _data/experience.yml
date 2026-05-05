@@ -16,12 +16,12 @@
     - RAG,
     - MCP
     - Azure AI Foundry
-    - .NET Framework
+    - Microsoft Power Apps
 
 - position: "Online Programmer"
   company: "Brass Lion Entertainment"
   location: "Edmonton, Alberta (Remote)"
-  duration: "Jul. 2024 – Apr. 2025"
+  duration: "Jul. 2023 – Apr. 2025"
   logo: "/assets/images/companies/brasslionen_logo.jpg"
   description: |
     Brass Lion Entertainment is a game development studio dedicated to creating original fictional universes, characters, stories, and themes.
@@ -44,7 +44,7 @@
 - position: "Back End Engineer"
   company: "Froglet Games"
   location: "Edmonton, Alberta (Remote)"
-  duration: "Sep. 2023 – Jun. 2024"
+  duration: "Apr. 2023 – Jun. 2023"
   logo: "/assets/images/companies/froglet_logo.jpg"
   description: |
     Froglet Games is an emerging game development company known for creating engaging and innovative gaming experiences.

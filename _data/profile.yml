@@ -1,18 +1,18 @@
 # Personal Information
 name: "Echo Yin"
-title: "Senior A.I. Developer"
+title: "Senior A.I. Engineer"
 email: "echoybl1123@gmail.com"
 location: "Edmonton, AB, Canada"
-tagline: "Passionate about creating innovative web solutions"
+tagline: "Passionate about creating innovative AI solutions"
 
 # About section
 about:
   description: |
-    I'm a passionate full-stack developer with over 5 years of experience creating digital solutions that make a difference. 
-    My journey in technology began with curiosity and has evolved into a love for crafting elegant, efficient code that solves real-world problems.
+    I'm a senior AI engineer with over 7 years of experience building intelligent systems and machine learning solutions that transform how businesses operate. 
+    My journey in AI began with fascination for neural networks and has evolved into expertise in designing scalable, production-ready AI systems.
 
-    I specialize in modern web technologies and have a strong background in both frontend and backend development. 
-    When I'm not coding, you can find me exploring new technologies, contributing to open-source projects, or sharing knowledge with the developer community.
+    I specialize in deploying machine learning models, with deep expertise in applied AI techniques like RAG, MCP and toolings. 
+     When I'm not tackling models, you can find me researching cutting-edge AI techniques, contributing to open-source ML projects, or mentoring aspiring engineers.
 
   image: assets/images/profile/portrait-small.jpg
   resume_url: assets/resume.pdf
@@ -36,7 +36,7 @@ social:
 
 # Typing animation texts
 typed_strings:
-  - "A.I. Engineer"
+  - "Senior A.I. Engineer"
   - "Problem Solver"
   - "Tech Enthusiast"
   - "Creative Thinker"
