@@ -7,6 +7,9 @@
   box-shadow: var(--shadow);
   transition: all 0.3s ease;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 
   &:hover {
     transform: translateY(-6px);
@@ -21,6 +24,7 @@
   object-fit: cover;
   aspect-ratio: 16 / 9;
   transition: transform 0.3s ease;
+  flex-shrink: 0;
 
   &:hover {
     transform: scale(1.05);
@@ -32,3 +36,173 @@
 .project-card:hover .project-card-image {
   transform: scale(1.05);
 }
+
+// Card body - consistent flex column layout
+.blog-content,
+.project-card-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 1.5rem;
+}
+
+// Meta section (date + category) - fixed height
+.blog-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.blog-date {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.blog-category {
+  background: var(--primary-color);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+// Card title - fixed height via line clamp
+.blog-card-title,
+.project-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
+}
+
+// Description - variable height with line clamp
+.blog-excerpt,
+.project-card-description {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+}
+
+// Tags - fixed height, flex-shrink
+.project-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+  flex-shrink: 0;
+  min-height: 24px; // reserve space for single row
+}
+
+.project-card-tag {
+  background: var(--primary-color);
+  color: white;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+// Links - anchored to bottom
+.project-card-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+.project-card-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: color 0.3s ease;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+
+  i {
+    transition: transform 0.3s ease;
+    font-size: 0.8rem;
+  }
+
+  &:hover {
+    color: var(--accent-color);
+
+    i {
+      transform: translateX(3px);
+    }
+  }
+
+  &.secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+
+    &:hover {
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+  }
+}
+
+.blog-read-more {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: color 0.3s ease;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  margin-top: auto;
+
+  i {
+    transition: transform 0.3s ease;
+    font-size: 0.8rem;
+  }
+
+  &:hover {
+    color: var(--accent-color);
+
+    i {
+      transform: translateX(3px);
+    }
+  }
+}
+
