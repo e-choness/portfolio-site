@@ -1,47 +1,40 @@
 title: "Blog"
-description: "Sharing insights on web development, technology trends, and lessons learned from building modern applications."
-author: "Your Name"
+description: "Sharing insights on AI engineering, machine learning, and building production-ready LLM applications."
+author: "Echo Yin"
 
 # Blog categories
 categories:
-  - name: "JavaScript"
-    slug: "javascript"
-    description: "Modern JavaScript techniques, frameworks, and best practices"
-    color: "#f7df1e"
-    
-  - name: "Backend"
-    slug: "backend"
-    description: "Server-side development, APIs, and database design"
-    color: "#68217a"
-    
-  - name: "CSS"
-    slug: "css"
-    description: "Styling, layouts, and modern CSS techniques"
-    color: "#1572b6"
-    
-  - name: "React"
-    slug: "react"
-    description: "React ecosystem, hooks, and component patterns"
+  - name: "Machine Learning Frameworks"
+    slug: "ml-frameworks"
+    description: "PyTorch, TensorFlow, scikit-learn, and Hugging Face Transformers"
     color: "#61dafb"
     
-  - name: "Node.js"
-    slug: "nodejs"
-    description: "Server-side JavaScript and Node.js development"
+  - name: "AI Specializations"
+    slug: "ai-specializations"
+    description: "Natural language processing, computer vision, and large language models"
     color: "#339933"
     
-  - name: "Frontend"
-    slug: "frontend"
-    description: "User interface development and frontend architecture"
-    color: "#ff6b6b"
+  - name: "AI Infrastructure"
+    slug: "ai-infrastructure"
+    description: "RAG systems, MCP, vector databases, and model fine-tuning"
+    color: "#f5a623"
+    
+  - name: "MLOps & Cloud"
+    slug: "mlops-cloud"
+    description: "Production ML deployment, Docker/Kubernetes, and cloud AI services"
+    color: "#68217a"
 
 # Featured topics
 featured_topics:
-  - "JavaScript Frameworks"
-  - "API Development"
-  - "CSS Layout"
-  - "Performance Optimization"
-  - "Testing Strategies"
-  - "Developer Tools"
+  - "Large Language Models"
+  - "RAG Systems"
+  - "PyTorch/TensorFlow"
+  - "MLOps Best Practices"
+  - "AI Model Deployment"
+  - "Vector Databases"
+  - "Natural Language Processing"
+  - "Computer Vision"
+  - "Model Fine-Tuning"
 
 # Blog settings
 posts_per_page: 6

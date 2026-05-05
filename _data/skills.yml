@@ -1,70 +1,95 @@
 categories:
-  - name: "Frontend Development"
+  - name: "Machine Learning Frameworks"
     skills:
-      - name: "TypeScript"
-        level: 80
-        years: 4
-        icon: "fas fa-code"
-      - name: "React"
-        level: 90
-        years: 4
-        icon: "fab fa-react"
-      - name: "CSS3"
-        level: 85
-        years: 4
-        icon: "fab fa-css3-alt"
-      - name: "HTML5"
-        level: 80
-        years: 5
-        icon: "fab fa-html5"
-      - name: "Vue.js"
-        level: 75
-        years: 2
-        icon: "fab fa-vuejs"
-
-  - name: "Backend Development"
-    skills:
-      - name: "Node.js"
-        level: 70
-        years: 4
-        icon: "fab fa-node-js"
-      - name: "Python"
-        level: 90
-        years: 3
-        icon: "fab fa-python"
-      - name: ".NET Framework"
+      - name: "PyTorch"
         level: 95
-        years: 4
-        icon: "fab fa-microsoft"
-      - name: "REST APIs"
+        years: 5
+        icon: "fas fa-brain"
+      - name: "TensorFlow/Keras"
         level: 90
-        years: 4
-        icon: "fas fa-exchange-alt"
-      - name: "GraphQL"
-        level: 70
-        years: 2
-        icon: "fas fa-project-diagram"
-
-  - name: "Database & Tools"
-    skills:
-      - name: "MongoDB"
-        level: 82
-        years: 3
-        icon: "fas fa-database"
-      - name: "Microsoft SQL Server"
-        level: 78
-        years: 3
-        icon: "fas fa-server"
-      - name: "Git"
+        years: 5
+        icon: "fas fa-network-wired"
+      - name: "Scikit-learn"
         level: 92
         years: 5
-        icon: "fab fa-git-alt"
-      - name: "Azure"
+        icon: "fas fa-chart-line"
+      - name: "Hugging Face Transformers"
+        level: 93
+        years: 3
+        icon: "fas fa-robot"
+
+  - name: "Programming Languages"
+    skills:
+      - name: "Python"
+        level: 98
+        years: 7
+        icon: "fab fa-python"
+      - name: "C++"
+        level: 88
+        years: 5
+        icon: "fas fa-code"
+      - name: "C#"
         level: 85
         years: 5
+        icon: "fas fa-code"
+      - name: "SQL"
+        level: 85
+        years: 5
+        icon: "fas fa-database"
+
+  - name: "AI Specializations"
+    skills:
+      - name: "Natural Language Processing"
+        level: 90
+        years: 4
+        icon: "fas fa-comments"
+      - name: "Computer Vision"
+        level: 85
+        years: 3
+        icon: "fas fa-eye"
+      - name: "Large Language Models"
+        level: 92
+        years: 3
+        icon: "fas fa-brain"
+      - name: "Deep Learning"
+        level: 95
+        years: 5
+        icon: "fas fa-network-wired"
+
+  - name: "MLOps & Cloud"
+    skills:
+      - name: "Docker/Kubernetes"
+        level: 88
+        years: 3
+        icon: "fab fa-docker"
+      - name: "AWS SageMaker"
+        level: 82
+        years: 3
+        icon: "fab fa-aws"
+      - name: "Azure ML"
+        level: 85
+        years: 4
         icon: "fab fa-microsoft"
-      - name: "Google Cloud Platform"
-        level: 70
+      - name: "MLflow"
+        level: 80
         years: 2
-        icon: "fab fa-google"
-      
+        icon: "fas fa-flask"
+
+  - name: "AI Infrastructure"
+    skills:
+      - name: "RAG Systems"
+        level: 88
+        years: 3
+        icon: "fas fa-database"
+      - name: "MCP (Model Context Protocol)"
+        level: 85
+        years: 2
+        icon: "fas fa-plug"
+      - name: "Vector Databases"
+        level: 87
+        years: 3
+        icon: "fas fa-brain"
+      - name: "Model Fine-tuning"
+        level: 90
+        years: 3
+        icon: "fas fa-sliders-h"
