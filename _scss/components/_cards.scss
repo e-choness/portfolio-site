@@ -15,7 +15,7 @@
 }
 
 .blog-image,
-.project-image {
+.project-card-image {
   width: 100%;
   height: 200px;
   object-fit: cover;
@@ -29,6 +29,6 @@
 }
 
 .blog-card:hover .blog-image,
-.project-card:hover .project-image {
+.project-card:hover .project-card-image {
   transform: scale(1.05);
 }
