@@ -2,7 +2,7 @@
 layout: project
 title: "EcoManage"
 description: "A full-stack renewable energy and resource management dashboard to monitor, analyze, and optimize consumption. Built with React, Node.js, and TypeScript."
-image: "assets/images/projects/ecomanage-landing.gif"
+image: "assets/images/projects/eco-manage.jpg"
 technologies:
   - Typescript
   - React
@@ -17,7 +17,6 @@ github_url: "https://github.com/e-choness/eco-manage"
 featured: true
 order: 1
 ---
-
 ## Project Overview
 
 EcoManage is a full-stack web application designed to help users monitor, analyze, and optimize their resource consumption. It provides a comprehensive dashboard for tracking key metrics related to energy, finance, and environmental impact, enabling informed decision-making for better sustainability and cost-efficiency.
