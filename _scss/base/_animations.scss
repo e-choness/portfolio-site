@@ -1,20 +1,33 @@
 
-// Starfield Animations
+// Enhanced Starfield Animations
 @keyframes starFloat {
-  0% {
-    transform: translate(0, 0);
-  }
-  100% {
-    transform: translate(var(--drift-x), var(--drift-y));
-  }
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(var(--drift-x), var(--drift-y)) scale(1.02); }
 }
 
 @keyframes starTwinkle {
   0%, 100% {
-    opacity: var(--twinkle-base, 0.6);
+    opacity: var(--twinkle-base);
+    filter: brightness(1) blur(var(--blur, 0.5px));
   }
   50% {
-    opacity: calc(var(--twinkle-base, 0.6) * 0.3);
+    opacity: calc(var(--twinkle-base) * 0.35);
+    filter: brightness(0.55) blur(calc(var(--blur, 0.5px) + 0.25px));
+  }
+}
+
+@keyframes starPulse {
+  0%, 100% { 
+    transform: translate(var(--drift-x), var(--drift-y)) scale(1);
+    filter: brightness(1) blur(var(--blur, 0.5px));
+  }
+  33% { 
+    transform: translate(calc(var(--drift-x) * 0.7), calc(var(--drift-y) * 0.7)) scale(var(--pulse-scale, 1.15));
+    filter: brightness(1.5) blur(calc(var(--blur, 0.5px) * 0.7));
+  }
+  66% { 
+    transform: translate(calc(var(--drift-x) * 1.3), calc(var(--drift-y) * 1.3)) scale(calc(1 / var(--pulse-scale, 1.15)));
+    filter: brightness(0.65) blur(calc(var(--blur, 0.5px) * 1.3));
   }
 }
 

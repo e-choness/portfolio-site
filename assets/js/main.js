@@ -382,16 +382,21 @@ backToTopButton.addEventListener("click", () => {
   });
 });
 
-// Particle Animation - Starfield Effect
+// Enhanced Starfield - High-Visibility Particle System
 const createStarfield = () => {
   const container = document.querySelector(".particles-container");
   if (!container) return;
 
-  // Create stars with varying depth (parallax layers)
+  // Multi-layered depth system with optimized visibility
   const layers = [
-    { count: 40, sizeMin: 1, sizeMax: 2, speedMin: 15, speedMax: 30, opacity: 0.3 },  // far
-    { count: 30, sizeMin: 2, sizeMax: 3, speedMin: 10, speedMax: 20, opacity: 0.5 },  // mid
-    { count: 20, sizeMin: 3, sizeMax: 4, speedMin: 5, speedMax: 12, opacity: 0.8 },   // near
+    // Far: tiny, soft, slow-moving background layer
+    { count: 30, sizeMin: 1, sizeMax: 2, opacityBase: 0.2, blur: 1.2, speedMin: 25, speedMax: 45, colorHue: 220, colorSat: 20 },
+    // Mid-range: main visible stars with good contrast
+    { count: 40, sizeMin: 2, sizeMax: 4, opacityBase: 0.5, blur: 0.6, speedMin: 15, speedMax: 28, colorHue: 200, colorSat: 40 },
+    // Near: larger, sharper, brighter stars
+    { count: 25, sizeMin: 4, sizeMax: 7, opacityBase: 0.9, blur: 0.2, speedMin: 8, speedMax: 18, colorHue: 190, colorSat: 60 },
+    // Accent beacons: rare, bright, glowing focal points
+    { count: 6, sizeMin: 8, sizeMax: 12, opacityBase: 1.0, blur: 0, speedMin: 4, speedMax: 10, colorHue: 180, colorSat: 80 },
   ];
 
   layers.forEach((layer) => {
@@ -399,28 +404,45 @@ const createStarfield = () => {
       const star = document.createElement("div");
       const size = Math.random() * (layer.sizeMax - layer.sizeMin) + layer.sizeMin;
       const duration = Math.random() * (layer.speedMax - layer.speedMin) + layer.speedMin;
-      const delay = Math.random() * -duration; // negative for immediate phase offset
+      const delay = Math.random() * -duration;
       const startX = Math.random() * 100;
       const startY = Math.random() * 100;
-      const driftX = (Math.random() - 0.5) * 20; // subtle horizontal drift
-      const driftY = (Math.random() - 0.5) * 20; // subtle vertical drift
+      const driftX = (Math.random() - 0.5) * (8 + size * 0.5);
+      const driftY = (Math.random() - 0.5) * 6;
+      const blurVal = layer.blur + Math.random() * 0.4;
+      const twinkleBase = layer.opacityBase * (0.6 + Math.random() * 0.4);
+      const glowSize1 = size * 1.2;
+      const glowSize2 = size * 2.8;
+      const pulseScale = 1 + (layer.sizeMin / 16);
+
+      // Dynamic hue variance for natural feel
+      const hueVar = layer.colorHue + (Math.random() - 0.5) * 30;
+      const satVar = layer.colorSat + (Math.random() - 0.5) * 20;
 
       star.style.cssText = `
         position: absolute;
         width: ${size}px;
         height: ${size}px;
-        background: var(--primary-color);
+        background: hsl(${hueVar}, ${satVar}%, 95%);
         border-radius: 50%;
-        --twinkle-base: ${layer.opacity * (0.5 + Math.random() * 0.5)};
+        box-shadow:
+          0 0 ${glowSize1}px hsl(${hueVar}, ${satVar}%, 85%),
+          0 0 ${glowSize2}px hsl(${hueVar}, ${satVar}%, 75%);
+        filter: blur(${blurVal}px);
+        --twinkle-base: ${twinkleBase};
         opacity: var(--twinkle-base);
         left: ${startX}%;
         top: ${startY}%;
         pointer-events: none;
-        will-change: transform, opacity;
+        will-change: transform, opacity, filter;
+        mix-blend-mode: screen;
         animation: starFloat ${duration}s ease-in-out ${delay}s infinite alternate,
-                   starTwinkle ${2 + Math.random() * 3}s ease-in-out ${Math.random() * 2}s infinite;
+                   starTwinkle ${1.8 + Math.random() * 2.2}s ease-in-out ${Math.random() * 2}s infinite,
+                   starPulse ${3 + Math.random() * 5}s ease-in-out ${Math.random() * 3}s infinite;
         --drift-x: ${driftX}vmin;
         --drift-y: ${driftY}vmin;
+        --pulse-scale: ${pulseScale};
+        z-index: ${layer.sizeMin};
       `;
 
       container.appendChild(star);
