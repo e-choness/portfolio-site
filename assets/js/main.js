@@ -316,34 +316,7 @@ window.addEventListener("load", () => {
   }, 2000);
 });
 
-// Project Filtering
-const filterButtons = document.querySelectorAll(".filter-btn");
-const projectCards = document.querySelectorAll(".project-card");
 
-filterButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const filter = button.getAttribute("data-filter");
-
-    // Update active filter button
-    filterButtons.forEach((btn) => btn.classList.remove("active"));
-    button.classList.add("active");
-
-    // Filter projects
-    projectCards.forEach((card) => {
-      const categories = card.getAttribute("data-category");
-
-      if (
-        filter === "all" ||
-        (categories && categories.toLowerCase().includes(filter.toLowerCase()))
-      ) {
-        card.style.display = "block";
-        card.style.animation = "fadeIn 0.5s ease forwards";
-      } else {
-        card.style.display = "none";
-      }
-    });
-  });
-});
 
 // Project Card Click Handlers
 projectCards.forEach((card) => {

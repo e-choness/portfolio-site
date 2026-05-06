@@ -17,17 +17,6 @@ wide: true
 </div>
 
 <div class="container">
-  <!-- Projects Filter -->
-  <div class="projects-filter" data-aos="fade-up" data-aos-delay="200">
-    <button class="filter-btn active" data-filter="all">All</button>
-    {% assign all_categories = site.projects | map: 'categories' | join: ',' |
-    split: ',' | uniq | sort %} {% for category in all_categories %}
-    <button class="filter-btn" data-filter="{{ category }}">
-      {{ category | capitalize }}
-    </button>
-    {% endfor %}
-  </div>
-
   <!-- Projects Grid -->
   <div class="projects-grid">
     {% assign project_files = site.projects | sort: 'order' %} {% for project

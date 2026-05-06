@@ -1,16 +1,6 @@
 <section id="projects" class="section">
   <h2 class="section-title" data-aos="fade-up">Projects</h2>
 
-  <div class="projects-filter" data-aos="fade-up" data-aos-delay="200">
-    <button class="filter-btn active" data-filter="all">All</button>
-    {% assign all_categories = site.projects | map: 'categories' | join: ',' |
-    split: ',' | uniq | sort %} {% for category in all_categories %}
-    <button class="filter-btn" data-filter="{{ category }}">
-      {{ category | capitalize }}
-    </button>
-    {% endfor %}
-  </div>
-
   <div class="projects-grid">
     {% assign project_files = site.projects | sort: 'order' %} {% for project
     in project_files %}

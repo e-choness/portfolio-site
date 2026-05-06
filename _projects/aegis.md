@@ -8,7 +8,6 @@ technologies:
   - FastAPI
   - Docker
   - PostgreSQL
-  - Prometheus
 categories:
   - Python
   - node.js
@@ -19,7 +18,6 @@ github_url: "https://github.com/e-choness/aegis"
 featured: true
 order: 1
 ---
-
 ## Project Overview
 
 Aegis is a centralized control plane that transforms fragmented LLM integrations into a governed, secure service layer. It acts as a single gateway for AI traffic across Anthropic, Azure OpenAI, and Ollama with built‑in data classification, PII masking, and budget enforcement. Provider‑agnostic and Docker‑native, it delivers enterprise governance without GPU requirements.
