@@ -1,4 +1,4 @@
-# Jekyll Portfolio Website with Blog
+# Chroma - Jekyll Portfolio Website with Blog
 
 *A modern, responsive portfolio website built with Jekyll and deployable to GitHub Pages. Features smooth animations, dark/light theme toggle, a professional design, and a comprehensive blog section.*
 
