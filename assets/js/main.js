@@ -58,6 +58,19 @@ if (themeToggle) {
         themeIcon.classList.replace("fa-sun", "fa-moon");
       }
     }
+
+    // Regenerate starfield with new theme colors
+    const container = document.querySelector(".particles-container");
+    if (container) {
+      // Fade out, swap colors, fade in
+      container.style.transition = "opacity 0.3s ease";
+      container.style.opacity = "0";
+      setTimeout(() => {
+        container.innerHTML = "";
+        createStarfield();
+        container.style.opacity = "1";
+      }, 300);
+    }
   });
 }
 
@@ -382,21 +395,86 @@ backToTopButton.addEventListener("click", () => {
   });
 });
 
-// Enhanced Starfield - High-Visibility Particle System
+// Enhanced Starfield - Theme-Aware High-Visibility Particle System
 const createStarfield = () => {
   const container = document.querySelector(".particles-container");
   if (!container) return;
 
-  // Multi-layered depth system with optimized visibility
+  // Detect current theme
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+
+  // Theme-specific color palettes
+  const palettes = {
+    dark: {
+      // Cool blue-white spectrum — bright, luminous stars
+      baseHue: 210,
+      hueRange: 40,
+      saturation: 75,
+      lightness: 94,
+      glowIntensity: 1.0,
+      shadowColor: 'hsla(210, 70%, 55%, 0.45)',
+      blendMode: 'screen'
+    },
+    light: {
+      // Deep indigo/violet — high contrast against light bg
+      baseHue: 255,
+      hueRange: 25,
+      saturation: 90,
+      lightness: 38,
+      glowIntensity: 0.55,
+      shadowColor: 'hsla(255, 90%, 35%, 0.3)',
+      blendMode: 'multiply'
+    }
+   };
+
+  const theme = isDark ? palettes.dark : palettes.light;
+
+  // Multi-layered depth system with optimized visibility per theme
   const layers = [
-    // Far: tiny, soft, slow-moving background layer
-    { count: 30, sizeMin: 1, sizeMax: 2, opacityBase: 0.2, blur: 1.2, speedMin: 25, speedMax: 45, colorHue: 220, colorSat: 20 },
-    // Mid-range: main visible stars with good contrast
-    { count: 40, sizeMin: 2, sizeMax: 4, opacityBase: 0.5, blur: 0.6, speedMin: 15, speedMax: 28, colorHue: 200, colorSat: 40 },
-    // Near: larger, sharper, brighter stars
-    { count: 25, sizeMin: 4, sizeMax: 7, opacityBase: 0.9, blur: 0.2, speedMin: 8, speedMax: 18, colorHue: 190, colorSat: 60 },
-    // Accent beacons: rare, bright, glowing focal points
-    { count: 6, sizeMin: 8, sizeMax: 12, opacityBase: 1.0, blur: 0, speedMin: 4, speedMax: 10, colorHue: 180, colorSat: 80 },
+    // Far: background stars - smaller, softer, slower
+    {
+      count: isDark ? 30 : 22,
+      sizeMin: isDark ? 0.8 : 1.2,
+      sizeMax: isDark ? 1.8 : 2.2,
+      opacityBase: isDark ? 0.2 : 0.45,
+      blur: isDark ? 1.2 : 0.6,
+      speedMin: isDark ? 25 : 30,
+      speedMax: isDark ? 45 : 50,
+      glowMultiplier: isDark ? 0.7 : 0.5
+    },
+    // Mid-range: main visible field
+    {
+      count: isDark ? 40 : 32,
+      sizeMin: isDark ? 1.8 : 2.3,
+      sizeMax: isDark ? 3.8 : 4.5,
+      opacityBase: isDark ? 0.5 : 0.7,
+      blur: isDark ? 0.6 : 0.2,
+      speedMin: isDark ? 15 : 18,
+      speedMax: isDark ? 28 : 32,
+      glowMultiplier: isDark ? 1.0 : 0.7
+    },
+    // Near: prominent, sharper stars
+    {
+      count: isDark ? 25 : 18,
+      sizeMin: isDark ? 3.5 : 2.8,
+      sizeMax: isDark ? 6.5 : 5.5,
+      opacityBase: isDark ? 0.9 : 0.9,
+      blur: isDark ? 0.2 : 0.05,
+      speedMin: isDark ? 8 : 10,
+      speedMax: isDark ? 18 : 22,
+      glowMultiplier: isDark ? 1.2 : 0.9
+    },
+    // Accent beacons: bright focal points
+    {
+      count: isDark ? 6 : 3,
+      sizeMin: isDark ? 7 : 5.5,
+      sizeMax: isDark ? 11 : 8.5,
+      opacityBase: 1.0,
+      blur: 0,
+      speedMin: isDark ? 4 : 5,
+      speedMax: isDark ? 10 : 12,
+      glowMultiplier: isDark ? 1.4 : 1.0
+    }
   ];
 
   layers.forEach((layer) => {
@@ -407,42 +485,47 @@ const createStarfield = () => {
       const delay = Math.random() * -duration;
       const startX = Math.random() * 100;
       const startY = Math.random() * 100;
-      const driftX = (Math.random() - 0.5) * (8 + size * 0.5);
-      const driftY = (Math.random() - 0.5) * 6;
-      const blurVal = layer.blur + Math.random() * 0.4;
-      const twinkleBase = layer.opacityBase * (0.6 + Math.random() * 0.4);
-      const glowSize1 = size * 1.2;
-      const glowSize2 = size * 2.8;
-      const pulseScale = 1 + (layer.sizeMin / 16);
+      const driftX = (Math.random() - 0.5) * (6 + size * 0.4);
+      const driftY = (Math.random() - 0.5) * 5;
 
-      // Dynamic hue variance for natural feel
-      const hueVar = layer.colorHue + (Math.random() - 0.5) * 30;
-      const satVar = layer.colorSat + (Math.random() - 0.5) * 20;
+      // Theme-aware color generation
+      const hue = theme.baseHue + (Math.random() - 0.5) * theme.hueRange;
+      const sat = theme.saturation + (Math.random() - 0.5) * 15;
+      const light = theme.lightness + (Math.random() - 0.5) * 10;
+      const glow1Size = size * (1.0 + layer.glowMultiplier * 0.4);
+      const glow2Size = size * (2.2 + layer.glowMultiplier * 0.6);
+      const glow3Size = size * (3.5 + layer.glowMultiplier * 0.8);
+      // Smoother blur for natural edge softening
+      const blurVal = layer.blur + Math.random() * 0.4;
+      // Soft border radius for organic shape (slightly off-perfect circle)
+      const radiusX = 48 + Math.random() * 4;
+      const radiusY = 48 + Math.random() * 4;
 
       star.style.cssText = `
         position: absolute;
         width: ${size}px;
         height: ${size}px;
-        background: hsl(${hueVar}, ${satVar}%, 95%);
-        border-radius: 50%;
+        background: hsl(${hue}, ${sat}%, ${light}%);
+        border-radius: ${radiusX}% ${100 - radiusX}% ${radiusY}% ${100 - radiusY}% / ${radiusY}% ${radiusX}% ${100 - radiusY}% ${100 - radiusX}%;
         box-shadow:
-          0 0 ${glowSize1}px hsl(${hueVar}, ${satVar}%, 85%),
-          0 0 ${glowSize2}px hsl(${hueVar}, ${satVar}%, 75%);
-        filter: blur(${blurVal}px);
-        --twinkle-base: ${twinkleBase};
-        opacity: var(--twinkle-base);
+          0 0 ${glow1Size * 1.15}px hsla(${hue}, ${sat}%, ${light + 30}%, 0.45),
+          0 0 ${glow2Size * 1.2}px hsla(${hue}, ${sat}%, ${light + 20}%, 0.4),
+          0 0 ${glow3Size}px hsla(${hue}, ${sat}%, ${light + 10}%, 0.3);
+         filter: blur(${blurVal}px);
+         --twinkle-base: ${layer.opacityBase * (0.7 + Math.random() * 0.3)};
+         opacity: calc(var(--twinkle-base) * 0.85);
         left: ${startX}%;
         top: ${startY}%;
         pointer-events: none;
         will-change: transform, opacity, filter;
-        mix-blend-mode: screen;
+        mix-blend-mode: ${theme.blendMode};
         animation: starFloat ${duration}s ease-in-out ${delay}s infinite alternate,
                    starTwinkle ${1.8 + Math.random() * 2.2}s ease-in-out ${Math.random() * 2}s infinite,
                    starPulse ${3 + Math.random() * 5}s ease-in-out ${Math.random() * 3}s infinite;
         --drift-x: ${driftX}vmin;
         --drift-y: ${driftY}vmin;
-        --pulse-scale: ${pulseScale};
-        z-index: ${layer.sizeMin};
+        --pulse-scale: ${1 + (size / 20)};
+        z-index: ${Math.floor(size)};
       `;
 
       container.appendChild(star);
@@ -451,10 +534,17 @@ const createStarfield = () => {
 };
 
 // Initialize starfield on DOM ready
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", createStarfield);
-} else {
+const initStarfield = () => {
+  // Clear existing stars
+  const container = document.querySelector(".particles-container");
+  if (container) container.innerHTML = "";
   createStarfield();
+};
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initStarfield);
+} else {
+  initStarfield();
 }
 
 // Smooth loading animation
