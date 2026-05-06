@@ -29,6 +29,8 @@
      rgba(0, 0, 0, 0.22) 100%
    );
    pointer-events: none;
+   // Smooth transition when theme changes
+   transition: opacity 0.3s ease;
  }
 
 .hero-content {
