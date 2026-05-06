@@ -494,6 +494,7 @@ const createStarfield = () => {
       const light = theme.lightness + (Math.random() - 0.5) * 10;
       const glow1Size = size * (1.0 + layer.glowMultiplier * 0.4);
       const glow2Size = size * (2.2 + layer.glowMultiplier * 0.6);
+      const glow3Size = size * (3.5 + layer.glowMultiplier * 0.8);
       // Smoother blur for natural edge softening
       const blurVal = layer.blur + Math.random() * 0.4;
       // Soft border radius for organic shape (slightly off-perfect circle)
@@ -507,11 +508,12 @@ const createStarfield = () => {
         background: hsl(${hue}, ${sat}%, ${light}%);
         border-radius: ${radiusX}% ${100 - radiusX}% ${radiusY}% ${100 - radiusY}% / ${radiusY}% ${radiusX}% ${100 - radiusY}% ${100 - radiusX}%;
         box-shadow:
-          0 0 ${glow1Size * 0.9}px ${theme.shadowColor},
-          0 0 ${glow2Size}px hsla(${hue}, ${sat}%, ${light + 15}%, 0.5);
-        filter: blur(${blurVal}px);
-        --twinkle-base: ${layer.opacityBase * (0.7 + Math.random() * 0.3)};
-        opacity: var(--twinkle-base);
+          0 0 ${glow1Size * 1.15}px hsla(${hue}, ${sat}%, ${light + 30}%, 0.45),
+          0 0 ${glow2Size * 1.2}px hsla(${hue}, ${sat}%, ${light + 20}%, 0.4),
+          0 0 ${glow3Size}px hsla(${hue}, ${sat}%, ${light + 10}%, 0.3);
+         filter: blur(${blurVal}px);
+         --twinkle-base: ${layer.opacityBase * (0.7 + Math.random() * 0.3)};
+         opacity: calc(var(--twinkle-base) * 0.85);
         left: ${startX}%;
         top: ${startY}%;
         pointer-events: none;
