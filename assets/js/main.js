@@ -319,6 +319,7 @@ window.addEventListener("load", () => {
 
 
 // Project Card Click Handlers
+const projectCards = document.querySelectorAll(".project-card");
 projectCards.forEach((card) => {
   card.addEventListener("click", (e) => {
     // Don't trigger if clicking on links
@@ -381,32 +382,80 @@ backToTopButton.addEventListener("click", () => {
   });
 });
 
-// Particle Animation (Simple)
-const createParticles = () => {
-  const particlesContainer = document.querySelector(".particles-container");
-  if (!particlesContainer) return;
-  const particleCount = 50;
+// Enhanced Starfield - High-Visibility Particle System
+const createStarfield = () => {
+  const container = document.querySelector(".particles-container");
+  if (!container) return;
 
-  for (let i = 0; i < particleCount; i++) {
-    const particle = document.createElement("div");
-    particle.style.position = "absolute";
-    particle.style.width = Math.random() * 4 + 2 + "px";
-    particle.style.height = particle.style.width;
-    particle.style.background = "var(--primary-color)";
-    particle.style.borderRadius = "50%";
-    particle.style.opacity = Math.random() * 0.5 + 0.2;
-    particle.style.left = Math.random() * 100 + "%";
-    particle.style.top = Math.random() * 100 + "%";
-    particle.style.animation = `float ${
-      Math.random() * 10 + 10
-    }s linear infinite`;
+  // Multi-layered depth system with optimized visibility
+  const layers = [
+    // Far: tiny, soft, slow-moving background layer
+    { count: 30, sizeMin: 1, sizeMax: 2, opacityBase: 0.2, blur: 1.2, speedMin: 25, speedMax: 45, colorHue: 220, colorSat: 20 },
+    // Mid-range: main visible stars with good contrast
+    { count: 40, sizeMin: 2, sizeMax: 4, opacityBase: 0.5, blur: 0.6, speedMin: 15, speedMax: 28, colorHue: 200, colorSat: 40 },
+    // Near: larger, sharper, brighter stars
+    { count: 25, sizeMin: 4, sizeMax: 7, opacityBase: 0.9, blur: 0.2, speedMin: 8, speedMax: 18, colorHue: 190, colorSat: 60 },
+    // Accent beacons: rare, bright, glowing focal points
+    { count: 6, sizeMin: 8, sizeMax: 12, opacityBase: 1.0, blur: 0, speedMin: 4, speedMax: 10, colorHue: 180, colorSat: 80 },
+  ];
 
-    particlesContainer.appendChild(particle);
-  }
+  layers.forEach((layer) => {
+    for (let i = 0; i < layer.count; i++) {
+      const star = document.createElement("div");
+      const size = Math.random() * (layer.sizeMax - layer.sizeMin) + layer.sizeMin;
+      const duration = Math.random() * (layer.speedMax - layer.speedMin) + layer.speedMin;
+      const delay = Math.random() * -duration;
+      const startX = Math.random() * 100;
+      const startY = Math.random() * 100;
+      const driftX = (Math.random() - 0.5) * (8 + size * 0.5);
+      const driftY = (Math.random() - 0.5) * 6;
+      const blurVal = layer.blur + Math.random() * 0.4;
+      const twinkleBase = layer.opacityBase * (0.6 + Math.random() * 0.4);
+      const glowSize1 = size * 1.2;
+      const glowSize2 = size * 2.8;
+      const pulseScale = 1 + (layer.sizeMin / 16);
+
+      // Dynamic hue variance for natural feel
+      const hueVar = layer.colorHue + (Math.random() - 0.5) * 30;
+      const satVar = layer.colorSat + (Math.random() - 0.5) * 20;
+
+      star.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        background: hsl(${hueVar}, ${satVar}%, 95%);
+        border-radius: 50%;
+        box-shadow:
+          0 0 ${glowSize1}px hsl(${hueVar}, ${satVar}%, 85%),
+          0 0 ${glowSize2}px hsl(${hueVar}, ${satVar}%, 75%);
+        filter: blur(${blurVal}px);
+        --twinkle-base: ${twinkleBase};
+        opacity: var(--twinkle-base);
+        left: ${startX}%;
+        top: ${startY}%;
+        pointer-events: none;
+        will-change: transform, opacity, filter;
+        mix-blend-mode: screen;
+        animation: starFloat ${duration}s ease-in-out ${delay}s infinite alternate,
+                   starTwinkle ${1.8 + Math.random() * 2.2}s ease-in-out ${Math.random() * 2}s infinite,
+                   starPulse ${3 + Math.random() * 5}s ease-in-out ${Math.random() * 3}s infinite;
+        --drift-x: ${driftX}vmin;
+        --drift-y: ${driftY}vmin;
+        --pulse-scale: ${pulseScale};
+        z-index: ${layer.sizeMin};
+      `;
+
+      container.appendChild(star);
+    }
+  });
 };
 
-// Initialize particles
-createParticles();
+// Initialize starfield on DOM ready
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", createStarfield);
+} else {
+  createStarfield();
+}
 
 // Smooth loading animation
 window.addEventListener("load", () => {
