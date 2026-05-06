@@ -50,17 +50,14 @@ We will now rebuild the RAG retrieval module. We will integrate BM25 sparse sear
 
 First, update your environment with the required packages.
 
-**Bash**
-
-```
+```bash
 pip install rank_bm25 jieba faiss-cpu sentence-transformers openai pypdf
 ```
 
 Below is the complete implementation of the upgraded pipeline.
 
-**Python**
 
-```
+```python
 import os
 import jieba
 import numpy as np

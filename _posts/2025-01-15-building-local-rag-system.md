@@ -118,7 +118,9 @@ You can create a simple PDF question answering system with Python.
 
 Install dependencies:
 
-`pip install pypdf langchain sentence-transformers faiss-cpu`
+```bash
+pip install pypdf langchain sentence-transformers faiss-cpu
+```
 
 Optionally use a local or API based model such as DeepSeek, Qwen, or Llama.
 
