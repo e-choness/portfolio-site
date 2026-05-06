@@ -1,50 +1,53 @@
 # Jekyll Portfolio Website with Blog
 
-A modern, responsive portfolio website built with Jekyll and deployable to GitHub Pages. Features smooth animations, dark/light theme toggle, a professional design, and a comprehensive blog section.
+*A modern, responsive portfolio website built with Jekyll and deployable to GitHub Pages. Features smooth animations, dark/light theme toggle, a professional design, and a comprehensive blog section.*
+
+<div align="center">
+
+[![GitHub Pages Deployment](https://github.com/e-choness/portfolio-site/actions/workflows/pages.yml/badge.svg)](https://github.com/e-choness/portfolio-site/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Jekyll](https://img.shields.io/badge/Jekyll-Static_Site-CC342D?logo=jekyll&logoColor=white)](https://jekyllrb.com/)
+[![GitHub last commit](https://img.shields.io/github/last-commit/e-choness/portfolio-site)](https://github.com/e-choness/portfolio-site)
+[![GitHub repo size](https://img.shields.io/github/repo-size/e-choness/portfolio-site)](https://github.com/e-choness/portfolio-site)
+
+**[View Live Demo](https://e-choness.github.io/portfolio-site/)** • **[Report Bug](https://github.com/e-choness/portfolio-site/issues)** • **[Request Feature](https://github.com/e-choness/portfolio-site/issues)**
+
+</div>
 
 ## 🚀 Features
 
-- **Responsive Design**: Works perfectly on desktop, tablet, and mobile devices
-- **Dark/Light Theme**: Toggle between themes with smooth transitions
-- **Smooth Animations**: Scroll-triggered animations using AOS library
-- **Interactive Elements**: Typing animation, animated counters, and skill bars
-- **Project Filtering**: Filter projects by technology or category
-- **Blog System**: Full-featured blog with posts, categories, and pagination
-- **SEO Optimized**: Meta tags, Open Graph, and structured data
-- **Fast Loading**: Optimized images and CSS for better performance
-- **GitHub Pages Ready**: Easy deployment with GitHub Pages
+- 📱 **Responsive Design**: Works perfectly on desktop, tablet, and mobile devices
+- 🌓 **Dark/Light Theme**: Toggle between themes with smooth transitions
+- ✨ **Smooth Animations**: Scroll-triggered animations using AOS library
+- 🖱️ **Interactive Elements**: Typing animation, animated counters, and skill bars
+- 🔍 **Project Filtering**: Filter projects by technology or category
+- ✍️ **Blog System**: Full-featured blog with posts, categories, and pagination
+- 🚀 **SEO Optimized**: Meta tags, Open Graph, and structured data
+- ⚡ **Fast Loading**: Optimized images and CSS for better performance
+- 🌐 **GitHub Pages Ready**: Easy deployment with GitHub Pages
 
 ## 📁 Project Structure
 
-```
+```bash
 ├── _config.yml              # Jekyll configuration
 ├── _layouts/                # Layout templates
-│   ├── blog.html           # Blog layout template
-│   └── post.html           # Individual post layout
 ├── _data/                   # Data files (YAML)
-│   ├── profile.yml          # Personal information
-│   ├── experience.yml       # Work experience
-│   ├── education.yml        # Education background
-│   ├── skills.yml           # Skills and proficiencies
-│   ├── projects.yml         # Project portfolio
-│   └── blog.yml             # Blog configuration
 ├── _posts/                  # Blog posts (Markdown)
-│   ├── 2025-01-15-evolution-of-javascript-frameworks.md
-│   ├── 2025-01-08-building-scalable-rest-apis.md
-│   └── 2024-12-28-css-grid-vs-flexbox.md
 ├── _projects/               # Individual project pages
 ├── blog/                    # Blog index and pages
-│   └── index.html          # Blog listing page
-├── assets/                  # Static assets
-│   ├── images/             # Images and photos
-│   ├── css/                # Additional stylesheets
-│   └── js/                 # Additional JavaScript
+├── assets/                  # Static assets (images, css, js)
 ├── .github/workflows/       # GitHub Actions
-│   └── pages.yml           # Automated deployment
-├── index.html              # Main portfolio page
-├── Gemfile                 # Ruby dependencies
-└── README.md               # This file
+├── index.html               # Main portfolio page
+└── Gemfile                  # Ruby dependencies
 ```
+Customize the site easily by editing the YAML files in the `_data/` directory:
+|**File**|**Purpose**|
+|---|---|
+|`profile.yml`|Personal info (name, title, email, social links)|
+|`experience.yml`|Work experience timeline|
+|`projects.yml`|Portfolio projects and tech stacks|
+|`skills.yml`|Skill categories and progress bars|
+|`blog.yml`|Blog specific settings (categories, pagination limits)|
 
 ## 🛠️ Setup & Installation
 
@@ -377,29 +380,6 @@ To accept guest posts:
    - Check Prism.js configuration
    - Test with different themes
 
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## 🎯 Future Blog Enhancements
-
-Planned features:
-
-- [x] Full-text search functionality
-- [ ] Comment system integration
-- [ ] Newsletter subscription
-- [ ] Related posts suggestions
-- [ ] Reading progress indicator
-- [ ] Social media auto-posting
-- [ ] Advanced analytics dashboard
-- [ ] Multi-author support
-- [ ] Content series organization
-- [ ] Draft preview system
-
----
-
-Made with ❤️ using Jekyll and GitHub Pages
-
 ## 📞 Support
 
 If you have questions about the blog system:
@@ -410,3 +390,11 @@ If you have questions about the blog system:
 - Join the Jekyll community for help
 
 Happy blogging! 🎉
+
+<div align="center">
+
+<p>Made with ❤️ using Jekyll and GitHub Pages</p>
+
+<p>This project is open source and available under the <a href="LICENSE">MIT License</a>.</p>
+
+</div>
