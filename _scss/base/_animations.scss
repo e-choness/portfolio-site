@@ -1,4 +1,23 @@
 
+// Starfield Animations
+@keyframes starFloat {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(var(--drift-x), var(--drift-y));
+  }
+}
+
+@keyframes starTwinkle {
+  0%, 100% {
+    opacity: var(--twinkle-base, 0.6);
+  }
+  50% {
+    opacity: calc(var(--twinkle-base, 0.6) * 0.3);
+  }
+}
+
 // Animation Classes
 .fade-in {
     opacity: 0;

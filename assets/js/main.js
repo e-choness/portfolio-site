@@ -319,6 +319,7 @@ window.addEventListener("load", () => {
 
 
 // Project Card Click Handlers
+const projectCards = document.querySelectorAll(".project-card");
 projectCards.forEach((card) => {
   card.addEventListener("click", (e) => {
     // Don't trigger if clicking on links
@@ -381,32 +382,58 @@ backToTopButton.addEventListener("click", () => {
   });
 });
 
-// Particle Animation (Simple)
-const createParticles = () => {
-  const particlesContainer = document.querySelector(".particles-container");
-  if (!particlesContainer) return;
-  const particleCount = 50;
+// Particle Animation - Starfield Effect
+const createStarfield = () => {
+  const container = document.querySelector(".particles-container");
+  if (!container) return;
 
-  for (let i = 0; i < particleCount; i++) {
-    const particle = document.createElement("div");
-    particle.style.position = "absolute";
-    particle.style.width = Math.random() * 4 + 2 + "px";
-    particle.style.height = particle.style.width;
-    particle.style.background = "var(--primary-color)";
-    particle.style.borderRadius = "50%";
-    particle.style.opacity = Math.random() * 0.5 + 0.2;
-    particle.style.left = Math.random() * 100 + "%";
-    particle.style.top = Math.random() * 100 + "%";
-    particle.style.animation = `float ${
-      Math.random() * 10 + 10
-    }s linear infinite`;
+  // Create stars with varying depth (parallax layers)
+  const layers = [
+    { count: 40, sizeMin: 1, sizeMax: 2, speedMin: 15, speedMax: 30, opacity: 0.3 },  // far
+    { count: 30, sizeMin: 2, sizeMax: 3, speedMin: 10, speedMax: 20, opacity: 0.5 },  // mid
+    { count: 20, sizeMin: 3, sizeMax: 4, speedMin: 5, speedMax: 12, opacity: 0.8 },   // near
+  ];
 
-    particlesContainer.appendChild(particle);
-  }
+  layers.forEach((layer) => {
+    for (let i = 0; i < layer.count; i++) {
+      const star = document.createElement("div");
+      const size = Math.random() * (layer.sizeMax - layer.sizeMin) + layer.sizeMin;
+      const duration = Math.random() * (layer.speedMax - layer.speedMin) + layer.speedMin;
+      const delay = Math.random() * -duration; // negative for immediate phase offset
+      const startX = Math.random() * 100;
+      const startY = Math.random() * 100;
+      const driftX = (Math.random() - 0.5) * 20; // subtle horizontal drift
+      const driftY = (Math.random() - 0.5) * 20; // subtle vertical drift
+
+      star.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        background: var(--primary-color);
+        border-radius: 50%;
+        --twinkle-base: ${layer.opacity * (0.5 + Math.random() * 0.5)};
+        opacity: var(--twinkle-base);
+        left: ${startX}%;
+        top: ${startY}%;
+        pointer-events: none;
+        will-change: transform, opacity;
+        animation: starFloat ${duration}s ease-in-out ${delay}s infinite alternate,
+                   starTwinkle ${2 + Math.random() * 3}s ease-in-out ${Math.random() * 2}s infinite;
+        --drift-x: ${driftX}vmin;
+        --drift-y: ${driftY}vmin;
+      `;
+
+      container.appendChild(star);
+    }
+  });
 };
 
-// Initialize particles
-createParticles();
+// Initialize starfield on DOM ready
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", createStarfield);
+} else {
+  createStarfield();
+}
 
 // Smooth loading animation
 window.addEventListener("load", () => {
