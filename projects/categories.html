@@ -14,7 +14,7 @@ wide: true
     "project.categories contains category_data.slug" %} {% if
     category_projects.size > 0 %}
      <div class="category-card">
-       <div class="category-header category-{{ category_data.slug | slugify }}">
+       <div class="category-header category-{{ category_data.slug | slugify }}" style="--category-color: {{ category_data.color }}; border-left-color: {{ category_data.color }}; background-color: {{ category_data.color }}15;">
          <h3 class="category-name">
            <a
              href="{{ '/projects/categories/' | relative_url }}{{ category_data.slug | slugify }}/"
