@@ -7,31 +7,22 @@ header: false
 wide: true
 ---
 
-<div class="project-header" data-aos="fade-up">
-  <div class="container">
-    <h1 class="project-title">Categories</h1>
-    <p class="project-subtitle">
-      Browse projects by category to find work that interests you most
-    </p>
-  </div>
-</div>
-
 <div class="container">
   <div class="categories-grid" data-aos="fade-up" data-aos-delay="200">
     {% for category_data in site.data.projects.categories %} {% assign
     category_projects = site.projects | where_exp: "project",
     "project.categories contains category_data.slug" %} {% if
     category_projects.size > 0 %}
-    <div class="category-card">
-      <div class="category-header category-{{ category_data.slug }}">
-        <h3 class="category-name">
-          <a
-            href="{{ '/projects/categories/' | relative_url }}{{ category_data.slug }}/"
-            class="category-link-{{ category_data.slug }}"
-          >
-            {{ category_data.name }}
-          </a>
-        </h3>
+     <div class="category-card">
+       <div class="category-header category-{{ category_data.slug | slugify }}">
+         <h3 class="category-name">
+           <a
+             href="{{ '/projects/categories/' | relative_url }}{{ category_data.slug | slugify }}/"
+             class="category-link-{{ category_data.slug | slugify }}"
+           >
+             {{ category_data.name }}
+           </a>
+         </h3>
         <p class="category-description">{{ category_data.description }}</p>
         <div class="category-stats">
           <span class="project-count"

@@ -6,67 +6,133 @@ header: false
 wide: true
 ---
 
-<div class="projects-header" data-aos="fade-up">
-  <div class="container">
-    <h1 class="page-title">All Projects</h1>
-    <p class="page-subtitle">
-      Explore my portfolio of projects showcasing various technologies and
-      skills.
-    </p>
+
+   <div class="container">
+   <div class="search-bar-container" data-aos="fade-up" data-aos-delay="200">
+     <div class="search-bar-form">
+       <div class="search-bar-input-wrapper">
+         <input
+           type="text"
+           id="search-input"
+           placeholder="Search projects, technologies, or categories..."
+           autocomplete="off"
+         />
+         <button type="button" id="search-button" aria-label="Search">
+           <i class="fas fa-search"></i>
+         </button>
+         <button
+           type="button"
+           id="clear-search"
+           class="is-hidden"
+           aria-label="Clear search"
+         >
+           <i class="fas fa-times"></i>
+         </button>
+       </div>
+
+       <div class="search-bar-filters">
+         <select id="category-filter">
+           <option value="">All Categories</option>
+           {% for category in site.data.projects.categories %}
+           <option value="{{ category.slug }}">{{ category.name }}</option>
+           {% endfor %}
+         </select>
+
+         <select id="sort-filter">
+           <option value="order-asc">Featured First</option>
+           <option value="title-asc">Title A-Z</option>
+           <option value="title-desc">Title Z-A</option>
+           <option value="date-desc">Newest First</option>
+           <option value="date-asc">Oldest First</option>
+         </select>
+       </div>
+     </div>
+
+<div class="search-stats">
+        <span id="search-results-count"></span>
+      </div>
+    </div>
+
+    <!-- Search Results Container -->
+    <div id="search-results" class="projects-grid">
+      {% assign project_files = site.projects | sort: 'order' %} {% for project
+      in project_files %}
+      <div
+        class="project-card"
+        data-category="{{ project.categories | join: ',' }}"
+        data-aos="fade-up"
+        data-aos-delay="{{ forloop.index | times: 200 }}"
+      >
+       <img
+         src="{{ project.image | relative_url}}"
+         alt="{{ project.title }}"
+         class="project-card-image"
+       />
+       <div class="project-card-content">
+         <h3 class="project-card-title">
+           <a href="{{ project.url | relative_url }}">{{ project.title }}</a>
+         </h3>
+         <p class="project-card-description">{{ project.description }}</p>
+         <div class="project-card-tags">
+           {% for technology in project.technologies %}
+           <span class="project-card-tag">{{ technology }}</span>
+           {% endfor %}
+         </div>
+         <div class="project-card-links">
+           <a href="{{ project.url | relative_url }}" class="project-card-link"
+             ><i class="fas fa-info-circle"></i> View Details</a
+           >
+           {% if project.live_url %}
+           <a
+             href="{{ project.live_url }}"
+             class="project-card-link"
+             target="_blank"
+             ><i class="fas fa-external-link-alt"></i> Live Demo</a
+           >
+           {% endif %} {% if project.github_url %}
+           <a
+             href="{{ project.github_url }}"
+             class="project-card-link"
+             target="_blank"
+             ><i class="fab fa-github"></i> GitHub</a
+           >
+           {% endif %}
+         </div>
+       </div>
+     </div>
+     {% endfor %}
+   </div>
+
+   <div id="no-results" class="no-results is-hidden">
+     <i class="fas fa-search fa-3x"></i>
+     <h3>No projects found</h3>
+     <p>Try adjusting your search terms or browse by category.</p>
+     <a href="{{ '/projects/categories/' | relative_url }}" class="view-all-projects">Browse Categories</a>
+   </div>
   </div>
 </div>
 
-<div class="container">
-  <!-- Projects Grid -->
-  <div class="projects-grid">
-    {% assign project_files = site.projects | sort: 'order' %} {% for project
-    in project_files %}
-    <div
-      class="project-card"
-      data-category="{{ project.categories | join: ' ' }}"
-      data-aos="fade-up"
-      data-aos-delay="{{ forloop.index | times: 200 }}"
-    >
-      <img
-        src="{{ project.image | relative_url}}"
-        alt="{{ project.title }}"
-        class="project-card-image"
-      />
-      <div class="project-card-content">
-        <h3 class="project-card-title">
-          <a href="{{ project.url | relative_url }}">{{ project.title }}</a>
-        </h3>
-        <p class="project-card-description">{{ project.description }}</p>
-        <div class="project-card-tags">
-          {% for technology in project.technologies %}
-          <span class="project-card-tag">{{ technology }}</span>
-          {% endfor %}
-        </div>
-        <div class="project-card-links">
-          <a href="{{ project.url | relative_url }}" class="project-card-link"
-            ><i class="fas fa-info-circle"></i> View Details</a
-          >
-          {% if project.live_url %}
-          <a
-            href="{{ project.live_url }}"
-            class="project-card-link"
-            target="_blank"
-            ><i class="fas fa-external-link-alt"></i> Live Demo</a
-          >
-          {% endif %} {% if project.github_url %}
-          <a
-            href="{{ project.github_url }}"
-            class="project-card-link"
-            target="_blank"
-            ><i class="fab fa-github"></i> GitHub</a
-          >
-          {% endif %}
-        </div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-</div>
+<!-- JSON data for search -->
+<script type="application/json" id="project-search-data">
+  [
+  {% for project in site.projects %}
+  {
+    "title": {{ project.title | jsonify }},
+    "url": {{ project.url | jsonify }},
+    "date": {{ project.date | date: "%Y-%m-%d" | jsonify }},
+    "dateFormatted": {{ project.date | date: "%B %d, %Y" | jsonify }},
+    "categories": {{ project.categories | jsonify }},
+    "technologies": {{ project.technologies | jsonify }},
+    "description": {{ project.description | jsonify }},
+    "image": {{ project.image | relative_url | default: "/assets/images/projects/placeholder.jpg" | jsonify }},
+    "live_url": {{ project.live_url | default: "" | jsonify }},
+    "github_url": {{ project.github_url | default: "" | jsonify }},
+    "featured": {{ project.featured | default: false }},
+    "order": {{ project.order | default: 999 }}
+  }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+  ]
+</script>
 
 <!-- styles moved to SCSS: _scss/pages/_projects-index.scss -->
 

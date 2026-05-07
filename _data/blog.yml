@@ -4,25 +4,14 @@ author: "Echo Yin"
 
 # Blog categories
 categories:
-  - name: "Machine Learning Frameworks"
-    slug: "ml-frameworks"
-    description: "PyTorch, TensorFlow, scikit-learn, and Hugging Face Transformers"
+  - name: "Artificial Intelligence"
+    slug: "ai"
+    description: "Posts about AI, machine learning, LLMs, and intelligent systems"
     color: "#61dafb"
-    
-  - name: "AI Specializations"
-    slug: "ai-specializations"
-    description: "Natural language processing, computer vision, and large language models"
+  - name: "Backend Development"
+    slug: "backend"
+    description: "Building robust APIs, servers, and backend architectures"
     color: "#339933"
-    
-  - name: "AI Infrastructure"
-    slug: "ai-infrastructure"
-    description: "RAG systems, MCP, vector databases, and model fine-tuning"
-    color: "#f5a623"
-    
-  - name: "MLOps & Cloud"
-    slug: "mlops-cloud"
-    description: "Production ML deployment, Docker/Kubernetes, and cloud AI services"
-    color: "#68217a"
 
 # Featured topics
 featured_topics:

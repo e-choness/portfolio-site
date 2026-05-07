@@ -2,7 +2,7 @@
 layout: post
 title: "Building Aegis An Enterprise AI Gateway"
 date: 2025-11-25 12:00:00 -0000
-category: AI
+category: ai
 tags: [ai, python, llm, enterprise, infrastructure, security, compliance, pipeda]
 author: "Echo Yin"
 image: "assets/images/projects/aegis.jpg"

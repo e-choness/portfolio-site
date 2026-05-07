@@ -5,30 +5,21 @@ description: "Browse posts by category to find content that interests you most"
 permalink: /blog/categories/
 ---
 
-<div class="blog-header" data-aos="fade-up">
-  <div class="container">
-    <h1 class="blog-title">Categories</h1>
-    <p class="blog-subtitle">
-      Browse posts by category to find content that interests you most
-    </p>
-  </div>
-</div>
-
 <div class="container">
   <div class="categories-grid" data-aos="fade-up" data-aos-delay="200">
     {% for category_data in site.data.blog.categories %} {% assign
     category_posts = site.categories[category_data.slug] %} {% if
     category_posts.size > 0 %}
-    <div class="category-card">
-      <div class="category-header category-{{ category_data.slug }}">
-        <h3 class="category-name">
-          <a
-            href="{{ '/blog/categories/' | relative_url }}{{ category_data.slug }}/"
-            class="category-link-{{ category_data.slug }}"
-          >
-            {{ category_data.name }}
-          </a>
-        </h3>
+     <div class="category-card">
+       <div class="category-header category-{{ category_data.slug | slugify }}">
+         <h3 class="category-name">
+           <a
+             href="{{ '/blog/categories/' | relative_url }}{{ category_data.slug | slugify }}/"
+             class="category-link-{{ category_data.slug | slugify }}"
+           >
+             {{ category_data.name }}
+           </a>
+         </h3>
         <p class="category-description">{{ category_data.description }}</p>
         <div class="category-stats">
           <span class="post-count">{{ category_posts.size }} posts</span>

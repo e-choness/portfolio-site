@@ -1,10 +1,12 @@
-/* Extracted from _includes/blog-nav.html and _includes/project-nav.html inline styles */
 /* Blog navigation */
 .blog-navigation {
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   padding: 1rem 0;
   margin-bottom: 2rem;
+  /* Add top padding to account for fixed header since main padding is removed */
+  padding-top: calc(var(--header-height) + 1rem);
+  margin-top: 0;
 }
 
 .blog-navigation .container {
@@ -79,7 +81,7 @@
   border-bottom: 1px solid var(--border-color);
   padding: 1rem 0;
   margin-bottom: 2rem;
-  /* Offset for fixed header - matches blog's behavior where nav sits inside padded main */
+  /* Add top padding to account for fixed header since main padding is removed */
   padding-top: calc(var(--header-height) + 1rem);
   margin-top: 0;
 }

@@ -626,8 +626,9 @@ window.addEventListener("load", () => {
         });
       });
 
-      this.checkUrlParams();
-      this.displayResults(this.posts);
+this.checkUrlParams();
+       // Don't auto-display results - let the initial page content (paginated) show
+       // Results will be displayed when user searches or filters
     }
 
     checkUrlParams() {
@@ -666,6 +667,9 @@ window.addEventListener("load", () => {
         return;
       }
 
+      // Split query into words and require ALL words to match (AND search)
+      const queryWords = query.split(/\s+/).filter(w => w.length > 0);
+
       this.filteredPosts = this.posts.filter((post) => {
         const searchFields = [
           post.title,
@@ -677,7 +681,8 @@ window.addEventListener("load", () => {
           .join(" ")
           .toLowerCase();
 
-        return searchFields.includes(query);
+        // All query words must be present in the search fields
+        return queryWords.every(word => searchFields.includes(word));
       });
 
       this.applyFilters();
@@ -686,21 +691,29 @@ window.addEventListener("load", () => {
 
     handleFilter() {
       const category = this.categoryFilter?.value || "";
-
-      if (category === "") {
-        this.filteredPosts = [...this.posts];
-      } else {
-        this.filteredPosts = this.posts.filter(
-          (post) => post.category === category
-        );
-      }
-
       const query = (this.searchInput.value || "").trim();
-      if (query !== "") {
-        this.handleSearch();
-        return;
+
+      let results = [...this.posts];
+
+      if (category !== "") {
+        results = results.filter(post => post.category === category);
       }
 
+      if (query !== "") {
+        const queryWords = query.split(/\s+/).filter(w => w.length > 0);
+        results = results.filter(post => {
+          const searchFields = [
+            post.title,
+            post.content,
+            post.category || "",
+            (post.tags || []).join(" "),
+            post.author || "",
+          ].join(" ").toLowerCase();
+          return queryWords.every(word => searchFields.includes(word));
+        });
+      }
+
+      this.filteredPosts = results;
       this.applySort();
       this.updateUI();
     }
@@ -766,9 +779,9 @@ window.addEventListener("load", () => {
           const highlightedExcerpt = query
             ? this.highlightText(post.excerpt || "", query)
             : post.excerpt || "";
-          const imageSrc =
-            post.image ||
-            "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=200&fit=crop";
+          const imageSrc = post.image
+            ? (post.image.startsWith('assets/') ? '/' + post.image : post.image)
+            : "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=200&fit=crop";
 
           return `
           <article class="blog-card" data-aos="fade-up" data-aos-delay="${delay}">
@@ -957,7 +970,9 @@ window.addEventListener("load", () => {
           );
 
         const matchesCategory =
-          !category || (project.categories || []).includes(category);
+          !category || (project.categories || []).some(
+            cat => cat.toLowerCase() === category.toLowerCase()
+          );
         return matchesQuery && matchesCategory;
       });
 
@@ -987,7 +1002,7 @@ window.addEventListener("load", () => {
       if (this.currentResults.length === 0) {
         setHidden(this.searchResults, true);
         setHidden(this.noResults, false);
-        setHidden(this.searchSuggestions, false);
+        if (this.searchSuggestions) setHidden(this.searchSuggestions, false);
         if (this.resultsCount)
           this.resultsCount.textContent = "No projects found";
         return;
@@ -995,59 +1010,124 @@ window.addEventListener("load", () => {
 
       setHidden(this.searchResults, false);
       setHidden(this.noResults, true);
-      setHidden(this.searchSuggestions, true);
+      if (this.searchSuggestions) setHidden(this.searchSuggestions, true);
       if (this.resultsCount) {
         this.resultsCount.textContent = `${this.currentResults.length} project${
           this.currentResults.length !== 1 ? "s" : ""
         } found`;
       }
 
-      this.searchResults.innerHTML = this.currentResults
-        .map(
-          (project) => `
-        <div class="project-card" data-category="${(
-          project.categories || []
-        ).join(" ")}">
-          <img src="${project.image}" alt="${
-            project.title
-          }" class="project-card-image">
-          <div class="project-card-content">
-            <h3 class="project-card-title">${
-              project.title
-            }</h3>
-            <p class="project-card-description">${
-              project.description || ""
-            }</p>
-            <div class="project-card-tags">
-              ${(project.technologies || [])
-                .map((tech) => `<span class="project-card-tag">${tech}</span>`)
-                .join("")}
-            </div>
-            <div class="project-card-links">
-              <a href="${
-                project.url
-              }" class="project-card-link"><i class="fas fa-info-circle"></i> View Details</a>
-              ${
-                project.live_url
-                  ? `<a href="${project.live_url}" class="project-card-link" target="_blank"><i class="fas fa-external-link-alt"></i> Live Demo</a>`
-                  : ""
-              }
-              ${
-                project.github_url
-                  ? `<a href="${project.github_url}" class="project-card-link" target="_blank"><i class="fab fa-github"></i> GitHub</a>`
-                  : ""
-              }
-            </div>
-          </div>
-        </div>
-      `
-        )
-        .join("");
+this.searchResults.innerHTML = this.currentResults
+  .map(
+    (project) => {
+      const imageSrc = project.image || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=200&fit=crop";
+      // Prepend baseurl to links if it's not already present
+      const projectUrl = project.url.startsWith('/portfolio-site') ? project.url : '/portfolio-site' + project.url;
+      return `
+   <div class="project-card" data-category="${(
+     project.categories || []
+   ).join(" ")}">
+     <img src="${imageSrc}" alt="${
+     project.title
+   }" class="project-card-image">
+     <div class="project-card-content">
+       <h3 class="project-card-title">${
+         project.title
+       }</h3>
+       <p class="project-card-description">${
+         project.description || ""
+       }</p>
+       <div class="project-card-tags">
+         ${(project.technologies || [])
+           .map((tech) => `<span class="project-card-tag">${tech}</span>`)
+           .join("")}
+       </div>
+       <div class="project-card-links">
+         <a href="${
+           projectUrl
+         }" class="project-card-link"><i class="fas fa-info-circle"></i> View Details</a>
+         ${
+           project.live_url
+             ? `<a href="${project.live_url}" class="project-card-link" target="_blank"><i class="fas fa-external-link-alt"></i> Live Demo</a>`
+             : ""
+         }
+         ${
+           project.github_url
+             ? `<a href="${project.github_url}" class="project-card-link" target="_blank"><i class="fab fa-github"></i> GitHub</a>`
+             : ""
+         }
+       </div>
+     </div>
+   </div>
+ `;}
+  )
+  .join("");
+
     }
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    if (hasBlogSearch()) new BlogSearch();
-    if (hasProjectSearch()) new ProjectSearch();
-  });
-})();
+   document.addEventListener("DOMContentLoaded", () => {
+     if (hasBlogSearch()) new BlogSearch();
+     if (hasProjectSearch()) new ProjectSearch();
+     initCategoryFilters();
+   });
+ })();
+
+ // Category Filter Tabs (for Blog and Projects index pages)
+ class CategoryFilter {
+   constructor(containerSelector, itemSelector, itemCategoryAttr) {
+     this.container = document.querySelector(containerSelector);
+     this.items = document.querySelectorAll(itemSelector);
+     this.itemCategoryAttr = itemCategoryAttr;
+
+     if (!this.container) return;
+
+     this.filterButtons = this.container.querySelectorAll('.filter-btn');
+     this.init();
+   }
+
+   init() {
+     if (!this.container || this.filterButtons.length === 0) return;
+
+     this.filterButtons.forEach((btn) => {
+       btn.addEventListener('click', () => {
+         // Update active state
+         this.filterButtons.forEach(b => b.classList.remove('active'));
+         btn.classList.add('active');
+
+         const filterValue = btn.getAttribute('data-filter');
+         this.filterItems(filterValue);
+       });
+     });
+   }
+
+   filterItems(filterValue) {
+     this.items.forEach(item => {
+       const itemCategories = item.getAttribute(this.itemCategoryAttr);
+       const categories = itemCategories ? itemCategories.split(',').map(c => c.trim()).filter(c => c) : [];
+
+       const shouldShow = filterValue === 'all' || categories.includes(filterValue);
+
+       if (shouldShow) {
+         item.style.display = '';
+         // Re-trigger AOS animation for newly visible items
+         if (typeof AOS !== 'undefined') {
+           AOS.refresh();
+         }
+       } else {
+         item.style.display = 'none';
+       }
+     });
+
+     // Trigger a scroll event to handle any lazy animations
+     window.dispatchEvent(new Event('scroll'));
+   }
+ }
+
+ function initCategoryFilters() {
+   // Blog page filter
+   new CategoryFilter('.blog-filter', '.blog-card', 'data-category');
+
+   // Projects page filter
+   new CategoryFilter('.projects-filter', '.project-card', 'data-category');
+ }
