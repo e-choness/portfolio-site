@@ -13,8 +13,8 @@ categories:
   - Mobile
 live_url: "https://store.steampowered.com/app/3655340/Bubble_UP/"
 github_url: "https://www.bubbleupgame.com/"
-featured: true
-order: 4
+featured: false
+order: 5
 ---
 ## **What is Bubble UP!**
 
