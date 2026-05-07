@@ -65,7 +65,7 @@ permalink: /blog/search/
   "tags": {{ post.tags | jsonify }},
   "content": {{ post.content | strip_html | replace: "</script>", "<\\/script>" | truncate: 300 | jsonify }},
   "excerpt": {{ post.excerpt | strip_html | truncate: 150 | jsonify }},
-  "image": {{ post.image | default: "" | jsonify }},
+  "image": {{ post.image | relative_url | default: "" | jsonify }},
   "author": {{ post.author | default: "Anonymous" | jsonify }}
 }{% unless forloop.last %},{% endunless %}
 {% endfor %}
