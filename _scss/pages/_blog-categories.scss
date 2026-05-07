@@ -7,7 +7,7 @@
 
 .category-card {
   background: var(--bg-secondary);
-  border-radius: 15px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow);
   transition: all 0.3s ease;
@@ -36,7 +36,7 @@
 }
 
 .category-name a:hover {
-  opacity: 0.8;
+  color: var(--primary-color);
 }
 
 .category-description {

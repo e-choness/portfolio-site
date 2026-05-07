@@ -28,26 +28,32 @@
     position: relative;
     margin-bottom: 3rem;
     width: calc(80% - 2rem);
-    
+
     &:nth-child(even) {
         margin-left: auto;
         margin-right: 0;
     }
-    
+
     &:nth-child(odd) {
         margin-left: 0;
         margin-right: auto;
+    }
+
+    @media (max-width: 768px) {
+        width: 100%;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
     }
 }
 
 .timeline-content {
     background: var(--bg-secondary);
     padding: 2rem;
-    border-radius: 15px;
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow);
     position: relative;
     transition: all 0.3s ease;
-    
+
     &:hover {
         transform: translateY(-5px);
         box-shadow: var(--shadow-lg);
