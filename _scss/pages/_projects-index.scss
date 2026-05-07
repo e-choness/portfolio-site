@@ -1,10 +1,10 @@
 /* Projects page specific styles */
 
-/* Full-width layout for project listing pages (overrides .project-content) */
+/* Full-width layout for project listing pages (overrides .main-content) */
 .projects-listing {
   max-width: none;
   width: 100%;
-  padding: 100px 0 0;
+  padding-top: 0;
 }
 
 /* Header matching blog header style */
