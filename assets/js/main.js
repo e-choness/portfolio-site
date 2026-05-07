@@ -1018,48 +1018,51 @@ this.checkUrlParams();
       }
 
 this.searchResults.innerHTML = this.currentResults
-        .map(
-          (project) => {
-            const imageSrc = project.image || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=200&fit=crop";
-            return `
-         <div class="project-card" data-category="${(
-           project.categories || []
-         ).join(" ")}">
-           <img src="${imageSrc}" alt="${
-           project.title
-         }" class="project-card-image">
-           <div class="project-card-content">
-             <h3 class="project-card-title">${
-               project.title
-             }</h3>
-             <p class="project-card-description">${
-               project.description || ""
-             }</p>
-             <div class="project-card-tags">
-               ${(project.technologies || [])
-                 .map((tech) => `<span class="project-card-tag">${tech}</span>`)
-                 .join("")}
-             </div>
-             <div class="project-card-links">
-               <a href="${
-                 project.url
-               }" class="project-card-link"><i class="fas fa-info-circle"></i> View Details</a>
-               ${
-                 project.live_url
-                   ? `<a href="${project.live_url}" class="project-card-link" target="_blank"><i class="fas fa-external-link-alt"></i> Live Demo</a>`
-                   : ""
-               }
-               ${
-                 project.github_url
-                   ? `<a href="${project.github_url}" class="project-card-link" target="_blank"><i class="fab fa-github"></i> GitHub</a>`
-                   : ""
-               }
-             </div>
-           </div>
-         </div>
-       `;}
-        )
-        .join("");
+  .map(
+    (project) => {
+      const imageSrc = project.image || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=200&fit=crop";
+      // Prepend baseurl to links if it's not already present
+      const projectUrl = project.url.startsWith('/portfolio-site') ? project.url : '/portfolio-site' + project.url;
+      return `
+   <div class="project-card" data-category="${(
+     project.categories || []
+   ).join(" ")}">
+     <img src="${imageSrc}" alt="${
+     project.title
+   }" class="project-card-image">
+     <div class="project-card-content">
+       <h3 class="project-card-title">${
+         project.title
+       }</h3>
+       <p class="project-card-description">${
+         project.description || ""
+       }</p>
+       <div class="project-card-tags">
+         ${(project.technologies || [])
+           .map((tech) => `<span class="project-card-tag">${tech}</span>`)
+           .join("")}
+       </div>
+       <div class="project-card-links">
+         <a href="${
+           projectUrl
+         }" class="project-card-link"><i class="fas fa-info-circle"></i> View Details</a>
+         ${
+           project.live_url
+             ? `<a href="${project.live_url}" class="project-card-link" target="_blank"><i class="fas fa-external-link-alt"></i> Live Demo</a>`
+             : ""
+         }
+         ${
+           project.github_url
+             ? `<a href="${project.github_url}" class="project-card-link" target="_blank"><i class="fab fa-github"></i> GitHub</a>`
+             : ""
+         }
+       </div>
+     </div>
+   </div>
+ `;}
+  )
+  .join("");
+
     }
   }
 
