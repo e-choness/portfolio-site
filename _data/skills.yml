@@ -39,7 +39,7 @@ categories:
 
   - name: "AI Specializations"
     skills:
-      - name: "Natural Language Processing"
+      - name: "NLP"
         level: 90
         years: 4
         icon: "fas fa-comments"
@@ -81,7 +81,7 @@ categories:
         level: 88
         years: 3
         icon: "fas fa-database"
-      - name: "MCP (Model Context Protocol)"
+      - name: "MCP"
         level: 85
         years: 2
         icon: "fas fa-plug"
