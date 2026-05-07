@@ -629,6 +629,7 @@ window.addEventListener("load", () => {
 this.checkUrlParams();
        // Don't auto-display results - let the initial page content (paginated) show
        // Results will be displayed when user searches or filters
+       this.updateResultsCount();
     }
 
     checkUrlParams() {
