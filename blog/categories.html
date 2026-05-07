@@ -11,7 +11,7 @@ permalink: /blog/categories/
     category_posts = site.categories[category_data.slug] %} {% if
     category_posts.size > 0 %}
      <div class="category-card">
-       <div class="category-header category-{{ category_data.slug | slugify }}">
+       <div class="category-header category-{{ category_data.slug | slugify }}" style="--category-color: {{ category_data.color }}; border-left-color: {{ category_data.color }}; background-color: {{ category_data.color }}15;">
          <h3 class="category-name">
            <a
              href="{{ '/blog/categories/' | relative_url }}{{ category_data.slug | slugify }}/"

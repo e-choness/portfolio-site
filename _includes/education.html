@@ -1,0 +1,69 @@
+<section id="education" class="section">
+  <h2 class="section-title" data-aos="fade-up">Education & Certifications</h2>
+  <div class="education-grid">
+    {% for edu in site.data.education %}
+    <div class="education-card" data-aos="fade-up" data-aos-delay="{{ forloop.index | times: 200 }}">
+      <div class="education-content">
+        <div class="education-institution-row">
+          {% if edu.logo %}
+          <img src="{{ edu.logo | relative_url }}" alt="{{ edu.institution }}" class="education-logo-img" />
+          {% endif %}
+          <p class="education-institution">{{ edu.institution }}</p>
+        </div>
+        <h3 class="education-degree">{{ edu.degree }}</h3>
+        {% if edu.location %}
+        <p class="education-location">
+          <i class="fas fa-map-marker-alt"></i> {{ edu.location }}
+        </p>
+        {% endif %}
+        <p class="education-duration">
+          <i class="fas fa-calendar"></i> {{ edu.duration }}
+        </p>
+        {% if edu.gpa %}
+        <p class="education-gpa">
+          <strong>GPA:</strong> {{ edu.gpa }}
+        </p>
+        {% endif %}
+        {% if edu.description %}
+        <p class="education-description">{{ edu.description }}</p>
+        {% endif %}
+        {% if edu.coursework %}
+        <div class="education-coursework">
+          <h4>Coursework</h4>
+          <ul>
+            {% for course in edu.coursework %}
+            <li>{{ course }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+        {% if edu.achievements %}
+        <div class="education-achievements">
+          <h4>Achievements</h4>
+          <ul>
+            {% for achievement in edu.achievements %}
+            <li>{{ achievement }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+        {% if edu.skills %}
+        <div class="education-skills">
+          <h4>Skills Demonstrated</h4>
+          <div class="skill-tags">
+            {% for skill in edu.skills %}
+            <span class="skill-tag">{{ skill }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+        {% if edu.verification_url %}
+        <a href="{{ edu.verification_url }}" target="_blank" class="education-verify">
+          <i class="fas fa-external-link-alt"></i> Verify Credential
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>

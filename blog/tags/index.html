@@ -1,0 +1,70 @@
+---
+layout: blog
+title: "Browse by Tag"
+description: "Explore all blog posts by tag"
+permalink: /blog/tags/
+---
+
+<div class="container">
+  <div class="blog-header" data-aos="fade-up">
+    <h1 class="blog-title">Browse by Tag</h1>
+    <p class="blog-subtitle">Explore posts organized by topic</p>
+  </div>
+
+  <div class="tags-grid" data-aos="fade-up" data-aos-delay="200">
+    {% assign all_tags = site.posts | map: 'tags' | join: ',' | split: ',' | uniq | sort %}
+    {% for tag in all_tags %}
+      {% assign tag_slug = tag | slugify %}
+      {% assign tag_posts = site.posts | where_exp: "post", "post.tags contains tag" | size %}
+      <div class="tag-card">
+        <a href="#{{ tag_slug }}" class="tag-card-link">
+          <span class="tag-name">{{ tag }}</span>
+          <span class="tag-post-count">{{ tag_posts }}</span>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="tags-list" data-aos="fade-up" data-aos-delay="400">
+    {% assign all_tags = site.posts | map: 'tags' | join: ',' | split: ',' | uniq | sort %}
+    {% for tag in all_tags %}
+      {% assign tag_slug = tag | slugify %}
+      <div class="tag-section" id="{{ tag_slug }}">
+        <h2 class="tag-section-title">{{ tag }}</h2>
+        <div class="blog-grid">
+          {% assign posts_with_tag = site.posts | where_exp: "post", "post.tags contains tag" %}
+          {% for post in posts_with_tag %}
+          <article class="blog-card" data-aos="fade-up">
+            {% if post.image %}
+            <img src="{{ post.image | relative_url }}" alt="{{ post.title }}" class="blog-image" />
+            {% else %}
+            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=200&fit=crop" alt="{{ post.title }}" class="blog-image" />
+            {% endif %}
+            <div class="blog-content">
+              <div class="blog-meta">
+                <span class="blog-date">
+                  <i class="fas fa-calendar"></i>
+                  {{ post.date | date: "%B %d, %Y" }}
+                </span>
+                {% if post.category %}
+                <span class="blog-category">{{ post.category | capitalize }}</span>
+                {% endif %}
+              </div>
+              <h2 class="blog-card-title">
+                <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+              </h2>
+              <p class="blog-excerpt">
+                {% if post.excerpt %} {{ post.excerpt | strip_html | truncate: 150 }}
+                {% else %} {{ post.content | strip_html | truncate: 150 }} {% endif %}
+              </p>
+              <a href="{{ post.url | relative_url }}" class="blog-read-more">
+                Read More <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

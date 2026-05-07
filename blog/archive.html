@@ -6,11 +6,21 @@ permalink: /blog/archive/
 ---
 
 <div class="container">
+    <div class="blog-header" data-aos="fade-up" data-aos-delay="200">
+      <h1 class="blog-title">Jump to Year</h1>
+      <div class="year-links">
+            {% assign posts_by_year = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+            {% for year in posts_by_year %}
+            <a href="#year-{{ year.name }}" class="year-link">{{ year.name }}</a>
+            {% endfor %}
+        </div>
+    </div>
+
     <div class="archive-container" data-aos="fade-up" data-aos-delay="200">
         {% assign posts_by_year = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
         
         {% for year in posts_by_year %}
-        <div class="year-section">
+        <div class="year-section" id="year-{{ year.name }}">
             <h2 class="year-header">{{ year.name }}</h2>
             <div class="year-stats">{{ year.items.size }} posts</div>
             
@@ -55,25 +65,3 @@ permalink: /blog/archive/
         {% endfor %}
     </div>
 </div>
-
-<script>
-// Smooth scroll for year navigation
-document.addEventListener('DOMContentLoaded', function() {
-    const yearLinks = document.querySelectorAll('.year-link');
-    
-    yearLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href').substring(1);
-            const targetElement = document.getElementById(targetId);
-            
-            if (targetElement) {
-                targetElement.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
-});
-</script>

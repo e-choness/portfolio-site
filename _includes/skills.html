@@ -11,7 +11,12 @@
           {% for skill in category.skills %}
           <div class="skill-item">
             <div class="skill-info">
-              <span class="skill-name">{{ skill.name }}</span>
+              <div class="skill-name-with-icon">
+                {% if skill.icon %}
+                <i class="skill-icon {{ skill.icon }}"></i>
+                {% endif %}
+                <span class="skill-name">{{ skill.name }}</span>
+              </div>
               <span class="skill-percentage">{{ skill.level }}%</span>
             </div>
             <div class="skill-bar">

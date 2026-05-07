@@ -3,11 +3,12 @@
 .categories-grid {
   @extend .cards-grid;
   margin-top: 2rem;
+  padding-bottom: 4rem;
 }
 
 .category-card {
   background: var(--bg-secondary);
-  border-radius: 15px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow);
   transition: all 0.3s ease;
@@ -22,6 +23,7 @@
   padding: 2rem;
   background: var(--bg-primary);
   border-radius: 15px 15px 0 0;
+  border-left: 4px solid var(--category-color);
 }
 
 .category-name {
@@ -32,7 +34,8 @@
 
 .category-name a {
   text-decoration: none;
-  transition: opacity 0.3s ease;
+  transition: color 0.3s ease;
+  color: var(--category-color);
 }
 
 .category-name a:hover {
@@ -122,51 +125,7 @@
   transform: translateX(5px);
 }
 
-/* Category-specific styles (from data-driven examples) */
-.category-react {
-  background-color: #61dafb15;
-  border-left: 4px solid #61dafb;
-}
-
-.category-link-react {
-  color: #61dafb;
-}
-
-.category-nodejs {
-  background-color: #33993315;
-  border-left: 4px solid #339933;
-}
-
-.category-link-nodejs {
-  color: #339933;
-}
-
-.category-fullstack {
-  background-color: #2563eb15;
-  border-left: 4px solid #2563eb;
-}
-
-.category-link-fullstack {
-  color: #2563eb;
-}
-
-.category-frontend {
-  background-color: #ff6b6b15;
-  border-left: 4px solid #ff6b6b;
-}
-
-.category-link-frontend {
-  color: #ff6b6b;
-}
-
-.category-backend {
-  background-color: #68217a15;
-  border-left: 4px solid #68217a;
-}
-
-.category-link-backend {
-  color: #68217a;
-}
+/* Category colors are now applied dynamically via inline styles and CSS custom properties */
 
 @media (max-width: 768px) {
   .categories-grid {

@@ -1,71 +1,57 @@
-- degree: "Bachelor of Science in Computer Science"
-  institution: "University of Technology"
-  location: "City, State"
-  duration: "2015 - 2019"
-  gpa: "3.8/4.0"
-  logo: "/assets/images/education/university-tech.png"
+- degree: "AI Engineer Professional Certificate"
+  institution: "Microsoft"
+  location: "Online (via edX)"
+  duration: "Sep 2025 – Dec 2025"
+  logo: "/assets/images/education/microsoft.png"
   description: |
-    Comprehensive computer science program focusing on software engineering, algorithms, and system design. 
-    Graduated Magna Cum Laude with specialization in web technologies and database systems.
+    A professional program focused on building and deploying enterprise-grade AI solutions. 
+    The curriculum covers Azure AI services, Machine Learning models, natural language 
+    processing, computer vision, and the integration of Azure OpenAI with a focus 
+    on responsible and ethical AI development.
+  skills:
+    - "Microsoft Azure AI"
+    - "Azure Machine Learning"
+    - "Azure OpenAI"
+    - "Computer Vision"
+    - "Natural Language Processing (NLP)"
+    - "Conversational AI"
+    - "Responsible AI"
+  verification_url: "https://www.edx.org/certificates/professional-certificate/microsoft-ai-engineer"
+
+- degree: "Master of Science - MS, Computer Science"
+  institution: "Lakehead University"
+  location: "Thunder Bay, Ontario, Canada"
+  duration: "Sep 2020 – May 2023"
+  gpa: "3.86/4.0"
+  logo: "/assets/images/education/lakehead-university.png"
+  description: |
+    First Class Honours graduate. A consistent volunteer for multiple campus events, clubs, and departments.
+  coursework:
+    - "Machine Learning"
+    - "Deep Learning"
+    - "Pattern Recognition"
+    - "Big Data"
+    - "Natural Language Processing"
+  achievements:
+    - "First Class Honours"
+    - "Campus Event Volunteer"
+
+- degree: "Bachelor of Engineering - BE, Software Engineering"
+  institution: "Dalian Minzu University"
+  location: "Dalian, China"
+  duration: "Sep 2008 – Jul 2012"
+  logo: "/assets/images/education/dalian-minzu.png"
+  description: |
+    Comprehensive engineering program covering the full software development lifecycle, 
+    from mathematical foundations to embedded real-time systems and quality assurance.
   coursework:
     - "Data Structures and Algorithms"
-    - "Software Engineering"
-    - "Database Systems"
-    - "Web Development"
-    - "Computer Networks"
-    - "Operating Systems"
+    - "Object-Oriented Programming (Java)"
+    - "Software Engineering Integrated Design"
+    - "Operating System"
+    - "Database and Information Management"
+    - "Computer Network"
+    - "Artificial Intelligence Principles"
+    - "Software Quality Assurance and Testing"
   achievements:
-    - "Dean's List - 6 semesters"
-    - "Outstanding Student in Computer Science"
-    - "President of Computer Science Club"
-
-- degree: "Full-Stack Web Development Bootcamp"
-  institution: "Code Academy"
-  location: "Online"
-  duration: "2019"
-  logo: "/assets/images/education/code-academy.png"
-  description: |
-    Intensive 6-month full-stack web development program covering modern JavaScript frameworks, 
-    backend development, and deployment strategies. Completed with honors.
-  coursework:
-    - "HTML5, CSS3, JavaScript ES6+"
-    - "React.js and Redux"
-    - "Node.js and Express.js"
-    - "MongoDB and PostgreSQL"
-    - "RESTful API Development"
-    - "Git Version Control"
-  achievements:
-    - "Graduated with Honors"
-    - "Best Final Project Award"
-    - "Peer Mentor"
-
-- degree: "AWS Solutions Architect Certification"
-  institution: "Amazon Web Services"
-  location: "Online"
-  duration: "2021"
-  logo: "/assets/images/education/aws.png"
-  description: |
-    Professional certification demonstrating expertise in designing distributed systems 
-    and applications on the AWS platform.
-  skills:
-    - "Cloud Architecture Design"
-    - "AWS Services Implementation"
-    - "Security Best Practices"
-    - "Cost Optimization"
-    - "Performance Optimization"
-  verification_url: "https://aws.amazon.com/verification"
-
-- degree: "Google Analytics Certified"
-  institution: "Google"
-  location: "Online"
-  duration: "2020"
-  logo: "/assets/images/education/google.png"
-  description: |
-    Certification in Google Analytics demonstrating proficiency in web analytics, 
-    data analysis, and digital marketing insights.
-  skills:
-    - "Web Analytics"
-    - "Data Analysis"
-    - "Performance Tracking"
-    - "Conversion Optimization"
-  verification_url: "https://skillshop.exceedlms.com/student/award/"
+    - "CET 4 & CET 6 (English Proficiency)"
