@@ -16,17 +16,28 @@ wide: true
   </div>
 </div>
 
-<div class="container">
+  <div class="container">
+  <!-- Projects Filter Tabs -->
+  <div class="projects-filter" data-aos="fade-up" data-aos-delay="100">
+    <button class="filter-btn active" data-filter="all">All</button>
+    {% for category_data in site.data.projects.categories %}
+      {% assign category_projects = site.projects | where_exp: "project", "project.categories contains category_data.slug" %}
+      {% if category_projects.size > 0 %}
+    <button class="filter-btn" data-filter="{{ category_data.slug }}">{{ category_data.name }}</button>
+      {% endif %}
+    {% endfor %}
+  </div>
+
   <!-- Projects Grid -->
   <div class="projects-grid">
     {% assign project_files = site.projects | sort: 'order' %} {% for project
     in project_files %}
-    <div
-      class="project-card"
-      data-category="{{ project.categories | join: ' ' }}"
-      data-aos="fade-up"
-      data-aos-delay="{{ forloop.index | times: 200 }}"
-    >
+     <div
+       class="project-card"
+       data-category="{{ project.categories | join: ',' }}"
+       data-aos="fade-up"
+       data-aos-delay="{{ forloop.index | times: 200 }}"
+     >
       <img
         src="{{ project.image | relative_url}}"
         alt="{{ project.title }}"

@@ -1046,8 +1046,68 @@ window.addEventListener("load", () => {
     }
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    if (hasBlogSearch()) new BlogSearch();
-    if (hasProjectSearch()) new ProjectSearch();
-  });
-})();
+   document.addEventListener("DOMContentLoaded", () => {
+     if (hasBlogSearch()) new BlogSearch();
+     if (hasProjectSearch()) new ProjectSearch();
+     initCategoryFilters();
+   });
+ })();
+
+ // Category Filter Tabs (for Blog and Projects index pages)
+ class CategoryFilter {
+   constructor(containerSelector, itemSelector, itemCategoryAttr) {
+     this.container = document.querySelector(containerSelector);
+     this.items = document.querySelectorAll(itemSelector);
+     this.itemCategoryAttr = itemCategoryAttr;
+
+     if (!this.container) return;
+
+     this.filterButtons = this.container.querySelectorAll('.filter-btn');
+     this.init();
+   }
+
+   init() {
+     if (!this.container || this.filterButtons.length === 0) return;
+
+     this.filterButtons.forEach((btn) => {
+       btn.addEventListener('click', () => {
+         // Update active state
+         this.filterButtons.forEach(b => b.classList.remove('active'));
+         btn.classList.add('active');
+
+         const filterValue = btn.getAttribute('data-filter');
+         this.filterItems(filterValue);
+       });
+     });
+   }
+
+   filterItems(filterValue) {
+     this.items.forEach(item => {
+       const itemCategories = item.getAttribute(this.itemCategoryAttr);
+       const categories = itemCategories ? itemCategories.split(',').map(c => c.trim()).filter(c => c) : [];
+
+       const shouldShow = filterValue === 'all' || categories.includes(filterValue);
+
+       if (shouldShow) {
+         item.style.display = '';
+         // Re-trigger AOS animation for newly visible items
+         if (typeof AOS !== 'undefined') {
+           AOS.refresh();
+         }
+       } else {
+         item.style.display = 'none';
+       }
+     });
+
+     // Trigger a scroll event to handle any lazy animations
+     window.dispatchEvent(new Event('scroll'));
+   }
+ }
+
+ function initCategoryFilters() {
+   // Blog page filter
+   new CategoryFilter('.blog-filter', '.blog-card', 'data-category');
+
+   // Projects page filter
+   new CategoryFilter('.projects-filter', '.project-card', 'data-category');
+ }
