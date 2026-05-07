@@ -64,3 +64,33 @@
     grid-template-columns: 1fr;
   }
 }
+
+// Empty state message
+.no-results {
+  text-align: center;
+  padding: 4rem 2rem;
+  margin: 3rem 0;
+
+  i {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: 1rem;
+  }
+
+  a {
+    display: inline-block;
+  }
+}
