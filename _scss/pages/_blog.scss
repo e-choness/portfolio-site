@@ -163,23 +163,32 @@
 /* Blog Header */
 .blog-header {
   text-align: center;
-  padding: 3rem 0 2rem;
-  background: linear-gradient(
-    135deg,
-    var(--bg-primary) 0%,
-    var(--bg-secondary) 100%
-  );
+  padding: 2rem 0 3rem;
 }
 
 .blog-title {
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  margin-bottom: 1rem;
   color: var(--text-primary);
+  position: relative;
+  display: inline-block;
+  margin-bottom: 2.5rem;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: var(--primary-color);
+    border-radius: 2px;
+  }
 }
 
 .blog-subtitle {
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: var(--text-secondary);
   max-width: 600px;
   margin: 0 auto;
@@ -483,20 +492,17 @@
 /* Tags Page */
 .tags-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.75rem;
   margin-bottom: 3rem;
 }
 
 .tag-card {
-  background: var(--bg-secondary);
   border-radius: var(--radius);
-  padding: 1.5rem;
-  text-align: center;
+  overflow: hidden;
   transition: all 0.3s ease;
 
   &:hover {
-    transform: translateY(-3px);
     box-shadow: var(--shadow-lg);
   }
 }
@@ -505,24 +511,38 @@
   text-decoration: none;
   color: inherit;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0;
 }
 
 .tag-name {
-  font-weight: 600;
+  flex: 1;
+  background: var(--bg-secondary);
   color: var(--text-primary);
-  font-size: 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  transition: background-color 0.3s ease;
 }
 
 .tag-post-count {
+  flex: 0 0 50px;
   background: var(--primary-color);
   color: white;
-  padding: 0.25rem 0.6rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.tag-card:hover .tag-name {
+  background: var(--border-color);
 }
 
 .tags-list {

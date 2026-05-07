@@ -6,9 +6,9 @@ permalink: /blog/archive/
 ---
 
 <div class="container">
-    <div class="archive-navigation" data-aos="fade-up" data-aos-delay="200">
-        <h3>Jump to Year</h3>
-        <div class="year-links">
+    <div class="blog-header" data-aos="fade-up" data-aos-delay="200">
+      <h1 class="blog-title">Jump to Year</h1>
+      <div class="year-links">
             {% assign posts_by_year = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
             {% for year in posts_by_year %}
             <a href="#year-{{ year.name }}" class="year-link">{{ year.name }}</a>
