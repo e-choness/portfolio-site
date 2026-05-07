@@ -22,6 +22,7 @@
   padding: 2rem;
   background: var(--bg-primary);
   border-radius: 15px 15px 0 0;
+  border-left: 4px solid var(--category-color);
 }
 
 .category-name {
@@ -32,11 +33,12 @@
 
 .category-name a {
   text-decoration: none;
-  transition: opacity 0.3s ease;
+  transition: color 0.3s ease;
+  color: var(--category-color);
 }
 
 .category-name a:hover {
-  color: var(--primary-color);
+  opacity: 0.8;
 }
 
 .category-description {
