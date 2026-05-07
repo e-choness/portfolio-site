@@ -24,7 +24,7 @@ body {
 
 /* Offset content for fixed header */
 main {
-  padding-top: calc(var(--header-height) + 1rem);
+  padding-top: var(--header-height);
   min-height: calc(100vh - var(--header-height));
 }
 
