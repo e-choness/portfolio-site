@@ -66,19 +66,6 @@ wide: true
         >Browse Categories</a
       >
     </div>
-
-    <div id="search-suggestions" class="search-suggestions">
-      <h3>Popular Technologies</h3>
-      <div class="tag-cloud">
-        {% assign all_technologies = site.projects | map: 'technologies' | join:
-        ',' | split: ',' | uniq | sort %} {% for tech in all_technologies limit:
-        20 %} {% if tech != '' %}
-        <button class="tag-suggestion" data-tech="{{ tech }}">
-          {{ tech }}
-        </button>
-        {% endif %} {% endfor %}
-      </div>
-    </div>
   </div>
 </div>
 

@@ -49,18 +49,6 @@ permalink: /blog/search/
             <p>Try adjusting your search terms or browse by category.</p>
             <a href="{{ '/blog/categories/' | relative_url }}" class="view-all-posts">Browse Categories</a>
         </div>
-        
-        <div id="search-suggestions" class="search-suggestions">
-            <h3>Popular Tags</h3>
-            <div class="tag-cloud">
-                {% assign all_tags = site.posts | map: 'tags' | join: ',' | split: ',' | uniq | sort %}
-                {% for tag in all_tags limit: 20 %}
-                {% if tag != '' %}
-                <button class="tag-suggestion" data-tag="{{ tag }}">{{ tag }}</button>
-                {% endif %}
-                {% endfor %}
-            </div>
-        </div>
     </div>
 </div>
 
