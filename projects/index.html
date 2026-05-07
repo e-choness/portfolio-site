@@ -6,27 +6,10 @@ header: false
 wide: true
 ---
 
-<div class="projects-header" data-aos="fade-up">
-  <div class="container">
-    <h1 class="page-title">All Projects</h1>
-    <p class="page-subtitle">
-      Explore my portfolio of projects showcasing various technologies and
-      skills.
-    </p>
-  </div>
-</div>
+
 
   <div class="container">
   <!-- Projects Filter Tabs -->
-  <div class="projects-filter" data-aos="fade-up" data-aos-delay="100">
-    <button class="filter-btn active" data-filter="all">All</button>
-    {% for category_data in site.data.projects.categories %}
-      {% assign category_projects = site.projects | where_exp: "project", "project.categories contains category_data.slug" %}
-      {% if category_projects.size > 0 %}
-    <button class="filter-btn" data-filter="{{ category_data.slug }}">{{ category_data.name }}</button>
-      {% endif %}
-    {% endfor %}
-  </div>
 
   <!-- Projects Grid -->
   <div class="projects-grid">

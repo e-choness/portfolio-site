@@ -5,18 +5,6 @@ description: "Complete archive of all blog posts organized by date"
 permalink: /blog/archive/
 ---
 
-<div class="blog-header" data-aos="fade-up">
-    <div class="container">
-        <h1 class="blog-title">Archive</h1>
-        <p class="blog-subtitle">
-            Complete archive of all blog posts organized by date
-        </p>
-        <div class="archive-stats">
-            <span class="total-posts">{{ site.posts.size }} total posts</span>
-        </div>
-    </div>
-</div>
-
 <div class="container">
     <div class="archive-container" data-aos="fade-up" data-aos-delay="200">
         {% assign posts_by_year = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}

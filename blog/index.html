@@ -4,27 +4,7 @@ title: "Blog"
 description: "Thoughts on web development, technology, and career insights"
 ---
 
-<div class="blog-header" data-aos="fade-up">
   <div class="container">
-    <h1 class="blog-title">Blog</h1>
-    <p class="blog-subtitle">
-      Sharing insights on web development, technology trends, and lessons
-      learned from building modern applications.
-    </p>
-  </div>
-</div>
-
-  <div class="container">
-  <!-- Blog Category Filter Tabs -->
-  <div class="blog-filter" data-aos="fade-up" data-aos-delay="100">
-    <button class="filter-btn active" data-filter="all">All</button>
-    {% for category_data in site.data.blog.categories %}
-      {% assign category_posts = site.categories[category_data.slug] %}
-      {% if category_posts and category_posts.size > 0 %}
-    <button class="filter-btn" data-filter="{{ category_data.slug }}">{{ category_data.name }}</button>
-      {% endif %}
-    {% endfor %}
-  </div>
 
   <div class="blog-grid">
     {% for post in paginator.posts %}
