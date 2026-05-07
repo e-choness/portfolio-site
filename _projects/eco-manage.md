@@ -15,7 +15,7 @@ categories:
 live_url: "https://github.com/e-choness/eco-manage"
 github_url: "https://github.com/e-choness/eco-manage"
 featured: true
-order: 1
+order: 3
 ---
 ## Project Overview
 

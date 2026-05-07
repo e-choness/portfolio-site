@@ -14,8 +14,8 @@ categories:
   - Fullstack
 live_url: "https://store.steampowered.com/app/3763470/WuTang_Rise_of_the_Deceiver/"
 github_url: "https://store.steampowered.com/app/3763470/WuTang_Rise_of_the_Deceiver/"
-featured: true
-order: 3
+featured: false
+order: 4
 ---
 
 ## Wu-Tang: Rise of the Deceiver
