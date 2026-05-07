@@ -49,7 +49,7 @@ wide: true
         {% endfor %} {% if category_projects.size > 3 %}
         <div class="view-more">
           <a
-            href="{{ '/projects/categories/' | relative_url }}{{ category_data.slug }}/"
+            href="{{ '/projects/' | relative_url }}?category={{ category_data.slug }}"
             class="view-more-link"
           >
             View all {{ category_projects.size }} projects

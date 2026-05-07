@@ -186,13 +186,20 @@
   padding: 2rem;
   border-radius: 15px;
   box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
 
   h3 {
-    font-size: 1.3rem;
+    font-size: 0.8rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
     color: var(--text-primary);
     text-align: center;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.4;
   }
 }
 
