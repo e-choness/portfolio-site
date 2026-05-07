@@ -1125,9 +1125,6 @@ this.searchResults.innerHTML = this.currentResults
  }
 
  function initCategoryFilters() {
-   // Blog page filter
-   new CategoryFilter('.blog-filter', '.blog-card', 'data-category');
-
    // Projects page filter
    new CategoryFilter('.projects-filter', '.project-card', 'data-category');
  }

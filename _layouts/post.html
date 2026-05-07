@@ -38,7 +38,7 @@ layout: blog
   {{ content }} {% if page.tags %}
   <div class="post-tags">
     {% for tag in page.tags %}
-    <a href="{{ '/blog/tags/' | relative_url }}{{ tag | slugify }}/" class="tag"
+    <a href="{{ '/blog/tags/' | relative_url }}#{{ tag | slugify }}" class="tag"
       >#{{ tag }}</a
     >
     {% endfor %}
