@@ -950,7 +950,17 @@ this.checkUrlParams();
         }
       });
 
+      this.checkUrlParams();
       this.performSearch();
+    }
+
+    checkUrlParams() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const category = urlParams.get("category");
+
+      if (category && this.categoryFilter) {
+        this.categoryFilter.value = category;
+      }
     }
 
     performSearch() {
