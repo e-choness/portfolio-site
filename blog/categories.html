@@ -40,7 +40,7 @@ permalink: /blog/categories/
         {% endfor %} {% if category_posts.size > 3 %}
         <div class="view-more">
           <a
-            href="{{ '/blog/categories/' | relative_url }}{{ category_data.slug }}/"
+            href="{{ '/blog/' | relative_url }}?category={{ category_data.slug }}"
             class="view-more-link"
           >
             View all {{ category_posts.size }} posts
