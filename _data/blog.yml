@@ -7,11 +7,11 @@ categories:
   - name: "Artificial Intelligence"
     slug: "ai"
     description: "Posts about AI, machine learning, LLMs, and intelligent systems"
-    color: "#61dafb"
+    color: "#65c4ed"
   - name: "Backend Development"
     slug: "backend"
     description: "Building robust APIs, servers, and backend architectures"
-    color: "#339933"
+    color: "#743a70"
 
 # Featured topics
 featured_topics:
