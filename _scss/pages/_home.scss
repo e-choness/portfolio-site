@@ -124,6 +124,21 @@
   margin-bottom: 2rem;
 }
 
+@include down($bp-xs) {
+  .about-content {
+    grid-template-columns: 1fr;
+    gap: 0;
+
+    > div:first-child {
+      display: none;
+    }
+  }
+
+  .about-text {
+    text-align: justify;
+  }
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
