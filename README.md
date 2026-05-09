@@ -38,7 +38,9 @@
 ├── assets/                  # Static assets (images, css, js)
 ├── .github/workflows/       # GitHub Actions
 ├── index.html               # Main portfolio page
-└── Gemfile                  # Ruby dependencies
+├── Gemfile                  # Ruby dependencies
+├── Dockerfile               # Docker image definition
+└── docker-compose.yml       # Docker Compose config
 ```
 Customize the site easily by editing the YAML files in the `_data/` directory:
 |**File**|**Purpose**|
@@ -51,13 +53,35 @@ Customize the site easily by editing the YAML files in the `_data/` directory:
 
 ## 🛠️ Setup & Installation
 
-### Prerequisites
+### Docker (Recommended)
+
+No Ruby or Jekyll setup required.
+
+1. **Clone the repository**
+
+```bash
+git clone https://github.com/yourusername/yourusername.github.io.git
+cd yourusername.github.io
+```
+
+2. **Build and start the container**
+
+```bash
+docker compose up
+```
+
+3. **Open your browser**
+   Navigate to `http://localhost:4000`
+
+The server runs with live reload — changes to source files rebuild automatically.
+
+### Manual Setup
+
+#### Prerequisites
 
 - Ruby (2.7 or higher)
 - Bundler gem
 - Git
-
-### Local Development
 
 1. **Clone the repository**
 
