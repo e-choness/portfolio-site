@@ -1,5 +1,0 @@
-{
-  "quietDeps": true,
-  "style": "compressed",
-  "loadPaths": ["_scss"]
-}

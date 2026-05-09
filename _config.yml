@@ -26,6 +26,8 @@ exclude:
   - vendor/gems/
   - vendor/ruby/
   - README.md
+  - Dockerfile
+  - docker-compose.yml
 
 # Collections
 collections:
