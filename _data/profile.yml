@@ -8,7 +8,7 @@ tagline: "Passionate about creating innovative AI solutions"
 # About section
 about:
   description: |
-    I'm a senior AI engineer with over 7 years of experience building intelligent systems and machine learning solutions that transform how businesses operate. 
+    I'm a senior AI engineer with over 8 years of experience building intelligent systems and machine learning solutions that transform how businesses operate. 
     My journey in AI began with fascination for neural networks and has evolved into expertise in designing scalable, production-ready AI systems.
 
     I specialize in deploying machine learning models, with deep expertise in applied AI techniques like RAG, MCP and toolings. 
@@ -21,7 +21,7 @@ about:
 # Statistics
 stats:
   - label: "Years Experience"
-    value: 7
+    value: 8
   - label: "Projects Completed"
     value: 38
   - label: "Happy Clients"
