@@ -14,7 +14,7 @@ permalink: /blog/categories/
        <div class="category-header category-{{ category_data.slug | slugify }}" style="--category-color: {{ category_data.color }}; border-left-color: {{ category_data.color }}; background-color: {{ category_data.color }}15;">
          <h3 class="category-name">
            <a
-             href="{{ '/blog/categories/' | relative_url }}{{ category_data.slug | slugify }}/"
+             href="{{ '/blog/' | relative_url }}?category={{ category_data.slug }}"
              class="category-link-{{ category_data.slug | slugify }}"
            >
              {{ category_data.name }}

@@ -17,7 +17,7 @@ wide: true
        <div class="category-header category-{{ category_data.slug | slugify }}" style="--category-color: {{ category_data.color }}; border-left-color: {{ category_data.color }}; background-color: {{ category_data.color }}15;">
          <h3 class="category-name">
            <a
-             href="{{ '/projects/categories/' | relative_url }}{{ category_data.slug | slugify }}/"
+             href="{{ '/projects/' | relative_url }}?category={{ category_data.slug }}"
              class="category-link-{{ category_data.slug | slugify }}"
            >
              {{ category_data.name }}

@@ -18,12 +18,11 @@
     <div class="project-stats">
       <span class="stat-item">
         <i class="fas fa-code"></i>
-        {{ site.projects.size }} Projects
+        {{ site.projects | size }} Projects
       </span>
       <span class="stat-item">
         <i class="fas fa-tags"></i>
-        {% assign all_categories = site.projects | map: 'categories' | join: ','
-        | split: ',' | uniq %} {{ all_categories.size }} Categories
+        {{ site.data.projects.categories.size }} Categories
       </span>
     </div>
   </div>
