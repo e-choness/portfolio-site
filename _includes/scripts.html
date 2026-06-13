@@ -21,6 +21,31 @@
   defer
   src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"
 ></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  // Kramdown renders ```mermaid as <pre><code class="language-mermaid">
+  // Transform to <pre class="mermaid"> so Mermaid.js picks it up
+  document.querySelectorAll('pre code.language-mermaid').forEach(function (el) {
+    var pre = el.parentElement;
+    var container = document.createElement('pre');
+    container.className = 'mermaid';
+    container.textContent = el.textContent;
+    pre.parentElement.replaceChild(container, pre);
+  });
+  mermaid.initialize({ startOnLoad: true });
+</script>
+<script>
+  // Kramdown renders ```markmap as <pre><code class="language-markmap">
+  // Transform to <div class="markmap"> so markmap-autoloader picks it up
+  document.querySelectorAll('pre code.language-markmap').forEach(function (el) {
+    var pre = el.parentElement;
+    var container = document.createElement('div');
+    container.className = 'markmap';
+    container.textContent = el.textContent;
+    pre.parentElement.replaceChild(container, pre);
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/markmap-autoloader@0.16"></script>
 {% endif %}
 
 <!-- Typed.js Data -->
