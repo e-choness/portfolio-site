@@ -21,6 +21,56 @@
   defer
   src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"
 ></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+  // Collect mermaid diagrams and store source so we can re-render on theme change
+  var diagrams = [];
+  document.querySelectorAll('pre code.language-mermaid').forEach(function (el) {
+    var source = el.textContent;
+    var pre = el.parentElement;
+    var container = document.createElement('pre');
+    container.className = 'mermaid';
+    container.textContent = source;
+    pre.parentElement.replaceChild(container, pre);
+    diagrams.push({ container: container, source: source });
+  });
+
+  function getMermaidTheme() {
+    return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default';
+  }
+
+  async function renderMermaid() {
+    // Restore source so mermaid can re-render (it skips already-processed elements)
+    diagrams.forEach(function (d) {
+      d.container.removeAttribute('data-processed');
+      d.container.textContent = d.source;
+    });
+    mermaid.initialize({ startOnLoad: false, theme: getMermaidTheme() });
+    await mermaid.run();
+  }
+
+  renderMermaid();
+
+  // Re-render diagrams when the site theme is toggled
+  new MutationObserver(function (mutations) {
+    mutations.forEach(function (m) {
+      if (m.attributeName === 'data-theme') renderMermaid();
+    });
+  }).observe(document.documentElement, { attributes: true });
+</script>
+<script>
+  // Kramdown renders ```markmap as <pre><code class="language-markmap">
+  // Transform to <div class="markmap"> so markmap-autoloader picks it up
+  document.querySelectorAll('pre code.language-markmap').forEach(function (el) {
+    var pre = el.parentElement;
+    var container = document.createElement('div');
+    container.className = 'markmap';
+    container.textContent = el.textContent;
+    pre.parentElement.replaceChild(container, pre);
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/markmap-autoloader@0.16"></script>
 {% endif %}
 
 <!-- Typed.js Data -->
