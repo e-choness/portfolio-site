@@ -2,7 +2,7 @@
 layout: post
 title: "The Honest Parts: Residency, Tenancy, and Saying No"
 date: 2026-05-27 09:00:00 -0000
-category: ai-ml
+category: ai
 tags: [ai, llm, compliance, data-residency, architecture, scope]
 author: "Echo Yin"
 image: "assets/images/projects/aegis.jpg"

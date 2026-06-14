@@ -2,7 +2,7 @@
 layout: post
 title: "Guardrails That Tell You the Truth About Streaming"
 date: 2026-05-20 09:00:00 -0000
-category: ai-ml
+category: ai
 tags: [ai, llm, guardrails, streaming, safety, architecture]
 author: "Echo Yin"
 image: "assets/images/projects/aegis.jpg"

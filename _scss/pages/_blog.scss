@@ -428,12 +428,13 @@
   border: 1px solid var(--border-color);
 }
 
-.post-content code {
+.post-content code,
+.post-content :not(pre) > code[class*="language-"] {
   background: var(--bg-secondary);
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   font-size: 0.9rem;
-  color: var(--primary-color);
+  color: var(--inline-code-color);
   border: 1px solid var(--border-color);
 }
 

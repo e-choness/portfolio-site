@@ -12,6 +12,10 @@ categories:
     slug: "backend"
     description: "Building robust APIs, servers, and backend architectures"
     color: "#743a70"
+  - name: "Networking"
+    slug: "networking"
+    description: "Insights on network architecture, and performance optimization"
+    color: "#f9a03f"
 
 # Featured topics
 featured_topics:

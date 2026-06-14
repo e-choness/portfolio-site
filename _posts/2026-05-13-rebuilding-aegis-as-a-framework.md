@@ -2,7 +2,7 @@
 layout: post
 title: "Rebuilding an AI Gateway as a Framework, Not a Product"
 date: 2026-05-13 09:00:00 -0000
-category: ai-ml
+category: ai
 tags: [ai, llm, architecture, langgraph, plugins, gateway]
 author: "Echo Yin"
 image: "assets/images/projects/aegis.jpg"

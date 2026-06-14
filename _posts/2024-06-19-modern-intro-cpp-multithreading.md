@@ -2,7 +2,7 @@
 layout: post
 title: "A Modern Introduction to C++ Multithreading (C++11 to C++20)"
 date: 2024-06-19
-category: Multithreading
+category: networking
 tags: ["c++11", "c++17", "c++20", "multithreading", "concurrency", "std::thread", "std::async"]
 author: "Echo Yin"
 image: "assets/images/blogs/cpp-20-multithread.jpg"
