@@ -70,7 +70,7 @@ flowchart TD
     IF --> AUTH --> PR --> K --> C --> PP
 ```
 
-Read that diagram top to bottom and the dependency direction is the whole argument: interfaces depend on the runtime, the runtime depends on the kernel, the kernel depends on the contracts, and the governance features at the bottom depend on the contracts too — exactly like any third-party plugin would. Nothing points back up.
+Read that diagram top to bottom and the dependency direction is the whole argument: interfaces depend on the runtime, the runtime depends on the kernel, the kernel depends on the contracts, and the governance features at the bottom depend on the contracts too, exactly like any third-party plugin would. Nothing points back up.
 
 Discovery uses Python entry points, the same mechanism pytest and Flake8 use to find plugins. A third-party package declares an entry point in its `pyproject.toml`, and Aegis finds it at startup with zero core changes:
 
@@ -85,9 +85,9 @@ This is deliberately boring, and boring is the point. Entry points have worked a
 
 Here is the trap with every "everything is a plugin" architecture I've seen fail: the core team builds the real features with private, internal APIs, and the public plugin interface becomes a second-class afterthought that can't actually express anything serious. You discover this the first time an outside developer tries to build a real plugin and hits a wall the core team never hit, because the core team wasn't using the public door.
 
-I wanted a structural defense against that, not a good intention. The rule became: **Aegis's own governance features are plugins.** Data classification, residency enforcement, budgets, PII masking — none of them live in the core. They are optional policy packs that import *only* the public `aegis` contracts. And an import-linter contract in CI fails the build if a pack reaches for anything private.
+I wanted a structural defense against that, not a good intention. The rule became: **Aegis's own governance features are plugins.** Data classification, residency enforcement, budgets, PII masking and none of them live in the core. They are optional policy packs that import *only* the public `aegis` contracts. And an import-linter contract in CI fails the build if a pack reaches for anything private.
 
-This changes the abstraction from aspiration to proof. If our own flagship features cannot be built on the public contracts, the contracts are wrong, and the build goes red before anyone merges. The policy packs are an executable, continuously-checked proof that the plugin API is sufficient for real work. The day an outside developer writes a guardrail, they are using the exact same interface that our PII pack uses — because there is no other interface.
+This changes the abstraction from aspiration to proof. If our own flagship features cannot be built on the public contracts, the contracts are wrong, and the build goes red before anyone merges. The policy packs are an executable, continuously-checked proof that the plugin API is sufficient for real work. The day an outside developer writes a guardrail, they are using the exact same interface that our PII pack uses because there is no other interface.
 
 It also produced a nice side effect for installation. Because the packs are separate, the base install stays slim:
 
@@ -104,7 +104,7 @@ A framework whose base `pip install` drags in torch and spaCy before you've sent
 
 The old call chain had a subtler problem than rigidity. It couldn't express conditional flow without nesting. "If the data is classified RESTRICTED, route only to a compliant provider" became an `if` statement buried three functions deep — invisible to anyone reading the configuration, impossible to point at in an audit, and untestable in isolation.
 
-In v2 the request lifecycle is a LangGraph `StateGraph`. The compliance rule becomes an *edge* in a graph: a thing you can draw, lint, and show an auditor. A request flows through a staged spine — ingress guards, then route, then execute, then egress guards — and each stage is populated from ordered node lists in `aegis.yaml`. The assembler compiles one graph per route at startup, so there is no per-request assembly cost and misconfiguration is caught at load, not in production.
+In v2 the request lifecycle is a LangGraph `StateGraph`. The compliance rule becomes an *edge* in a graph: a thing you can draw, lint, and show an auditor. A request flows through a staged spine, ingress guards, then route, then execute, then egress guards, and each stage is populated from ordered node lists in `aegis.yaml`. The assembler compiles one graph per route at startup, so there is no per-request assembly cost and misconfiguration is caught at load, not in production.
 
 ```mermaid
 flowchart LR
@@ -125,24 +125,27 @@ flowchart LR
 
 Making the pipeline a graph bought four things that would each have been a project on its own.
 
-**Conditional routing** as visible structure rather than nested branches — the residency branch in that diagram is a real edge, not buried logic. **Checkpointing** — runs persist and survive a server restart. **Human-in-the-loop** — a guardrail can *pause* a request via an interrupt instead of only blocking it, and the run resumes later. **Streaming** — first-class, with the runtime handling token flow.
+**Conditional routing** as visible structure rather than nested branches — the residency branch in that diagram is a real edge, not buried logic.
+**Checkpointing** which runs persist and survive a server restart.
+**Human-in-the-loop** as a guardrail can *pause* a request via an interrupt instead of only blocking it, and the run resumes later.
+**Streaming** first-class, with the runtime handling token flow.
 
 It also collapsed two concepts I'd been treating as separate. A "gateway request" and an "agent run" are now the same abstraction: a traversal of a graph. Adding agentic workflows later isn't a new subsystem; it's more nodes on the same runtime. That kind of leverage only comes from picking the right core abstraction before you build features on top of it.
 
 ## Nodes talk through state, not through each other
 
-One detail that made the plugin model actually composable: nodes never call each other. They communicate only through a typed `RunState` that flows through the graph — run id, the authenticated principal, the messages, a free-form `labels` dictionary, a mask map kept in a channel that is never serialized into model-visible text, the selected route, an append-only event log, and usage accumulators.
+One detail that made the plugin model actually composable: nodes never call each other. They communicate only through a typed `RunState` that flows through the graph to run id, the authenticated principal, the messages, a free-form `labels` dictionary, a mask map kept in a channel that is never serialized into model-visible text, the selected route, an append-only event log, and usage accumulators.
 
-The `labels` field is how packs cooperate without coupling. The classification pack writes `labels.classification = "restricted"`. The residency pack *reads* `labels.classification` to decide which providers are eligible. Neither imports the other. Neither knows the other exists. They coordinate through shared state the way two Unix programs coordinate through a pipe — which means you can add, remove, or replace either one without touching the other. A third-party node and a built-in node are indistinguishable to the runtime, because both are just functions from state to a state delta.
+The `labels` field is how packs cooperate without coupling. The classification pack writes `labels.classification = "restricted"`. The residency pack *reads* `labels.classification` to decide which providers are eligible. Neither imports the other. Neither knows the other exists. They coordinate through shared state the way two Unix programs coordinate through a pipe which means you can add, remove, or replace either one without touching the other. A third-party node and a built-in node are indistinguishable to the runtime, because both are just functions from state to a state delta.
 
 ## What I'd tell someone starting this
 
 Three things, in order of how much time they saved.
 
-**Pick the core abstraction before the features.** The early design sessions argued about whether the pipeline was a call chain, a middleware stack, or a graph — not about which guardrails to support. The graph decision made every later decision easier and several later decisions free. Feature decisions made first would have calcified into the wrong core, and you cannot refactor your way out of a wrong core abstraction; you rewrite. I know, because v1 was that rewrite.
+**Pick the core abstraction before the features.** The early design sessions argued about whether the pipeline was a call chain, a middleware stack, or a graph, not about which guardrails to support. The graph decision made every later decision easier and several later decisions free. Feature decisions made first would have calcified into the wrong core, and you cannot refactor your way out of a wrong core abstraction; you rewrite. I know, because v1 was that rewrite.
 
 **Make dogfooding structural, not aspirational.** "We use our own public API" is a lovely sentiment that erodes the first time a deadline makes a private shortcut faster. An import-linter rule that fails the build does not erode under deadline pressure. If you want your plugin interface to stay honest, hand its enforcement to a machine.
 
-**Adopt standards as interfaces where the standard is the value; wrap everything fast-moving.** Aegis programs directly against LangGraph's graph and checkpointer, the official MCP SDK, and OpenTelemetry — because adopting those interfaces means plugin authors inherit those ecosystems on purpose. But it *wraps* fast-moving libraries like LiteLLM and the guardrail engines behind its own contracts, each imported in exactly one module. When a wrapped library breaks, the fix is one file and nothing else in the codebase ever knew it existed. Knowing which dependencies to adopt and which to quarantine is most of what dependency hygiene actually is.
+**Adopt standards as interfaces where the standard is the value; wrap everything fast-moving.** Aegis programs directly against LangGraph's graph and checkpointer, the official MCP SDK, and OpenTelemetry, because adopting those interfaces means plugin authors inherit those ecosystems on purpose. But it *wraps* fast-moving libraries like LiteLLM and the guardrail engines behind its own contracts, each imported in exactly one module. When a wrapped library breaks, the fix is one file and nothing else in the codebase ever knew it existed. Knowing which dependencies to adopt and which to quarantine is most of what dependency hygiene actually is.
 
-The next post is about the single hardest part of the build: designing a guardrail contract that is configurable, composable, *and* honest about what it can guarantee — especially when streaming and full-context scanning want exactly opposite things.
+The next post is about the single hardest part of the build: designing a guardrail contract that is configurable, composable, *and* honest about what it can guarantee, especially when streaming and full-context scanning want exactly opposite things.
