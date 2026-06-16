@@ -14,7 +14,7 @@ categories:
 live_url: "https://store.steampowered.com/app/3655340/Bubble_UP/"
 github_url: "https://www.bubbleupgame.com/"
 featured: false
-order: 5
+order: 6
 ---
 ## **What is Bubble UP!**
 

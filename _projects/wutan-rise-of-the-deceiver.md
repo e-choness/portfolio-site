@@ -15,9 +15,8 @@ categories:
 live_url: "https://store.steampowered.com/app/3763470/WuTang_Rise_of_the_Deceiver/"
 github_url: "https://store.steampowered.com/app/3763470/WuTang_Rise_of_the_Deceiver/"
 featured: false
-order: 4
+order: 5
 ---
-
 ## Wu-Tang: Rise of the Deceiver
 
 **Platform:** PC (Steam)

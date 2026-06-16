@@ -15,9 +15,8 @@ categories:
 live_url: "https://github.com/e-choness/NeighborIQ"
 github_url: "https://github.com/e-choness/NeighborIQ"
 featured: true
-order: 2
+order: 4
 ---
-
 ## Project Overview
 
 [NeighborIQ](https://github.com/e-choness/NeighborIQ) is an AI-powered intelligence platform that transforms raw real estate data into actionable neighborhood insights. It acts as a unified microservices ecosystem for the Canadian residential market, combining automated data ingestion with machine learning to provide price predictions and investment analytics. Built for extensibility and performance, it leverages a distributed architecture to deliver enterprise-grade market transparency without high operational overhead.
@@ -51,6 +50,6 @@ order: 2
 
 ### Infrastructure
 
-* **Containerization:** [Docker & Docker Compose](https://github.com/e-choness/NeighborIQ#quick-start)
+* **Containerization:** [Docker &amp; Docker Compose](https://github.com/e-choness/NeighborIQ#quick-start)
 * **Reverse Proxy:** Nginx
 * **CI/CD:** GitHub Actions with Trivy security scanning

@@ -17,7 +17,7 @@ categories:
 live_url: "https://aegis-ai.dev/"
 github_url: "https://github.com/e-choness/aegis"
 featured: true
-order: 1
+order: 2
 ---
 ## Project Overview
 
