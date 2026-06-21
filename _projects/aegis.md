@@ -14,7 +14,7 @@ categories:
   - AI/ML
   - Framework
   - Fullstack
-live_url: "https://aegis-ai.dev/"
+live_url: "https://huggingface.co/spaces/echoness/aegis-server"
 github_url: "https://github.com/e-choness/aegis"
 featured: true
 order: 2
@@ -24,6 +24,8 @@ order: 2
 **Aegis is the governed gateway where every safeguard is a plugin.** It sits between your applications and any LLM provider and turns fragmented, ungoverned model calls into a single auditable pipeline — guardrails, PII masking, routing, budgets, and tool governance — without locking you into any one vendor or any one policy.
 
 The v2 rewrite is built on one structural bet: the kernel knows *nothing* about what the pipeline does. It discovers plugins, validates typed config, resolves secrets, and compiles the request lifecycle into a LangGraph state machine. Everything with an opinion — providers, guardrails, RAG stores, secret backends, telemetry, authenticators — implements one of seven published contracts. Aegis's own governance features ship as optional policy packs built on those same public contracts, which is the permanent proof the plugin API is complete.
+
+[Detailed documentation](https://e-choness.github.io/aegis/)
 
 ## Features
 
