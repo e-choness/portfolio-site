@@ -49,3 +49,7 @@
   color: var(--ink);
   white-space: nowrap;
 }
+
+@media (max-width: 760px) {
+  .os-dock { display: none; }
+}
