@@ -1,6 +1,9 @@
 // spotlight.js — ⌘K / Ctrl+K palette (§6.1).
-// Fuzzy-ish search over apps, projects and posts. Enter opens the top result.
-export function initSpotlight(root, { apps, content, wm, onOpenResult }) {
+// Fuzzy-ish search over apps, projects, posts and actions. Enter opens the
+// top result; Escape dismisses. Mirrors EchoOS.dc.html lines 506-525 / 977-996.
+import { beep } from './sound.js';
+
+export function initSpotlight(root, { apps, content, wm, store, onOpenResult }) {
   let isOpen = false;
   let items = [];
   let active = 0;
@@ -10,7 +13,11 @@ export function initSpotlight(root, { apps, content, wm, onOpenResult }) {
   overlay.hidden = true;
   overlay.innerHTML = `
     <div class="os-spotlight-box" role="dialog" aria-label="Spotlight" aria-modal="true">
-      <input class="os-spotlight-input" type="text" placeholder="Search apps, projects, posts…" aria-label="Spotlight search" autocomplete="off" spellcheck="false" />
+      <div class="os-spotlight-inputrow">
+        <span class="os-spotlight-search" aria-hidden="true">⌕</span>
+        <input class="os-spotlight-input" type="text" placeholder="Search apps, projects, posts…" aria-label="Spotlight search" autocomplete="off" spellcheck="false" />
+        <span class="os-spotlight-hint">↑↓ · ↵ open · esc</span>
+      </div>
       <ul class="os-spotlight-results"></ul>
     </div>`;
   root.appendChild(overlay);
@@ -29,6 +36,7 @@ export function initSpotlight(root, { apps, content, wm, onOpenResult }) {
     for (const p of (content && content.posts) || []) {
       idx.push({ kind: 'post', id: p.slug, title: p.title, sub: `${p.date}`, hay: p.title });
     }
+    idx.push({ kind: 'action', id: 'theme', title: 'Toggle dark / light theme', sub: 'action', hay: 'Toggle dark / light theme' });
     return idx;
   }
 
@@ -61,7 +69,11 @@ export function initSpotlight(root, { apps, content, wm, onOpenResult }) {
     for (const it of list) {
       const li = document.createElement('li');
       li.className = 'os-spotlight-item';
-      li.textContent = `${it.title} — ${it.sub}`;
+      li.innerHTML = `
+        <span class="os-spotlight-label"></span>
+        <span class="os-spotlight-kind"></span>`;
+      li.querySelector('.os-spotlight-label').textContent = it.title;
+      li.querySelector('.os-spotlight-kind').textContent = it.kind;
       li.dataset.index = String(items.indexOf(it));
       li.addEventListener('mousedown', (e) => {
         e.preventDefault();
@@ -83,6 +95,11 @@ export function initSpotlight(root, { apps, content, wm, onOpenResult }) {
     close();
     if (it.kind === 'app') {
       wm && wm.openApp(it.id);
+    } else if (it.kind === 'action' && store) {
+      // Prototype toggleThemeFn: flip theme + confirmation blip.
+      const cur = store.get().theme;
+      store.set({ theme: cur === 'dark' ? 'light' : 'dark' });
+      beep(500, 0.05);
     } else if (onOpenResult) {
       onOpenResult(it);
     }
@@ -91,8 +108,8 @@ export function initSpotlight(root, { apps, content, wm, onOpenResult }) {
   function open() {
     isOpen = true;
     overlay.hidden = false;
-    render();
     input.value = '';
+    render();
     input.focus();
   }
 
@@ -120,6 +137,9 @@ export function initSpotlight(root, { apps, content, wm, onOpenResult }) {
     } else if (e.key === 'Enter') {
       e.preventDefault();
       openItem(items[active]);
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      close();
     }
   });
 

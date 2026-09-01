@@ -55,8 +55,13 @@ async function renderDiagrams(container) {
   }
 }
 
+// Spotlight post selection (boot.js) asks the open reader to jump to a post.
+// Kept at module scope so re-renders replace the listener instead of stacking.
+let onOpenPost = null;
+
 export function renderBlog(bodyEl, { content, toast }) {
   const posts = content.posts || [];
+  if (onOpenPost) document.removeEventListener('echoos:open-post', onOpenPost);
 
   bodyEl.innerHTML = `
     <div class="os-blog">
@@ -119,4 +124,11 @@ export function renderBlog(bodyEl, { content, toast }) {
       window.open(post.url, '_blank', 'noopener');
     }
   }
+
+  onOpenPost = (e) => {
+    const slug = e.detail && e.detail.slug;
+    const post = posts.find((p) => p.slug === slug);
+    if (post) openPost(post);
+  };
+  document.addEventListener('echoos:open-post', onOpenPost);
 }

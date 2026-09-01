@@ -97,9 +97,16 @@ function initOS(content) {
     apps,
     content,
     wm,
+    store,
     onOpenResult: (it) => {
       if (it.kind === 'project') wm.openApp('proj');
-      else if (it.kind === 'post') wm.openApp('blog');
+      else if (it.kind === 'post') {
+        wm.openApp('blog');
+        // The blog window renders synchronously on openApp; tell it which
+        // post to open via a document-level event (a CustomEvent fired on
+        // `root` never reaches the window's body, which is a descendant).
+        document.dispatchEvent(new CustomEvent('echoos:open-post', { detail: { slug: it.id } }));
+      }
     },
   });
 
