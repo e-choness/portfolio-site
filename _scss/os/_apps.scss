@@ -364,46 +364,68 @@
 }
 
 // ── skills ─────────────────────────────────────────────────────────────────
+// System-monitor look per EchoOS.dc.html lines 237-255: echo-top header,
+// group title accent, rows = name · years · bar 170×7 · pct.
+.os-skills-top {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
 .os-skills-group {
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 .os-skills-group-title {
   margin: 0 0 8px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--accent);
 }
 .os-skills-list {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
 }
 .os-skills-item {
-  display: grid;
-  grid-template-columns: 130px 1fr;
+  display: flex;
   align-items: center;
   gap: 12px;
-  padding: 5px 0;
 }
 .os-skills-label {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
   color: var(--ink);
-  text-align: right;
+  flex: 1;
+  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.os-skills-years {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--muted);
+  width: 26px;
+  text-align: right;
+  flex: none;
+}
 .os-skills-track {
-  height: 6px;
+  width: 170px;
+  height: 7px;
   background: var(--surface2);
   border: 1px solid var(--line);
   border-radius: 4px;
   overflow: hidden;
+  flex: none;
 }
 .os-skills-fill {
   height: 100%;
@@ -411,6 +433,15 @@
   background: var(--accent);
   border-radius: 4px;
   transition: width 0.6s ease;
+}
+.os-skills-pct {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  width: 34px;
+  text-align: right;
+  flex: none;
 }
 
 // ── blog ───────────────────────────────────────────────────────────────────

@@ -10,6 +10,12 @@ export function renderSkills(bodyEl, { content }) {
   const wrap = document.createElement('div');
   wrap.className = 'os-skills';
 
+  // Header line is design chrome, verbatim (EchoOS.dc.html line 238).
+  const top = document.createElement('div');
+  top.className = 'os-skills-top';
+  top.textContent = 'echo-top — 20 processes running · uptime 8y+ · load: healthy';
+  wrap.appendChild(top);
+
   for (const g of content.skills || []) {
     const group = document.createElement('section');
     group.className = 'os-skills-group';
@@ -30,6 +36,12 @@ export function renderSkills(bodyEl, { content }) {
       label.textContent = s.name;
       li.appendChild(label);
 
+      // Prototype row: name · years (26px) · bar 170×7 · pct (34px).
+      const years = document.createElement('span');
+      years.className = 'os-skills-years';
+      years.textContent = `${s.years}y`;
+      li.appendChild(years);
+
       const track = document.createElement('div');
       track.className = 'os-skills-track';
       const fill = document.createElement('div');
@@ -38,6 +50,11 @@ export function renderSkills(bodyEl, { content }) {
       fill.dataset.level = String(s.level);
       track.appendChild(fill);
       li.appendChild(track);
+
+      const pct = document.createElement('span');
+      pct.className = 'os-skills-pct';
+      pct.textContent = `${s.level}%`;
+      li.appendChild(pct);
 
       list.appendChild(li);
     }
