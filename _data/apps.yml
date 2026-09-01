@@ -28,6 +28,7 @@
   w: 790
   h: 570
   desktop_icon: true
+  desktop_icon_order: 3
   tab_bar: true
 - id: skills
   label: Skills
@@ -46,6 +47,7 @@
   w: 710
   h: 560
   desktop_icon: true
+  desktop_icon_order: 2
   tab_bar: true
 - id: term
   label: Terminal
@@ -64,6 +66,7 @@
   w: 470
   h: 460
   desktop_icon: true
+  desktop_icon_order: 4
 - id: arcade
   label: Arcade
   glyph: "▲"
@@ -73,6 +76,7 @@
   w: 700
   h: 590
   desktop_icon: true
+  desktop_icon_order: 1
   tab_bar: true
 - id: resume
   label: Resume

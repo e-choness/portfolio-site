@@ -96,12 +96,14 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   }
   root.appendChild(dock);
 
-  // --- desktop icons ------------------------------------------------------
+  // --- desktop icons (sorted by desktop_icon_order) --------------------------
   const desktop = document.createElement('div');
   desktop.className = 'os-desktop';
   desktop.setAttribute('aria-label', 'Desktop');
-  for (const app of apps) {
-    if (!app.desktop_icon) continue;
+  const desktopApps = apps
+    .filter((a) => a.desktop_icon)
+    .sort((a, b) => (a.desktop_icon_order || 0) - (b.desktop_icon_order || 0));
+  for (const app of desktopApps) {
     const icon = document.createElement('button');
     icon.type = 'button';
     icon.className = 'os-desk-icon';
