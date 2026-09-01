@@ -1,8 +1,7 @@
-// terminal.js — echo-sh command interpreter (§6.6).
-// Command set (all implemented, exactly these): help, about, experience,
-// projects, skills, education, blog, contact, resume, open <app|project|post>,
-// theme [light|dark], sound [on|off], clear, whoami, date, ls, echo <text>,
-// sudo make coffee. Unknown commands error; Up/Down walk history.
+// terminal.js — echo-sh command interpreter (§6.6, patch 42).
+// Command set exactly as per prototype spec: help, about, whoami, skills,
+// projects, blog, experience, education, contact, resume, open, theme, sound,
+// clear, date, ls, echo, neofetch, vim/vi, exit, hi/hello, sudo, games.
 import { store } from './store.js';
 import { sfx } from './sound.js';
 
@@ -11,6 +10,7 @@ export function createTerminal(content, wm, { apps }) {
   let input = null;
   const history = [];
   let histIdx = -1;
+  let bannerPrinted = false;
 
   function mount(bodyEl) {
     bodyEl.innerHTML = `
@@ -23,7 +23,13 @@ export function createTerminal(content, wm, { apps }) {
       </div>`;
     outEl = bodyEl.querySelector('.os-term-out');
     input = bodyEl.querySelector('.os-term-input');
-    print({ text: 'EchoOS terminal — type `help` to see commands.', kind: 'muted' });
+
+    // Print banner only once
+    if (!bannerPrinted) {
+      printRaw({ text: 'EchoOS terminal — type `help` to see commands.', kind: 'muted' });
+      bannerPrinted = true;
+    }
+
     input.addEventListener('keydown', onKey);
     bodyEl.querySelector('.os-term-form').addEventListener('submit', (e) => {
       e.preventDefault();
@@ -35,7 +41,7 @@ export function createTerminal(content, wm, { apps }) {
     if (input) input.focus();
   }
 
-  function print({ text, kind = 'out' }) {
+  function printRaw({ text, kind = 'out' }) {
     const line = document.createElement('div');
     line.className = `os-term-line os-term-${kind}`;
     line.textContent = text;
@@ -43,12 +49,18 @@ export function createTerminal(content, wm, { apps }) {
     outEl.scrollTop = outEl.scrollHeight;
   }
 
+  function print({ text, kind = 'out' }) {
+    printRaw({ text, kind });
+  }
+
   function run() {
-    const cmd = input.value.trim();
-    history.push(cmd);
+    const raw = input.value.trim();
+    if (raw) {
+      history.push(raw);
+    }
     histIdx = history.length;
-    print({ text: `➜ ${cmd}`, kind: 'in' });
-    exec(cmd);
+    printRaw({ text: `➜ ${raw}`, kind: 'in' });
+    exec(raw);
     input.value = '';
   }
 
@@ -72,99 +84,279 @@ export function createTerminal(content, wm, { apps }) {
     return hay.toLowerCase().includes(needle.toLowerCase());
   }
 
-  function open(arg) {
-    if (!arg) {
-      print({ text: 'open: missing argument (usage: open <app|project|post>)', kind: 'err' });
-      return;
+  function deriveTopSkills() {
+    const allSkills = [];
+    for (const cat of content.skills || []) {
+      for (const skill of cat.skills || []) {
+        allSkills.push(skill);
+      }
     }
-    const app = apps.find((a) => a.id === arg.toLowerCase() || a.label.toLowerCase() === arg.toLowerCase());
+    return allSkills
+      .sort((a, b) => (b.level || 0) - (a.level || 0))
+      .slice(0, 5)
+      .map((s) => `${s.name} ${s.level}%`)
+      .join(' · ');
+  }
+
+  function deriveProcessCount() {
+    let count = 0;
+    for (const cat of content.skills || []) {
+      count += (cat.skills || []).length;
+    }
+    return count;
+  }
+
+  function deriveMaxYears() {
+    let max = 0;
+    for (const cat of content.skills || []) {
+      for (const skill of cat.skills || []) {
+        max = Math.max(max, skill.years || 0);
+      }
+    }
+    return max;
+  }
+
+  function open(arg) {
+    const lc = (arg || '').toLowerCase();
+
+    // Try app by id or label prefix
+    const app = apps.find((a) => a.id === lc || a.label.toLowerCase().startsWith(lc));
     if (app) {
+      print({ text: `opening ${app.label}…`, kind: 'muted' });
       wm.openApp(app.id);
       return;
     }
+
+    // Try project by title
     const proj = (content.projects || []).find((p) => fuzzy(p.title, arg));
     if (proj) {
+      print({ text: `opening Projects…`, kind: 'muted' });
       wm.openApp('proj');
       return;
     }
+
+    // Try post by title (and select it)
     const post = (content.posts || []).find((p) => fuzzy(p.title, arg));
     if (post) {
+      print({ text: `opening Blog…`, kind: 'muted' });
       wm.openApp('blog');
+      // Fire custom event to select the post
+      window.dispatchEvent(new CustomEvent('echoos:open-post', { detail: { post } }));
       return;
     }
-    print({ text: `open: ${arg}: not found`, kind: 'err' });
-    sfx.error();
+
+    print({ text: `no app called "${arg}"`, kind: 'err' });
   }
 
   function exec(cmd) {
-    const parts = cmd.split(/\s+/);
-    const head = (parts[0] || '').toLowerCase();
-    const args = parts.slice(1);
-    const arg = args.join(' ');
+    const lc = cmd.toLowerCase();
+    const lcParts = lc.split(/\s+/);
+    const head = lcParts[0] || '';
+
+    // For arg and raw arg: split original cmd
+    const origParts = cmd.split(/\s+/);
+    const origArgs = origParts.slice(1);
+    const arg = origArgs.join(' ');
 
     switch (head) {
       case 'help':
-        print({
-          text: 'Commands: help, about, experience, projects, skills, education, blog, contact, resume, open <app|project|post>, theme [light|dark], sound [on|off], clear, whoami, date, ls, echo <text>, sudo make coffee',
-          kind: 'accent',
-        });
+        print({ text: 'help · about · whoami · skills · projects · blog · contact', kind: 'muted' });
+        print({ text: 'open <app> · theme · sound · neofetch · date · ls · clear · exit', kind: 'muted' });
+        print({ text: 'games: tetris · snake · missile · pond · breakout · invaders', kind: 'muted' });
         break;
-      case 'about': wm.openApp('about'); break;
-      case 'experience': wm.openApp('exp'); break;
-      case 'projects': wm.openApp('proj'); break;
-      case 'skills': wm.openApp('skills'); break;
-      case 'education': wm.openApp('about'); break; // education tab lives in About
-      case 'blog': wm.openApp('blog'); break;
-      case 'contact': wm.openApp('contact'); break;
-      case 'resume': wm.openApp('resume'); break;
-      case 'open': open(arg); break;
-      case 'theme': {
-        const v = (args[0] || '').toLowerCase();
-        if (v === 'light' || v === 'dark') {
-          store.set({ theme: v });
-          print({ text: `theme set to ${v}`, kind: 'out' });
-        } else {
-          print({ text: `theme: ${store.get().theme} (usage: theme [light|dark])`, kind: 'muted' });
+
+      case 'about':
+        if (content.profile) {
+          print({ text: `${content.profile.name} — ${content.profile.title} · ${content.profile.location}`, kind: 'out' });
+          print({ text: content.profile.tagline, kind: 'muted' });
+        }
+        wm.openApp('about');
+        break;
+
+      case 'whoami':
+        if (content.profile) {
+          print({ text: `${content.profile.name} — ${content.profile.title} · ${content.profile.location}`, kind: 'out' });
+          print({ text: content.profile.tagline, kind: 'muted' });
         }
         break;
-      }
-      case 'sound': {
-        const v = (args[0] || '').toLowerCase();
-        if (v === 'on' || v === 'off') {
-          store.set({ sound: v });
-          print({ text: `sound ${v}`, kind: 'out' });
-        } else {
-          print({ text: `sound: ${store.get().sound} (usage: sound [on|off])`, kind: 'muted' });
-        }
+
+      case 'skills': {
+        const top = deriveTopSkills();
+        print({ text: `top: ${top}`, kind: 'muted' });
+        wm.openApp('skills');
         break;
       }
+
+      case 'projects':
+        for (const p of content.projects || []) {
+          print({ text: `• ${p.title}`, kind: 'muted' });
+        }
+        wm.openApp('proj');
+        break;
+
+      case 'blog':
+        for (const p of (content.posts || []).slice(0, 3)) {
+          print({ text: `• ${p.title}`, kind: 'muted' });
+        }
+        wm.openApp('blog');
+        break;
+
+      case 'experience':
+        for (const e of content.experience || []) {
+          print({ text: `• ${e.position} — ${e.company}`, kind: 'muted' });
+        }
+        wm.openApp('exp');
+        break;
+
+      case 'education':
+        for (const e of content.education || []) {
+          print({ text: `• ${e.degree} — ${e.school}`, kind: 'muted' });
+        }
+        wm.openApp('about');
+        // Fire event to select education tab
+        window.dispatchEvent(new CustomEvent('echoos:set-about-tab', { detail: { tab: 'education' } }));
+        break;
+
+      case 'contact':
+        if (content.profile) {
+          print({ text: content.profile.email, kind: 'out' });
+        }
+        wm.openApp('contact');
+        break;
+
+      case 'resume':
+        print({ text: 'opening resume.pdf…', kind: 'muted' });
+        wm.openApp('resume');
+        break;
+
       case 'clear':
         outEl.innerHTML = '';
         break;
-      case 'whoami':
-        print({ text: content.profile ? content.profile.name : 'echo', kind: 'out' });
-        break;
+
       case 'date':
-        print({ text: new Date().toString(), kind: 'out' });
+        print({ text: new Date().toString(), kind: 'muted' });
         break;
+
       case 'ls':
-        print({ text: apps.map((a) => a.id).join('  '), kind: 'out' });
+        print({ text: apps.map((a) => a.id).join(' '), kind: 'out' });
         break;
-      case 'echo':
-        print({ text: arg || '', kind: 'out' });
+
+      case 'neofetch': {
+        const procCount = deriveProcessCount();
+        const uptime = deriveMaxYears();
+        print({ text: 'EchoOS 1.0 — paper edition', kind: 'accent' });
+        print({ text: 'host: github pages · jekyll static', kind: 'muted' });
+        print({ text: 'shell: echo-sh · wm: paperwm', kind: 'muted' });
+        print({ text: `uptime: ${uptime}+ years in AI · packages: ${(content.projects || []).length} projects, ${(content.posts || []).length} posts`, kind: 'muted' });
         break;
-      case 'sudo': {
-        if (arg === 'make coffee') {
-          print({ text: "I'm a static site. Brew your own.", kind: 'accent' });
+      }
+
+      case 'open':
+        open(arg);
+        break;
+
+      case 'theme': {
+        const v = (lcParts[1] || '').toLowerCase();
+        if (v === 'light' || v === 'dark') {
+          store.set({ theme: v });
+          print({ text: `theme → ${v}`, kind: 'muted' });
         } else {
-          print({ text: `echo-sh: sudo: ${arg}: command not found`, kind: 'err' });
+          const current = store.get().theme || 'light';
+          const next = current === 'light' ? 'dark' : 'light';
+          store.set({ theme: next });
+          print({ text: `theme → ${next}`, kind: 'muted' });
         }
         break;
       }
+
+      case 'sound': {
+        const v = (lcParts[1] || '').toLowerCase();
+        if (v === 'on' || v === 'off') {
+          store.set({ sound: v });
+          print({ text: `sound → ${v}`, kind: 'muted' });
+        } else {
+          const current = store.get().sound || 'on';
+          const next = current === 'on' ? 'off' : 'on';
+          store.set({ sound: next });
+          print({ text: `sound → ${next}`, kind: 'muted' });
+        }
+        break;
+      }
+
+      case 'echo':
+        if (arg) {
+          print({ text: arg, kind: 'out' });
+        }
+        break;
+
+      case 'vim':
+      case 'vi':
+        print({ text: 'you are now stuck in vim. (type `open contact` to send help)', kind: 'muted' });
+        break;
+
+      case 'exit':
+        print({ text: 'there is no escape — this is a portfolio.', kind: 'muted' });
+        break;
+
+      case 'hi':
+      case 'hello':
+        print({ text: 'hello! try `help`.', kind: 'muted' });
+        break;
+
+      case 'coffee':
+        print({ text: 'brewing… done. (decaf — we ship on fridays)', kind: 'accent' });
+        break;
+
+      case 'sudo': {
+        if (arg === 'make coffee') {
+          print({ text: 'brewing… done. (decaf — we ship on fridays)', kind: 'accent' });
+        } else if (cmd.toLowerCase().startsWith('sudo')) {
+          print({ text: 'nice try. this incident will be reported to echo.', kind: 'err' });
+        }
+        break;
+      }
+
+      case 'rm': {
+        const rmCmd = lc.trim();
+        if (rmCmd === 'rm -rf /' || rmCmd === 'rm -rf /*') {
+          print({ text: 'refusing: the portfolio is load-bearing.', kind: 'err' });
+        } else {
+          print({ text: `command not found: ${cmd} — try \`help\``, kind: 'err' });
+          sfx.error();
+        }
+        break;
+      }
+
+      case 'tetris':
+      case 'snake':
+      case 'missile':
+      case 'pond':
+      case 'breakout':
+      case 'invaders': {
+        print({ text: `launching ${head}…`, kind: 'muted' });
+        wm.openApp('arcade');
+        setTimeout(() => {
+          if (window.EchoGames) {
+            const game = window.EchoGames.list.find((g) => g.id === head);
+            if (game) {
+              window.dispatchEvent(new CustomEvent('echoos:start-game', { detail: { game } }));
+            }
+          }
+        }, 80);
+        break;
+      }
+
+      case 'arcade':
+      case 'games':
+        print({ text: 'insert coin.', kind: 'muted' });
+        wm.openApp('arcade');
+        break;
+
       case '':
         break;
+
       default:
-        print({ text: `echo-sh: ${head}: command not found`, kind: 'err' });
+        print({ text: `command not found: ${cmd} — try \`help\``, kind: 'err' });
         sfx.error();
     }
   }
