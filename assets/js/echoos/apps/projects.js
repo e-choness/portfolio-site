@@ -1,5 +1,4 @@
-// apps/projects.js — card gallery with tech filter chips (§6.5).
-// Filter options are derived from the union of tech[] — never hardcoded.
+// apps/projects.js — card gallery without filter chips (prototype-only).
 function esc(s) {
   const d = document.createElement('div');
   d.textContent = s == null ? '' : String(s);
@@ -8,26 +7,10 @@ function esc(s) {
 
 export function renderProjects(bodyEl, { content }) {
   const projects = content.projects || [];
-  const allTech = [...new Set(projects.flatMap((p) => p.tech || []))].sort();
-  let active = 'All';
 
-  bodyEl.innerHTML = `
-    <div class="os-proj-filters">
-      <button type="button" class="os-chip-btn is-on" data-t="All">All</button>
-    </div>
-    <div class="os-proj-grid"></div>`;
+  bodyEl.innerHTML = `<div class="os-proj-grid"></div>`;
 
-  const filters = bodyEl.querySelector('.os-proj-filters');
   const grid = bodyEl.querySelector('.os-proj-grid');
-
-  for (const t of allTech) {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'os-chip-btn';
-    b.dataset.t = t;
-    b.textContent = t;
-    filters.appendChild(b);
-  }
 
   function card(p) {
     const article = document.createElement('article');
@@ -62,9 +45,10 @@ export function renderProjects(bodyEl, { content }) {
       body.appendChild(cat);
     }
 
-    const h = document.createElement('h4');
+    const h = document.createElement('a');
     h.className = 'os-proj-title';
     h.textContent = p.title;
+    if (p.url) h.href = p.url;
     body.appendChild(h);
 
     if (p.desc) {
@@ -86,16 +70,9 @@ export function renderProjects(bodyEl, { content }) {
       body.appendChild(ul);
     }
 
-    // Details (plan: keeps the per-project page) + prototype's ↗ links.
+    // Links row: Live Demo ↗ + GitHub ↗ (title is now the link to project page)
     const links = document.createElement('div');
     links.className = 'os-proj-links';
-    if (p.url) {
-      const a = document.createElement('a');
-      a.className = 'os-proj-details';
-      a.href = p.url;
-      a.textContent = 'Details';
-      links.appendChild(a);
-    }
     if (p.demo) {
       const a = document.createElement('a');
       a.className = 'os-proj-demo';
@@ -123,17 +100,8 @@ export function renderProjects(bodyEl, { content }) {
 
   function render() {
     grid.innerHTML = '';
-    const shown = active === 'All' ? projects : projects.filter((p) => (p.tech || []).includes(active));
-    for (const p of shown) grid.appendChild(card(p));
+    for (const p of projects) grid.appendChild(card(p));
   }
-
-  filters.addEventListener('click', (e) => {
-    const b = e.target.closest('.os-chip-btn');
-    if (!b) return;
-    active = b.dataset.t;
-    filters.querySelectorAll('.os-chip-btn').forEach((x) => x.classList.toggle('is-on', x === b));
-    render();
-  });
 
   render();
 }
