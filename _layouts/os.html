@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" data-echo-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    {% if page.title %}{{ page.title }} - {% endif %}{{ site.data.profile.name
+    }} - {{ site.data.profile.title }}
+  </title>
+
+  <link rel="icon" href="{{ '/assets/favicon.ico' | relative_url }}" type="image/x-icon" />
+  <link rel="manifest" href="{{ '/assets/manifest.webmanifest' | relative_url }}" />
+  <meta name="theme-color" content="#f1eee8" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#14121a" media="(prefers-color-scheme: dark)" />
+
+  <!-- Fonts (§4) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  {% seo %}
+
+  <!-- Custom CSS -->
+  <link href="{{ '/assets/css/style.css' | relative_url }}" rel="stylesheet" />
+</head>
+<body>
+  <div id="echoos-root" data-base="{{ '/' | relative_url }}" data-content="{{ '/assets/data/content.json' | relative_url }}"></div>
+
+  <noscript>
+    <div style="max-width: 44rem; margin: 4rem auto; padding: 0 1.5rem; font-family: system-ui, sans-serif; line-height: 1.6">
+      <h1>{{ site.data.profile.name }} — {{ site.data.profile.title }}</h1>
+      <p>{{ site.data.profile.tagline }}</p>
+      <p>This site is an interactive desktop; it needs JavaScript. A static version is available at
+        <a href="{{ '/classic/' | relative_url }}">/classic/</a>.</p>
+    </div>
+  </noscript>
+
+  <script src="{{ '/assets/js/games.js' | relative_url }}" defer></script>
+  <script type="module" src="{{ '/assets/js/echoos/boot.js' | relative_url }}"></script>
+</body>
+</html>

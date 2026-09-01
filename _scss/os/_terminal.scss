@@ -1,0 +1,66 @@
+// os/_terminal.scss — echo-sh terminal pane (terminal.js). Mono throughout,
+// line kinds: out / muted / err / accent.
+
+.os-term {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.os-term-out {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 2px 0 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.os-term-line {
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--ink);
+}
+.os-term-out {
+  color: var(--ink);
+}
+.os-term-muted {
+  color: var(--muted);
+}
+.os-term-err {
+  color: var(--accent);
+}
+.os-term-accent {
+  color: var(--accent);
+}
+
+.os-term-form {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+
+.os-term-prompt {
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.os-term-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: none;
+  border: 0;
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--ink);
+  caret-color: var(--accent);
+}
+.os-term-input:focus {
+  outline: none;
+}

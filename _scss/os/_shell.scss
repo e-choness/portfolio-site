@@ -1,0 +1,282 @@
+// os/_shell.scss — desktop surface, menu bar, boot screen, toasts, desktop
+// icons and the mobile home grid. Values from IMPLEMENTATION-PLAN §4.
+
+// The os layout's body contains only #echoos-root; clamp it to the viewport.
+body:has(#echoos-root) {
+  overflow: hidden;
+  height: 100vh;
+}
+
+#echoos-root {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+// ── boot screen ───────────────────────────────────────────────────────────
+.os-boot {
+  position: absolute;
+  inset: 0;
+  z-index: 200000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: var(--bg);
+  transition: opacity 0.3s ease;
+}
+.os-boot-done {
+  opacity: 0;
+}
+.os-boot-fill {
+  width: 0;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--accent);
+}
+.os-boot-text {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+// ── menu bar ──────────────────────────────────────────────────────────────
+.os-menubar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--bar-h);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  background: color-mix(in oklab, var(--surface) 78%, transparent);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+  user-select: none;
+}
+.os-mb-left,
+.os-mb-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.os-mb-brand {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.os-mb-app {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.os-mb-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  background: none;
+  border: 0;
+  padding: 4px 6px;
+  border-radius: var(--r-ctl);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.os-mb-btn:hover {
+  color: var(--ink);
+  background: var(--accent-soft);
+}
+.os-mb-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.os-mb-clock {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+// ── toasts ────────────────────────────────────────────────────────────────
+.os-toasts {
+  position: absolute;
+  top: calc(var(--bar-h) + 10px);
+  right: 12px;
+  z-index: 200001;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.os-toast {
+  pointer-events: auto;
+  max-width: 300px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl);
+  box-shadow: var(--shadow);
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  color: var(--ink);
+  transition: opacity 0.25s ease;
+}
+.os-toast-out {
+  opacity: 0;
+}
+
+// Notification panel (menubar "Alerts").
+.os-notif {
+  position: absolute;
+  top: calc(var(--bar-h) + 6px);
+  right: 12px;
+  z-index: 200001;
+  width: 280px;
+  max-height: 320px;
+  overflow: auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-win);
+  box-shadow: var(--shadow);
+  padding: 12px 14px;
+}
+.os-notif-title {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 8px;
+}
+.os-notif-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.os-notif-list li {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  color: var(--muted);
+  padding: 6px 8px;
+  background: var(--surface2);
+  border-radius: var(--r-ctl);
+}
+
+// ── desktop icons ─────────────────────────────────────────────────────────
+.os-desktop {
+  position: absolute;
+  inset: 0;
+  padding: calc(var(--bar-h) + 16px) 16px calc(var(--dock-h) + 16px);
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 12px;
+  pointer-events: none; // hits pass through the layer; icons opt back in
+  z-index: 1;
+}
+.os-desk-icon {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 84px;
+  padding: 12px 6px 8px;
+  background: color-mix(in oklab, var(--surface) 72%, transparent);
+  border: 1px solid var(--line);
+  border-radius: var(--r-icon);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+.os-desk-icon:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.os-desk-icon:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.os-glyph {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+.os-desk-icon-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.3;
+}
+
+// ── mobile home grid ──────────────────────────────────────────────────────
+.os-home {
+  display: none;
+}
+@media (max-width: 760px) {
+  .os-home {
+    position: absolute;
+    inset: 0;
+    padding: calc(var(--bar-h) + 16px) 16px 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    gap: 12px;
+    align-content: start;
+    z-index: 1;
+  }
+  .os-home-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 6px 8px;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+  .os-home-item .os-glyph {
+    font-size: 20px;
+  }
+  .os-home-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+  }
+}

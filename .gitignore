@@ -77,4 +77,5 @@ vendor/
 .openclaude/
 .openclaude*
 reference/
+NOTES.md
 # End of https://www.toptal.com/developers/gitignore/api/jekyll

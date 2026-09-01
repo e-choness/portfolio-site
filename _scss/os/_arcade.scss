@@ -1,0 +1,166 @@
+// os/_arcade.scss — game grid, canvas stage, HUD and mobile pad (arcade.js).
+// Pad button spec from IMPLEMENTATION-PLAN §6.7.
+
+.os-arcade {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.os-arcade-grid {
+  flex: 1 1 auto;
+  overflow: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  align-content: start;
+}
+.os-arcade-grid[hidden],
+.os-arcade-stage[hidden] {
+  display: none;
+}
+
+.os-arcade-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-win);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+.os-arcade-card:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.os-arcade-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.os-arcade-card-name {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.os-arcade-card-tag {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.os-arcade-card-hi {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+// ── stage ─────────────────────────────────────────────────────────────────
+.os-arcade-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.os-arcade-hud {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 2px 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+.os-arcade-name {
+  font-weight: 600;
+  color: var(--ink);
+}
+.os-arcade-score,
+.os-arcade-hi {
+  font-variant-numeric: tabular-nums;
+}
+.os-arcade-spacer {
+  flex: 1 1 auto;
+}
+.os-arcade-restart,
+.os-arcade-back {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--surface2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl);
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.os-arcade-restart:hover,
+.os-arcade-back:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.os-arcade-canvas-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  background: var(--surface2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-win);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.os-arcade-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.os-arcade-hint {
+  flex: 0 0 auto;
+  padding: 8px 2px 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+// ── mobile / trackpad pad (§6.7) ──────────────────────────────────────────
+.os-arcade-pad {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding-top: 12px;
+}
+.os-pad-btn {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  background: var(--surface2);
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  font-family: var(--font-mono);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--accent);
+  touch-action: none;
+  user-select: none;
+  cursor: pointer;
+  transition: background 0.1s ease, border-color 0.1s ease;
+}
+.os-pad-btn:active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}

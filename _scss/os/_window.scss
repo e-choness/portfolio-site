@@ -1,0 +1,120 @@
+// os/_window.scss — floating windows: chrome, drag/resize affordances and the
+// mobile full-screen sheet state. Geometry (left/top/width/height/z-index) is
+// set inline by wm.js; class names are the Step 3 contract.
+
+.os-win {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-win);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  min-width: 320px;
+  min-height: 240px;
+  user-select: none;
+}
+.os-win:focus {
+  outline: none;
+}
+
+.os-dragging {
+  cursor: grabbing;
+}
+.os-resizing {
+  cursor: nwse-resize;
+}
+body.os-dragging-cursor {
+  cursor: grabbing;
+}
+
+.os-win-bar {
+  flex: 0 0 auto;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 0 14px;
+  border-bottom: 1px solid var(--line);
+  cursor: grab;
+}
+.os-dragging .os-win-bar {
+  cursor: grabbing;
+}
+
+.os-win-title {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.os-win-close {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  border-radius: var(--r-ctl);
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.os-win-close::before {
+  content: "×";
+}
+.os-win-close:hover {
+  color: var(--ink);
+  background: var(--accent-soft);
+}
+.os-win-close:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.os-win-body {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 16px 18px;
+  user-select: text;
+  overscroll-behavior: contain;
+}
+
+.os-win-resize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  cursor: nwse-resize;
+  touch-action: none;
+  background-image: radial-gradient(circle at 2px 2px, var(--line) 1px, transparent 1.5px);
+  background-size: 6px 6px;
+  background-position: bottom right;
+  background-repeat: no-repeat;
+}
+
+// ── mobile: full-screen sheets (wm.js adds .os-sheet under 760px) ─────────
+@media (max-width: 760px) {
+  .os-sheet {
+    position: fixed !important;
+    inset: var(--bar-h) 0 0 0 !important;
+    width: auto !important;
+    height: auto !important;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+  }
+  .os-win-resize {
+    display: none;
+  }
+}

@@ -86,13 +86,13 @@
 
 // Entry-level animation classes for the OS route. Class names are the contract
 // for the OS components (Step 6) — do not rename without updating NOTES.md.
-.os-window{animation:winin .22s ease}
+.os-win{animation:winin .22s ease}
 .os-toast{animation:toastin .2s ease}
 .os-boot-fill{animation:bootload 1.15s linear forwards}
 .os-blink{animation:blink 1.1s infinite}
 
 @media (prefers-reduced-motion: reduce) {
-  .os-window,
+  .os-win,
   .os-toast{animation:none}
   .os-boot-fill{animation:bootload .2s linear forwards}
   // Wallpaper motion is canvas-driven; wallpaper.js honors this media query too.

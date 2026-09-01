@@ -1,6 +1,8 @@
+@use "../abstracts/mixins" as m;
+
 // Navigation
 .nav-container {
-  @include container;
+  @include m.container;
   padding-top: 1rem;
   padding-bottom: 1rem;
   display: flex;
@@ -55,7 +57,7 @@
     }
 
     &:focus-visible {
-      @include focus-ring;
+      @include m.focus-ring;
       border-radius: 6px;
     }
   }

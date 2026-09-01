@@ -1,25 +1,34 @@
-@import "abstracts/variables";
-@import "abstracts/mixins";
+@use "abstracts/tokens";
+@use "abstracts/variables";
+@use "abstracts/mixins";
 
-@import "base/base";
-@import "base/typography";
-@import "base/animations";
-@import "base/utilities";
+@use "base/base";
+@use "base/typography";
+@use "base/animations";
+@use "base/utilities";
 
-@import "components/buttons";
-@import "components/cards";
-@import "components/timeline";
-@import "components/navbars";
+@use "components/buttons";
+@use "components/cards";
+@use "components/timeline";
+@use "components/navbars";
 
-@import "layout/header";
-@import "layout/footer";
-@import "layout/navigation";
+@use "layout/header";
+@use "layout/footer";
+@use "layout/navigation";
 
-@import "pages/home";
-@import "pages/blog-categories";
-@import "pages/project-categories";
-@import "pages/projects-index";
-@import "pages/blog";
-@import "pages/blog-archive";
-@import "pages/project";
-@import "pages/post";
+@use "pages/home";
+@use "pages/blog-categories";
+@use "pages/project-categories";
+@use "pages/projects-index";
+@use "pages/blog";
+@use "pages/blog-archive";
+@use "pages/project";
+@use "pages/post";
+
+@use "os/shell";
+@use "os/window";
+@use "os/dock";
+@use "os/spotlight";
+@use "os/terminal";
+@use "os/arcade";
+@use "os/apps";
