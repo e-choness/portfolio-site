@@ -2,7 +2,6 @@
 layout: none
 permalink: /assets/data/content.json
 ---
-{# This file is Liquid-rendered at build time. #}
 {% assign posts = site.posts %}
 {
   "profile": {
