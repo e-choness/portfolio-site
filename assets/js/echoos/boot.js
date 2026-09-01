@@ -57,7 +57,6 @@ async function main() {
 function initOS(content) {
   const apps = content.apps || [];
 
-  const wallpaper = initWallpaper(root);
   const notifications = initNotifications(root, {
     portrait: content.profile && content.profile.portrait,
     stats: (content.profile && content.profile.stats) || [],
@@ -93,6 +92,10 @@ function initOS(content) {
       },
     },
   });
+
+  // Wallpaper after wm: the reduced-motion static frame renders synchronously
+  // and queries wm.isAnyOpen() for the calm factor — wm must exist first.
+  const wallpaper = initWallpaper(root, { isAnyOpen: () => wm.isAnyOpen() });
 
   spotlight = initSpotlight(root, {
     apps,

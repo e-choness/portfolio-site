@@ -71,7 +71,9 @@ export function createWM(root, opts = {}) {
 
   function buildWin(app) {
     const el = document.createElement('section');
-    el.className = 'os-win';
+    // Guide gets a modifier so its window body can zero its padding and pin the
+    // action footer flush to the window bottom (audit patch 18, bug 3).
+    el.className = `os-win${app.id === 'guide' ? ' os-win-guide' : ''}`;
     el.setAttribute('role', 'dialog');
     el.setAttribute('aria-modal', 'false');
     el.setAttribute('aria-label', app.title || app.label);
@@ -270,8 +272,9 @@ export function createWM(root, opts = {}) {
     }
     const el = winEls.get(id);
     el.hidden = false;
-    // Re-raise in DOM order so the focused window paints on top.
-    root.appendChild(el);
+    // No re-insert here: remove+reinsert restarts the `winin` CSS animation on
+    // every pointerdown (blink + swallowed clicks). Stacking is handled by the
+    // z-index set in apply().
     if (document.activeElement !== el) el.focus({ preventScroll: true });
     if (opts.onFocus) opts.onFocus(id);
   }
@@ -352,6 +355,12 @@ export function createWM(root, opts = {}) {
     isOpen: (id) => {
       const win = wins.get(id);
       return !!(win && win.open && !win.minimized);
+    },
+    isAnyOpen: () => {
+      for (const win of wins.values()) {
+        if (win.open && !win.minimized) return true;
+      }
+      return false;
     },
     getFocused,
     setContent(content) {

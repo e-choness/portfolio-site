@@ -705,12 +705,18 @@
 // square, message bubbles (surface2, radius 11), action footer with accent
 // action + bordered Next / Restart tour. Negates .os-win-body padding so the
 // footer border-top sits flush with the window's bottom edge.
+// Guide windows (wm.js tags them .os-win-guide) zero the body padding so the
+// tour owns the full body: chat scrolls, action footer pins flush at the bottom.
+.os-win-guide .os-win-body {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
 .os-guide {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
   min-height: 0;
-  margin: -16px -18px;
 }
 .os-guide-chat {
   flex: 1 1 auto;

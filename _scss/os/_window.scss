@@ -98,10 +98,27 @@ body.os-dragging-cursor {
 
 .os-win-body {
   flex: 1 1 auto;
+  min-height: 0; // flex min-height:auto would grow the body past the window
   overflow: auto;
   padding: 16px 18px;
   user-select: text;
   overscroll-behavior: contain;
+}
+
+// OS-scoped scrollbars (prototype line 24: 8px, thumb --line, track transparent).
+.os-win ::-webkit-scrollbar,
+.os-guide ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.os-win ::-webkit-scrollbar-thumb,
+.os-guide ::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 4px;
+}
+.os-win ::-webkit-scrollbar-track,
+.os-guide ::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .os-win-resize {

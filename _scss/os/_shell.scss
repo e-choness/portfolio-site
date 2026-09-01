@@ -19,6 +19,17 @@ body:has(#echoos-root) {
   -webkit-font-smoothing: antialiased;
 }
 
+// Nebula canvas (§6.8): behind everything, fills the desktop. Stacking: windows
+// start at z-index 2, menubar 5000, boot 200000 — this stays at the floor.
+.os-wallpaper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
 // ── boot screen ───────────────────────────────────────────────────────────
 .os-boot {
   position: absolute;
