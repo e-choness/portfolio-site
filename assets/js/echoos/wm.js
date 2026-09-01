@@ -97,6 +97,8 @@ export function createWM(root, opts = {}) {
       h: 0,
       z: 0,
       minimized: false,
+      rendered: false,
+      teardown: null,
     };
     const s = initialSize(app);
     win.w = s.w;
@@ -196,11 +198,17 @@ export function createWM(root, opts = {}) {
   // --- open / close / focus ----------------------------------------------
 
   function renderBody(win, app) {
+    // Call previous teardown if registered
+    if (win.teardown) {
+      win.teardown();
+      win.teardown = null;
+    }
+
     const body = winEls.get(win.id).querySelector('.os-win-body');
     body.innerHTML = '';
     const renderer = opts.renderers && opts.renderers[app.id];
     if (renderer) {
-      renderer(body, {
+      const result = renderer(body, {
         app,
         content: opts.content || null,
         wm: api,
@@ -208,7 +216,12 @@ export function createWM(root, opts = {}) {
         toast: opts.toast,
         sfx,
       });
+      // Store teardown function if renderer returned one
+      if (typeof result === 'function') {
+        win.teardown = result;
+      }
     }
+    win.rendered = true;
   }
 
   function openApp(id, { silent = false } = {}) {
@@ -227,7 +240,9 @@ export function createWM(root, opts = {}) {
     el.style.display = 'block';
     el.hidden = false;
     apply(win);
-    renderBody(win, app);
+    if (!win.rendered) {
+      renderBody(win, app);
+    }
     focus(id);
     if (!silent) sfx.open();
   }
@@ -235,12 +250,19 @@ export function createWM(root, opts = {}) {
   function closeApp(id) {
     const win = wins.get(id);
     if (!win || !win.open) return;
+    if (win.teardown) {
+      win.teardown();
+      win.teardown = null;
+    }
     win.open = false;
     win.minimized = false;
     const el = winEls.get(id);
     el.style.display = 'none';
     el.hidden = true;
-    if (focused === id) focused = null;
+    if (focused === id) {
+      focused = null;
+      if (opts.onFocus) opts.onFocus(focused);
+    }
     sfx.close();
   }
 
@@ -250,7 +272,10 @@ export function createWM(root, opts = {}) {
     win.minimized = true;
     win.open = false;
     winEls.get(id).style.display = 'none';
-    if (focused === id) focused = null;
+    if (focused === id) {
+      focused = null;
+      if (opts.onFocus) opts.onFocus(focused);
+    }
   }
 
   function toggleApp(id) {
@@ -365,7 +390,9 @@ export function createWM(root, opts = {}) {
     getFocused,
     setContent(content) {
       opts.content = content;
+      // Force re-render on all windows
       for (const win of wins.values()) {
+        win.rendered = false;
         if (win.open) renderBody(win, byId(win.id));
       }
     },
