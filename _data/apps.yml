@@ -11,6 +11,7 @@
   h: 520
   desktop_icon: true
   open_on_boot: true
+  tab_bar: true
 - id: exp
   label: Experience
   glyph: "cv"
@@ -29,6 +30,7 @@
   w: 790
   h: 570
   desktop_icon: true
+  tab_bar: true
 - id: skills
   label: Skills
   glyph: "%"
@@ -46,6 +48,7 @@
   w: 710
   h: 560
   desktop_icon: true
+  tab_bar: true
 - id: term
   label: Terminal
   glyph: ">_"
@@ -70,6 +73,7 @@
   y: 56
   w: 700
   h: 590
+  tab_bar: true
 - id: resume
   label: Resume
   glyph: "≡"

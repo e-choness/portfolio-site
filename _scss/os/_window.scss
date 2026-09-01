@@ -106,7 +106,7 @@ body.os-dragging-cursor {
 @media (max-width: 760px) {
   .os-sheet {
     position: fixed !important;
-    inset: var(--bar-h) 0 0 0 !important;
+    inset: var(--bar-h) 0 64px 0 !important;
     width: auto !important;
     height: auto !important;
     border-radius: 0;

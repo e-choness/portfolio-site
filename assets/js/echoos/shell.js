@@ -108,6 +108,23 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   }
   root.appendChild(desktop);
 
+  // --- mobile tab bar (bottom 64px, apps flagged tab_bar in apps.yml) ------
+  const tabbar = document.createElement('nav');
+  tabbar.className = 'os-tabbar';
+  tabbar.setAttribute('aria-label', 'Tab bar');
+  for (const app of apps) {
+    if (!app.tab_bar) continue;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'os-tabbar-item';
+    btn.dataset.app = app.id;
+    btn.setAttribute('aria-label', `Open ${app.label}`);
+    btn.innerHTML = `<span class="os-glyph">${app.glyph}</span><span class="os-tabbar-label">${app.label}</span>`;
+    btn.addEventListener('click', () => wm && wm.openApp(app.id));
+    tabbar.appendChild(btn);
+  }
+  root.appendChild(tabbar);
+
   // --- mobile home grid ---------------------------------------------------
   const home = document.createElement('div');
   home.className = 'os-home';
@@ -131,6 +148,7 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
       MENU.remove();
       dock.remove();
       desktop.remove();
+      tabbar.remove();
       home.remove();
     },
   };
