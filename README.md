@@ -1,424 +1,200 @@
-# Chroma - Jekyll Portfolio Website with Blog
+# EchoOS — Jekyll Portfolio
 
-*A modern, responsive portfolio website built with Jekyll and deployable to GitHub Pages. Features smooth animations, dark/light theme toggle, a professional design, and a comprehensive blog section.*
+*An OS-metaphor portfolio: the home page is a desktop "operating system" built from
+vanilla ES modules on top of Jekyll + GitHub Pages. A no-JS fallback of the classic
+single-page site remains at `/classic/`.*
 
 <div align="center">
 
 [![GitHub Pages Deployment](https://github.com/e-choness/portfolio-site/actions/workflows/pages.yml/badge.svg)](https://github.com/e-choness/portfolio-site/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Jekyll](https://img.shields.io/badge/Jekyll-Static_Site-CC342D?logo=jekyll&logoColor=white)](https://jekyllrb.com/)
-[![GitHub last commit](https://img.shields.io/github/last-commit/e-choness/portfolio-site)](https://github.com/e-choness/portfolio-site)
-[![GitHub repo size](https://img.shields.io/github/repo-size/e-choness/portfolio-site)](https://github.com/e-choness/portfolio-site)
 
-**[View Live Demo](https://e-choness.github.io/portfolio-site/)** • **[Report Bug](https://github.com/e-choness/portfolio-site/issues)** • **[Request Feature](https://github.com/e-choness/portfolio-site/issues)**
+**[View Live Demo](https://e-choness.github.io/portfolio-site/)** • **[Classic View](/classic/)** • **[Report Bug](https://github.com/e-choness/portfolio-site/issues)**
 
 </div>
 
-## 🚀 Features
+## Overview
 
-- 📱 **Responsive Design**: Works perfectly on desktop, tablet, and mobile devices
-- 🌓 **Dark/Light Theme**: Toggle between themes with smooth transitions
-- ✨ **Smooth Animations**: Scroll-triggered animations using AOS library
-- 🖱️ **Interactive Elements**: Typing animation, animated counters, and skill bars
-- 🔍 **Project Filtering**: Filter projects by technology or category
-- ✍️ **Blog System**: Full-featured blog with posts, categories, and pagination
-- 🚀 **SEO Optimized**: Meta tags, Open Graph, and structured data
-- ⚡ **Fast Loading**: Optimized images and CSS for better performance
-- 🌐 **GitHub Pages Ready**: Easy deployment with GitHub Pages
+- **EchoOS** (the `/` route): a desktop shell — wallpaper, dock, windows, spotlight
+  (⌘K / Ctrl+K), a terminal, a theme toggle, and a first-run guided tour. All content
+  is rendered client-side from `assets/data/content.json`, so navigating the site never
+  reloads the page.
+- **Classic** (`/classic/`): the original single-page site (hero, about, experience,
+  education, projects, skills, blog) with server-rendered HTML and no JavaScript shell.
+  It is linked from the OS header ("Try EchoOS" → home, and back) and from the guide's
+  final step.
+- All OS and classic content comes from the same YAML files in `_data/`.
 
-## 📁 Project Structure
+## Stack
 
-```bash
-├── _config.yml              # Jekyll configuration
-├── _layouts/                # Layout templates
-├── _data/                   # Data files (YAML)
-├── _posts/                  # Blog posts (Markdown)
-├── _projects/               # Individual project pages
-├── blog/                    # Blog index and pages
-├── assets/                  # Static assets (images, css, js)
-├── .github/workflows/       # GitHub Actions
-├── index.html               # Main portfolio page
-├── Gemfile                  # Ruby dependencies
-├── Dockerfile               # Docker image definition
-└── docker-compose.yml       # Docker Compose config
-```
-Customize the site easily by editing the YAML files in the `_data/` directory:
-|**File**|**Purpose**|
+| Layer | Choice |
 |---|---|
-|`profile.yml`|Personal info (name, title, email, social links)|
-|`experience.yml`|Work experience timeline|
-|`projects.yml`|Portfolio projects and tech stacks|
-|`skills.yml`|Skill categories and progress bars|
-|`blog.yml`|Blog specific settings (categories, pagination limits)|
+| Static site | Jekyll 4.4.1 |
+| Stylesheets | Dart Sass (`sass-embedded` 1.103.1) via `jekyll-sass-converter` 3.1.0 |
+| OS shell | Vanilla ES modules (no framework, no bundler) |
+| Diagrams in posts | mermaid@11 and markmap (loaded on demand) |
+| Hosting | GitHub Pages via Actions (`pages.yml`) |
+| Local dev | Docker Compose, or bare `bundle exec jekyll serve` |
 
-## 🛠️ Setup & Installation
+## Project Structure
 
-### Docker (Recommended)
-
-No Ruby or Jekyll setup required.
-
-1. **Clone the repository**
-
-```bash
-git clone https://github.com/yourusername/yourusername.github.io.git
-cd yourusername.github.io
+```text
+├── _config.yml              # Jekyll config (baseurl /portfolio-site)
+├── _config_dev.yml          # Dev override: baseurl "" for localhost
+├── _data/                   # Content source of truth (YAML)
+│   ├── apps.yml             #   EchoOS app registry (dock order, window geometry)
+│   ├── profile.yml          #   name, bio, stats, social links
+│   ├── experience.yml       #   work timeline
+│   ├── projects.yml         #   project gallery
+│   ├── skills.yml           #   skill groups
+│   ├── education.yml        #   degrees
+│   └── blog.yml             #   blog settings / categories
+├── _includes/               # Classic-route partials (hero, about, ...)
+├── _layouts/                # os.html (EchoOS shell), default.html (classic route)
+├── _plugins/apps_titles.rb  # Build hook: interpolates counts into apps.yml titles
+├── _posts/                  # Blog posts (Markdown, mermaid/markmap supported)
+├── _projects/               # Individual project pages
+├── _scss/                   # Sass sources
+│   ├── abstracts/           #   tokens, variables, mixins
+│   ├── base/                #   base, typography, animations, utilities
+│   ├── os/                  #   shell, window, dock, spotlight, terminal, arcade, apps
+│   ├── components/ layout/ pages/
+│   └── main.scss            #   entry (@use chain)
+├── assets/
+│   ├── js/echoos/           # OS modules (see Module map)
+│   ├── data/content.json    # Liquid page: site data emitted as JSON for the OS
+│   └── manifest.webmanifest # PWA manifest
+├── classic/index.html       # No-JS fallback (layout: default)
+├── index.html               # EchoOS route (layout: os)
+├── blog/ projects/          # Server-rendered pages
+├── Gemfile / Dockerfile / docker-compose.yml
+└── .github/workflows/pages.yml
 ```
 
-2. **Build and start the container**
+## Local Development
+
+Both workflows build the identical site; pick whichever you prefer.
+
+### Docker (recommended)
 
 ```bash
 docker compose up
+# → http://localhost:4000  (live reload on)
 ```
 
-3. **Open your browser**
-   Navigate to `http://localhost:4000`
-
-The server runs with live reload — changes to source files rebuild automatically.
-
-### Manual Setup
-
-#### Prerequisites
-
-- Ruby (2.7 or higher)
-- Bundler gem
-- Git
-
-1. **Clone the repository**
-
-```bash
-git clone https://github.com/yourusername/yourusername.github.io.git
-cd yourusername.github.io
-```
-
-2. **Install dependencies**
+### Bare Jekyll
 
 ```bash
 bundle install
+bundle exec jekyll serve --config _config.yml,_config_dev.yml
+# → http://localhost:4000
 ```
 
-3. **Run the development server**
+The `_config_dev.yml` override clears `baseurl`, so asset URLs are root-relative
+locally; the shipped site is built with the `/portfolio-site/` baseurl.
+
+### Building / validating
 
 ```bash
-bundle exec jekyll serve
+bundle exec jekyll build --trace   # production build, zero-warning expected
 ```
 
-4. **Open your browser**
-   Navigate to `http://localhost:4000`
+## EchoOS module map
 
-### GitHub Pages Deployment
+All modules live in `assets/js/echoos/` (19 ES modules + `games.js`, a verbatim-port
+game library shipped separately).
 
-1. **Create a new repository**
+| Module | Responsibility |
+|---|---|
+| `boot.js` | Entry point: boot animation, fetch `content.json`, wire everything |
+| `wm.js` | Window manager: open/close/focus/drag/resize windows, z-order |
+| `shell.js` | Desktop chrome: menu bar, dock, theme + sound toggles |
+| `wallpaper.js` | Animated canvas wallpaper (respects reduced motion) |
+| `spotlight.js` | ⌘K command palette over apps, projects, posts |
+| `terminal.js` | `echo-sh`: help, open, theme, clear, ... |
+| `notifications.js` | Toast notifications |
+| `sound.js` | UI sound effects |
+| `store.js` | Persisted state (theme, accent, visited, guideDone) |
+| `guide.js` | 8-step first-run guided tour with spotlight ring |
+| `apps/*.js` | One renderer per app — see *Adding an app* |
 
-   - Repository name must be: `yourusername.github.io`
-   - Make sure it's public
+`_scss/os/` holds the matching styles (`.os-dock`, `.os-win`, `.os-spotlight`, ...),
+and `_data/apps.yml` is the single registry both the dock markup and the window
+manager read.
 
-2. **Push your code**
+## Adding an app
 
-```bash
-git add .
-git commit -m "Initial commit"
-git push origin main
-```
+1. **Register the app** in `_data/apps.yml` (dock order = file order; do not renumber
+   existing entries):
 
-3. **Enable GitHub Pages**
+   ```yaml
+   - id: myapp
+     label: My App
+     glyph: "µ"
+     title: "myapp"
+     x: 160
+     y: 80
+     w: 640
+     h: 480
+     desktop_icon: true
+   ```
 
-   - Go to repository Settings
-   - Scroll to Pages section
-   - Select "Deploy from a branch"
-   - Choose "main" branch and "/ (root)" folder
-   - Click Save
+2. **Write the renderer** `assets/js/echoos/apps/myapp.js` exporting
+   `renderMyApp(bodyEl, ctx)` — `ctx` carries `content` (parsed `content.json`), `root`,
+   `store`, and the window manager. Look at `apps/about.js` for the simplest template.
 
-4. **Access your site**
-   - Portfolio: `https://yourusername.github.io`
-   - Blog: `https://yourusername.github.io/blog/`
-   - It may take a few minutes to deploy
+3. **Wire it up** in `assets/js/echoos/boot.js`: add an import and a
+   `myapp: renderMyApp,` entry in the `renderers` map passed to `createWM`.
 
-## ⚙️ Customization
+4. **Style it** in `_scss/os/_apps.scss` (or a partial it loads) using the existing
+   design tokens (`--ink`, `--muted`, `--accent`, `--surface2`, `--line`, `--r-ctl`, ...).
 
-### Personal Information
+The dock icon, window title, desktop icon, and Spotlight entry all come from
+`apps.yml` automatically.
 
-Edit `_data/profile.yml`:
+## Customizing Content
 
-```yaml
-name: "Your Name"
-title: "Your Title"
-email: "your.email@example.com"
-# ... other settings
-```
+All content lives in `_data/`. Edit the YAML and rebuild — both the EchoOS route and
+`/classic/` pick it up.
 
-### Work Experience
+- **Profile** — `_data/profile.yml` (name, bio, stats, social links, resume URL).
+- **Experience** — `_data/experience.yml` (roles, companies, durations, bullets).
+- **Projects** — `_data/projects.yml` (title, description, tech chips, links, image).
+- **Skills** — `_data/skills.yml` (groups of skills with levels).
+- **Education** — `_data/education.yml` (degree, school, duration, notes).
+- **Blog** — `_data/blog.yml` (categories, colors) + `_posts/`.
 
-Edit `_data/experience.yml`:
+### Writing a blog post
 
-```yaml
-- position: "Your Position"
-  company: "Company Name"
-  duration: "2020 - Present"
-  description: "Your job description"
-  # ... other details
-```
+Create `_posts/YYYY-MM-DD-post-title.md`:
 
-### Projects
-
-Edit `_data/projects.yml`:
-
-```yaml
-- title: "Project Name"
-  description: "Project description"
-  technologies:
-    - React
-    - Node.js
-  # ... other details
-```
-
-### Skills
-
-Edit `_data/skills.yml`:
-
-```yaml
-categories:
-  - name: "Frontend Development"
-    skills:
-      - name: "JavaScript"
-        level: 95
-      # ... other skills
-```
-
-### Blog Configuration
-
-Edit `_data/blog.yml`:
-
-```yaml
-title: "Blog"
-description: "Your blog description"
-posts_per_page: 6
-categories:
-  - name: "JavaScript"
-    slug: "javascript"
-    color: "#f7df1e"
-  # ... other categories
-```
-
-## 📝 Writing Blog Posts
-
-### Creating a New Post
-
-1. Create a new file in `_posts/` with the format: `YYYY-MM-DD-post-title.md`
-
-2. Add front matter at the top:
-
-```yaml
+```markdown
 ---
 layout: post
 title: "Your Post Title"
-date: 2025-01-15 10:00:00 -0000
+date: 2026-01-15 10:00:00 -0000
 category: javascript
-tags: [javascript, react, frontend]
+tags: [javascript, react]
 author: "Your Name"
 image: "https://example.com/image.jpg"
-excerpt: "Brief description of your post"
+excerpt: "Brief description"
 ---
+
+Content in Markdown. ```mermaid ... ``` and markmap blocks render inline.
 ```
 
-3. Write your content in Markdown below the front matter
+The post index (`/blog/`) is server-rendered; inside EchoOS every post opens in the
+Blog app's reader pane (per-post JSON under `assets/data/posts/`, generated by
+`_plugins/post_json.rb`).
 
-### Post Front Matter Options
+## Deployment
 
-- `title`: Post title (required)
-- `date`: Publication date (required)
-- `category`: Single category (optional)
-- `tags`: Array of tags (optional)
-- `author`: Author name (optional)
-- `image`: Featured image URL (optional)
-- `excerpt`: Custom excerpt (optional, auto-generated if not provided)
+`main` deploys to GitHub Pages through `.github/workflows/pages.yml`
+(actions/checkout → ruby/setup-ruby → configure-pages → build → upload → deploy). The
+workflow also sanity-checks the build artifacts (`content.json`, `classic/index.html`)
+before deploying.
 
-### Markdown Features
+## License
 
-The blog supports:
-
-- **Syntax highlighting** with Prism.js
-- **Tables**
-- **Blockquotes**
-- **Links and images**
-- **Lists** (ordered and unordered)
-- **Code blocks** with language specification
-
-Example code block:
-
-````markdown
-```javascript
-function greet(name) {
-  console.log(`Hello, ${name}!`);
-}
-```
-````
-
-## 🎨 Blog Styling
-
-### Categories and Tags
-
-Categories are displayed as colored badges. You can customize colors in `_data/blog.yml`:
-
-```yaml
-categories:
-  - name: "JavaScript"
-    slug: "javascript"
-    color: "#f7df1e"
-```
-
-### Custom Styling
-
-The blog inherits the main site's theme system. You can customize:
-
-- **Colors**: Edit CSS variables in the blog layout
-- **Typography**: Modify font families and sizes
-- **Layout**: Adjust grid systems and spacing
-- **Animations**: Customize AOS animations
-
-## 📊 Blog Features
-
-### Automatic Features
-
-- **Reading time calculation**: Based on word count
-- **Responsive images**: Automatic optimization
-- **SEO optimization**: Meta tags and Open Graph
-- **Pagination**: Automatic post pagination
-- **Navigation**: Previous/next post links
-- **Archive**: Organized by date and category
-
-### Interactive Features
-
-- **Search functionality** (can be added)
-- **Category filtering**
-- **Tag system**
-- **Social sharing** (configurable)
-- **Comments system** (can be integrated)
-
-## 🔧 Advanced Blog Configuration
-
-### Pagination Settings
-
-In `_config.yml`:
-
-```yaml
-paginate: 6
-paginate_path: "/blog/page:num/"
-```
-
-### Custom Collections
-
-You can create custom collections for different content types:
-
-```yaml
-collections:
-  tutorials:
-    output: true
-    permalink: /:collection/:name/
-```
-
-### RSS Feed
-
-The blog automatically generates an RSS feed at `/feed.xml` using the jekyll-feed plugin.
-
-## 📱 Responsive Design
-
-The blog is fully responsive with breakpoints:
-
-- **Desktop**: 1200px and above
-- **Tablet**: 768px - 1199px
-- **Mobile**: Below 768px
-
-## 🎯 SEO Best Practices
-
-The blog includes:
-
-- **Structured data** for articles
-- **Open Graph tags** for social sharing
-- **Twitter Cards** for Twitter sharing
-- **Canonical URLs** for duplicate content prevention
-- **Meta descriptions** for better search results
-
-## 🚀 Performance Optimization
-
-### Blog-Specific Optimizations
-
-- **Lazy loading** for post images
-- **Syntax highlighting** loaded only when needed
-- **Pagination** to limit posts per page
-- **Optimized fonts** with font-display: swap
-- **Minified CSS and JavaScript**
-
-## 📈 Analytics Integration
-
-Add Google Analytics to track blog performance:
-
-1. Add your tracking ID in `_config.yml`:
-
-```yaml
-google_analytics: UA-XXXXXXXXX-X
-```
-
-2. The analytics code will be automatically included
-
-## 🤝 Contributing Blog Content
-
-### Guest Posts
-
-To accept guest posts:
-
-1. Create author profiles in `_data/authors.yml`
-2. Reference authors in post front matter
-3. Display author information in post layout
-
-### Content Guidelines
-
-- Write clear, actionable content
-- Include code examples when relevant
-- Use proper heading hierarchy
-- Optimize images for web
-- Proofread before publishing
-
-## 🐛 Troubleshooting
-
-### Common Blog Issues
-
-1. **Posts not showing**
-
-   - Check file naming convention (`YYYY-MM-DD-title.md`)
-   - Verify front matter syntax
-   - Ensure date is not in the future
-
-2. **Pagination not working**
-
-   - Check `paginate` setting in `_config.yml`
-   - Verify `jekyll-paginate` plugin is installed
-
-3. **Images not loading**
-
-   - Use absolute URLs for images
-   - Check image paths and permissions
-   - Optimize image sizes for web
-
-4. **Syntax highlighting issues**
-   - Verify language specification in code blocks
-   - Check Prism.js configuration
-   - Test with different themes
-
-## 📞 Support
-
-If you have questions about the blog system:
-
-- Check the Jekyll documentation
-- Review the Liquid templating guide
-- Open an issue for bugs or feature requests
-- Join the Jekyll community for help
-
-Happy blogging! 🎉
-
-<div align="center">
-
-<p>Made with ❤️ using Jekyll and GitHub Pages</p>
-
-<p>This project is open source and available under the <a href="LICENSE">MIT License</a>.</p>
-
-</div>
+MIT — see [LICENSE](LICENSE).
