@@ -26,6 +26,18 @@ per IMPLEMENTATION-PLAN.md rules.
   Steps 5 and 7. The remote `workflow_dispatch` run is therefore deferred until the branch is
   feature-complete; dispatching now would fail the sanity check by design.
 
+## Step 4 — App registry
+
+- `_data/apps.yml` created exactly per plan §5 (10 apps, dock order = file order, `anchor:
+  bottom-right` only on guide). Counts not hardcoded: `{{ posts_count }}` / `{{ exp_count }}`
+  placeholders resolved at build time.
+- **Deviation (mechanism, not content):** Jekyll does not render Liquid inside `.yml` data files —
+  the probe showed `{{ site.posts.size }}` left verbatim. Added `_plugins/apps_titles.rb`
+  (a `:post_read` hook) that substitutes `site.posts.docs.size` (→ 11) and
+  `site.data.experience` (→ 6). Verified: `about — profile` … `guide — tour`, `blog — 11 posts`,
+  `experience — 6 roles`.
+- Note: `_plugins/` is not in `_config.yml` `exclude`, so Jekyll auto-loads it.
+
 ## Pending (added by later steps)
 
 - _stats discrepancy_ (see §6.2): prototype shows `8+ / 38 / 66`, `_config.yml` `author:` block says
