@@ -6,14 +6,15 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   MENU.className = 'os-menubar';
   MENU.innerHTML = `
     <div class="os-mb-left">
+      <span class="os-mb-logo"></span>
       <span class="os-mb-brand">EchoOS</span>
       <span class="os-mb-app"></span>
     </div>
     <div class="os-mb-right">
-      <button type="button" class="os-mb-btn os-mb-spotlight" aria-label="Spotlight">Spotlight</button>
+      <button type="button" class="os-mb-btn os-mb-spotlight" aria-label="Spotlight">⌘K</button>
+      <button type="button" class="os-mb-btn os-mb-sound" aria-label="Toggle sound">♪ on</button>
       <button type="button" class="os-mb-btn os-mb-theme" aria-label="Toggle theme"></button>
-      <button type="button" class="os-mb-btn os-mb-sound" aria-label="Toggle sound"></button>
-      <button type="button" class="os-mb-btn os-mb-notif" aria-label="Notifications">Alerts</button>
+      <button type="button" class="os-mb-btn os-mb-notif" aria-label="Notifications">▤</button>
       <span class="os-mb-clock" aria-label="Clock"></span>
     </div>`;
   root.appendChild(MENU);
@@ -38,7 +39,7 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   // --- theme --------------------------------------------------------------
   function applyTheme(theme) {
     document.documentElement.dataset.echoTheme = theme;
-    mbTheme.textContent = theme === 'dark' ? 'Light' : 'Dark';
+    mbTheme.textContent = theme === 'dark' ? '☀' : '☾';
   }
   mbTheme.addEventListener('click', () => {
     store.set({ theme: store.get().theme === 'dark' ? 'light' : 'dark' });
@@ -46,7 +47,7 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
 
   // --- sound --------------------------------------------------------------
   function applySound(sound) {
-    mbSound.textContent = sound === 'on' ? 'Sound off' : 'Sound on';
+    mbSound.textContent = sound === 'on' ? '♪ on' : '♪ off';
   }
   mbSound.addEventListener('click', () => {
     store.set({ sound: store.get().sound === 'on' ? 'off' : 'on' });
@@ -55,10 +56,13 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   // --- clock --------------------------------------------------------------
   function tick() {
     const now = new Date();
-    mbClock.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const day = now.toLocaleDateString([], { weekday: 'short' });
+    const date = now.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    const time = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    mbClock.textContent = `${day}, ${date} · ${time}`;
   }
   tick();
-  const clockTimer = setInterval(tick, 30000);
+  const clockTimer = setInterval(tick, 20000);
 
   // --- accent override ----------------------------------------------------
   function applyAccent(accent) {

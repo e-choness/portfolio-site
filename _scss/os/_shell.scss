@@ -74,6 +74,13 @@ body:has(#echoos-root) {
   gap: 12px;
   min-width: 0;
 }
+.os-mb-logo {
+  width: 13px;
+  height: 13px;
+  border-radius: 4px;
+  background: var(--accent);
+  flex: none;
+}
 .os-mb-brand {
   font-family: var(--font-sans);
   font-size: 13px;
@@ -97,12 +104,12 @@ body:has(#echoos-root) {
   font-size: 11px;
   font-weight: 500;
   color: var(--muted);
-  background: none;
-  border: 0;
-  padding: 4px 6px;
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 4px 9px;
   border-radius: var(--r-ctl);
   cursor: pointer;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
 .os-mb-btn:hover {
   color: var(--ink);
