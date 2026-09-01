@@ -1,4 +1,4 @@
-// guide.js — 7-step guided tour (rendered in the guide window, §6.1).
+// guide.js — 8-step guided tour (rendered in the guide window, §6.1).
 // Step copy is terse and describes the real OS UI it points at; nothing here
 // invents site content.
 import { store } from './store.js';
@@ -11,6 +11,7 @@ const STEPS = [
   { title: 'Terminal', text: 'Open the Terminal and type help for the full command set.', target: '.os-dock-item[data-app="term"]' },
   { title: 'Theme & sound', text: 'Toggle light/dark theme and sound from the menu bar.', target: '.os-mb-right' },
   { title: 'Blog', text: 'Every post opens in its own reader pane — no page reloads.', target: '.os-dock-item[data-app="blog"]' },
+  { title: 'Classic view', target: null, html(root) { const base = (root && root.dataset.base) || ''; return `Prefer a static page? The no-JS version lives at <a class="os-guide-link" href="${base}classic/">/classic/</a>.`; } },
 ];
 
 let ring = null;
@@ -67,7 +68,11 @@ export function renderGuide(bodyEl, { root, wm }) {
   function render() {
     const s = STEPS[step];
     title.textContent = `${step + 1}. ${s.title}`;
-    text.textContent = s.text;
+    if (s.html) {
+      text.innerHTML = s.html(root);
+    } else {
+      text.textContent = s.text;
+    }
     Array.from(dots.children).forEach((li, i) => li.classList.toggle('is-on', i === step));
     prev.disabled = step === 0;
     next.textContent = step === STEPS.length - 1 ? 'Done' : 'Next';

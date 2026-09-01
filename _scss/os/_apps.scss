@@ -622,6 +622,14 @@
   line-height: 1.7;
   color: var(--muted);
 }
+.os-guide-text .os-guide-link,
+.os-guide-link {
+  color: var(--accent);
+  text-decoration: none;
+}
+.os-guide-link:hover {
+  color: var(--ink);
+}
 .os-guide-actions {
   margin-top: auto;
   display: flex;
