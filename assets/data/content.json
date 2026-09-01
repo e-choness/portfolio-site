@@ -90,5 +90,6 @@ permalink: /assets/data/content.json
     }{% unless forloop.last %},{% endunless %}
   {% endfor %}
   ],
-  "apps": {{ site.data.apps | jsonify }}
+  "apps": {{ site.data.apps | jsonify }},
+  "guide": {{ site.data.guide | jsonify }}
 }

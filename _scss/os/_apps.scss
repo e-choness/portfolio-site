@@ -701,94 +701,97 @@
 }
 
 // ── guide ──────────────────────────────────────────────────────────────────
+// Chat-bubble tour per EchoOS.dc.html lines 460-478: `?` avatar 24px accent
+// square, message bubbles (surface2, radius 11), action footer with accent
+// action + bordered Next / Restart tour. Negates .os-win-body padding so the
+// footer border-top sits flush with the window's bottom edge.
 .os-guide {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  min-height: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: -16px -18px;
 }
-.os-guide-dots {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.os-guide-chat {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px 18px;
   display: flex;
-  gap: 6px;
+  flex-direction: column;
+  gap: 10px;
 }
-.os-guide-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+.os-guide-msg {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+}
+.os-guide-avatar {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+}
+.os-guide-bubble {
   background: var(--surface2);
   border: 1px solid var(--line);
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-.os-guide-dot.is-on {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-.os-guide-title {
-  margin: 4px 0 0;
-  font-family: var(--font-sans);
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-}
-.os-guide-text {
-  margin: 0;
-  font-size: 13.5px;
-  line-height: 1.7;
-  color: var(--muted);
-}
-.os-guide-text .os-guide-link,
-.os-guide-link {
-  color: var(--accent);
-  text-decoration: none;
-}
-.os-guide-link:hover {
+  border-radius: 11px;
+  padding: 9px 12px;
+  font-size: 12.5px;
+  line-height: 1.55;
   color: var(--ink);
 }
 .os-guide-actions {
-  margin-top: auto;
+  flex: none;
   display: flex;
   gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
 }
-.os-guide-prev,
-.os-guide-next {
+.os-guide-action {
   font-family: var(--font-sans);
   font-size: 12px;
-  font-weight: 600;
-  color: var(--ink);
-  background: var(--surface2);
-  border: 1px solid var(--line);
-  border-radius: var(--r-ctl);
-  padding: 6px 12px;
+  font-weight: 700;
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: none;
+  border-radius: 9px;
+  padding: 8px 14px;
   cursor: pointer;
 }
-.os-guide-prev:disabled {
-  opacity: 0.45;
-  cursor: default;
+.os-guide-action:hover {
+  opacity: 0.88;
+}
+.os-guide-next,
+.os-guide-restart {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--line);
+  background: transparent;
+  border-radius: 9px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
 }
 .os-guide-next {
-  background: var(--accent);
+  color: var(--ink);
+}
+.os-guide-restart {
+  color: var(--muted);
+}
+.os-guide-next:hover,
+.os-guide-restart:hover {
   border-color: var(--accent);
-  color: var(--accent-ink);
-}
-.os-guide-prev:hover:not(:disabled),
-.os-guide-next:hover {
-  filter: brightness(1.08);
-}
-
-// Spotlight highlight ring (guide.js draws it on document.body).
-.os-guide-ring {
-  position: fixed;
-  z-index: 300000;
-  border: 2px solid var(--accent);
-  border-radius: var(--r-win);
-  pointer-events: none;
-  box-shadow: 0 0 0 4px var(--accent-soft);
-  transition: top 0.18s ease, left 0.18s ease, width 0.18s ease, height 0.18s ease;
+  color: var(--accent);
 }
 
 // ── responsive: stacked blog list, single-column about ─────────────────────

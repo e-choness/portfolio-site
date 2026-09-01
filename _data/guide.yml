@@ -1,0 +1,22 @@
+# Guide tour — chat-bubble step texts (verbatim from EchoOS.dc.html lines 622-628).
+# Each step is `text` plus an optional `action` that opens an app (`app`) or the
+# spotlight (`spot: true`). The final step has no action: the footer shows
+# "Restart tour".
+steps:
+  - text: "Hi! I'm the EchoOS guide. This desktop is Echo Yin's portfolio — every app is a section of it. Want a quick tour?"
+  - text: "The dock at the bottom holds every app. Click any icon to open its window — drag title bars to arrange them."
+    action: "Open About"
+    app: "about"
+  - text: "Projects is a card gallery of Echo's real work — live demos and GitHub links included."
+    action: "Open Projects"
+    app: "proj"
+  - text: "The Arcade has six playable retro games, all drawn in code — no art assets anywhere."
+    action: "Open Arcade"
+    app: "arcade"
+  - text: "Press ⌘K (or Ctrl+K) anytime to search apps, projects and blog posts."
+    action: "Try search"
+    spot: true
+  - text: "The terminal speaks. Try `help` — or `sudo make coffee`."
+    action: "Open Terminal"
+    app: "term"
+  - text: "That's the tour! The ◤ bell (top right) has stats and socials. Enjoy exploring."

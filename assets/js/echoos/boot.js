@@ -85,7 +85,7 @@ function initOS(content) {
       contact: renderContact,
       resume: renderResume,
       arcade: renderArcade,
-      guide: (bodyEl, ctx) => renderGuide(bodyEl, { root, wm }),
+      guide: (bodyEl, ctx) => renderGuide(bodyEl, { wm, openSpotlight: () => spotlight.toggle(), content: ctx.content }),
       term: (bodyEl, ctx) => {
         if (!term) term = createTerminal(content, wm, { apps });
         term.mount(bodyEl);
