@@ -111,7 +111,7 @@ body.os-dragging-cursor {
   flex: 1 1 auto;
   min-height: 0; // flex min-height:auto would grow the body past the window
   overflow: auto;
-  padding: 16px 18px;
+  padding: 24px 26px;
   user-select: text;
   overscroll-behavior: contain;
 }
