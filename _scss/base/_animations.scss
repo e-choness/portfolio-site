@@ -76,4 +76,24 @@
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
-} 
+}
+
+// ── EchoOS keyframes (IMPLEMENTATION-PLAN §4, copied verbatim) ───────────────
+@keyframes bootload{from{width:0}to{width:100%}}
+@keyframes blink{0%,55%{opacity:1}56%,100%{opacity:0}}
+@keyframes winin{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes toastin{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+
+// Entry-level animation classes for the OS route. Class names are the contract
+// for the OS components (Step 6) — do not rename without updating NOTES.md.
+.os-window{animation:winin .22s ease}
+.os-toast{animation:toastin .2s ease}
+.os-boot-fill{animation:bootload 1.15s linear forwards}
+.os-blink{animation:blink 1.1s infinite}
+
+@media (prefers-reduced-motion: reduce) {
+  .os-window,
+  .os-toast{animation:none}
+  .os-boot-fill{animation:bootload .2s linear forwards}
+  // Wallpaper motion is canvas-driven; wallpaper.js honors this media query too.
+}

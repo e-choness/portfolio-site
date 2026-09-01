@@ -30,3 +30,20 @@ per IMPLEMENTATION-PLAN.md rules.
 
 - _stats discrepancy_ (see §6.2): prototype shows `8+ / 38 / 66`, `_config.yml` `author:` block says
   `5 / 25 / 15`. Plan: use `_data/profile.yml` as the source and confirm with owner.
+
+## Step 3 — Design tokens
+
+- `_scss/abstracts/_tokens.scss` created exactly per plan §4 (light `:root` + `[data-echo-theme="dark"]`).
+- `_scss/base/_animations.scss`: appended the four OS keyframes (`bootload`, `blink`, `winin`, `toastin`)
+  copied verbatim from the prototype, plus `prefers-reduced-motion` overrides (winin/toastin → none,
+  boot shortened to `.2s`). Wallpaper motion is canvas-driven; `wallpaper.js` must honor the same
+  media query (see §6.8). The AOS-era keyframes were left in place — they serve the classic route;
+  Step 8's deletion list doesn't touch them.
+- **Class-name contract** for the OS route (used by the reduced-motion block; Step 6 components must
+  use these exact names): `.os-window` (winin .22s), `.os-toast` (toastin .2s), `.os-boot-fill`
+  (bootload 1.15s), `.os-blink` (blink 1.1s).
+- Fonts `<link>` (Archivo + IBM Plex Mono) is specified in plan §4 but belongs in the `os` layout
+  head — applied in Step 6 with the layout.
+- Theme toggle (`data-echo-theme`, `echoos-theme`), accent override (`echoos-accent`) are runtime
+  behaviors for `shell.js` (Step 5), not CSS.
+- Verified: `bundle exec jekyll build` exits 0; all four keyframes present in `_site/assets/css/style.css`.
