@@ -23,10 +23,12 @@ exclude:
   - README.md
   - NOTES.md
   - IMPLEMENTATION-PLAN.md
+  - PATCH-1.md
   - Dockerfile
   - docker-compose.yml
   - node_modules
   - vendor/
+  - reference/
 
 # Collections
 collections:
@@ -75,5 +77,5 @@ social:
 sass:
   style: compressed
   load_paths:
-    - _scss
+    - _sass
   quiet_deps: true

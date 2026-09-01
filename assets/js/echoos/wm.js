@@ -77,6 +77,7 @@ export function createWM(root, opts = {}) {
     el.setAttribute('role', 'dialog');
     el.setAttribute('aria-modal', 'false');
     el.setAttribute('aria-label', app.title || app.label);
+    el.dataset.app = app.id;
     el.tabIndex = -1;
     el.innerHTML = `
       <header class="os-win-bar">

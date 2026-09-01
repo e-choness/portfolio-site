@@ -19,4 +19,4 @@ steps:
   - text: "The terminal speaks. Try `help` — or `sudo make coffee`."
     action: "Open Terminal"
     app: "term"
-  - text: "That's the tour! The ◤ bell (top right) has stats and socials. Enjoy exploring."
+  - text: "That's the tour! The ▤ bell (top right) has stats and socials. Enjoy exploring."

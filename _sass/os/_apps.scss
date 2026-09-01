@@ -1057,6 +1057,45 @@
   color: var(--ink);
 }
 
+// ── per-app body padding (patch 43) ────────────────────────────────────────
+// Override base padding (16px 18px from _window.scss) per app and prototype spec.
+.os-win[data-app="about"] .os-win-body {
+  padding: 24px 26px;
+}
+.os-win[data-app="exp"] .os-win-body {
+  padding: 20px 22px;
+}
+.os-win[data-app="proj"] .os-win-body {
+  padding: 18px 20px;
+}
+.os-win[data-app="skills"] .os-win-body {
+  padding: 18px 22px;
+}
+.os-win[data-app="blog"] .os-win-body {
+  padding: 14px 20px;
+}
+.os-win[data-app="contact"] .os-win-body {
+  padding: 28px;
+}
+.os-win[data-app="arcade"] .os-win-body {
+  padding: 18px 20px;
+}
+.os-win[data-app="resume"] .os-win-body {
+  padding: 22px;
+}
+.os-win[data-app="terminal"] .os-win-body {
+  padding: 0;
+}
+.os-win[data-app="terminal"] .os-term-out {
+  padding: 14px 18px;
+}
+.os-win[data-app="terminal"] .os-term-form {
+  padding: 10px 18px;
+}
+.os-win[data-app="guide"] .os-win-body {
+  padding: 16px;
+}
+
 // ── guide ──────────────────────────────────────────────────────────────────
 // Chat-bubble tour per EchoOS.dc.html lines 460-478: `?` avatar 24px accent
 // square, message bubbles (surface2, radius 11), action footer with accent

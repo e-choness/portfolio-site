@@ -370,6 +370,19 @@ body:has(#echoos-root) {
 .os-notif-tour:hover {
   opacity: 0.85;
 }
+.os-notif-classic {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--muted);
+  text-decoration: none;
+  text-align: center;
+  margin-top: 10px;
+  transition: color 0.15s ease;
+}
+.os-notif-classic:hover {
+  color: var(--accent);
+}
 
 // ── desktop icons ─────────────────────────────────────────────────────────
 // Prototype layout: a right-edge column, each icon a 52×52 glyph tile over an

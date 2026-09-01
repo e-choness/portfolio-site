@@ -10,10 +10,20 @@ export function renderSkills(bodyEl, { content }) {
   const wrap = document.createElement('div');
   wrap.className = 'os-skills';
 
-  // Header line is design chrome, verbatim (EchoOS.dc.html line 238).
+  // Derive process count and max uptime from data
+  let procCount = 0;
+  let maxYears = 0;
+  for (const g of content.skills || []) {
+    for (const s of g.skills || []) {
+      procCount++;
+      maxYears = Math.max(maxYears, s.years || 0);
+    }
+  }
+
+  // Header line: derived process count and uptime
   const top = document.createElement('div');
   top.className = 'os-skills-top';
-  top.textContent = 'echo-top — 20 processes running · uptime 8y+ · load: healthy';
+  top.textContent = `echo-top — ${procCount} processes running · uptime ${maxYears}y+ · load: healthy`;
   wrap.appendChild(top);
 
   for (const g of content.skills || []) {
