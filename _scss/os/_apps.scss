@@ -98,77 +98,113 @@
   border-bottom-color: var(--accent);
 }
 
+// Profile panel mirrors EchoOS.dc.html lines 95-119: header row (84px
+// portrait, name 25px/800, title mono accent uppercase, location), bio
+// paragraphs, flex stats cells, then accent resume + bordered social links.
 .os-about-profile {
-  display: grid;
-  grid-template-columns: 140px 1fr;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.os-about-header {
+  display: flex;
+  align-items: center;
   gap: 18px;
 }
 .os-about-portrait {
-  width: 100%;
-  border-radius: var(--r-win);
+  width: 84px;
+  height: 84px;
+  border-radius: 22px;
   border: 1px solid var(--line);
   object-fit: cover;
-  aspect-ratio: 1;
+  flex: none;
 }
-.os-about-bio p {
-  margin: 0 0 10px;
-}
-.os-about-stats {
-  grid-column: 1 / -1;
-  list-style: none;
-  margin: 8px 0 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-  gap: 8px;
-}
-.os-about-stats li {
-  text-align: center;
-  padding: 12px 8px;
-  background: var(--surface2);
-  border: 1px solid var(--line);
-  border-radius: var(--r-ctl);
-}
-.os-about-stats strong {
-  display: block;
+.os-about-name {
   font-family: var(--font-sans);
-  font-size: 22px;
+  font-size: 25px;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--ink);
 }
-.os-about-stats span {
-  display: block;
+.os-about-title {
   font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--muted);
-  margin-top: 2px;
+  color: var(--accent);
+  margin-top: 3px;
 }
-.os-about-social {
-  grid-column: 1 / -1;
+.os-about-loc {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.os-about-bio p {
+  margin: 0 0 12px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--ink);
+}
+.os-about-stats {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
+  gap: 10px;
+}
+.os-about-stats li {
+  flex: 1;
+  padding: 12px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.os-about-stats strong {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent);
+}
+.os-about-stats span {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.os-about-actions {
+  display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
-.os-about-social a {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: var(--accent);
+.os-about-actions a {
+  font-size: 12.5px;
+  border-radius: 9px;
+  padding: 8px 14px;
   text-decoration: none;
-  padding: 5px 10px;
-  background: var(--accent-soft);
-  border-radius: 999px;
 }
-.os-about-social a:hover {
+.os-about-resume {
+  font-weight: 700;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.os-about-resume:hover {
+  opacity: 0.88;
+  color: var(--accent-ink);
+}
+.os-about-social-link {
+  font-weight: 600;
+  border: 1px solid var(--line);
   color: var(--ink);
+}
+.os-about-social-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .os-edu-card {
@@ -683,10 +719,15 @@
     padding-right: 0;
     max-height: 40%;
   }
-  .os-about-profile {
-    grid-template-columns: 1fr;
+  .os-about-header {
+    gap: 12px;
   }
   .os-about-portrait {
-    width: 120px;
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+  }
+  .os-about-name {
+    font-size: 21px;
   }
 }

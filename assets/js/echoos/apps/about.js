@@ -23,11 +23,27 @@ export function renderAbout(bodyEl, { content }) {
     const frag = document.createElement('div');
     frag.className = 'os-about-profile';
 
+    // Header row: portrait + name / title / location (EchoOS.dc.html 95-102).
+    const header = document.createElement('div');
+    header.className = 'os-about-header';
     const img = document.createElement('img');
     img.className = 'os-about-portrait';
     img.src = p.portrait;
     img.alt = `Portrait of ${p.name}`;
-    frag.appendChild(img);
+    const id = document.createElement('div');
+    id.className = 'os-about-id';
+    const nameEl = document.createElement('div');
+    nameEl.className = 'os-about-name';
+    nameEl.textContent = p.name;
+    const titleEl = document.createElement('div');
+    titleEl.className = 'os-about-title';
+    titleEl.textContent = p.title;
+    const locEl = document.createElement('div');
+    locEl.className = 'os-about-loc';
+    locEl.textContent = p.location;
+    id.append(nameEl, titleEl, locEl);
+    header.append(img, id);
+    frag.appendChild(header);
 
     const bio = document.createElement('div');
     bio.className = 'os-about-bio';
@@ -51,20 +67,29 @@ export function renderAbout(bodyEl, { content }) {
     }
     frag.appendChild(stats);
 
-    const social = document.createElement('ul');
-    social.className = 'os-about-social';
+    // Actions row: accent "Download Resume" + bordered social links
+    // (prototype lines 114-119). Prototype opens resumeUrl in a new tab
+    // (no `download` attribute); match that, not the plan's `download`.
+    const actions = document.createElement('div');
+    actions.className = 'os-about-actions';
+    const resume = document.createElement('a');
+    resume.className = 'os-about-resume';
+    resume.href = p.resumeUrl || '#';
+    resume.target = '_blank';
+    resume.rel = 'noopener noreferrer';
+    resume.textContent = 'Download Resume';
+    actions.appendChild(resume);
     for (const s of p.social || []) {
-      const li = document.createElement('li');
       const a = document.createElement('a');
+      a.className = 'os-about-social-link';
       a.href = s.url;
       a.textContent = s.label;
       if (s.url.startsWith('mailto:')) a.href = s.url; // mailto links are fine as-is
       else a.target = '_blank';
       a.rel = 'noopener noreferrer';
-      li.appendChild(a);
-      social.appendChild(li);
+      actions.appendChild(a);
     }
-    frag.appendChild(social);
+    frag.appendChild(actions);
 
     return frag;
   }
