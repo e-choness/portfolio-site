@@ -69,6 +69,7 @@ function initOS(content) {
 
   const wm = createWM(root, {
     apps,
+    content,
     store,
     toast: (msg, opts) => notifications.toast(msg, opts),
     getSpotlight: () => spotlight,
