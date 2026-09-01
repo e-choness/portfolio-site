@@ -1,5 +1,5 @@
 // notifications.js — toast + notification panel (§6.1).
-export function initNotifications(root) {
+export function initNotifications(root, { portrait = '', onTour } = {}) {
   const toasts = document.createElement('div');
   toasts.className = 'os-toasts';
   toasts.setAttribute('aria-live', 'polite');
@@ -27,8 +27,53 @@ export function initNotifications(root) {
     }, 2600);
   }
 
+  let welcomeEl = null;
+
+  // Post-boot welcome card (EchoOS.dc.html lines 553-567): portrait, blurb,
+  // "Take the tour" opens the guide, auto-hides after 9s. Shown on every load.
+  function welcome() {
+    if (welcomeEl) return;
+    const el = document.createElement('div');
+    el.className = 'os-welcome';
+    const portraitImg = portrait
+      ? `<img class="os-welcome-portrait" src="${portrait}" alt="">`
+      : '';
+    el.innerHTML = `
+      ${portraitImg}
+      <div class="os-welcome-body">
+        <div class="os-welcome-title">Welcome to EchoOS</div>
+        <div class="os-welcome-text">Every app on this desktop is a section of Echo Yin's portfolio. The Arcade is real.</div>
+        <div class="os-welcome-actions">
+          <button type="button" class="os-welcome-tour">Take the tour</button>
+          <button type="button" class="os-welcome-dismiss">Dismiss</button>
+        </div>
+      </div>`;
+    el.querySelector('.os-welcome-tour').addEventListener('click', () => {
+      el.remove();
+      welcomeEl = null;
+      if (onTour) onTour();
+    });
+    el.querySelector('.os-welcome-dismiss').addEventListener('click', () => {
+      el.remove();
+      welcomeEl = null;
+    });
+    root.appendChild(el);
+    welcomeEl = el;
+    setTimeout(() => {
+      if (welcomeEl) {
+        welcomeEl.remove();
+        welcomeEl = null;
+      }
+    }, 9000);
+  }
+
   function togglePanel() {
     panel.hidden = !panel.hidden;
+    // Prototype: opening the notification center dismisses the welcome toast.
+    if (welcomeEl) {
+      welcomeEl.remove();
+      welcomeEl = null;
+    }
   }
 
   function closePanel() {
@@ -46,5 +91,5 @@ export function initNotifications(root) {
     }
   });
 
-  return { toast, togglePanel, closePanel, isOpen };
+  return { toast, welcome, togglePanel, closePanel, isOpen };
 }

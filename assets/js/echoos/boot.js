@@ -3,6 +3,7 @@
 // the boot animation (shortened on repeat visits), loads content.json, then
 // wires wallpaper, window manager, shell, spotlight and the app renderers.
 import { store } from './store.js';
+import { beep } from './sound.js';
 import { initWallpaper } from './wallpaper.js';
 import { initNotifications } from './notifications.js';
 import { initSpotlight } from './spotlight.js';
@@ -57,7 +58,10 @@ function initOS(content) {
   const apps = content.apps || [];
 
   const wallpaper = initWallpaper(root);
-  const notifications = initNotifications(root);
+  const notifications = initNotifications(root, {
+    portrait: content.profile && content.profile.portrait,
+    onTour: () => wm.openApp('guide'),
+  });
   const shellRef = { current: null };
   let term = null;
   let spotlight = null;
@@ -109,6 +113,11 @@ function initOS(content) {
   // about opens on boot (§6.4); first-time visitors get the guided tour.
   wm.openApp('about');
   if (!store.get().guideDone) wm.openApp('guide');
+
+  // Post-boot welcome toast (prototype finishBoot): two-tone chirp + 9s auto-hide.
+  beep(660, 0.08);
+  setTimeout(() => beep(880, 0.1), 110);
+  notifications.welcome();
 }
 
 main();

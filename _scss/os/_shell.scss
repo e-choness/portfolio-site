@@ -155,6 +155,77 @@ body:has(#echoos-root) {
   opacity: 0;
 }
 
+// Post-boot welcome card (EchoOS.dc.html lines 553-567).
+.os-welcome {
+  position: absolute;
+  top: 52px;
+  right: 16px;
+  width: 320px;
+  z-index: 200001;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-win);
+  box-shadow: var(--shadow);
+  animation: toastin 0.25s ease;
+}
+.os-welcome-portrait {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  object-fit: cover;
+  flex: none;
+}
+.os-welcome-body {
+  flex: 1;
+}
+.os-welcome-title {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.os-welcome-text {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-top: 2px;
+}
+.os-welcome-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.os-welcome-actions button {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: var(--r-ctl);
+  padding: 6px 11px;
+  cursor: pointer;
+}
+.os-welcome-tour {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: none;
+}
+.os-welcome-tour:hover {
+  opacity: 0.88;
+}
+.os-welcome-dismiss {
+  font-weight: 600;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+.os-welcome-dismiss:hover {
+  color: var(--ink);
+}
+
 // Notification panel (menubar "Alerts").
 .os-notif {
   position: absolute;
