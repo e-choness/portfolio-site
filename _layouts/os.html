@@ -1,6 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" data-echo-theme="light">
+<html lang="en">
 <head>
+  <script>
+    try {
+      var t = localStorage.getItem('echoos-theme');
+      document.documentElement.dataset.echoTheme = t === 'dark' ? 'dark' : 'light';
+      var a = localStorage.getItem('echoos-accent');
+      if (a) document.documentElement.style.setProperty('--accent', a);
+    } catch (e) { document.documentElement.dataset.echoTheme = 'light'; }
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>
