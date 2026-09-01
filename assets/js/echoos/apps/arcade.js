@@ -153,30 +153,35 @@ export function renderArcade(bodyEl, { toast }) {
   });
   bodyEl.querySelector('.os-arcade-back').addEventListener('click', back);
 
-  // Re-start the current game when the theme changes.
+  // Re-start the current game when the theme changes (compare previous value to avoid restart on unrelated state).
+  let lastTheme = store.get().theme;
   const unsubTheme = store.subscribe((s) => {
-    if (current && alive && stage && !stage.hidden) startRunner(current);
+    if (s.theme === lastTheme) return;
+    lastTheme = s.theme;
+    if (current && alive && !stage.hidden) startRunner(current);
   });
 
   // Games read W/H at start: a window resize means stop + start. The round
-  // resets (acceptable per §6.7); the HUD stays.
+  // resets (acceptable per §6.7); the HUD stays. Debounce with 150ms trailing timer.
+  let resizeTimer = null;
   const onResize = () => {
-    if (current && alive && runner) {
-      runner.stop();
-      startRunner(current);
-    }
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (current && alive && runner) {
+        runner.stop();
+        startRunner(current);
+      }
+    }, 150);
   };
   window.addEventListener('resize', onResize);
 
-  // Cleanup when the arcade canvas is unmounted (window closed or re-rendered).
-  const observer = new MutationObserver((_, obs) => {
-    if (!canvas.isConnected && alive) {
-      alive = false;
-      if (runner) runner.stop();
-      unsubTheme();
-      window.removeEventListener('resize', onResize);
-      obs.disconnect();
-    }
-  });
-  observer.observe(canvas, { childList: true });
+  // Return teardown function
+  return () => {
+    back();
+    alive = false;
+    if (runner) runner.stop();
+    unsubTheme();
+    window.removeEventListener('resize', onResize);
+    clearTimeout(resizeTimer);
+  };
 }
