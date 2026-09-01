@@ -52,10 +52,10 @@ single-page site remains at `/classic/`.*
 │   └── blog.yml             #   blog settings / categories
 ├── _includes/               # Classic-route partials (hero, about, ...)
 ├── _layouts/                # os.html (EchoOS shell), default.html (classic route)
-├── _plugins/apps_titles.rb  # Build hook: interpolates counts into apps.yml titles
+├── _plugins/                # Ruby build hooks (apps_titles.rb, echoos_filters.rb, post_json.rb)
 ├── _posts/                  # Blog posts (Markdown, mermaid/markmap supported)
 ├── _projects/               # Individual project pages
-├── _scss/                   # Sass sources
+├── _sass/                   # Sass sources
 │   ├── abstracts/           #   tokens, variables, mixins
 │   ├── base/                #   base, typography, animations, utilities
 │   ├── os/                  #   shell, window, dock, spotlight, terminal, arcade, apps
@@ -99,6 +99,10 @@ locally; the shipped site is built with the `/portfolio-site/` baseurl.
 ```bash
 bundle exec jekyll build --trace   # production build, zero-warning expected
 ```
+
+### Custom plugins
+
+This site uses three custom Ruby plugins (`_plugins/apps_titles.rb`, `echoos_filters.rb`, `post_json.rb`) for build-time content generation. These prevent use of GitHub Pages' gem-based builder; the site can only be built via the Actions workflow (`.github/workflows/pages.yml`). Do not change Pages settings to branch-deploy mode.
 
 ## EchoOS module map
 

@@ -2,8 +2,7 @@
 title: Echo Yin
 email: echoybl1123@gmail.com
 description: >-
-  Full-stack developer passionate about creating innovative web solutions.
-  Experienced in modern JavaScript frameworks, backend development, and UI/UX design.
+  Passionate about creating innovative AI solutions.
 baseurl: "/portfolio-site" # the subpath of your site, e.g. /blog
 repository: e-choness/portfolio-site # Change to <your-username>/<your-username>.github.io (or remove it if you don't need remote projects) # the base hostname & protocol for your site
 url: "https://e-choness.github.io" # the base hostname & protocol for your site
@@ -29,6 +28,7 @@ exclude:
   - node_modules
   - vendor/
   - reference/
+  - .github/
 
 # Collections
 collections:
@@ -60,8 +60,8 @@ projects:
 # Site data
 author:
   name: Echo Yin
-  title: Software Engineer
-  location: "Edmonton, AB, Canada"
+  title: Senior A.I. Engineer
+  location: "Calgary, AB, Canada"
   years_experience: 5
   projects_completed: 25
   happy_clients: 15
