@@ -57,14 +57,14 @@ export function renderArcade(bodyEl, { toast }) {
   bodyEl.innerHTML = `
     <div class="os-arcade">
       <div class="os-arcade-grid"></div>
+      <div class="os-arcade-footnote">Every sprite, sound and explosion is generated in JavaScript — no image or audio files. High scores persist in your browser.</div>
       <div class="os-arcade-stage" hidden>
         <div class="os-arcade-hud">
+          <button type="button" class="os-arcade-back">‹ games</button>
           <span class="os-arcade-name"></span>
-          <span class="os-arcade-score">score 0</span>
-          <span class="os-arcade-hi">hi 0</span>
+          <span class="os-arcade-score">SCORE 0 · HI 0</span>
           <span class="os-arcade-spacer"></span>
-          <button type="button" class="os-arcade-restart">Restart</button>
-          <button type="button" class="os-arcade-back">Back</button>
+          <button type="button" class="os-arcade-restart">restart</button>
         </div>
         <div class="os-arcade-canvas-wrap"><canvas class="os-arcade-canvas" tabindex="0"></canvas></div>
         <p class="os-arcade-hint"></p>
@@ -77,7 +77,6 @@ export function renderArcade(bodyEl, { toast }) {
   const canvas = bodyEl.querySelector('.os-arcade-canvas');
   const nameEl = bodyEl.querySelector('.os-arcade-name');
   const scoreEl = bodyEl.querySelector('.os-arcade-score');
-  const hiEl = bodyEl.querySelector('.os-arcade-hi');
   const hintEl = bodyEl.querySelector('.os-arcade-hint');
   const padEl = bodyEl.querySelector('.os-arcade-pad');
 
@@ -106,12 +105,10 @@ export function renderArcade(bodyEl, { toast }) {
     if (runner) runner.stop();
     sizeCanvas();
     runner = window.EchoGames.start(canvas, game.id, buildTheme(), (s, over, h) => {
-      scoreEl.textContent = `score ${s}`;
-      hiEl.textContent = `hi ${h}`;
-      if (over) hiEl.textContent = `hi ${h}`;
+      scoreEl.textContent = `SCORE ${s} · HI ${h}`;
     });
     const hi = hiscores()[game.id] || 0;
-    hiEl.textContent = `hi ${hi}`;
+    scoreEl.textContent = `SCORE 0 · HI ${hi}`;
   }
 
   function startGame(game) {
@@ -148,10 +145,12 @@ export function renderArcade(bodyEl, { toast }) {
     grid.hidden = false;
   }
 
-  bodyEl.querySelector('.os-arcade-restart').addEventListener('click', () => {
-    if (current) startGame(current);
+  bodyEl.addEventListener('click', (e) => {
+    const restart = e.target.closest('.os-arcade-restart');
+    if (restart && current) startGame(current);
+    const backBtn = e.target.closest('.os-arcade-back');
+    if (backBtn) back();
   });
-  bodyEl.querySelector('.os-arcade-back').addEventListener('click', back);
 
   // Re-start the current game when the theme changes (compare previous value to avoid restart on unrelated state).
   let lastTheme = store.get().theme;
