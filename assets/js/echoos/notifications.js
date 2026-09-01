@@ -1,26 +1,54 @@
 // notifications.js — toast + notification panel (§6.1).
-export function initNotifications(root, { portrait = '', onTour } = {}) {
+export function initNotifications(root, { portrait = '', stats = [], onTour } = {}) {
   const toasts = document.createElement('div');
   toasts.className = 'os-toasts';
   toasts.setAttribute('aria-live', 'polite');
   root.appendChild(toasts);
 
+  // Notification center — date header, stats grid, welcome card, tour button
+  // (EchoOS.dc.html lines 527-551). No message list in the prototype.
   const panel = document.createElement('aside');
   panel.className = 'os-notif';
   panel.hidden = true;
   panel.innerHTML = `
-    <h3 class="os-notif-title">Notifications</h3>
-    <ul class="os-notif-list"></ul>`;
+    <div class="os-notif-day"></div>
+    <div class="os-notif-date"></div>
+    <div class="os-notif-stats"></div>
+    <div class="os-notif-welcome">
+      <img class="os-notif-welcome-img" src="${portrait}" alt="">
+      <div>
+        <div class="os-notif-welcome-title">Welcome to EchoOS</div>
+        <div class="os-notif-welcome-text">A different way to explore Echo Yin's professional profile.</div>
+      </div>
+    </div>
+    <button type="button" class="os-notif-tour">Take the guided tour</button>`;
   root.appendChild(panel);
+
+  function renderPanel() {
+    const d = new Date();
+    panel.querySelector('.os-notif-day').textContent = d.toLocaleDateString('en-US', { weekday: 'long' });
+    panel.querySelector('.os-notif-date').textContent = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+    const statsEl = panel.querySelector('.os-notif-stats');
+    statsEl.innerHTML = '';
+    for (const st of stats) {
+      const cell = document.createElement('div');
+      cell.className = 'os-notif-stat';
+      cell.innerHTML = `
+        <div class="os-notif-stat-val">${st.value}</div>
+        <div class="os-notif-stat-label">${st.label}</div>`;
+      statsEl.appendChild(cell);
+    }
+  }
+  panel.querySelector('.os-notif-tour').addEventListener('click', () => {
+    panel.hidden = true;
+    if (onTour) onTour();
+  });
 
   function toast(msg, { kind = 'out' } = {}) {
     const el = document.createElement('div');
     el.className = 'os-toast os-toast-' + kind;
     el.textContent = msg;
     toasts.appendChild(el);
-    const li = document.createElement('li');
-    li.textContent = msg;
-    panel.querySelector('.os-notif-list').prepend(li);
     setTimeout(() => {
       el.classList.add('os-toast-out');
       setTimeout(() => el.remove(), 300);
@@ -69,6 +97,7 @@ export function initNotifications(root, { portrait = '', onTour } = {}) {
 
   function togglePanel() {
     panel.hidden = !panel.hidden;
+    if (!panel.hidden) renderPanel();
     // Prototype: opening the notification center dismisses the welcome toast.
     if (welcomeEl) {
       welcomeEl.remove();

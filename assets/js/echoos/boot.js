@@ -60,6 +60,7 @@ function initOS(content) {
   const wallpaper = initWallpaper(root);
   const notifications = initNotifications(root, {
     portrait: content.profile && content.profile.portrait,
+    stats: (content.profile && content.profile.stats) || [],
     onTour: () => wm.openApp('guide'),
   });
   const shellRef = { current: null };
