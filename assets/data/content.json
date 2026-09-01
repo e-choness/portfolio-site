@@ -1,0 +1,93 @@
+---
+layout: none
+permalink: /assets/data/content.json
+---
+{% assign posts = site.posts %}
+{
+  "profile": {
+    "name": {{ site.data.profile.name | jsonify }},
+    "title": {{ site.data.profile.title | jsonify }},
+    "location": {{ site.data.profile.location | jsonify }},
+    "email": {{ site.data.profile.email | jsonify }},
+    "tagline": {{ site.data.profile.tagline | jsonify }},
+    "about": {{ site.data.profile.about.description | split_paragraphs | jsonify }},
+    "portrait": {{ site.data.profile.about.image | relative_url | jsonify }},
+    "resumeUrl": {{ site.data.profile.about.resume_url | relative_url | jsonify }},
+    "stats": {{ site.data.profile.stats | jsonify }},
+    "social": [
+      {"label": "GitHub", "url": {{ site.data.profile.social.github | jsonify }}},
+      {"label": "LinkedIn", "url": {{ site.data.profile.social.linkedin | jsonify }}},
+      {"label": "Twitter / X", "url": {{ site.data.profile.social.twitter | jsonify }}},
+      {"label": "Email", "url": {{ site.data.profile.social.email | jsonify }}}
+    ]
+  },
+  "experience": [
+  {% for e in site.data.experience %}
+    {
+      "role": {{ e.position | jsonify }},
+      "company": {{ e.company | jsonify }},
+      "duration": {{ e.duration | jsonify }},
+      "location": {{ e.location | jsonify }},
+      "logo": {{ e.logo | relative_url | jsonify }},
+      "desc": {{ e.description | jsonify }},
+      "bullets": {{ e.responsibilities | jsonify }},
+      "tech": {{ e.technologies | jsonify }}
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+  ],
+  "projects": [
+  {% for p in site.projects %}
+    {
+      "title": {{ p.title | jsonify }},
+      "slug": {{ p.slug | jsonify }},
+      "url": {{ p.url | relative_url | jsonify }},
+      "desc": {{ p.description | default: p.excerpt | strip_html | strip_newlines | jsonify }},
+      "tech": {{ p.technologies | jsonify }},
+      "demo": {{ p.live_url | jsonify }},
+      "repo": {{ p.github_url | jsonify }},
+      "image": {{ p.image | relative_url | jsonify }},
+      "featured": {{ p.featured | default: false | jsonify }}
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+  ],
+  "skills": [
+  {% for g in site.data.skills.categories %}
+    {
+      "group": {{ g.name | jsonify }},
+      "items": [
+      {% for s in g.skills %}
+        {"name": {{ s.name | jsonify }}, "level": {{ s.level }}}{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+      ]
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+  ],
+  "education": [
+  {% for ed in site.data.education %}
+    {
+      "degree": {{ ed.degree | jsonify }},
+      "school": {{ ed.institution | jsonify }},
+      "duration": {{ ed.duration | jsonify }},
+      "location": {{ ed.location | jsonify }},
+      "logo": {{ ed.logo | relative_url | jsonify }},
+      "notes": {{ ed.coursework | default: ed.skills | jsonify }}
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+  ],
+  "posts": [
+  {% for post in posts %}
+    {
+      "title": {{ post.title | jsonify }},
+      "slug": {{ post.url | split: "/" | last | jsonify }},
+      "url": {{ post.url | relative_url | jsonify }},
+      "date": {{ post.date | date: "%b %-d, %Y" | jsonify }},
+      "dateISO": {{ post.date | date_to_xmlschema | jsonify }},
+      "excerpt": {{ post.excerpt | strip_html | strip_newlines | truncate: 220 | jsonify }},
+      "categories": {{ post.categories | jsonify }},
+      "tags": {{ post.tags | jsonify }},
+      "readTime": {{ post.content | number_of_words | divided_by: 200 | plus: 1 }}
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+  ],
+  "apps": {{ site.data.apps | jsonify }}
+}

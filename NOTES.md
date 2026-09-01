@@ -38,6 +38,45 @@ per IMPLEMENTATION-PLAN.md rules.
   `experience — 6 roles`.
 - Note: `_plugins/` is not in `_config.yml` `exclude`, so Jekyll auto-loads it.
 
+## Step 5 — OS shell (vanilla ES modules)
+
+- 19 ES modules under `assets/js/echoos/`; all pass `node --check`. Syntax-check command (Jekyll
+  container has no node — use a one-off node container; git-bash mangles `/srv` so force
+  `MSYS_NO_PATHCONV=1` and a Windows-style source path):
+  `MSYS_NO_PATHCONV=1 docker run --rm -v "D:/Projects/portfolio-site:/srv" -w /srv node:22-alpine sh -c 'for f in assets/js/echoos/**/*.js assets/js/echoos/*.js; do node --check "$f"; done && echo ALL_SYNTAX_OK'`
+- **Deviation (schema, additive):** content.json gets an `"apps"` key from `{{ site.data.apps | jsonify }}`
+  (§6.2 fixed schema lists profile/experience/projects/skills/education/posts only). The window manager
+  needs dock/app geometry + titles at runtime and there is no YAML parser in JS, so the registry is
+  emitted as JSON. Counts interpolated by the Step 4 `apps_titles.rb` hook. Verified: 10 apps,
+  `about — profile` … `guide — tour`, `blog — 11 posts`.
+- **Post slug:** `post.data.slug` renders `nil` in Liquid (DocumentDrop has no `data` method — Ruby
+  plugins like `post_json.rb` use `post.data["slug"]` and are fine; Liquid cannot). `post.slug` is
+  deprecated in Jekyll 4.4. Derive instead: `{{ post.url | split: "/" | last | jsonify }}` →
+  `/blog/2026/07/14/PII-masking/` yields `PII-masking` (Ruby `split` drops trailing empty strings, so
+  no `pop` needed — a `pop` there removes the title and returns the day). Verified: all 11 slugs
+  match the `post_json.rb` filenames (e.g. `PII-masking.json`).
+- **Stats `8+`:** `_data/profile.yml` holds 8/38/66; the `+` suffix on "Years Experience" is
+  presentation-only, applied by `apps/about.js` to the first stat. Data stays 8.
+- **ztop interpretation:** `let ztop = 1; win.z = ++ztop` — about opens on boot with z=2; "ztop starts
+  at 2" (§6.4) is satisfied.
+- **Guide auto-open:** first-time visitors (`!guideDone`) get the guide window auto-opened on boot,
+  layered over the about window (this is the "guided tour" of §6.4's on-boot behavior).
+- **Blog reader diagrams:** `apps/blog.js` replicates `_includes/scripts.html` for the OS route —
+  `pre code.language-mermaid` → `pre.mermaid` + dynamic `import()` of mermaid@11 (jsdelivr) +
+  `mermaid.run()`; markmap via injected `markmap-autoloader@0.16` script. Fetches per-post JSON
+  (`url('/assets/data/posts/<slug>.json')`); on fetch failure falls back to `window.open(post.url)`.
+- **Arcade theme:** games.js reads 9 props — `bg, ink, muted, accent, accentSoft, soft, surface,
+  line, overlay, beep` — while §6.7 lists 7. `buildTheme()` in `apps/arcade.js` reads the live
+  computed custom properties each game start (theme changes restart the current game via a store
+  subscription).
+- **Overlay resolution:** `overlay = color-mix(in oklab, var(--bg) 72%, transparent)` is resolved to
+  a real rgba by probing the browser (color-mix unsupported → flat `rgba(--bg, .72)` fallback).
+- **Validation gotcha:** `docker compose run --rm jekyll build` fails with `exec: build: not found`
+  because compose overrides the Dockerfile `CMD` with just `build`. Use the full command:
+  `MSYS_NO_PATHCONV=1 docker compose run --rm jekyll bundle exec jekyll build`.
+- Verified: build exits 0; content.json parses (10 apps / 11 posts / 6 projects / 6 experience /
+  5 skills groups / 3 education); every post slug resolves to its per-post JSON.
+
 ## Pending (added by later steps)
 
 - _stats discrepancy_ (see §6.2): prototype shows `8+ / 38 / 66`, `_config.yml` `author:` block says
