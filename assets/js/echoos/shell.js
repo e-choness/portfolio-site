@@ -106,7 +106,7 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
     icon.className = 'os-desk-icon';
     icon.dataset.app = app.id;
     icon.setAttribute('aria-label', `Open ${app.label}`);
-    icon.innerHTML = `<span class="os-glyph">${app.glyph}</span><span class="os-desk-icon-label">${app.label}</span>`;
+    icon.innerHTML = `<span class="os-desk-icon-tile"><span class="os-glyph">${app.glyph}</span></span><span class="os-desk-icon-label">${app.label}</span>`;
     icon.addEventListener('click', () => wm && wm.openApp(app.id));
     desktop.appendChild(icon);
   }

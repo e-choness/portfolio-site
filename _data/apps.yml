@@ -9,7 +9,6 @@
   y: 74
   w: 690
   h: 520
-  desktop_icon: true
   open_on_boot: true
   tab_bar: true
 - id: exp
@@ -20,7 +19,6 @@
   y: 64
   w: 650
   h: 560
-  desktop_icon: true
 - id: proj
   label: Projects
   glyph: "{}"
@@ -65,6 +63,7 @@
   y: 120
   w: 470
   h: 460
+  desktop_icon: true
 - id: arcade
   label: Arcade
   glyph: "▲"
@@ -73,6 +72,7 @@
   y: 56
   w: 700
   h: 590
+  desktop_icon: true
   tab_bar: true
 - id: resume
   label: Resume
