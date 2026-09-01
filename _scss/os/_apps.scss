@@ -836,59 +836,58 @@
 }
 
 // ── contact ────────────────────────────────────────────────────────────────
-.os-contact {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
+.os-contact-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
 }
-.os-contact-primary {
+.os-contact-blurb {
   font-family: var(--font-sans);
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.os-contact-email {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  word-break: break-all;
   color: var(--accent);
   text-decoration: none;
 }
-.os-contact-primary:hover {
+.os-contact-email:hover {
   color: var(--ink);
-}
-.os-contact-copy {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-  background: none;
-  border: 1px solid var(--line);
-  border-radius: var(--r-ctl);
-  padding: 5px 10px;
-  cursor: pointer;
-}
-.os-contact-copy:hover {
-  color: var(--accent);
-  border-color: var(--accent);
 }
 .os-contact-social {
-  list-style: none;
-  margin: 8px 0 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
-.os-contact-social a {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: var(--accent);
-  text-decoration: none;
-  padding: 5px 10px;
-  background: var(--accent-soft);
-  border-radius: 999px;
-}
-.os-contact-social a:hover {
+.os-contact-social-link {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 700;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 14px;
   color: var(--ink);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.os-contact-social-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+@media (max-width: 760px) {
+  .os-contact-social {
+    grid-template-columns: 1fr;
+  }
 }
 
 // ── resume ─────────────────────────────────────────────────────────────────
