@@ -78,6 +78,7 @@ export function createWM(root, opts = {}) {
     el.tabIndex = -1;
     el.innerHTML = `
       <header class="os-win-bar">
+        <span class="os-win-dot" aria-hidden="true"></span>
         <span class="os-win-title"></span>
         <button type="button" class="os-win-close" aria-label="Close ${esc(app.label)}"></button>
       </header>

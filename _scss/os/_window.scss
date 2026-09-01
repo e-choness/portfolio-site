@@ -29,50 +29,66 @@ body.os-dragging-cursor {
   cursor: grabbing;
 }
 
+// Prototype chrome (EchoOS.dc.html line 84): 42px bar on surface2 tint,
+// 8px accent dot before the title, mono 11px/600 ls .12em uppercase title,
+// 26px bordered close (1px line, hover accent).
 .os-win-bar {
   flex: 0 0 auto;
-  height: 34px;
+  height: 42px;
   display: flex;
   align-items: center;
+  gap: 10px;
   justify-content: space-between;
-  padding: 0 8px 0 14px;
+  padding: 0 10px 0 16px;
   border-bottom: 1px solid var(--line);
+  background: var(--surface2);
   cursor: grab;
 }
 .os-dragging .os-win-bar {
   cursor: grabbing;
 }
 
+.os-win-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex: none;
+}
+
 .os-win-title {
   font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
+  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .os-win-close {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
+  flex: none;
   display: grid;
   place-items: center;
-  background: none;
-  border: 0;
-  border-radius: var(--r-ctl);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1;
   cursor: pointer;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
 .os-win-close::before {
   content: "×";
 }
 .os-win-close:hover {
-  color: var(--ink);
+  color: var(--accent);
   background: var(--accent-soft);
 }
 .os-win-close:focus-visible {
