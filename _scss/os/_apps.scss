@@ -891,24 +891,139 @@
 }
 
 // ── resume ─────────────────────────────────────────────────────────────────
-.os-resume {
-  height: 100%;
+// os-resume: title-bar download button
+.os-resume-dl {
+  font: 600 11px var(--font-mono);
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-radius: 8px;
+  padding: 6px 12px;
+  border: 0;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+.os-resume-dl:hover {
+  opacity: 0.88;
+}
+.os-resume-dl:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+// os-resume-doc: PDF object with fallback
+.os-resume-doc {
+  width: 100%;
+  min-height: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+// Fallback card (browsers that don't embed PDFs)
+.os-resume-fallback {
+  max-width: 520px;
+  margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 30px 34px;
+  box-shadow: 0 6px 24px -10px rgba(30, 20, 50, 0.2);
+}
+
+.os-resume-name {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.os-resume-title {
+  font: 600 11px var(--font-mono);
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.os-resume-contact {
+  font: 10.5px var(--font-mono);
+  color: var(--muted);
+  margin-bottom: 14px;
+  word-break: break-all;
+}
+
+.os-resume-section {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  margin-bottom: 14px;
+}
+
+.os-resume-section-head {
+  font: 600 10px var(--font-mono);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin-bottom: 10px;
+}
+
+.os-resume-items {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
 }
-.os-resume-actions {
-  flex: 0 0 auto;
+
+.os-resume-row {
   display: flex;
-  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
 }
-.os-resume-frame {
-  flex: 1 1 auto;
-  min-height: 0;
-  width: 100%;
-  border: 1px solid var(--line);
-  border-radius: var(--r-ctl);
-  background: #fff;
+
+.os-resume-item-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.os-resume-item-right {
+  font: 10px var(--font-mono);
+  color: var(--muted);
+  white-space: nowrap;
+  margin-left: 12px;
+}
+
+.os-resume-role {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.os-resume-company {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.os-resume-degree {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.os-resume-institution {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.os-resume-skills {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--ink);
 }
 
 // ── guide ──────────────────────────────────────────────────────────────────
