@@ -33,10 +33,27 @@ store.set({ visited: true });
 
 const boot = document.createElement('div');
 boot.className = 'os-boot';
-boot.innerHTML = '<div class="os-boot-fill"></div><span class="os-boot-text">EchoOS</span>';
+boot.innerHTML = `
+  <div class="os-boot-mark">
+    <span class="os-boot-square"></span>
+    <span class="os-boot-word">EchoOS</span>
+    <span class="os-boot-caret"></span>
+  </div>
+  <div class="os-boot-track"><div class="os-boot-fill"></div></div>
+  <div class="os-boot-text">booting portfolio environment — click to skip</div>`;
 root.appendChild(boot);
 
 const delay = (ms) => new Promise((r) => setTimeout(r, ms));
+let bootResolved = false;
+
+function finishBoot() {
+  if (bootResolved) return;
+  bootResolved = true;
+  boot.classList.add('os-boot-done');
+  setTimeout(() => boot.remove(), 300);
+}
+
+boot.addEventListener('click', finishBoot);
 
 async function main() {
   // Kick off the content fetch in parallel with the boot animation.
@@ -48,8 +65,7 @@ async function main() {
   const bootDur = firstVisit ? 1150 : 350; // echoos-visited skips the long boot
   await Promise.all([contentPromise, delay(bootDur)]);
 
-  boot.classList.add('os-boot-done');
-  setTimeout(() => boot.remove(), 300);
+  finishBoot();
 
   initOS(content || {});
 }
@@ -70,11 +86,15 @@ function initOS(content) {
     apps,
     content,
     store,
+    notifications,
     toast: (msg, opts) => notifications.toast(msg, opts),
     getSpotlight: () => spotlight,
     onFocus: (id) => {
       if (shellRef.current) shellRef.current.setFocusedApp(id);
       if (id === 'term' && term) term.focusInput();
+    },
+    onWindowsChanged: (openIds) => {
+      if (shellRef.current) shellRef.current.setOpenApps(openIds);
     },
     renderers: {
       about: renderAbout,
@@ -122,9 +142,8 @@ function initOS(content) {
   });
   shellRef.current = shell;
 
-  // about opens on boot (§6.4); first-time visitors get the guided tour.
+  // about opens on boot (§6.4)
   wm.openApp('about');
-  if (!store.get().guideDone) wm.openApp('guide');
 
   // Post-boot welcome toast (prototype finishBoot): two-tone chirp + 9s auto-hide.
   beep(660, 0.08);

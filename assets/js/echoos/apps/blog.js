@@ -26,6 +26,33 @@ function loadMermaid() {
   return mermaidPromise;
 }
 
+let outsideClickListener = null;
+function registerOutsideClickListener(app) {
+  if (outsideClickListener) {
+    document.removeEventListener('pointerdown', outsideClickListener);
+  }
+  outsideClickListener = (e) => {
+    const catEl = app.querySelector('.os-blog-cat');
+    if (catEl && !catEl.contains(e.target)) {
+      state.catOpen = false;
+      // Re-render to close the menu
+      const rows = app.closest('.os-blog');
+      if (rows && !state.sel) {
+        document.removeEventListener('pointerdown', outsideClickListener);
+        outsideClickListener = null;
+      }
+    }
+  };
+  document.addEventListener('pointerdown', outsideClickListener);
+}
+
+function clearOutsideClickListener() {
+  if (outsideClickListener) {
+    document.removeEventListener('pointerdown', outsideClickListener);
+    outsideClickListener = null;
+  }
+}
+
 async function renderDiagrams(container) {
   const mermaidBlocks = container.querySelectorAll('pre code.language-mermaid');
   for (const code of mermaidBlocks) {
@@ -129,6 +156,10 @@ export function renderBlog(bodyEl, { content, toast }) {
         });
         menu.appendChild(opt);
       }
+      // Register outside click listener when menu is open
+      registerOutsideClickListener(app);
+    } else {
+      clearOutsideClickListener();
     }
 
     const rowsEl = app.querySelector('.os-blog-rows');
@@ -217,4 +248,10 @@ export function renderBlog(bodyEl, { content, toast }) {
     }
   };
   document.addEventListener('echoos:open-post', onOpenPost);
+
+  // Return teardown function (Patch 23 contract)
+  return () => {
+    clearOutsideClickListener();
+    document.removeEventListener('echoos:open-post', onOpenPost);
+  };
 }

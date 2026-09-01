@@ -29,12 +29,19 @@ export function beep(freq = 700, dur = 0.06, type = 'sine') {
   } catch { /* audio unavailable — beep is decorative */ }
 }
 
-// Distinct beeps from §6.9: open 700Hz, close 420Hz, error 220Hz, game over 160Hz/.3s.
+// Beeps match the prototype (Patch 28).
 export const sfx = {
-  open: () => beep(700, 0.06),
-  close: () => beep(420, 0.06),
-  error: () => beep(220, 0.1),
-  gameOver: () => beep(160, 0.3),
+  open: () => beep(560, 0.05),
+  close: () => beep(360, 0.05),
+  error: () => beep(220, 0.08),  // terminal "command not found"
+  toggleTheme: () => beep(500, 0.05),
+  toggleSound: () => beep(700, 0.05),
+  guideNext: () => beep(640, 0.04),
+  pickGame: () => beep(700, 0.06),
+  blogOpen: () => beep(600, 0.04),
+  blogCatPick: () => beep(600, 0.03),
+  bootA: () => beep(660, 0.08),
+  bootB: () => beep(880, 0.1),
 };
 
 export function resumeAudio() {

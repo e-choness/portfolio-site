@@ -113,6 +113,13 @@ export function initNotifications(root, { portrait = '', stats = [], onTour } = 
     return !panel.hidden;
   }
 
+  function dismissWelcome() {
+    if (welcomeEl) {
+      welcomeEl.remove();
+      welcomeEl = null;
+    }
+  }
+
   // Clicking outside the panel closes it.
   document.addEventListener('pointerdown', (e) => {
     if (!panel.hidden && !panel.contains(e.target) && !e.target.closest('.os-mb-notif')) {
@@ -120,5 +127,5 @@ export function initNotifications(root, { portrait = '', stats = [], onTour } = 
     }
   });
 
-  return { toast, welcome, togglePanel, closePanel, isOpen };
+  return { toast, welcome, togglePanel, closePanel, isOpen, dismissWelcome };
 }

@@ -82,6 +82,7 @@ export function createWM(root, opts = {}) {
       <header class="os-win-bar">
         <span class="os-win-dot" aria-hidden="true"></span>
         <span class="os-win-title"></span>
+        <div class="os-win-actions"></div>
         <button type="button" class="os-win-close" aria-label="Close ${esc(app.label)}"></button>
       </header>
       <div class="os-win-body"></div>
@@ -129,13 +130,12 @@ export function createWM(root, opts = {}) {
 
   function startDrag(e, win) {
     if (MOBILE.matches) return;
-    if (e.target.closest('.os-win-close')) return;
-    if (resizeActive) return; // resize takes priority in the shared gesture
+    if (e.target.closest('button, a, input, select')) return;
+    if (resizeActive) return;
+    if (e.button !== 0) return;
     focus(win.id);
-    const bar = winEls.get(win.id).querySelector('.os-win-bar');
-    const rect = bar.getBoundingClientRect();
-    const dx = e.clientX - rect.left;
-    const dy = e.clientY - rect.top;
+    const dx = e.clientX - win.x;
+    const dy = e.clientY - win.y;
     const el = winEls.get(win.id);
     el.setPointerCapture(e.pointerId);
     el.classList.add('os-dragging');
@@ -205,7 +205,9 @@ export function createWM(root, opts = {}) {
     }
 
     const body = winEls.get(win.id).querySelector('.os-win-body');
+    const titlebar = winEls.get(win.id).querySelector('.os-win-actions');
     body.innerHTML = '';
+    if (titlebar) titlebar.innerHTML = '';
     const renderer = opts.renderers && opts.renderers[app.id];
     if (renderer) {
       const result = renderer(body, {
@@ -215,6 +217,7 @@ export function createWM(root, opts = {}) {
         store: opts.store,
         toast: opts.toast,
         sfx,
+        titlebar,
       });
       // Store teardown function if renderer returned one
       if (typeof result === 'function') {
@@ -227,6 +230,10 @@ export function createWM(root, opts = {}) {
   function openApp(id, { silent = false } = {}) {
     const app = byId(id);
     if (!app) return;
+    if (opts.notifications) {
+      opts.notifications.closePanel();
+      opts.notifications.dismissWelcome();
+    }
     let win = wins.get(id);
     if (!win) win = buildWin(app);
     if (app.anchor === 'bottom-right') {
@@ -245,6 +252,7 @@ export function createWM(root, opts = {}) {
     }
     focus(id);
     if (!silent) sfx.open();
+    notifyWindowsChanged();
   }
 
   function closeApp(id) {
@@ -264,6 +272,7 @@ export function createWM(root, opts = {}) {
       if (opts.onFocus) opts.onFocus(focused);
     }
     sfx.close();
+    notifyWindowsChanged();
   }
 
   function minimizeApp(id) {
@@ -276,6 +285,7 @@ export function createWM(root, opts = {}) {
       focused = null;
       if (opts.onFocus) opts.onFocus(focused);
     }
+    notifyWindowsChanged();
   }
 
   function toggleApp(id) {
@@ -369,6 +379,20 @@ export function createWM(root, opts = {}) {
   }
   window.addEventListener('keydown', onKey);
 
+  // --- notify dock of window changes ------
+
+  function notifyWindowsChanged() {
+    const openIds = new Set();
+    for (const win of wins.values()) {
+      if (win.open && !win.minimized) {
+        openIds.add(win.id);
+      }
+    }
+    if (opts.onWindowsChanged) {
+      opts.onWindowsChanged(openIds);
+    }
+  }
+
   // --- api ----------------------------------------------------------------
 
   const api = {
@@ -388,6 +412,10 @@ export function createWM(root, opts = {}) {
       return false;
     },
     getFocused,
+    getTitlebar(id) {
+      const el = winEls.get(id);
+      return el ? el.querySelector('.os-win-actions') : null;
+    },
     setContent(content) {
       opts.content = content;
       // Force re-render on all windows

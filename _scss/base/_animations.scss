@@ -95,5 +95,6 @@
   .os-win,
   .os-toast{animation:none}
   .os-boot-fill{animation:bootload .2s linear forwards}
+  .os-boot-caret{animation:none}
   // Wallpaper motion is canvas-driven; wallpaper.js honors this media query too.
 }

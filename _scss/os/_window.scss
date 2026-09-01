@@ -38,7 +38,7 @@ body.os-dragging-cursor {
   display: flex;
   align-items: center;
   gap: 10px;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: 0 10px 0 16px;
   border-bottom: 1px solid var(--line);
   background: var(--surface2);
@@ -56,6 +56,14 @@ body.os-dragging-cursor {
   flex: none;
 }
 
+.os-win-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+
 .os-win-title {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -64,9 +72,11 @@ body.os-dragging-cursor {
   text-transform: uppercase;
   color: var(--muted);
   min-width: 0;
+  flex: 0 1 auto;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-right: 0;
 }
 
 .os-win-close {
@@ -83,6 +93,7 @@ body.os-dragging-cursor {
   line-height: 1;
   cursor: pointer;
   transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  margin-left: 0;
 }
 .os-win-close::before {
   content: "×";

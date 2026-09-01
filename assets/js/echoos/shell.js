@@ -30,7 +30,7 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   }
 
   function setFocusedApp(id) {
-    mbApp.textContent = id ? labelFor(id) : '';
+    mbApp.textContent = id ? labelFor(id) : '—';
   }
 
   MENU.querySelector('.os-mb-spotlight').addEventListener('click', () => onSpotlight && onSpotlight());
@@ -88,8 +88,9 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
     btn.type = 'button';
     btn.className = 'os-dock-item';
     btn.dataset.app = app.id;
+    btn.title = app.label;
     btn.setAttribute('aria-label', `Open ${app.label}`);
-    btn.innerHTML = `<span class="os-glyph">${app.glyph}</span><span class="os-dock-label">${app.label}</span>`;
+    btn.innerHTML = `<span class="os-dock-tile"><span class="os-glyph">${app.glyph}</span></span><span class="os-dock-dot"></span>`;
     btn.addEventListener('click', () => wm && wm.toggleApp(app.id));
     dock.appendChild(btn);
   }
@@ -145,8 +146,20 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   }
   root.appendChild(home);
 
+  function setOpenApps(idsSet) {
+    for (const btn of dock.querySelectorAll('.os-dock-item')) {
+      const appId = btn.dataset.app;
+      if (idsSet.has(appId)) {
+        btn.classList.add('is-open');
+      } else {
+        btn.classList.remove('is-open');
+      }
+    }
+  }
+
   return {
     setFocusedApp,
+    setOpenApps,
     destroy() {
       clearInterval(clockTimer);
       MENU.remove();
