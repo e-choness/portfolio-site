@@ -17,7 +17,7 @@ export function createTerminal(content, wm, { apps }) {
       <div class="os-term">
         <div class="os-term-out"></div>
         <form class="os-term-form">
-          <span class="os-term-prompt">echo-sh $</span>
+          <span class="os-term-prompt">➜</span>
           <input class="os-term-input" autocomplete="off" spellcheck="false" aria-label="Terminal input" />
         </form>
       </div>`;
@@ -47,7 +47,7 @@ export function createTerminal(content, wm, { apps }) {
     const cmd = input.value.trim();
     history.push(cmd);
     histIdx = history.length;
-    print({ text: `echo-sh $ ${cmd}`, kind: 'muted' });
+    print({ text: `➜ ${cmd}`, kind: 'in' });
     exec(cmd);
     input.value = '';
   }

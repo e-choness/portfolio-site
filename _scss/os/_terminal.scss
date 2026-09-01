@@ -36,6 +36,10 @@
 .os-term-accent {
   color: var(--accent);
 }
+.os-term-in {
+  color: var(--ink);
+  font-weight: 600;
+}
 
 .os-term-form {
   flex: 0 0 auto;
@@ -47,7 +51,8 @@
 }
 
 .os-term-prompt {
-  color: var(--muted);
+  color: var(--accent);
+  font-weight: 600;
   flex: 0 0 auto;
 }
 
