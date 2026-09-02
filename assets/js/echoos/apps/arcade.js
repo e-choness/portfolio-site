@@ -95,15 +95,11 @@ export function renderArcade(bodyEl, { toast }) {
   }
 
   // --- canvas / runner ------------------------------------------------------
-  function sizeCanvas() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.max(1, Math.floor(canvas.clientWidth * dpr));
-    canvas.height = Math.max(1, Math.floor(canvas.clientHeight * dpr));
-  }
+  canvas.width = 620;
+  canvas.height = 400;
 
   function startRunner(game) {
     if (runner) runner.stop();
-    sizeCanvas();
     runner = window.EchoGames.start(canvas, game.id, buildTheme(), (s, over, h) => {
       scoreEl.textContent = `SCORE ${s} · HI ${h}`;
     });
@@ -160,27 +156,11 @@ export function renderArcade(bodyEl, { toast }) {
     if (current && alive && !stage.hidden) startRunner(current);
   });
 
-  // Games read W/H at start: a window resize means stop + start. The round
-  // resets (acceptable per §6.7); the HUD stays. Debounce with 150ms trailing timer.
-  let resizeTimer = null;
-  const onResize = () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      if (current && alive && runner) {
-        runner.stop();
-        startRunner(current);
-      }
-    }, 150);
-  };
-  window.addEventListener('resize', onResize);
-
   // Return teardown function
   return () => {
     back();
     alive = false;
     if (runner) runner.stop();
     unsubTheme();
-    window.removeEventListener('resize', onResize);
-    clearTimeout(resizeTimer);
   };
 }
