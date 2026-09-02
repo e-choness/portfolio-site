@@ -23,17 +23,25 @@ export function initWallpaper(root, { count = 110, isAnyOpen } = {}) {
 
   const isDark = () => document.documentElement.dataset.echoTheme === 'dark';
 
+  // Declare arrays before resize() so the clamp guard inside resize() works.
+  let particles = [];
+  let blobs = [];
+
   function resize() {
     w = root.clientWidth || window.innerWidth;
     h = root.clientHeight || window.innerHeight;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.max(1, Math.floor(w * dpr));
-    canvas.height = Math.max(1, Math.floor(h * dpr));
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    canvas.width = Math.max(1, w);
+    canvas.height = Math.max(1, h);
+    // Clamp out-of-bounds particles after the first real sizing.
+    for (const p of particles) { p.x = Math.min(p.x, w); p.y = Math.min(p.y, h); }
+    for (const b of blobs) { b.x = Math.min(b.x, w); b.y = Math.min(b.y, h); }
   }
 
+  // Size the canvas first so particles are seeded with real w/h values.
+  resize();
+
   // Prototype particle: slow drift (vx/vy * dt * calm), dot r .8–2.3, hue 246–294.
-  const particles = Array.from({ length: n }, () => ({
+  particles = Array.from({ length: n }, () => ({
     x: Math.random() * Math.max(w, 1),
     y: Math.random() * Math.max(h, 1),
     vx: (Math.random() - 0.5) * 14,
@@ -42,7 +50,7 @@ export function initWallpaper(root, { count = 110, isAnyOpen } = {}) {
     h: 246 + Math.random() * 48,
   }));
   // 3 drifting blobs, radius 180/270/360, each with its own orbit phase/speed.
-  const blobs = Array.from({ length: 3 }, (_, i) => ({
+  blobs = Array.from({ length: 3 }, (_, i) => ({
     x: Math.random() * Math.max(w, 1),
     y: Math.random() * Math.max(h, 1),
     r: 180 + i * 90,
@@ -128,15 +136,10 @@ export function initWallpaper(root, { count = 110, isAnyOpen } = {}) {
     cancelAnimationFrame(raf);
   }
 
-  const onVisibility = () => {
-    if (document.hidden) stop();
-    else if (!reduced) start();
-  };
+  const onVisibility = () => (document.hidden ? stop() : start());
   document.addEventListener('visibilitychange', onVisibility);
-
   window.addEventListener('resize', resize);
 
-  resize();
   start();
 
   return {
