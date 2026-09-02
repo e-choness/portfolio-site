@@ -22,6 +22,7 @@ export function renderExperience(bodyEl, { content }) {
       logo.className = 'os-exp-logo';
       logo.src = e.logo;
       logo.alt = `${e.company} logo`;
+      logo.addEventListener('error', () => logo.remove(), { once: true });
       head.appendChild(logo);
     }
 

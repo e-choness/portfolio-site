@@ -198,6 +198,9 @@ export function renderBlog(bodyEl, { content, toast }) {
       renderList();
     });
 
+    const heroImg = app.querySelector('.os-blog-image');
+    if (heroImg) heroImg.addEventListener('error', () => heroImg.remove(), { once: true });
+
     const holder = app.querySelector('.os-blog-loading');
     holder.className = 'os-blog-body';
     const fallbackNote = () => {
@@ -222,6 +225,7 @@ export function renderBlog(bodyEl, { content, toast }) {
         img.className = 'os-blog-image';
         img.src = data.image;
         img.alt = '';
+        img.addEventListener('error', () => img.remove(), { once: true });
         app.querySelector('.os-blog-h1').after(img);
       }
     } catch {

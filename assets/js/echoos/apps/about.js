@@ -107,6 +107,7 @@ export function renderAbout(bodyEl, { content, titlebar }) {
         logo.className = 'os-edu-logo';
         logo.src = ed.logo;
         logo.alt = `${ed.school} logo`;
+        logo.addEventListener('error', () => logo.remove(), { once: true });
         head.appendChild(logo);
       }
       const meta = document.createElement('div');

@@ -24,6 +24,7 @@ export function renderProjects(bodyEl, { content }) {
       img.src = p.image;
       img.alt = p.title;
       img.loading = 'lazy';
+      img.addEventListener('error', () => img.remove(), { once: true });
       article.appendChild(img);
     } else {
       const cover = document.createElement('div');
