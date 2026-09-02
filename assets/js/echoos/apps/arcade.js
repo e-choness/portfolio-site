@@ -156,11 +156,19 @@ export function renderArcade(bodyEl, { toast }) {
     if (current && alive && !stage.hidden) startRunner(current);
   });
 
+  const onStart = (e) => {
+    const id = e.detail && e.detail.id;
+    const g = games.find((x) => x.id === id);
+    if (g) startGame(g);
+  };
+  document.addEventListener('echoos:start-game', onStart);
+
   // Return teardown function
   return () => {
     back();
     alive = false;
     if (runner) runner.stop();
     unsubTheme();
+    document.removeEventListener('echoos:start-game', onStart);
   };
 }

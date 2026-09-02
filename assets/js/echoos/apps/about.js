@@ -106,7 +106,7 @@ export function renderAbout(bodyEl, { content, titlebar }) {
         const logo = document.createElement('img');
         logo.className = 'os-edu-logo';
         logo.src = ed.logo;
-        logo.alt = `${ed.school} logo`;
+        logo.alt = `${ed.institution} logo`;
         head.appendChild(logo);
       }
       const meta = document.createElement('div');
@@ -115,23 +115,36 @@ export function renderAbout(bodyEl, { content, titlebar }) {
       deg.textContent = ed.degree;
       const school = document.createElement('p');
       school.className = 'os-edu-school';
-      school.textContent = ed.school;
+      school.textContent = ed.institution;
       const dur = document.createElement('p');
       dur.className = 'os-edu-duration';
       dur.textContent = `${ed.duration}${ed.location ? ' · ' + ed.location : ''}`;
       meta.append(deg, school, dur);
       head.appendChild(meta);
       card.appendChild(head);
-      if ((ed.notes || []).length) {
-        const notes = document.createElement('ul');
-        notes.className = 'os-edu-notes';
-        for (const n of ed.notes) {
-          const li = document.createElement('li');
-          li.textContent = n;
-          notes.appendChild(li);
-        }
-        card.appendChild(notes);
+
+      // Description paragraph
+      if (ed.description) {
+        const desc = document.createElement('p');
+        desc.className = 'os-edu-desc';
+        desc.textContent = ed.description;
+        card.appendChild(desc);
       }
+
+      // Skills/coursework/achievements as tags
+      const items = ed.skills || ed.coursework || ed.achievements || [];
+      if (items.length) {
+        const tagsContainer = document.createElement('div');
+        tagsContainer.className = 'os-edu-tags';
+        for (const item of items) {
+          const tag = document.createElement('span');
+          tag.className = 'os-edu-tag';
+          tag.textContent = item;
+          tagsContainer.appendChild(tag);
+        }
+        card.appendChild(tagsContainer);
+      }
+
       frag.appendChild(card);
     }
     return frag;
@@ -156,4 +169,8 @@ export function renderAbout(bodyEl, { content, titlebar }) {
   }
 
   show(store.get().aboutTab || 'profile');
+
+  const onTab = (e) => { const t = e.detail && e.detail.tab; if (t) show(t); };
+  document.addEventListener('echoos:set-about-tab', onTab);
+  return () => document.removeEventListener('echoos:set-about-tab', onTab);
 }

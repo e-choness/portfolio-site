@@ -141,7 +141,7 @@ export function createTerminal(content, wm, { apps }) {
       print({ text: `opening Blog…`, kind: 'muted' });
       wm.openApp('blog');
       // Fire custom event to select the post
-      window.dispatchEvent(new CustomEvent('echoos:open-post', { detail: { post } }));
+      document.dispatchEvent(new CustomEvent('echoos:open-post', { detail: { slug: post.slug } }));
       return;
     }
 
@@ -214,7 +214,7 @@ export function createTerminal(content, wm, { apps }) {
         }
         wm.openApp('about');
         // Fire event to select education tab
-        window.dispatchEvent(new CustomEvent('echoos:set-about-tab', { detail: { tab: 'education' } }));
+        document.dispatchEvent(new CustomEvent('echoos:set-about-tab', { detail: { tab: 'education' } }));
         break;
 
       case 'contact':
@@ -336,12 +336,7 @@ export function createTerminal(content, wm, { apps }) {
         print({ text: `launching ${head}…`, kind: 'muted' });
         wm.openApp('arcade');
         setTimeout(() => {
-          if (window.EchoGames) {
-            const game = window.EchoGames.list.find((g) => g.id === head);
-            if (game) {
-              window.dispatchEvent(new CustomEvent('echoos:start-game', { detail: { game } }));
-            }
-          }
+          document.dispatchEvent(new CustomEvent('echoos:start-game', { detail: { id: head } }));
         }, 80);
         break;
       }
