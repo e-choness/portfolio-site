@@ -1,30 +1,48 @@
 # EchoOS — Jekyll Portfolio
 
 *An OS-metaphor portfolio: the home page is a desktop "operating system" built from
-vanilla ES modules on top of Jekyll + GitHub Pages. A no-JS fallback of the classic
-single-page site remains at `/classic/`.*
+vanilla ES modules on top of Jekyll + GitHub Pages.*
 
 <div align="center">
 
-[![GitHub Pages Deployment](https://github.com/e-choness/portfolio-site/actions/workflows/pages.yml/badge.svg)](https://github.com/e-choness/portfolio-site/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Jekyll](https://img.shields.io/badge/Jekyll-Static_Site-CC342D?logo=jekyll&logoColor=white)](https://jekyllrb.com/)
+<a href="https://e-choness.github.io/portfolio-site/">
+  <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=22&pause=1000&color=7A4FB8&center=true&vCenter=true&width=480&lines=EchoOS+%E2%80%94+Desktop+OS+Portfolio;Jekyll+%2B+Vanilla+ES+Modules;Arcade%2C+Terminal%2C+Spotlight%2C+More" alt="EchoOS" />
+</a>
 
-**[View Live Demo](https://e-choness.github.io/portfolio-site/)** • **[Classic View](/classic/)** • **[Report Bug](https://github.com/e-choness/portfolio-site/issues)**
+<br/>
+
+[![GitHub Pages](https://github.com/e-choness/portfolio-site/actions/workflows/pages.yml/badge.svg)](https://github.com/e-choness/portfolio-site/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Jekyll](https://img.shields.io/badge/Jekyll-4.4.1-CC342D?logo=jekyll&logoColor=white)](https://jekyllrb.com/)
+[![Last Commit](https://img.shields.io/github/last-commit/e-choness/portfolio-site)](https://github.com/e-choness/portfolio-site/commits/main)
+[![Repo Size](https://img.shields.io/github/repo-size/e-choness/portfolio-site)](https://github.com/e-choness/portfolio-site)
+[![GitHub Stars](https://img.shields.io/github/stars/e-choness/portfolio-site?style=social)](https://github.com/e-choness/portfolio-site/stargazers)
+
+**[View Live Demo](https://e-choness.github.io/portfolio-site/)** &nbsp;•&nbsp; **[Report Bug](https://github.com/e-choness/portfolio-site/issues)**
 
 </div>
 
+---
+
 ## Overview
 
-- **EchoOS** (the `/` route): a desktop shell — wallpaper, dock, windows, spotlight
-  (⌘K / Ctrl+K), a terminal, a theme toggle, and a first-run guided tour. All content
-  is rendered client-side from `assets/data/content.json`, so navigating the site never
-  reloads the page.
-- **Classic** (`/classic/`): the original single-page site (hero, about, experience,
-  education, projects, skills, blog) with server-rendered HTML and no JavaScript shell.
-  It is linked from the OS header ("Try EchoOS" → home, and back) and from the guide's
-  final step.
-- All OS and classic content comes from the same YAML files in `_data/`.
+EchoOS is a desktop shell — wallpaper, dock, windows, spotlight (⌘K / Ctrl+K), a
+terminal, a theme toggle, and a first-run guided tour. All content is rendered
+client-side from `assets/data/content.json`, so navigating the site never reloads
+the page. Blog posts and project pages are server-rendered by Jekyll and linked from
+within the OS. All content comes from the same YAML files in `_data/`.
+
+## Features
+
+| Feature | Description |
+|---|---|
+| Desktop shell | Draggable, resizable windows; z-ordering; animated wallpaper |
+| Spotlight | ⌘K command palette — search apps, projects, posts |
+| Terminal | `echo-sh` with `open`, `theme`, `clear`, `help` and more |
+| Arcade | 6 canvas games (Blockfall, Snake, Breakout, Invaders, and more); hi-scores persist |
+| Blog reader | Mermaid diagrams + syntax-highlighted code blocks inside the OS window |
+| Theme | Light / dark with persisted accent color; animated portrait ring in About |
+| PWA | `manifest.webmanifest` — installable on desktop and mobile |
 
 ## Stack
 
@@ -65,7 +83,6 @@ single-page site remains at `/classic/`.*
 │   ├── js/echoos/           # OS modules (see Module map)
 │   ├── data/content.json    # Liquid page: site data emitted as JSON for the OS
 │   └── manifest.webmanifest # PWA manifest
-├── classic/index.html       # No-JS fallback (layout: default)
 ├── index.html               # EchoOS route (layout: os)
 ├── blog/ projects/          # Server-rendered pages
 ├── Gemfile / Dockerfile / docker-compose.yml
@@ -123,7 +140,7 @@ game library shipped separately).
 | `guide.js` | 8-step first-run guided tour with spotlight ring |
 | `apps/*.js` | One renderer per app — see *Adding an app* |
 
-`_scss/os/` holds the matching styles (`.os-dock`, `.os-win`, `.os-spotlight`, ...),
+`_sass/os/` holds the matching styles (`.os-dock`, `.os-win`, `.os-spotlight`, ...),
 and `_data/apps.yml` is the single registry both the dock markup and the window
 manager read.
 
@@ -151,7 +168,7 @@ manager read.
 3. **Wire it up** in `assets/js/echoos/boot.js`: add an import and a
    `myapp: renderMyApp,` entry in the `renderers` map passed to `createWM`.
 
-4. **Style it** in `_scss/os/_apps.scss` (or a partial it loads) using the existing
+4. **Style it** in `_sass/os/_apps.scss` (or a dedicated partial) using the existing
    design tokens (`--ink`, `--muted`, `--accent`, `--surface2`, `--line`, `--r-ctl`, ...).
 
 The dock icon, window title, desktop icon, and Spotlight entry all come from
@@ -159,8 +176,7 @@ The dock icon, window title, desktop icon, and Spotlight entry all come from
 
 ## Customizing Content
 
-All content lives in `_data/`. Edit the YAML and rebuild — both the EchoOS route and
-`/classic/` pick it up.
+All content lives in `_data/`. Edit the YAML and rebuild — EchoOS and all server-rendered pages pick it up.
 
 - **Profile** — `_data/profile.yml` (name, bio, stats, social links, resume URL).
 - **Experience** — `_data/experience.yml` (roles, companies, durations, bullets).
@@ -185,7 +201,7 @@ image: "https://example.com/image.jpg"
 excerpt: "Brief description"
 ---
 
-Content in Markdown. ```mermaid ... ``` and markmap blocks render inline.
+Content in Markdown. Fenced ```mermaid``` and markmap blocks render inline in the OS reader.
 ```
 
 The post index (`/blog/`) is server-rendered; inside EchoOS every post opens in the

@@ -86,7 +86,7 @@
           clear(ctx,W,H,T);
           ctx.fillStyle=T.soft;for(let x=0;x<COLS;x++)for(let y=0;y<ROWS;y++)if((x+y)%2)ctx.fillRect(x*C,y*C,C,C);
           ctx.fillStyle=T.accent;ctx.beginPath();ctx.arc(food.x*C+C/2,food.y*C+C/2,C*.32,0,7);ctx.fill();
-          snake.forEach((s,i)=>{ctx.fillStyle=i===0?T.ink:T.accent2;ctx.fillRect(s.x*C+2,s.y*C+2,C-4,C-4)});}
+          snake.forEach((s,i)=>{ctx.globalAlpha=1-i/snake.length*.72;ctx.fillStyle=i===0?T.ink:T.accent;ctx.fillRect(s.x*C+2,s.y*C+2,C-4,C-4)});ctx.globalAlpha=1;}
       };
     },
     // ---------------- NUCLEAR DEFENCE (missile command) ----------------
@@ -149,7 +149,7 @@
           ctx.strokeStyle=T.line;ripples.forEach(r=>{ctx.globalAlpha=1-r.r/52;ctx.beginPath();ctx.arc(r.x,r.y,r.r,0,7);ctx.stroke();ctx.globalAlpha=1});
           ctx.fillStyle=T.ink;food.forEach(f=>{ctx.beginPath();ctx.arc(f.x,f.y,3,0,7);ctx.fill()});
           fish.forEach(f=>{ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.a);
-            ctx.fillStyle=f.fed>4?T.accent:T.accent2;
+            ctx.fillStyle=f.fed>4?T.accent:T.muted;
             ctx.beginPath();ctx.ellipse(0,0,f.s*.7,f.s*.34,0,0,7);ctx.fill();
             ctx.beginPath();ctx.moveTo(-f.s*.6,0);ctx.lineTo(-f.s*1.05,-f.s*.3);ctx.lineTo(-f.s*1.05,f.s*.3);ctx.closePath();ctx.fill();
             ctx.fillStyle=T.bg;ctx.beginPath();ctx.arc(f.s*.4,-f.s*.08,2.2,0,7);ctx.fill();ctx.restore();});
@@ -179,7 +179,7 @@
             b.alive=false;ball.vy*=-1;addScore(10);beep(700+b.r*60,.05);}});
           if(bricks.every(b=>!b.alive)){bricks.forEach(b=>b.alive=true);ball.vx*=1.15;ball.vy*=1.15;addScore(100);}}
           clear(ctx,W,H,T);
-          bricks.forEach(b=>{if(b.alive){ctx.fillStyle=b.r%2?T.accent2:T.accent;ctx.fillRect(b.x,b.y,bw-4,bh)}});
+          bricks.forEach(b=>{if(b.alive){ctx.fillStyle=b.r%2?T.ink:T.accent;ctx.fillRect(b.x,b.y,bw-4,bh)}});
           ctx.fillStyle=T.ink;ctx.fillRect(px,H-20,pw,8);
           ctx.beginPath();ctx.arc(ball.x,ball.y,6,0,7);ctx.fill();
           ctx.fillStyle=T.muted;ctx.font='11px "IBM Plex Mono",monospace';ctx.textAlign='left';ctx.fillText('lives '+lives+' · arrows or mouse',10,16);}
