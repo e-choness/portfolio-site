@@ -1099,14 +1099,6 @@
 .os-win[data-app="resume"] .os-win-body {
   padding: 22px;
 }
-.os-win[data-app="term"] .os-term-out {
-  padding: 14px 18px;
-}
-.os-win[data-app="term"] .os-term-form {
-  padding: 10px 18px;
-  padding-top: 0;
-}
-
 // Blog and Arcade scroll inside their own panes; the body must not also scroll.
 .os-win-body:has(> .os-blog),
 .os-win-body:has(> .os-arcade) { overflow: hidden; }

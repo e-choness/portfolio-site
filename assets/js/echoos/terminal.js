@@ -39,6 +39,7 @@ export function createTerminal(content, wm, { apps }) {
 
   function focusInput() {
     if (input) input.focus();
+    if (outEl) outEl.scrollTop = outEl.scrollHeight;
   }
 
   function printRaw({ text, kind = 'out' }) {
