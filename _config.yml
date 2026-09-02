@@ -27,7 +27,7 @@ exclude:
   - docker-compose.yml
   - node_modules
   - vendor/
-  - reference/
+  - docs/
   - .github/
 
 # Collections
