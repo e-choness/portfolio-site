@@ -29,7 +29,7 @@ export function renderExperience(bodyEl, { content }) {
     meta.className = 'os-exp-meta';
     const role = document.createElement('h4');
     role.className = 'os-exp-role';
-    role.textContent = e.position;
+    role.textContent = e.role;
     const company = document.createElement('p');
     company.className = 'os-exp-company';
     company.textContent = e.company;
@@ -44,18 +44,18 @@ export function renderExperience(bodyEl, { content }) {
     card.appendChild(head);
 
     // Description
-    if (e.description) {
+    if (e.desc) {
       const desc = document.createElement('p');
       desc.className = 'os-exp-desc';
-      desc.textContent = e.description;
+      desc.textContent = e.desc;
       card.appendChild(desc);
     }
 
     // Responsibilities (bullets)
-    if ((e.responsibilities || []).length) {
+    if ((e.bullets || []).length) {
       const bullets = document.createElement('ul');
       bullets.className = 'os-exp-bullets';
-      for (const b of e.responsibilities) {
+      for (const b of e.bullets) {
         const li = document.createElement('li');
         li.textContent = b;
         bullets.appendChild(li);
@@ -64,10 +64,10 @@ export function renderExperience(bodyEl, { content }) {
     }
 
     // Technologies (chips)
-    if ((e.technologies || []).length) {
+    if ((e.tech || []).length) {
       const chipRow = document.createElement('div');
       chipRow.className = 'os-exp-chips';
-      for (const t of e.technologies) {
+      for (const t of e.tech) {
         const chip = document.createElement('span');
         chip.className = 'os-exp-chip';
         chip.textContent = t;

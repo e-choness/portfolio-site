@@ -14,7 +14,7 @@ export function renderSkills(bodyEl, { content }) {
   let procCount = 0;
   let maxYears = 0;
   for (const g of content.skills || []) {
-    for (const s of g.skills || []) {
+    for (const s of g.items || []) {
       procCount++;
       maxYears = Math.max(maxYears, s.years || 0);
     }

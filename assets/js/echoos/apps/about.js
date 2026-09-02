@@ -106,7 +106,7 @@ export function renderAbout(bodyEl, { content, titlebar }) {
         const logo = document.createElement('img');
         logo.className = 'os-edu-logo';
         logo.src = ed.logo;
-        logo.alt = `${ed.institution} logo`;
+        logo.alt = `${ed.school} logo`;
         head.appendChild(logo);
       }
       const meta = document.createElement('div');
@@ -115,7 +115,7 @@ export function renderAbout(bodyEl, { content, titlebar }) {
       deg.textContent = ed.degree;
       const school = document.createElement('p');
       school.className = 'os-edu-school';
-      school.textContent = ed.institution;
+      school.textContent = ed.school;
       const dur = document.createElement('p');
       dur.className = 'os-edu-duration';
       dur.textContent = `${ed.duration}${ed.location ? ' · ' + ed.location : ''}`;
@@ -124,15 +124,15 @@ export function renderAbout(bodyEl, { content, titlebar }) {
       card.appendChild(head);
 
       // Description paragraph
-      if (ed.description) {
+      if (ed.desc) {
         const desc = document.createElement('p');
         desc.className = 'os-edu-desc';
-        desc.textContent = ed.description;
+        desc.textContent = ed.desc;
         card.appendChild(desc);
       }
 
       // Skills/coursework/achievements as tags
-      const items = ed.skills || ed.coursework || ed.achievements || [];
+      const items = ed.tags || ed.notes || [];
       if (items.length) {
         const tagsContainer = document.createElement('div');
         tagsContainer.className = 'os-edu-tags';

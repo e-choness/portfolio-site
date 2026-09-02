@@ -87,7 +87,7 @@ export function createTerminal(content, wm, { apps }) {
   function deriveTopSkills() {
     const allSkills = [];
     for (const cat of content.skills || []) {
-      for (const skill of cat.skills || []) {
+      for (const skill of cat.items || []) {
         allSkills.push(skill);
       }
     }
@@ -101,7 +101,7 @@ export function createTerminal(content, wm, { apps }) {
   function deriveProcessCount() {
     let count = 0;
     for (const cat of content.skills || []) {
-      count += (cat.skills || []).length;
+      count += (cat.items || []).length;
     }
     return count;
   }
@@ -109,7 +109,7 @@ export function createTerminal(content, wm, { apps }) {
   function deriveMaxYears() {
     let max = 0;
     for (const cat of content.skills || []) {
-      for (const skill of cat.skills || []) {
+      for (const skill of cat.items || []) {
         max = Math.max(max, skill.years || 0);
       }
     }
@@ -203,7 +203,7 @@ export function createTerminal(content, wm, { apps }) {
 
       case 'experience':
         for (const e of content.experience || []) {
-          print({ text: `• ${e.position} — ${e.company}`, kind: 'muted' });
+          print({ text: `• ${e.role} — ${e.company}`, kind: 'muted' });
         }
         wm.openApp('exp');
         break;
