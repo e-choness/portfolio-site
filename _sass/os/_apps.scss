@@ -1099,12 +1099,6 @@
 .os-win[data-app="resume"] .os-win-body {
   padding: 22px;
 }
-.os-win[data-app="term"] .os-win-body {
-  padding: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
 .os-win[data-app="term"] .os-term-out {
   padding: 14px 18px;
 }
@@ -1112,26 +1106,26 @@
   padding: 10px 18px;
   padding-top: 0;
 }
-.os-win[data-app="guide"] .os-win-body {
-  padding: 16px;
-}
 
 // Blog and Arcade scroll inside their own panes; the body must not also scroll.
 .os-win-body:has(> .os-blog),
 .os-win-body:has(> .os-arcade) { overflow: hidden; }
 
-// ── guide ──────────────────────────────────────────────────────────────────
-// Chat-bubble tour per EchoOS.dc.html lines 460-478: `?` avatar 24px accent
-// square, message bubbles (surface2, radius 11), action footer with accent
-// action + bordered Next / Restart tour. Negates .os-win-body padding so the
-// footer border-top sits flush with the window's bottom edge.
-// Guide windows (wm.js tags them .os-win-guide) zero the body padding so the
-// tour owns the full body: chat scrolls, action footer pins flush at the bottom.
-.os-win-guide .os-win-body {
+// Panes that own the body's height: no body padding, no body scroll — the pane
+// scrolls internally and pins its own footer. Keyed on the pane, not the app id.
+.os-win-body:has(> .os-guide),
+.os-win-body:has(> .os-term) {
   padding: 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
+
+// ── guide ──────────────────────────────────────────────────────────────────
+// Chat-bubble tour per EchoOS.dc.html lines 460-478: `?` avatar 24px accent
+// square, message bubbles (surface2, radius 11), action footer with accent
+// action + bordered Next / Restart tour. Body layout owned by the
+// :has(> .os-guide) rule above; chat scrolls, action footer pins flush at bottom.
 .os-guide {
   display: flex;
   flex-direction: column;
