@@ -1,4 +1,6 @@
-// apps/projects.js — card gallery with in-window detail view (patch 73).
+// apps/projects.js — card gallery with in-window detail view (patch 73+77).
+import { url } from '../base.js';
+
 function esc(s) {
   const d = document.createElement('div');
   d.textContent = s == null ? '' : String(s);
@@ -167,6 +169,10 @@ export function renderProjects(bodyEl, { content }) {
       detail.appendChild(ul);
     }
 
+    // Placeholder filled by the async fetch below.
+    const bodyDiv = document.createElement('div');
+    detail.appendChild(bodyDiv);
+
     const links = document.createElement('div');
     links.className = 'os-proj-detail-links';
     if (p.demo) {
@@ -190,6 +196,19 @@ export function renderProjects(bodyEl, { content }) {
     if (links.childElementCount) detail.appendChild(links);
 
     bodyEl.appendChild(detail);
+
+    // Fetch rendered markdown body from the build-time JSON (patch 77).
+    if (p.slug) {
+      fetch(url('/assets/data/projects/' + p.slug + '.json'))
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (data && data.html && bodyEl.contains(bodyDiv)) {
+            bodyDiv.className = 'os-post-body';
+            bodyDiv.innerHTML = data.html;
+          }
+        })
+        .catch(() => {});
+    }
   }
 
   if (state.sel != null) {

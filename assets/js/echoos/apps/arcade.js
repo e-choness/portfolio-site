@@ -86,6 +86,7 @@ export function renderArcade(bodyEl, { toast }) {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'os-arcade-card';
+    b.dataset.game = game.id;
     b.innerHTML = `<strong class="os-arcade-card-name"></strong><span class="os-arcade-card-tag"></span><span class="os-arcade-card-hi"></span>`;
     b.querySelector('.os-arcade-card-name').textContent = game.name;
     b.querySelector('.os-arcade-card-tag').textContent = game.tag;
@@ -158,6 +159,11 @@ export function renderArcade(bodyEl, { toast }) {
     current = null;
     stage.hidden = true;
     grid.hidden = false;
+    // Refresh hi score display on all cards after a game session.
+    const hi = hiscores();
+    for (const b of grid.querySelectorAll('.os-arcade-card')) {
+      b.querySelector('.os-arcade-card-hi').textContent = `hi ${hi[b.dataset.game] || 0}`;
+    }
   }
 
   bodyEl.addEventListener('click', (e) => {

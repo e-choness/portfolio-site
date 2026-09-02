@@ -262,6 +262,7 @@ export function createWM(root, opts = {}) {
     if (win.teardown) {
       win.teardown();
       win.teardown = null;
+      win.rendered = false;
     }
     win.open = false;
     win.minimized = false;

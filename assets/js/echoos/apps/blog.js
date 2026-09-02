@@ -21,7 +21,9 @@ const MARKMAP_AUTOLOADER = 'https://cdn.jsdelivr.net/npm/markmap-autoloader@0.16
 let mermaidPromise = null;
 function loadMermaid() {
   if (!mermaidPromise) {
-    mermaidPromise = import(/* webpackIgnore: true */ MERMAID_CDN).catch(() => null);
+    mermaidPromise = import(/* webpackIgnore: true */ MERMAID_CDN)
+      .then((m) => m.default || m)
+      .catch(() => null);
   }
   return mermaidPromise;
 }
@@ -54,12 +56,16 @@ function clearOutsideClickListener() {
 }
 
 async function renderDiagrams(container) {
-  const mermaidBlocks = container.querySelectorAll('pre code.language-mermaid');
+  // Rouge wraps unknown lexers as <div class="language-X highlighter-rouge">…<code>
+  // (no class on the code element); plain Kramdown uses <pre><code class="language-X">.
+  const mermaidBlocks = container.querySelectorAll(
+    'pre code.language-mermaid, .language-mermaid.highlighter-rouge pre code'
+  );
   for (const code of mermaidBlocks) {
     const pre = document.createElement('pre');
     pre.className = 'mermaid';
     pre.textContent = code.textContent;
-    code.closest('pre').replaceWith(pre);
+    (code.closest('.highlighter-rouge') || code.closest('pre')).replaceWith(pre);
   }
   if (mermaidBlocks.length) {
     const mermaid = await loadMermaid();
@@ -71,7 +77,9 @@ async function renderDiagrams(container) {
     }
   }
 
-  const markmapBlocks = container.querySelectorAll('pre code.language-markmap');
+  const markmapBlocks = container.querySelectorAll(
+    'pre code.language-markmap, .language-markmap.highlighter-rouge pre code'
+  );
   if (markmapBlocks.length && !window.markmap) {
     const s = document.createElement('script');
     s.src = MARKMAP_AUTOLOADER;
@@ -82,7 +90,7 @@ async function renderDiagrams(container) {
     const div = document.createElement('div');
     div.className = 'markmap';
     div.textContent = code.textContent;
-    code.closest('pre').replaceWith(div);
+    (code.closest('.highlighter-rouge') || code.closest('pre')).replaceWith(div);
   }
 }
 

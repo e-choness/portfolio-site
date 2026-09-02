@@ -504,6 +504,18 @@ body:has(#echoos-root) {
     padding: 8px 12px;
     cursor: pointer;
   }
+  .os-tabbar-tile {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--r-icon);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in oklab, var(--surface) 72%, transparent);
+    border: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
   .os-tabbar-item .os-glyph {
     font-size: 15px;
   }
@@ -548,6 +560,19 @@ body:has(#echoos-root) {
     background: none;
     border: 0;
     cursor: pointer;
+  }
+  .os-home-tile {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--r-icon);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in oklab, var(--surface) 72%, transparent);
+    border: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 14px -6px rgba(30, 20, 50, 0.25);
   }
   .os-home-item .os-glyph {
     font-size: 20px;

@@ -126,7 +126,7 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
     btn.className = 'os-tabbar-item';
     btn.dataset.app = app.id;
     btn.setAttribute('aria-label', `Open ${app.label}`);
-    btn.innerHTML = `<span class="os-glyph">${app.glyph}</span><span class="os-tabbar-label">${app.label}</span>`;
+    btn.innerHTML = `<span class="os-tabbar-tile"><span class="os-glyph">${app.glyph}</span></span><span class="os-tabbar-label">${app.label}</span>`;
     btn.addEventListener('click', () => wm && wm.openApp(app.id));
     tabbar.appendChild(btn);
   }
@@ -142,7 +142,7 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
     icon.className = 'os-home-item';
     icon.dataset.app = app.id;
     icon.setAttribute('aria-label', `Open ${app.label}`);
-    icon.innerHTML = `<span class="os-glyph">${app.glyph}</span><span class="os-home-label">${app.label}</span>`;
+    icon.innerHTML = `<span class="os-home-tile"><span class="os-glyph">${app.glyph}</span></span><span class="os-home-label">${app.label}</span>`;
     icon.addEventListener('click', () => wm && wm.openApp(app.id));
     home.appendChild(icon);
   }

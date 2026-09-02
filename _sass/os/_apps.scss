@@ -872,7 +872,7 @@
   max-width: 420px;
   height: 180px;
   border-radius: var(--r-ctl);
-  margin: 12px 0 16px;
+  margin: 12px auto 16px;
   object-fit: cover;
   border: 1px solid var(--line);
 }
@@ -1256,8 +1256,7 @@
 .os-win[data-app="resume"] .os-win-body {
   padding: 22px;
 }
-// Blog and Arcade scroll inside their own panes; the body must not also scroll.
-.os-win-body:has(> .os-blog),
+// Arcade scrolls inside its own pane; the body must not also scroll.
 .os-win-body:has(> .os-arcade) { overflow: hidden; }
 
 // Panes that own the body's height: no body padding, no body scroll — the pane
@@ -1362,6 +1361,101 @@
   border-color: var(--accent);
   color: var(--accent);
 }
+
+// ── blog/post syntax highlighting (Rouge github themes) ────────────────────
+// Rouge emits .highlight wrappers + token spans; no CSS for them is generated
+// automatically. Scope github light here; github.dark under the dark attribute.
+.os-post-body .highlight,
+.os-post-body .highlight .w { color: #24292f; background-color: #f6f8fa; }
+.os-post-body .highlight .k, .os-post-body .highlight .kd, .os-post-body .highlight .kn,
+.os-post-body .highlight .kp, .os-post-body .highlight .kr, .os-post-body .highlight .kt,
+.os-post-body .highlight .kv { color: #cf222e; }
+.os-post-body .highlight .gr { color: #f6f8fa; }
+.os-post-body .highlight .gd { color: #82071e; background-color: #ffebe9; }
+.os-post-body .highlight .nb, .os-post-body .highlight .nc, .os-post-body .highlight .no,
+.os-post-body .highlight .nn { color: #953800; }
+.os-post-body .highlight .sr, .os-post-body .highlight .na,
+.os-post-body .highlight .nt { color: #116329; }
+.os-post-body .highlight .gi { color: #116329; background-color: #dafbe1; }
+.os-post-body .highlight .ges { font-weight: bold; font-style: italic; }
+.os-post-body .highlight .kc,
+.os-post-body .highlight .l, .os-post-body .highlight .ld, .os-post-body .highlight .m,
+.os-post-body .highlight .mb, .os-post-body .highlight .mf, .os-post-body .highlight .mh,
+.os-post-body .highlight .mi, .os-post-body .highlight .il, .os-post-body .highlight .mo,
+.os-post-body .highlight .mx, .os-post-body .highlight .sb, .os-post-body .highlight .bp,
+.os-post-body .highlight .ne, .os-post-body .highlight .nl, .os-post-body .highlight .py,
+.os-post-body .highlight .nv, .os-post-body .highlight .vc, .os-post-body .highlight .vg,
+.os-post-body .highlight .vi, .os-post-body .highlight .vm,
+.os-post-body .highlight .o,  .os-post-body .highlight .ow { color: #0550ae; }
+.os-post-body .highlight .gh,
+.os-post-body .highlight .gu { color: #0550ae; font-weight: bold; }
+.os-post-body .highlight .s, .os-post-body .highlight .sa, .os-post-body .highlight .sc,
+.os-post-body .highlight .dl, .os-post-body .highlight .sd, .os-post-body .highlight .s2,
+.os-post-body .highlight .se, .os-post-body .highlight .sh, .os-post-body .highlight .sx,
+.os-post-body .highlight .s1, .os-post-body .highlight .ss { color: #0a3069; }
+.os-post-body .highlight .nd,
+.os-post-body .highlight .nf, .os-post-body .highlight .fm { color: #8250df; }
+.os-post-body .highlight .err { color: #f6f8fa; background-color: #82071e; }
+.os-post-body .highlight .c, .os-post-body .highlight .ch, .os-post-body .highlight .cd,
+.os-post-body .highlight .cm, .os-post-body .highlight .cp, .os-post-body .highlight .cpf,
+.os-post-body .highlight .c1, .os-post-body .highlight .cs,
+.os-post-body .highlight .gl, .os-post-body .highlight .gt { color: #6e7781; }
+.os-post-body .highlight .ni, .os-post-body .highlight .si { color: #24292f; }
+.os-post-body .highlight .ge { color: #24292f; font-style: italic; }
+.os-post-body .highlight .gs { color: #24292f; font-weight: bold; }
+
+[data-echo-theme="dark"] .os-post-body .highlight,
+[data-echo-theme="dark"] .os-post-body .highlight .w { color: #c9d1d9; background-color: #161b22; }
+[data-echo-theme="dark"] .os-post-body .highlight .k,
+[data-echo-theme="dark"] .os-post-body .highlight .kd, [data-echo-theme="dark"] .os-post-body .highlight .kn,
+[data-echo-theme="dark"] .os-post-body .highlight .kp, [data-echo-theme="dark"] .os-post-body .highlight .kr,
+[data-echo-theme="dark"] .os-post-body .highlight .kt,
+[data-echo-theme="dark"] .os-post-body .highlight .kv { color: #ff7b72; }
+[data-echo-theme="dark"] .os-post-body .highlight .gr { color: #f0f6fc; }
+[data-echo-theme="dark"] .os-post-body .highlight .gd { color: #ffdcd7; background-color: #67060c; }
+[data-echo-theme="dark"] .os-post-body .highlight .nb, [data-echo-theme="dark"] .os-post-body .highlight .nc,
+[data-echo-theme="dark"] .os-post-body .highlight .no,
+[data-echo-theme="dark"] .os-post-body .highlight .nn { color: #ffa657; }
+[data-echo-theme="dark"] .os-post-body .highlight .sr, [data-echo-theme="dark"] .os-post-body .highlight .na,
+[data-echo-theme="dark"] .os-post-body .highlight .nt { color: #7ee787; }
+[data-echo-theme="dark"] .os-post-body .highlight .gi { color: #aff5b4; background-color: #033a16; }
+[data-echo-theme="dark"] .os-post-body .highlight .ges { font-weight: bold; font-style: italic; }
+[data-echo-theme="dark"] .os-post-body .highlight .kc,
+[data-echo-theme="dark"] .os-post-body .highlight .l,  [data-echo-theme="dark"] .os-post-body .highlight .ld,
+[data-echo-theme="dark"] .os-post-body .highlight .m,  [data-echo-theme="dark"] .os-post-body .highlight .mb,
+[data-echo-theme="dark"] .os-post-body .highlight .mf, [data-echo-theme="dark"] .os-post-body .highlight .mh,
+[data-echo-theme="dark"] .os-post-body .highlight .mi, [data-echo-theme="dark"] .os-post-body .highlight .il,
+[data-echo-theme="dark"] .os-post-body .highlight .mo, [data-echo-theme="dark"] .os-post-body .highlight .mx,
+[data-echo-theme="dark"] .os-post-body .highlight .sb, [data-echo-theme="dark"] .os-post-body .highlight .bp,
+[data-echo-theme="dark"] .os-post-body .highlight .ne, [data-echo-theme="dark"] .os-post-body .highlight .nl,
+[data-echo-theme="dark"] .os-post-body .highlight .py,
+[data-echo-theme="dark"] .os-post-body .highlight .nv, [data-echo-theme="dark"] .os-post-body .highlight .vc,
+[data-echo-theme="dark"] .os-post-body .highlight .vg, [data-echo-theme="dark"] .os-post-body .highlight .vi,
+[data-echo-theme="dark"] .os-post-body .highlight .vm,
+[data-echo-theme="dark"] .os-post-body .highlight .o,
+[data-echo-theme="dark"] .os-post-body .highlight .ow { color: #79c0ff; }
+[data-echo-theme="dark"] .os-post-body .highlight .gh,
+[data-echo-theme="dark"] .os-post-body .highlight .gu { color: #1f6feb; font-weight: bold; }
+[data-echo-theme="dark"] .os-post-body .highlight .s,  [data-echo-theme="dark"] .os-post-body .highlight .sa,
+[data-echo-theme="dark"] .os-post-body .highlight .sc, [data-echo-theme="dark"] .os-post-body .highlight .dl,
+[data-echo-theme="dark"] .os-post-body .highlight .sd, [data-echo-theme="dark"] .os-post-body .highlight .s2,
+[data-echo-theme="dark"] .os-post-body .highlight .se, [data-echo-theme="dark"] .os-post-body .highlight .sh,
+[data-echo-theme="dark"] .os-post-body .highlight .sx, [data-echo-theme="dark"] .os-post-body .highlight .s1,
+[data-echo-theme="dark"] .os-post-body .highlight .ss { color: #a5d6ff; }
+[data-echo-theme="dark"] .os-post-body .highlight .nd,
+[data-echo-theme="dark"] .os-post-body .highlight .nf,
+[data-echo-theme="dark"] .os-post-body .highlight .fm { color: #d2a8ff; }
+[data-echo-theme="dark"] .os-post-body .highlight .err { color: #f0f6fc; background-color: #8e1519; }
+[data-echo-theme="dark"] .os-post-body .highlight .c,  [data-echo-theme="dark"] .os-post-body .highlight .ch,
+[data-echo-theme="dark"] .os-post-body .highlight .cd, [data-echo-theme="dark"] .os-post-body .highlight .cm,
+[data-echo-theme="dark"] .os-post-body .highlight .cp, [data-echo-theme="dark"] .os-post-body .highlight .cpf,
+[data-echo-theme="dark"] .os-post-body .highlight .c1, [data-echo-theme="dark"] .os-post-body .highlight .cs,
+[data-echo-theme="dark"] .os-post-body .highlight .gl,
+[data-echo-theme="dark"] .os-post-body .highlight .gt { color: #8b949e; }
+[data-echo-theme="dark"] .os-post-body .highlight .ni,
+[data-echo-theme="dark"] .os-post-body .highlight .si { color: #c9d1d9; }
+[data-echo-theme="dark"] .os-post-body .highlight .ge { color: #c9d1d9; font-style: italic; }
+[data-echo-theme="dark"] .os-post-body .highlight .gs { color: #c9d1d9; font-weight: bold; }
 
 // ── responsive: stacked blog list, single-column about ─────────────────────
 @media (max-width: 760px) {
