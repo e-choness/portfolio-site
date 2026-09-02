@@ -198,6 +198,7 @@ const animateCounters = () => {
 
   counters.forEach((counter) => {
     const target = parseInt(counter.getAttribute("data-count"));
+    const display = counter.getAttribute("data-display") || target;
     const duration = 2000; // 2 seconds
     const startTime = performance.now();
 
@@ -214,7 +215,7 @@ const animateCounters = () => {
       if (progress < 1) {
         requestAnimationFrame(updateCounter);
       } else {
-        counter.textContent = target;
+        counter.textContent = display;
       }
     };
 

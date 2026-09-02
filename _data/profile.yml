@@ -22,6 +22,7 @@ about:
 stats:
   - label: "Years Experience"
     value: 10
+    display: "10+"
   - label: "Projects Completed"
     value: 38
   - label: "Happy Clients"

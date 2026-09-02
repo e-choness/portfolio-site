@@ -35,7 +35,7 @@
   <div class="stats-grid" data-aos="fade-up" data-aos-delay="200">
     {% for stat in site.data.profile.stats %}
     <div class="stat-item">
-      <span class="stat-number" data-count="{{ stat.value }}">0</span>
+      <span class="stat-number" data-count="{{ stat.value }}" data-display="{{ stat.display | default: stat.value }}">0</span>
       <span class="stat-label">{{ stat.label }}</span>
     </div>
     {% endfor %}
