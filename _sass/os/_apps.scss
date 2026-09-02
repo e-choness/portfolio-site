@@ -903,6 +903,42 @@
 }
 
 // ── contact ────────────────────────────────────────────────────────────────
+.os-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 100%;
+}
+
+.os-contact-id-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.os-contact-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex: none;
+}
+.os-contact-name {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.os-contact-title-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
 .os-contact-eyebrow {
   font-family: var(--font-mono);
   font-size: 10.5px;
@@ -917,32 +953,70 @@
   line-height: 1.6;
   color: var(--muted);
 }
+
+.os-contact-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl);
+}
+.os-contact-strip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex: none;
+}
+.os-contact-strip-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
 .os-contact-social {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+  margin-top: auto;
 }
 .os-contact-social-link {
-  font-family: var(--font-sans);
-  font-size: 12.5px;
-  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  background: var(--surface2);
   border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 11px 14px;
-  color: var(--ink);
-  text-align: center;
+  border-radius: var(--r-ctl);
   text-decoration: none;
-  cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  transition: border-color 0.15s ease, transform 0.15s ease;
 }
 .os-contact-social-link:hover {
   border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.os-contact-social-label {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+  transition: color 0.15s ease;
+}
+.os-contact-social-link:hover .os-contact-social-label {
   color: var(--accent);
+}
+.os-contact-social-host {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--muted);
 }
 
 @media (max-width: 760px) {
   .os-contact-social {
     grid-template-columns: 1fr;
+    margin-top: 0;
   }
 }
 
