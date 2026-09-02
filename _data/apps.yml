@@ -1,0 +1,95 @@
+# EchoOS app registry — canonical list, do not renumber (IMPLEMENTATION-PLAN §5).
+# Dock order = file order. Both Liquid (dock/icons markup) and JS (window manager)
+# read this single list. Titles interpolated at build time — never hardcode counts.
+- id: about
+  label: About
+  glyph: "id"
+  title: "about — profile"
+  x: 110
+  y: 70
+  w: 790
+  h: 580
+  open_on_boot: true
+  tab_bar: true
+- id: exp
+  label: Experience
+  glyph: "cv"
+  title: "experience — {{ exp_count }} roles"
+  x: 150
+  y: 62
+  w: 770
+  h: 650
+- id: proj
+  label: Projects
+  glyph: "{}"
+  title: "projects — gallery"
+  x: 120
+  y: 64
+  w: 940
+  h: 670
+  desktop_icon: true
+  desktop_icon_order: 3
+  tab_bar: true
+- id: skills
+  label: Skills
+  glyph: "%"
+  title: "skills — monitor"
+  x: 200
+  y: 76
+  w: 780
+  h: 610
+- id: blog
+  label: Blog
+  glyph: "¶"
+  title: "blog — {{ posts_count }} posts"
+  x: 170
+  y: 68
+  w: 880
+  h: 660
+  desktop_icon: true
+  desktop_icon_order: 2
+  tab_bar: true
+- id: term
+  label: Terminal
+  glyph: ">_"
+  title: "terminal — echo-sh"
+  x: 240
+  y: 120
+  w: 780
+  h: 500
+- id: contact
+  label: Contact
+  glyph: "@"
+  title: "contact"
+  x: 320
+  y: 110
+  w: 560
+  h: 520
+  desktop_icon: true
+  desktop_icon_order: 4
+- id: arcade
+  label: Arcade
+  glyph: "▲"
+  title: "arcade"
+  x: 130
+  y: 54
+  w: 840
+  h: 680
+  desktop_icon: true
+  desktop_icon_order: 1
+  tab_bar: true
+- id: resume
+  label: Resume
+  glyph: "≡"
+  title: "resume.pdf"
+  x: 250
+  y: 60
+  w: 770
+  h: 690
+- id: guide
+  label: Guide
+  glyph: "?"
+  title: "guide — tour"
+  w: 340
+  h: 430
+  anchor: bottom-right

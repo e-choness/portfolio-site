@@ -1,0 +1,576 @@
+// os/_shell.scss — desktop surface, menu bar, boot screen, toasts, desktop
+// icons and the mobile home grid. Values from IMPLEMENTATION-PLAN §4.
+
+// `hidden` must win over any class that sets `display` inside the OS.
+#echoos-root [hidden] { display: none !important; }
+
+// The os layout's body contains only #echoos-root; clamp it to the viewport.
+body:has(#echoos-root) {
+  overflow: hidden;
+  height: 100vh;
+}
+
+#echoos-root {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+// Nebula canvas (§6.8): behind everything, fills the desktop. Stacking: windows
+// start at z-index 2, menubar 5000, boot 200000 — this stays at the floor.
+.os-wallpaper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+// ── boot screen ───────────────────────────────────────────────────────────
+.os-boot {
+  position: absolute;
+  inset: 0;
+  z-index: 200000;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+.os-boot-done {
+  opacity: 0;
+}
+.os-boot-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.os-boot-square {
+  width: 22px;
+  height: 22px;
+  background: var(--accent);
+  border-radius: 6px;
+}
+.os-boot-word {
+  font: 800 30px var(--font-sans);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.os-boot-caret {
+  width: 11px;
+  height: 26px;
+  background: var(--accent);
+  animation: blink 1.1s infinite;
+}
+.os-boot-track {
+  width: 190px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+.os-boot-fill {
+  height: 100%;
+  background: var(--accent);
+  animation: bootload 1.15s linear forwards;
+}
+.os-boot-text {
+  font: 500 11px var(--font-mono);
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+// ── menu bar ──────────────────────────────────────────────────────────────
+.os-menubar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--bar-h);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  background: color-mix(in oklab, var(--surface) 78%, transparent);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+  user-select: none;
+}
+.os-mb-left,
+.os-mb-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.os-mb-logo {
+  width: 13px;
+  height: 13px;
+  border-radius: 4px;
+  background: var(--accent);
+  flex: none;
+}
+.os-mb-brand {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.os-mb-app {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.os-mb-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 4px 9px;
+  border-radius: var(--r-ctl);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.os-mb-btn:hover {
+  color: var(--ink);
+  background: var(--accent-soft);
+}
+.os-mb-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.os-mb-clock {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+// ── toasts ────────────────────────────────────────────────────────────────
+.os-toasts {
+  position: absolute;
+  top: calc(var(--bar-h) + 10px);
+  right: 12px;
+  z-index: 200001;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.os-toast {
+  pointer-events: auto;
+  max-width: 300px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl);
+  box-shadow: var(--shadow);
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  color: var(--ink);
+  transition: opacity 0.25s ease;
+}
+.os-toast-out {
+  opacity: 0;
+}
+
+// Post-boot welcome card (EchoOS.dc.html lines 553-567).
+.os-welcome {
+  position: absolute;
+  top: 52px;
+  right: 16px;
+  width: 320px;
+  z-index: 200001;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-win);
+  box-shadow: var(--shadow);
+  animation: toastin 0.25s ease;
+}
+.os-welcome-portrait {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  object-fit: cover;
+  flex: none;
+}
+.os-welcome-body {
+  flex: 1;
+}
+.os-welcome-title {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.os-welcome-text {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-top: 2px;
+}
+.os-welcome-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.os-welcome-actions button {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: var(--r-ctl);
+  padding: 6px 11px;
+  cursor: pointer;
+}
+.os-welcome-tour {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: none;
+}
+.os-welcome-tour:hover {
+  opacity: 0.88;
+}
+.os-welcome-dismiss {
+  font-weight: 600;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+.os-welcome-dismiss:hover {
+  color: var(--ink);
+}
+
+// Notification center (menubar "▤"), per EchoOS.dc.html lines 527-551.
+.os-notif {
+  position: absolute;
+  top: 48px;
+  right: 12px;
+  z-index: 200001;
+  width: 330px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 18px 20px;
+  animation: toastin 0.2s ease;
+}
+.os-notif-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.os-notif-close:hover { color: var(--accent); background: var(--accent-soft); }
+.os-notif-close:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.os-notif-day {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-right: 34px;
+}
+.os-notif-date {
+  font-family: var(--font-sans);
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 2px 0 14px;
+}
+.os-notif-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.os-notif-stat {
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 10px;
+  background: var(--surface2);
+  text-align: center;
+}
+.os-notif-stat-val {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--accent);
+}
+.os-notif-stat-label {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.os-notif-welcome {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 11px 13px;
+  margin-bottom: 10px;
+}
+.os-notif-welcome-img {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex: none;
+}
+.os-notif-welcome-title {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.os-notif-welcome-text {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  margin-top: 2px;
+}
+.os-notif-tour {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 700;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.os-notif-tour:hover {
+  opacity: 0.85;
+}
+
+// ── desktop icons ─────────────────────────────────────────────────────────
+// Prototype layout: a right-edge column, each icon a 52×52 glyph tile over an
+// ink label (EchoOS.dc.html lines 54-60).
+.os-desktop {
+  position: absolute;
+  top: 64px;
+  right: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  pointer-events: none; // hits pass through the layer; icons opt back in
+  z-index: 10;
+}
+.os-desk-icon {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 74px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.os-desk-icon:hover {
+  opacity: 0.85;
+}
+.os-desk-icon:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.os-desk-icon-tile {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--r-icon);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in oklab, var(--surface) 72%, transparent);
+  border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 14px -6px rgba(30, 20, 50, 0.25);
+}
+.os-glyph {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+.os-desk-icon-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: center;
+  line-height: 1.3;
+  max-width: 74px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ── mobile tab bar ────────────────────────────────────────────────────────
+.os-tabbar {
+  display: none;
+}
+@media (max-width: 760px) {
+  .os-tabbar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 64px;
+    z-index: 6000;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 10px;
+    background: color-mix(in oklab, var(--surface) 85%, transparent);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--line);
+  }
+  .os-tabbar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    background: none;
+    border: 0;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  .os-tabbar-tile {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--r-icon);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in oklab, var(--surface) 72%, transparent);
+    border: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  .os-tabbar-item .os-glyph {
+    font-size: 15px;
+  }
+  .os-tabbar-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+  .os-tabbar-item:hover .os-glyph,
+  .os-tabbar-item:focus-visible .os-glyph {
+    color: var(--ink);
+  }
+}
+
+// ── mobile home grid ──────────────────────────────────────────────────────
+.os-home {
+  display: none;
+}
+@media (max-width: 760px) {
+  // Desktop icons are redundant under the mobile home grid.
+  .os-desktop {
+    display: none;
+  }
+  .os-home {
+    position: absolute;
+    inset: 0;
+    padding: calc(var(--bar-h) + 16px) 16px calc(64px + 16px);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    gap: 12px;
+    align-content: start;
+    z-index: 1;
+  }
+  .os-home-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 6px 8px;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+  .os-home-tile {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--r-icon);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in oklab, var(--surface) 72%, transparent);
+    border: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 14px -6px rgba(30, 20, 50, 0.25);
+  }
+  .os-home-item .os-glyph {
+    font-size: 20px;
+  }
+  .os-home-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+  }
+}

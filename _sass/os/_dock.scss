@@ -1,0 +1,74 @@
+// os/_dock.scss — bottom dock (desktop only). Chrome matches Patch 34 prototype.
+
+.os-dock {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 14px;
+  z-index: 100000;
+  display: flex;
+  gap: 7px;
+  padding: 9px 11px;
+  background: color-mix(in oklab, var(--surface) 76%, transparent);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  box-shadow: 0 10px 30px -10px rgba(30, 20, 50, 0.3);
+}
+
+.os-dock-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.os-dock-item:hover {
+  transform: translateY(-4px);
+}
+.os-dock-item:hover .os-dock-tile {
+  border-color: var(--accent);
+}
+.os-dock-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.os-dock-tile {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface2);
+  border: 1px solid var(--line);
+  transition: border-color 0.15s ease;
+}
+.os-dock-item .os-glyph {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.os-dock-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.os-dock-item.is-open .os-dock-dot {
+  opacity: 1;
+}
+
+@media (max-width: 760px) {
+  .os-dock { display: none; }
+}

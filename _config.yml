@@ -2,8 +2,7 @@
 title: Echo Yin
 email: echoybl1123@gmail.com
 description: >-
-  Full-stack developer passionate about creating innovative web solutions.
-  Experienced in modern JavaScript frameworks, backend development, and UI/UX design.
+  Passionate about creating innovative AI solutions.
 baseurl: "/portfolio-site" # the subpath of your site, e.g. /blog
 repository: e-choness/portfolio-site # Change to <your-username>/<your-username>.github.io (or remove it if you don't need remote projects) # the base hostname & protocol for your site
 url: "https://e-choness.github.io" # the base hostname & protocol for your site
@@ -20,27 +19,32 @@ plugins:
 exclude:
   - Gemfile
   - Gemfile.lock
-  - node_modules
-  - vendor/bundle/
-  - vendor/cache/
-  - vendor/gems/
-  - vendor/ruby/
   - README.md
+  - NOTES.md
+  - IMPLEMENTATION-PLAN.md
+  - PATCH-1.md
   - Dockerfile
   - docker-compose.yml
+  - node_modules
+  - vendor/
+  - docs/
+  - .github/
 
 # Collections
 collections:
   projects:
     output: true
-    permalink: /:collection/:name/
+    permalink: /projects/:name/
   posts:
     output: true
     permalink: /blog/:year/:month/:day/:title/
 
-# Pagination
-paginate: 6
-paginate_path: "/blog/page:num/"
+# Defaults
+defaults:
+  - scope: { path: "", type: "posts" }
+    values: { layout: post }
+  - scope: { path: "", type: "projects" }
+    values: { layout: project }
 
 # Blog settings
 blog:
@@ -56,8 +60,8 @@ projects:
 # Site data
 author:
   name: Echo Yin
-  title: Software Engineer
-  location: "Edmonton, AB, Canada"
+  title: Senior A.I. Engineer
+  location: "Calgary, AB, Canada"
   years_experience: 5
   projects_completed: 25
   happy_clients: 15
@@ -69,14 +73,9 @@ social:
   twitter: _echo_yin
   email: echoybl1123@gmail.com
 
-# Google Analytics (optional)
-google_analytics: UA-XXXXXXXXX-X
-
 # Theme settings
 sass:
   style: compressed
   load_paths:
-    - _scss
+    - _sass
   quiet_deps: true
-  quiet: true
-  sass_dir: _scss

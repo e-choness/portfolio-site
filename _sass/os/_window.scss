@@ -1,0 +1,160 @@
+// os/_window.scss — floating windows: chrome, drag/resize affordances and the
+// mobile full-screen sheet state. Geometry (left/top/width/height/z-index) is
+// set inline by wm.js; class names are the Step 3 contract.
+
+.os-win {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-win);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  min-width: 320px;
+  min-height: 240px;
+  user-select: none;
+}
+.os-win:focus {
+  outline: none;
+}
+
+.os-dragging {
+  cursor: grabbing;
+}
+.os-resizing {
+  cursor: nwse-resize;
+}
+body.os-dragging-cursor {
+  cursor: grabbing;
+}
+
+// Prototype chrome (EchoOS.dc.html line 84): 42px bar on surface2 tint,
+// 8px accent dot before the title, mono 11px/600 ls .12em uppercase title,
+// 26px bordered close (1px line, hover accent).
+.os-win-bar {
+  flex: 0 0 auto;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-start;
+  padding: 0 10px 0 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface2);
+  cursor: grab;
+}
+.os-dragging .os-win-bar {
+  cursor: grabbing;
+}
+
+.os-win-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex: none;
+}
+
+.os-win-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+
+.os-win-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  min-width: 0;
+  flex: 0 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 0;
+}
+
+.os-win-close {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  margin-left: 0;
+}
+.os-win-close::before {
+  content: "×";
+}
+.os-win-close:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.os-win-close:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.os-win-body {
+  flex: 1 1 auto;
+  min-height: 0; // flex min-height:auto would grow the body past the window
+  overflow: auto;
+  padding: 24px 26px;
+  user-select: text;
+  overscroll-behavior: contain;
+}
+
+// Scrollbars: standard properties only. Mixing these with ::-webkit-scrollbar
+// on the same element makes Chromium drop the pseudo-element styling, which is
+// why the 8px thumb never appeared (see PATCH-PLAN-R5 §Patch 62).
+#echoos-root,
+#echoos-root *,
+#echoos-root *::before,
+#echoos-root *::after {
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted) transparent;
+}
+
+.os-win-resize {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  width: 18px;
+  height: 18px;
+  z-index: 20;
+  cursor: nwse-resize;
+  touch-action: none;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  border-bottom-right-radius: 13px;
+  opacity: 0.45;
+}
+
+// ── mobile: full-screen sheets (wm.js adds .os-sheet under 760px) ─────────
+@media (max-width: 760px) {
+  .os-sheet {
+    position: fixed !important;
+    inset: var(--bar-h) 0 64px 0 !important;
+    width: auto !important;
+    height: auto !important;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+  }
+  .os-win-resize {
+    display: none;
+  }
+}

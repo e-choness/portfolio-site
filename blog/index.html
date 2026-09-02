@@ -42,7 +42,7 @@ description: "Thoughts on web development, technology, and career insights"
 
   <!-- Search Results Container -->
   <div id="search-results" class="blog-grid">
-    {% for post in paginator.posts %}
+    {% for post in site.posts %}
     <article
       class="blog-card"
       data-category="{{ post.category | slugify | default: '' }}"
@@ -121,34 +121,4 @@ description: "Thoughts on web development, technology, and career insights"
   <!-- styles moved to SCSS: _scss/pages/_blog.scss -->
 
   <!-- behavior moved to assets/js/main.js -->
-
-  <!-- Pagination -->
-  {% if paginator.total_pages > 1 %}
-  <div class="pagination">
-    {% if paginator.previous_page %}
-    <a
-      href="{{ paginator.previous_page_path | relative_url }}"
-      class="pagination-link"
-    >
-      <i class="fas fa-chevron-left"></i> Previous
-    </a>
-    {% endif %} {% for page in (1..paginator.total_pages) %} {% if page ==
-    paginator.page %}
-    <span class="current">{{ page }}</span>
-    {% elsif page == 1 %}
-    <a href="{{ '/blog/' | relative_url }}">{{ page }}</a>
-    {% else %}
-    <a href="{{ site.paginate_path | replace: ':num', page | relative_url }}"
-      >{{ page }}</a
-    >
-    {% endif %} {% endfor %} {% if paginator.next_page %}
-    <a
-      href="{{ paginator.next_page_path | relative_url }}"
-      class="pagination-link"
-    >
-      Next <i class="fas fa-chevron-right"></i>
-    </a>
-    {% endif %}
-  </div>
-  {% endif %}
 </div>

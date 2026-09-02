@@ -1,0 +1,124 @@
+// os/_spotlight.scss — ⌘K / Ctrl+K command palette overlay.
+// Chrome mirrors EchoOS.dc.html lines 506-525: rgba scrim, blur, box
+// centered with `margin: 110px auto 0`, input row with ⌕ + hint.
+
+.os-spotlight {
+  position: absolute;
+  inset: 0;
+  z-index: 200000;
+  background: rgba(15, 10, 25, 0.3);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+// `display` is not set on the overlay, but re-assert `[hidden]` in case a
+// future rule adds one (the old flex layout used to override it).
+.os-spotlight[hidden] {
+  display: none;
+}
+
+.os-spotlight-box {
+  width: min(560px, calc(100vw - 32px));
+  margin: 110px auto 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.os-spotlight-inputrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.os-spotlight-search {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  flex: none;
+}
+
+.os-spotlight-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.os-spotlight-input::placeholder {
+  color: var(--muted);
+}
+
+.os-spotlight-hint {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+  flex: none;
+}
+
+.os-spotlight-results {
+  max-height: 340px;
+  overflow: auto;
+  padding: 8px;
+}
+
+.os-spotlight-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: none;
+  border: 0;
+  border-radius: 9px;
+  cursor: pointer;
+  text-align: left;
+}
+.os-spotlight-item:hover,
+.os-spotlight-item.is-active {
+  background: var(--accent-soft);
+}
+.os-spotlight-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.os-spotlight-label {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.os-spotlight-kind {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.os-spotlight-empty {
+  padding: 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+}
