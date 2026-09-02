@@ -6,27 +6,27 @@
   glyph: "id"
   title: "about — profile"
   x: 110
-  y: 74
-  w: 690
-  h: 520
+  y: 70
+  w: 790
+  h: 580
   open_on_boot: true
   tab_bar: true
 - id: exp
   label: Experience
   glyph: "cv"
   title: "experience — {{ exp_count }} roles"
-  x: 170
-  y: 64
-  w: 650
-  h: 560
+  x: 150
+  y: 62
+  w: 770
+  h: 650
 - id: proj
   label: Projects
   glyph: "{}"
   title: "projects — gallery"
-  x: 150
-  y: 70
-  w: 790
-  h: 570
+  x: 120
+  y: 64
+  w: 940
+  h: 670
   desktop_icon: true
   desktop_icon_order: 3
   tab_bar: true
@@ -34,18 +34,18 @@
   label: Skills
   glyph: "%"
   title: "skills — monitor"
-  x: 230
-  y: 88
-  w: 650
-  h: 540
+  x: 200
+  y: 76
+  w: 780
+  h: 610
 - id: blog
   label: Blog
   glyph: "¶"
   title: "blog — {{ posts_count }} posts"
-  x: 200
-  y: 76
-  w: 710
-  h: 560
+  x: 170
+  y: 68
+  w: 880
+  h: 660
   desktop_icon: true
   desktop_icon_order: 2
   tab_bar: true
@@ -53,28 +53,28 @@
   label: Terminal
   glyph: ">_"
   title: "terminal — echo-sh"
-  x: 260
-  y: 130
-  w: 640
-  h: 420
+  x: 240
+  y: 120
+  w: 780
+  h: 500
 - id: contact
   label: Contact
   glyph: "@"
   title: "contact"
-  x: 330
-  y: 120
-  w: 470
-  h: 460
+  x: 320
+  y: 110
+  w: 560
+  h: 520
   desktop_icon: true
   desktop_icon_order: 4
 - id: arcade
   label: Arcade
   glyph: "▲"
   title: "arcade"
-  x: 140
-  y: 56
-  w: 700
-  h: 590
+  x: 130
+  y: 54
+  w: 840
+  h: 680
   desktop_icon: true
   desktop_icon_order: 1
   tab_bar: true
@@ -82,10 +82,10 @@
   label: Resume
   glyph: "≡"
   title: "resume.pdf"
-  x: 270
-  y: 64
-  w: 640
-  h: 590
+  x: 250
+  y: 60
+  w: 770
+  h: 690
 - id: guide
   label: Guide
   glyph: "?"
