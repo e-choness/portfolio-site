@@ -14,6 +14,10 @@ Jekyll::Hooks.register :site, :post_write do |site|
       "date"  => post.date.strftime("%b %-d, %Y"),
       "html"  => converter.convert(post.content)
     }
+    # Include image if present in frontmatter, prefixed with baseurl
+    if post.data["image"]
+      payload["image"] = File.join(site.config["baseurl"].to_s, post.data["image"].sub(%r{\A/}, ''))
+    end
     File.write(File.join(dir, "#{post.data["slug"]}.json"), JSON.generate(payload))
   end
 end
