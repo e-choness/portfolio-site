@@ -915,17 +915,6 @@
   line-height: 1.6;
   color: var(--muted);
 }
-.os-contact-email {
-  font-size: 19px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  word-break: break-all;
-  color: var(--accent);
-  text-decoration: none;
-}
-.os-contact-email:hover {
-  color: var(--ink);
-}
 .os-contact-social {
   display: grid;
   grid-template-columns: 1fr 1fr;
