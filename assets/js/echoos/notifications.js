@@ -1,5 +1,5 @@
 // notifications.js — toast + notification panel (§6.1).
-export function initNotifications(root, { portrait = '', stats = [], onTour, firstVisit = false } = {}) {
+export function initNotifications(root, { portrait = '', stats = [], onTour } = {}) {
   const toasts = document.createElement('div');
   toasts.className = 'os-toasts';
   toasts.setAttribute('aria-live', 'polite');
@@ -11,6 +11,7 @@ export function initNotifications(root, { portrait = '', stats = [], onTour, fir
   panel.className = 'os-notif';
   panel.hidden = true;
   panel.innerHTML = `
+    <button type="button" class="os-notif-close" aria-label="Close notifications">×</button>
     <div class="os-notif-day"></div>
     <div class="os-notif-date"></div>
     <div class="os-notif-stats"></div>
@@ -39,6 +40,7 @@ export function initNotifications(root, { portrait = '', stats = [], onTour, fir
       statsEl.appendChild(cell);
     }
   }
+  panel.querySelector('.os-notif-close').addEventListener('click', closePanel);
   panel.querySelector('.os-notif-tour').addEventListener('click', () => {
     panel.hidden = true;
     if (onTour) onTour();
