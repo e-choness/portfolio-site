@@ -184,10 +184,12 @@ export function renderBlog(bodyEl, { content, toast }) {
 
   async function renderReading(post) {
     state.catOpen = false;
+    const imageHtml = post.image ? `<img class="os-blog-image" src="${esc(post.image)}" alt="">` : '';
     app.innerHTML = `
       <button type="button" class="os-blog-back">‹ all posts</button>
       <div class="os-blog-meta">${esc(catOf(post))} · ${esc(post.date || '')}</div>
       <h1 class="os-blog-h1">${esc(post.title)}</h1>
+      ${imageHtml}
       <p class="os-blog-excerpt">${esc(post.excerpt || '')}</p>
       <div class="os-blog-loading">Loading…</div>`;
 
@@ -215,13 +217,13 @@ export function renderBlog(bodyEl, { content, toast }) {
       holder.innerHTML = '';
       holder.appendChild(article);
       await renderDiagrams(article);
-      // Prototype keeps a link to the live post below the in-window render.
-      const note = document.createElement('div');
-      note.className = 'os-blog-note';
-      note.innerHTML = `
-        <div class="os-blog-note-text">Read the full post on the current site.</div>
-        <a class="os-blog-note-link" href="${esc(post.url)}" target="_blank" rel="noopener">Read the full post on the current site ↗</a>`;
-      holder.appendChild(note);
+      if (!post.image && data.image) {
+        const img = document.createElement('img');
+        img.className = 'os-blog-image';
+        img.src = data.image;
+        img.alt = '';
+        app.querySelector('.os-blog-h1').after(img);
+      }
     } catch {
       if (toast) toast('Could not load post — opening in a new tab');
       fallbackNote();
