@@ -124,7 +124,7 @@ body.os-dragging-cursor {
 #echoos-root *::before,
 #echoos-root *::after {
   scrollbar-width: thin;
-  scrollbar-color: var(--line) transparent;
+  scrollbar-color: var(--muted) transparent;
 }
 
 .os-win-resize {
