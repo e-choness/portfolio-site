@@ -117,19 +117,23 @@ body.os-dragging-cursor {
 }
 
 // OS-scoped scrollbars (prototype line 24: 8px, thumb --line, track transparent).
-.os-win ::-webkit-scrollbar,
-.os-guide ::-webkit-scrollbar {
+#echoos-root ::-webkit-scrollbar,
+#echoos-root::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
-.os-win ::-webkit-scrollbar-thumb,
-.os-guide ::-webkit-scrollbar-thumb {
+#echoos-root ::-webkit-scrollbar-thumb,
+#echoos-root::-webkit-scrollbar-thumb {
   background: var(--line);
   border-radius: 4px;
 }
-.os-win ::-webkit-scrollbar-track,
-.os-guide ::-webkit-scrollbar-track {
+#echoos-root ::-webkit-scrollbar-track,
+#echoos-root::-webkit-scrollbar-track {
   background: transparent;
+}
+#echoos-root {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
 }
 
 .os-win-resize {
