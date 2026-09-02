@@ -58,7 +58,7 @@ export function createWM(root, opts = {}) {
       el.style.width = `${win.w}px`;
       el.style.height = `${win.h}px`;
     }
-    el.style.zIndex = String(win.z);
+    el.style.zIndex = String(win.z + 100);
   }
 
   // --- building windows ---------------------------------------------------
