@@ -787,11 +787,12 @@
 .os-blog-image {
   display: block;
   width: 100%;
-  max-width: 100%;
-  height: auto;
+  max-width: 420px;
+  height: 180px;
   border-radius: var(--r-ctl);
-  margin: 14px 0 18px;
+  margin: 12px 0 16px;
   object-fit: cover;
+  border: 1px solid var(--line);
 }
 
 .os-blog-excerpt {
