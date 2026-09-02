@@ -1,6 +1,9 @@
 // os/_shell.scss — desktop surface, menu bar, boot screen, toasts, desktop
 // icons and the mobile home grid. Values from IMPLEMENTATION-PLAN §4.
 
+// `hidden` must win over any class that sets `display` inside the OS.
+#echoos-root [hidden] { display: none !important; }
+
 // The os layout's body contains only #echoos-root; clamp it to the viewport.
 body:has(#echoos-root) {
   overflow: hidden;

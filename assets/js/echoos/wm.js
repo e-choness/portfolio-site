@@ -339,6 +339,11 @@ export function createWM(root, opts = {}) {
     const spot = opts.getSpotlight ? opts.getSpotlight() : null;
 
     if (e.key === 'Escape') {
+      if (opts.notifications && opts.notifications.isOpen()) {
+        opts.notifications.closePanel();
+        e.preventDefault();
+        return;
+      }
       if (spot && spot.isOpen()) {
         spot.close();
         e.preventDefault();

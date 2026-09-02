@@ -1,5 +1,5 @@
 // notifications.js — toast + notification panel (§6.1).
-export function initNotifications(root, { portrait = '', stats = [], onTour } = {}) {
+export function initNotifications(root, { portrait = '', stats = [], onTour, firstVisit = false } = {}) {
   const toasts = document.createElement('div');
   toasts.className = 'os-toasts';
   toasts.setAttribute('aria-live', 'polite');
@@ -21,14 +21,8 @@ export function initNotifications(root, { portrait = '', stats = [], onTour } = 
         <div class="os-notif-welcome-text">A different way to explore Echo Yin's professional profile.</div>
       </div>
     </div>
-    <button type="button" class="os-notif-tour">Take the guided tour</button>
-    <a class="os-notif-classic" href="">Classic view ↗</a>`;
+    <button type="button" class="os-notif-tour">Take the guided tour</button>`;
   root.appendChild(panel);
-
-  // Set classic link href from data-base
-  const baseurl = root.dataset.base || '';
-  const classicLink = panel.querySelector('.os-notif-classic');
-  classicLink.href = baseurl + '/classic/';
 
   function renderPanel() {
     const d = new Date();
