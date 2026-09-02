@@ -18,7 +18,7 @@ export function createTerminal(content, wm, { apps }) {
         <div class="os-term-out"></div>
         <form class="os-term-form">
           <span class="os-term-prompt">➜</span>
-          <input class="os-term-input" autocomplete="off" spellcheck="false" aria-label="Terminal input" />
+          <input class="os-term-input" autocomplete="off" spellcheck="false" aria-label="Terminal input" placeholder="type help" />
         </form>
       </div>`;
     outEl = bodyEl.querySelector('.os-term-out');
