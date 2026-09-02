@@ -556,9 +556,10 @@
 // dropdown, filtered/total count), flat post rows and the reading view all
 // inside the window body's scroll container.
 .os-blog {
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  min-height: 0;
 }
 
 // toolbar
@@ -1113,6 +1114,10 @@
 .os-win[data-app="guide"] .os-win-body {
   padding: 16px;
 }
+
+// Blog and Arcade scroll inside their own panes; the body must not also scroll.
+.os-win-body:has(> .os-blog),
+.os-win-body:has(> .os-arcade) { overflow: hidden; }
 
 // ── guide ──────────────────────────────────────────────────────────────────
 // Chat-bubble tour per EchoOS.dc.html lines 460-478: `?` avatar 24px accent

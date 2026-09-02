@@ -116,22 +116,13 @@ body.os-dragging-cursor {
   overscroll-behavior: contain;
 }
 
-// OS-scoped scrollbars (prototype line 24: 8px, thumb --line, track transparent).
-#echoos-root ::-webkit-scrollbar,
-#echoos-root::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-#echoos-root ::-webkit-scrollbar-thumb,
-#echoos-root::-webkit-scrollbar-thumb {
-  background: var(--line);
-  border-radius: 4px;
-}
-#echoos-root ::-webkit-scrollbar-track,
-#echoos-root::-webkit-scrollbar-track {
-  background: transparent;
-}
-#echoos-root {
+// Scrollbars: standard properties only. Mixing these with ::-webkit-scrollbar
+// on the same element makes Chromium drop the pseudo-element styling, which is
+// why the 8px thumb never appeared (see PATCH-PLAN-R5 §Patch 62).
+#echoos-root,
+#echoos-root *,
+#echoos-root *::before,
+#echoos-root *::after {
   scrollbar-width: thin;
   scrollbar-color: var(--line) transparent;
 }
