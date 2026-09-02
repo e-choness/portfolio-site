@@ -134,16 +134,17 @@ body.os-dragging-cursor {
 
 .os-win-resize {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  right: 2px;
+  bottom: 2px;
   width: 18px;
   height: 18px;
+  z-index: 20;
   cursor: nwse-resize;
   touch-action: none;
-  background-image: radial-gradient(circle at 2px 2px, var(--line) 1px, transparent 1.5px);
-  background-size: 6px 6px;
-  background-position: bottom right;
-  background-repeat: no-repeat;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  border-bottom-right-radius: 13px;
+  opacity: 0.45;
 }
 
 // ── mobile: full-screen sheets (wm.js adds .os-sheet under 760px) ─────────
