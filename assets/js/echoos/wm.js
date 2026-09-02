@@ -245,7 +245,7 @@ export function createWM(root, opts = {}) {
     win.minimized = false;
     win.z = ++ztop;
     const el = winEls.get(id);
-    el.style.display = 'block';
+    el.style.display = 'flex';
     el.hidden = false;
     apply(win);
     if (!win.rendered) {
