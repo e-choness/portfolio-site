@@ -98,6 +98,25 @@ export function renderArcade(bodyEl, { toast }) {
   canvas.width = 620;
   canvas.height = 400;
 
+  function arcXY(e, type) {
+    if (!runner) return;
+    const r = canvas.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    const src = e.touches && e.touches.length ? e.touches[0] : e;
+    const x = (src.clientX - r.left) * (canvas.width / r.width);
+    const y = (src.clientY - r.top) * (canvas.height / r.height);
+    runner.pointer(x, y, type);
+  }
+
+  const onCanvasDown = (e) => { canvas.focus({ preventScroll: true }); arcXY(e, 'down'); };
+  const onCanvasMove = (e) => arcXY(e, 'move');
+  const onCanvasTouch = (e) => { e.preventDefault(); arcXY(e, e.type === 'touchstart' ? 'down' : 'move'); };
+
+  canvas.addEventListener('mousedown', onCanvasDown);
+  canvas.addEventListener('mousemove', onCanvasMove);
+  canvas.addEventListener('touchstart', onCanvasTouch, { passive: false });
+  canvas.addEventListener('touchmove', onCanvasTouch, { passive: false });
+
   function startRunner(game) {
     if (runner) runner.stop();
     runner = window.EchoGames.start(canvas, game.id, buildTheme(), (s, over, h) => {
@@ -170,5 +189,9 @@ export function renderArcade(bodyEl, { toast }) {
     if (runner) runner.stop();
     unsubTheme();
     document.removeEventListener('echoos:start-game', onStart);
+    canvas.removeEventListener('mousedown', onCanvasDown);
+    canvas.removeEventListener('mousemove', onCanvasMove);
+    canvas.removeEventListener('touchstart', onCanvasTouch);
+    canvas.removeEventListener('touchmove', onCanvasTouch);
   };
 }
