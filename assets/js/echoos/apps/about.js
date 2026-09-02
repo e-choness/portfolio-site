@@ -1,5 +1,13 @@
 // apps/about.js — tabs: profile / education (§6.5).
 import { store } from '../store.js';
+import { url } from '../base.js';
+
+const SOCIAL_ICON_FILES = {
+  GitHub:       'github.svg',
+  LinkedIn:     'linkedin.svg',
+  'Twitter / X':'twitter.svg',
+  Email:        'email.svg',
+};
 
 function esc(s) {
   const d = document.createElement('div');
@@ -32,6 +40,9 @@ export function renderAbout(bodyEl, { content, titlebar }) {
     img.className = 'os-about-portrait';
     img.src = p.portrait;
     img.alt = `Portrait of ${p.name}`;
+    const portraitWrap = document.createElement('div');
+    portraitWrap.className = 'os-about-portrait-wrap';
+    portraitWrap.appendChild(img);
     const id = document.createElement('div');
     id.className = 'os-about-id';
     const nameEl = document.createElement('div');
@@ -43,8 +54,13 @@ export function renderAbout(bodyEl, { content, titlebar }) {
     const locEl = document.createElement('div');
     locEl.className = 'os-about-loc';
     locEl.textContent = p.location;
-    id.append(nameEl, titleEl, locEl);
-    header.append(img, id);
+    const badge = document.createElement('div');
+    badge.className = 'os-about-badge';
+    const dot = document.createElement('span');
+    dot.className = 'os-about-badge-dot';
+    badge.append(dot, 'Open to opportunities');
+    id.append(nameEl, titleEl, locEl, badge);
+    header.append(portraitWrap, id);
     frag.appendChild(header);
 
     const bio = document.createElement('div');
@@ -83,9 +99,21 @@ export function renderAbout(bodyEl, { content, titlebar }) {
       const a = document.createElement('a');
       a.className = 'os-about-social-link';
       a.href = s.url;
-      a.textContent = s.label;
-      if (s.url.startsWith('mailto:')) a.href = s.url; // mailto links are fine as-is
-      else a.target = '_blank';
+      a.title = s.label;
+      a.setAttribute('aria-label', s.label);
+      const iconFile = SOCIAL_ICON_FILES[s.label];
+      if (iconFile) {
+        const img = document.createElement('img');
+        img.src = url('/assets/images/icons/' + iconFile);
+        img.width = 16;
+        img.height = 16;
+        img.alt = s.label;
+        img.className = 'os-about-social-icon';
+        a.appendChild(img);
+      } else {
+        a.textContent = s.label;
+      }
+      if (!s.url.startsWith('mailto:')) a.target = '_blank';
       a.rel = 'noopener noreferrer';
       actions.appendChild(a);
     }

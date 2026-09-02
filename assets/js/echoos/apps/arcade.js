@@ -48,6 +48,15 @@ function buildTheme() {
   };
 }
 
+const GLYPHS = {
+  tetris:   '▦',
+  snake:    '◈',
+  missile:  '↯',
+  pond:     '◉',
+  breakout: '◼',
+  invaders: '▲',
+};
+
 export function renderArcade(bodyEl, { toast }) {
   const games = (window.EchoGames && window.EchoGames.list) || [];
   let current = null;
@@ -87,10 +96,11 @@ export function renderArcade(bodyEl, { toast }) {
     b.type = 'button';
     b.className = 'os-arcade-card';
     b.dataset.game = game.id;
-    b.innerHTML = `<strong class="os-arcade-card-name"></strong><span class="os-arcade-card-tag"></span><span class="os-arcade-card-hi"></span>`;
+    b.innerHTML = `<span class="os-arcade-card-glyph"></span><strong class="os-arcade-card-name"></strong><span class="os-arcade-card-tag"></span><span class="os-arcade-card-hi"></span>`;
+    b.querySelector('.os-arcade-card-glyph').textContent = GLYPHS[game.id] || '▪';
     b.querySelector('.os-arcade-card-name').textContent = game.name;
     b.querySelector('.os-arcade-card-tag').textContent = game.tag;
-    b.querySelector('.os-arcade-card-hi').textContent = `hi ${hiscores()[game.id] || 0}`;
+    b.querySelector('.os-arcade-card-hi').textContent = `★ ${hiscores()[game.id] || 0}`;
     b.addEventListener('click', () => startGame(game));
     grid.appendChild(b);
   }
@@ -162,7 +172,7 @@ export function renderArcade(bodyEl, { toast }) {
     // Refresh hi score display on all cards after a game session.
     const hi = hiscores();
     for (const b of grid.querySelectorAll('.os-arcade-card')) {
-      b.querySelector('.os-arcade-card-hi').textContent = `hi ${hi[b.dataset.game] || 0}`;
+      b.querySelector('.os-arcade-card-hi').textContent = `★ ${hi[b.dataset.game] || 0}`;
     }
   }
 
