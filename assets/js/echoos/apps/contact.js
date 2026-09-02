@@ -22,7 +22,7 @@ export function renderContact(bodyEl, { content }) {
       <div class="os-contact-blurb">I'm always interested in new opportunities and exciting projects. Let's discuss how we can work together.</div>
       <div class="os-contact-strip">
         <span class="os-contact-strip-dot"></span>
-        <span class="os-contact-strip-text">${esc(p.location)} · ${esc(p.email)}</span>
+        <span class="os-contact-strip-text">${esc(p.location)}</span>
       </div>
       <div class="os-contact-social"></div>
     </div>`;
