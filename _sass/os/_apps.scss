@@ -977,20 +977,16 @@
   outline-offset: 2px;
 }
 
-// os-resume-doc: PDF object with fallback
-.os-resume-doc {
-  width: 100%;
-  min-height: 100%;
-  max-width: 520px;
-  margin: 0 auto;
-  display: block;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--surface);
+// os-resume-body: scrollable body wrapper; os-resume-card: typeset card
+.os-resume-body {
+  padding: 22px;
+  background: var(--surface2);
+  overflow: auto;
+  height: 100%;
+  box-sizing: border-box;
 }
 
-// Fallback card (browsers that don't embed PDFs)
-.os-resume-fallback {
+.os-resume-card {
   max-width: 520px;
   margin: 0 auto;
   background: var(--surface);
@@ -1013,13 +1009,13 @@
   color: var(--accent);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  margin-bottom: 8px;
+  margin-top: 3px;
 }
 
 .os-resume-contact {
   font: 10.5px var(--font-mono);
   color: var(--muted);
-  margin-bottom: 14px;
+  margin: 6px 0 16px;
   word-break: break-all;
 }
 
@@ -1037,16 +1033,11 @@
   margin-bottom: 10px;
 }
 
-.os-resume-items {
+.os-resume-item {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.os-resume-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  gap: 10px;
+  align-items: baseline;
+  margin-bottom: 5px;
 }
 
 .os-resume-item-left {
