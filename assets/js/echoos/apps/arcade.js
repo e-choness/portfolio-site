@@ -82,6 +82,7 @@ export function renderArcade(bodyEl, { toast }) {
     </div>`;
 
   const grid = bodyEl.querySelector('.os-arcade-grid');
+  const footnote = bodyEl.querySelector('.os-arcade-footnote');
   const stage = bodyEl.querySelector('.os-arcade-stage');
   const canvas = bodyEl.querySelector('.os-arcade-canvas');
   const nameEl = bodyEl.querySelector('.os-arcade-name');
@@ -140,6 +141,7 @@ export function renderArcade(bodyEl, { toast }) {
   function startGame(game) {
     current = game;
     grid.hidden = true;
+    footnote.hidden = true;
     stage.hidden = false;
     nameEl.textContent = game.name;
     hintEl.textContent = game.hint || '';
@@ -168,6 +170,7 @@ export function renderArcade(bodyEl, { toast }) {
     runner = null;
     current = null;
     stage.hidden = true;
+    footnote.hidden = false;
     grid.hidden = false;
     // Refresh hi score display on all cards after a game session.
     const hi = hiscores();

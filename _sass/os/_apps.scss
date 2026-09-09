@@ -1304,8 +1304,6 @@
 .os-win[data-app="resume"] .os-win-body {
   padding: 22px;
 }
-// Arcade scrolls inside its own pane; the body must not also scroll.
-.os-win-body:has(> .os-arcade) { overflow: hidden; }
 
 // Panes that own the body's height: no body padding, no body scroll — the pane
 // scrolls internally and pins its own footer. Keyed on the pane, not the app id.
