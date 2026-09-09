@@ -23,7 +23,46 @@ Any Docker-enabled host can either initialize a new Swarm cluster or join an exi
 - **Manager Nodes**: These nodes are responsible for managing the Swarm cluster. Most `docker swarm` commands can only be executed on manager nodes (the `docker swarm leave` command is an exception and can be run on worker nodes). A Swarm cluster can have multiple manager nodes, but only one is elected as the **leader** using the Raft consensus protocol. The leader is responsible for making all scheduling decisions and maintaining the desired state of the cluster.
 - **Worker Nodes**: These are the execution nodes for tasks. Manager nodes dispatch **services** to worker nodes for execution. By default, manager nodes also act as worker nodes, meaning they can run tasks. However, you can configure services to run exclusively on worker nodes or even specific manager nodes.
 
-![chapter-1-11-docker-swarm-1.png](../assets/blogs/chatper-1-11-docker-swarm-1.png)
+```mermaid
+flowchart TB
+    subgraph managers_zone[" "]
+        direction TB
+        state_store["Internal distributed state store"]
+        
+        subgraph managers[" "]
+            direction LR
+            M1["Manager"]
+            M2["Manager"]
+            M3["Manager"]
+        end
+        
+        state_store --- M1
+        state_store --- M2
+        state_store --- M3
+        
+        M1 <--> M2
+        M2 <--> M3
+    end
+    
+    subgraph workers_zone[" "]
+        direction LR
+        W1["Worker"]
+        W2["Worker"]
+        W3["Worker"]
+        W4["Worker"]
+        W5["Worker"]
+        W6["Worker"]
+    end
+    
+    M1 --> W1
+    M1 --> W2
+    M2 --> W3
+    M2 --> W4
+    M2 --> W5
+    M3 --> W4
+    M3 --> W5
+    M3 --> W6
+```
 
 ### Services and Tasks
 
@@ -34,7 +73,40 @@ Any Docker-enabled host can either initialize a new Swarm cluster or join an exi
 
 You specify the service mode using the `--mode` parameter with the `docker service create` command.
 
-![chapter-1-11-docker-swarm-2.png](../assets/blogs/chatper-1-11-docker-swarm-2.png)
+```mermaid
+flowchart LR
+    subgraph service["Service"]
+        direction TB
+        replicas["3 nginx replicas"]
+        manager["Swarm Manager"]
+        replicas --- manager
+    end
+
+    subgraph node1["available node"]
+        direction LR
+        task1["nginx.1"]
+        container1["nginx:latest"]
+        task1 --- container1
+    end
+
+    subgraph node2["available node"]
+        direction LR
+        task2["nginx.2"]
+        container2["nginx:latest"]
+        task2 --- container2
+    end
+
+    subgraph node3["available node"]
+        direction LR
+        task3["nginx.3"]
+        container3["nginx:latest"]
+        task3 --- container3
+    end
+
+    service -->|"task"| node1
+    service -->|"task"| node2
+    service -->|"task"| node3
+```
 
 ## Setting Up a Docker Swarm Cluster
 

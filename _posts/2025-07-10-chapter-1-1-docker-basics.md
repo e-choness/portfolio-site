@@ -5,7 +5,7 @@ date: "2025-07-10"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
-excerpt: "Tired of "it works on my machine"? Docker solves environment headaches by packaging apps and dependencies into isolated containers. Learn how this lightweight virtualization accelerates development, simplifies deployment, and revolutionizes software delivery."
+excerpt: 'Tired of "it works on my machine"? Docker solves environment headaches by packaging apps and dependencies into isolated containers. Learn how this lightweight virtualization accelerates development, simplifies deployment, and revolutionizes software delivery.'
 ---
 
 ## The Challenge of Environment Configuration

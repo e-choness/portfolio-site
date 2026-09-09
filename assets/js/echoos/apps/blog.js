@@ -98,12 +98,12 @@ async function renderDiagrams(container) {
 // Kept at module scope so re-renders replace the listener instead of stacking.
 let onOpenPost = null;
 // Module-scope UI state (prototype S.blog*): survives window re-renders.
-const state = { query: '', cat: 'All categories', catOpen: false, sel: null };
+const state = { query: '', cat: 'All categories', catOpen: false, sel: null, page: 1 };
 
 export function renderBlog(bodyEl, { content, toast }) {
   const posts = content.posts || [];
-  const catOf = (p) => (p.categories && p.categories[0]) || 'Uncategorized';
-  const cats = ['All categories', ...new Set(posts.map(catOf))];
+  const catOf = (p) => (p.categories && p.categories[0]) || p.category || '';
+  const cats = ['All categories', ...new Set(posts.map(catOf).filter(Boolean))];
 
   if (onOpenPost) document.removeEventListener('echoos:open-post', onOpenPost);
 
@@ -120,7 +120,12 @@ export function renderBlog(bodyEl, { content, toast }) {
   }
 
   function renderList() {
-    const rows = filtered();
+    const PAGE_SIZE = 8;
+    const all = filtered();
+    const totalPages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
+    if (state.page > totalPages) state.page = totalPages;
+    const rows = all.slice((state.page - 1) * PAGE_SIZE, state.page * PAGE_SIZE);
+
     app.innerHTML = `
       <div class="os-blog-bar">
         <div class="os-blog-search">
@@ -134,14 +139,16 @@ export function renderBlog(bodyEl, { content, toast }) {
           </button>
           <div class="os-blog-cat-menu" ${state.catOpen ? '' : 'hidden'}></div>
         </div>
-        <span class="os-blog-count">${rows.length}/${posts.length}</span>
+        <span class="os-blog-count">${all.length}/${posts.length}</span>
       </div>
-      <div class="os-blog-rows"></div>`;
+      <div class="os-blog-rows"></div>
+      <div class="os-blog-pager"></div>`;
 
     const input = app.querySelector('.os-blog-search-input');
     input.value = state.query;
     input.addEventListener('input', () => {
       state.query = input.value;
+      state.page = 1;
       renderList();
     });
 
@@ -160,18 +167,29 @@ export function renderBlog(bodyEl, { content, toast }) {
         opt.addEventListener('click', () => {
           state.cat = c;
           state.catOpen = false;
+          state.page = 1;
           renderList();
         });
         menu.appendChild(opt);
       }
-      // Register outside click listener when menu is open
       registerOutsideClickListener(app);
     } else {
       clearOutsideClickListener();
     }
 
+    // Rows with month/year separators
     const rowsEl = app.querySelector('.os-blog-rows');
+    let lastGroup = null;
     for (const p of rows) {
+      const parts = (p.date || '').split(' ');
+      const group = parts.length >= 3 ? `${parts[0]} ${parts[2]}` : (p.date || '');
+      if (group && group !== lastGroup) {
+        const sep = document.createElement('div');
+        sep.className = 'os-blog-sep';
+        sep.textContent = `— ${group} —`;
+        rowsEl.appendChild(sep);
+        lastGroup = group;
+      }
       const row = document.createElement('button');
       row.type = 'button';
       row.className = 'os-blog-row';
@@ -181,30 +199,96 @@ export function renderBlog(bodyEl, { content, toast }) {
           <span class="os-blog-row-title">${esc(p.title)}</span>
           <span class="os-blog-row-excerpt">${esc(p.excerpt || '')}</span>
         </span>
-        <span class="os-blog-row-cat">${esc(catOf(p))}</span>`;
+        ${catOf(p) ? `<span class="os-blog-row-cat">${esc(catOf(p))}</span>` : ''}`;
       row.addEventListener('click', () => {
         state.sel = posts.indexOf(p);
         renderReading(p);
       });
       rowsEl.appendChild(row);
     }
+
+    // Pagination
+    if (totalPages <= 1) return;
+    const pagerEl = app.querySelector('.os-blog-pager');
+
+    function pageSeq(cur, total) {
+      const set = new Set([1, total, cur - 1, cur, cur + 1].filter(n => n >= 1 && n <= total));
+      const sorted = [...set].sort((a, b) => a - b);
+      const out = [];
+      let prev = 0;
+      for (const n of sorted) {
+        if (n - prev > 1) out.push('…');
+        out.push(n);
+        prev = n;
+      }
+      return out;
+    }
+
+    const addBtn = (label, target, disabled, active) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'os-blog-page-btn' + (active ? ' is-active' : '');
+      btn.textContent = label;
+      if (disabled) {
+        btn.disabled = true;
+      } else {
+        btn.addEventListener('click', () => { state.page = target; renderList(); });
+      }
+      pagerEl.appendChild(btn);
+    };
+
+    addBtn('«', 1, state.page === 1, false);
+    addBtn('‹', state.page - 1, state.page === 1, false);
+    for (const n of pageSeq(state.page, totalPages)) {
+      if (n === '…') {
+        const el = document.createElement('span');
+        el.className = 'os-blog-page-ellipsis';
+        el.textContent = '…';
+        pagerEl.appendChild(el);
+      } else {
+        addBtn(String(n), n, false, n === state.page);
+      }
+    }
+    addBtn('›', state.page + 1, state.page === totalPages, false);
+    addBtn('»', totalPages, state.page === totalPages, false);
   }
 
   async function renderReading(post) {
     state.catOpen = false;
+    const idx = state.sel;
+    const prevPost = posts[idx + 1] || null; // older = previous
+    const nextPost = posts[idx - 1] || null; // newer = next
     const imageHtml = post.image ? `<img class="os-blog-image" src="${esc(post.image)}" alt="">` : '';
     app.innerHTML = `
-      <button type="button" class="os-blog-back">‹ all posts</button>
-      <div class="os-blog-meta">${esc(catOf(post))} · ${esc(post.date || '')}</div>
+      <div class="os-blog-back-bar">
+        <button type="button" class="os-blog-back">‹ all posts</button>
+      </div>
+      <div class="os-blog-meta">${catOf(post) ? esc(catOf(post)) + ' · ' : ''}${esc(post.date || '')}</div>
       <h1 class="os-blog-h1">${esc(post.title)}</h1>
       ${imageHtml}
       <p class="os-blog-excerpt">${esc(post.excerpt || '')}</p>
-      <div class="os-blog-loading">Loading…</div>`;
+      <div class="os-blog-loading">Loading…</div>
+      <div class="os-blog-nav">
+        <button type="button" class="os-blog-nav-btn os-blog-nav-prev"${!prevPost ? ' disabled' : ''}>‹ Previous</button>
+        <button type="button" class="os-blog-nav-btn os-blog-nav-next"${!nextPost ? ' disabled' : ''}>Next ›</button>
+      </div>`;
 
-    app.querySelector('.os-blog-back').addEventListener('click', () => {
+    app.querySelector('.os-blog-back-bar .os-blog-back').addEventListener('click', () => {
       state.sel = null;
       renderList();
     });
+    if (prevPost) {
+      app.querySelector('.os-blog-nav-prev').addEventListener('click', () => {
+        state.sel = idx + 1;
+        renderReading(prevPost);
+      });
+    }
+    if (nextPost) {
+      app.querySelector('.os-blog-nav-next').addEventListener('click', () => {
+        state.sel = idx - 1;
+        renderReading(nextPost);
+      });
+    }
 
     const heroImg = app.querySelector('.os-blog-image');
     if (heroImg) heroImg.addEventListener('error', () => heroImg.remove(), { once: true });

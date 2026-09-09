@@ -31,7 +31,38 @@ Port Publishing (-p / --publish):
 When you use `docker run -p <host_port>:<container_port> (or --publish)`, Docker automatically configures Destination Network Address Translation (DNAT) rules in the host's iptables. These rules forward incoming traffic from the specified host port to the corresponding port on the container, making the container's service accessible from outside the host. You can inspect these rules using `sudo iptables -t nat -vnL`.
 
 Visual Representation:
-![chapter-1-8-docker-network-bridge.png](../assets/blogs/chapter-1-8-docker-network-bridge.png)
+
+```mermaid
+flowchart TB
+
+    subgraph HOST["host"]
+        direction TB
+
+        subgraph D1["docker1"]
+            D1ETH["eth0<br/>172.12.0.2/24"]
+        end
+
+        subgraph D2["docker2"]
+            D2ETH["eth0<br/>172.12.0.3/24"]
+        end
+
+        subgraph NET["Docker bridge network"]
+            V1["veth*"]
+            V2["veth*"]
+            DOCKER0["docker0<br/>172.12.0.2/24"]
+        end
+
+        ETH0["eth0<br/>10.11.55.5/24"]
+
+        D1ETH <-->|"veth pair"| V1
+        D2ETH <-->|"veth pair"| V2
+
+        V1 --> DOCKER0
+        V2 --> DOCKER0
+
+        DOCKER0 -->|"IP forwarding"| ETH0
+    end
+```
 
 **Demonstration:**
 
@@ -166,7 +197,23 @@ Host mode is useful for performance-critical applications or when you need the c
 
 Visual Representation:
 
-![chapter-1-8-docker-network-host](../assets/blogs/chapter-1-8-docker-network-host.png)
+```mermaid
+flowchart TB
+
+    subgraph HOST["host"]
+        direction TB
+
+        subgraph D1["docker1"]
+            D1_ADDR["10.11.55.5:xxxxx"]
+        end
+
+        subgraph D2["docker2"]
+            D2_ADDR["10.11.55.5:xxxxx"]
+        end
+
+        ETH0["eth0<br/>10.11.55.5/24"]
+    end
+```
 
 **Demonstration:**
 
@@ -211,7 +258,29 @@ This mode is commonly used in "sidecar" patterns, where a helper container share
 
 Visual Representation:
 
-![chapter-1-8-docker-network-container](../assets/blogs/chapter-1-8-docker-network-container.png)
+```mermaid
+flowchart TB
+    subgraph host["host"]
+        direction TB
+        
+        subgraph containers[" "]
+            direction LR
+            docker1["docker1"]
+            docker2["docker2"]
+        end
+        
+        eth0_c["eth0<br/>172.12.0.3/24"]
+        veth["veth*"]
+        docker0["docker0<br/>172.12.0.2/24"]
+        eth0_h["eth0<br/>10.11.55.5/24"]
+        
+        docker1 --- eth0_c
+        docker2 --- eth0_c
+        eth0_c --- veth
+        veth --- docker0
+        docker0 --- |"ip forwarding"| eth0_h
+    end
+```
 
 **Demonstration:**
 

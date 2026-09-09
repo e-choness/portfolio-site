@@ -18,6 +18,7 @@ Jekyll::Hooks.register :site, :post_write do |site|
     if post.data["image"]
       payload["image"] = File.join(site.config["baseurl"].to_s, post.data["image"].sub(%r{\A/}, ''))
     end
-    File.write(File.join(dir, "#{post.data["slug"]}.json"), JSON.generate(payload))
+    slug = post.data["slug"] || post.basename_without_ext.sub(/\A\d{4}-\d{2}-\d{2}-/, '')
+    File.write(File.join(dir, "#{slug}.json"), JSON.generate(payload))
   end
 end

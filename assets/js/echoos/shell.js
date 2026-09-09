@@ -12,7 +12,7 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
     </div>
     <div class="os-mb-right">
       <button type="button" class="os-mb-btn os-mb-spotlight" aria-label="Spotlight">⌘K</button>
-      <button type="button" class="os-mb-btn os-mb-sound" aria-label="Toggle sound">♪ on</button>
+      <button type="button" class="os-mb-btn os-mb-sound" aria-label="Toggle sound">♪</button>
       <button type="button" class="os-mb-btn os-mb-theme" aria-label="Toggle theme"></button>
       <button type="button" class="os-mb-btn os-mb-notif" aria-label="Notifications">▤</button>
       <span class="os-mb-clock" aria-label="Clock"></span>
@@ -47,7 +47,7 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
 
   // --- sound --------------------------------------------------------------
   function applySound(sound) {
-    mbSound.textContent = sound === 'on' ? '♪ on' : '♪ off';
+    mbSound.classList.toggle('is-on', sound === 'on');
   }
   mbSound.addEventListener('click', () => {
     store.set({ sound: store.get().sound === 'on' ? 'off' : 'on' });
