@@ -41,27 +41,6 @@
     - Live-Ops
     - .NET Framework
 
-- position: "Back End Engineer"
-  company: "Froglet Games"
-  location: "Edmonton, Alberta (Remote)"
-  duration: "Apr. 2023 – Jun. 2023"
-  logo: "/assets/images/companies/froglet_logo.jpg"
-  description: |
-    Froglet Games is an emerging game development company known for creating engaging and innovative gaming experiences.
-    Focused on backend systems and live-ops features for gaming platforms.
-  responsibilities:
-    - "Engineered in-game user authentication, leaderboard, and in-game economy systems"
-    - "Managed telemetry systems and Unity Engine upgrades"
-    - "Worked under the mentorship of a former Senior Director of Engineering at Roblox"
-  technologies:
-    - C#
-    - Unity Engine
-    - Azure
-    - AWS
-    - Live-Ops
-    - Firebase
-    - .NET Framework
-
 - position: "Tools Engineer Intern"
   company: "Rec Room"
   location: "Thunder Bay, Ontario (Remote)"

@@ -2,7 +2,7 @@
 layout: post
 title: "The Clean Envelope: Debugging Production Pipelines Without Touching PII"
 date: 2026-07-14 21:00:00 -0000
-category: AI
+category: ai
 tags: [data-engineering, observability, architecture]
 author: "Echo Yin"
 image: "assets/images/blogs/pii-masking.jpg"
