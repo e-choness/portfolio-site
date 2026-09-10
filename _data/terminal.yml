@@ -5,7 +5,7 @@ help:
   - "help · about · whoami · skills · projects · blog · contact"
   - "open <app> · theme · sound · neofetch · date · ls · clear · exit"
   - "games: tetris · snake · missile · pond · breakout · invaders · pakupaku"
-  - "fun: git · ping · uname · man · ps · fortune · cat · curl · matrix"
+  - "fun: git · ping · uname · man · ps · fortune · cat · curl · matrix · coffee"
 
 neofetch:
   os: "EchoOS 1.0 — paper edition"

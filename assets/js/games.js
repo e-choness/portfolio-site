@@ -148,10 +148,13 @@
           clear(ctx,W,H,T);
           ctx.strokeStyle=T.line;ripples.forEach(r=>{ctx.globalAlpha=1-r.r/52;ctx.beginPath();ctx.arc(r.x,r.y,r.r,0,7);ctx.stroke();ctx.globalAlpha=1});
           ctx.fillStyle=T.ink;food.forEach(f=>{ctx.beginPath();ctx.arc(f.x,f.y,3,0,7);ctx.fill()});
-          fish.forEach(f=>{ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.a);
-            ctx.fillStyle=f.fed>4?T.accent:T.muted;
+          fish.forEach(f=>{
+            const ft=Math.min(1,f.fed/10);
+            ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.a);
+            ctx.fillStyle=T.muted;
             ctx.beginPath();ctx.ellipse(0,0,f.s*.7,f.s*.34,0,0,7);ctx.fill();
             ctx.beginPath();ctx.moveTo(-f.s*.6,0);ctx.lineTo(-f.s*1.05,-f.s*.3);ctx.lineTo(-f.s*1.05,f.s*.3);ctx.closePath();ctx.fill();
+            if(ft>0){ctx.globalAlpha=ft;ctx.fillStyle=T.accent;ctx.beginPath();ctx.ellipse(0,0,f.s*.7,f.s*.34,0,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(-f.s*.6,0);ctx.lineTo(-f.s*1.05,-f.s*.3);ctx.lineTo(-f.s*1.05,f.s*.3);ctx.closePath();ctx.fill();ctx.globalAlpha=1;}
             ctx.fillStyle=T.bg;ctx.beginPath();ctx.arc(f.s*.4,-f.s*.08,2.2,0,7);ctx.fill();ctx.restore();});
           ctx.fillStyle=T.muted;ctx.font='11px "IBM Plex Mono",monospace';ctx.textAlign='left';ctx.fillText('click to drop food · fish grow as they eat',10,16);}
       };
