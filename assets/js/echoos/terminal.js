@@ -1,4 +1,7 @@
+---
+---
 // terminal.js — echo-sh command interpreter (§6.6, patch 42).
+const TERMINAL = {{ site.data.terminal | jsonify }};
 // Command set exactly as per prototype spec: help, about, whoami, skills,
 // projects, blog, experience, education, contact, resume, open, theme, sound,
 // clear, date, ls, echo, neofetch, vim/vi, exit, hi/hello, sudo, games.
@@ -26,7 +29,7 @@ export function createTerminal(content, wm, { apps }) {
 
     // Print banner only once
     if (!bannerPrinted) {
-      printRaw({ text: 'EchoOS terminal — type `help` to see commands.', kind: 'muted' });
+      printRaw({ text: TERMINAL.messages.banner, kind: 'muted' });
       bannerPrinted = true;
     }
 
@@ -81,6 +84,10 @@ export function createTerminal(content, wm, { apps }) {
     input.value = histIdx === -1 ? '' : history[histIdx];
   }
 
+  function fmt(t, v) {
+    return t.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? '');
+  }
+
   function fuzzy(hay, needle) {
     return hay.toLowerCase().includes(needle.toLowerCase());
   }
@@ -123,7 +130,7 @@ export function createTerminal(content, wm, { apps }) {
     // Try app by id or label prefix
     const app = apps.find((a) => a.id === lc || a.label.toLowerCase().startsWith(lc));
     if (app) {
-      print({ text: `opening ${app.label}…`, kind: 'muted' });
+      print({ text: fmt(TERMINAL.cmd_strings.opening_app, { label: app.label }), kind: 'muted' });
       wm.openApp(app.id);
       return;
     }
@@ -131,7 +138,7 @@ export function createTerminal(content, wm, { apps }) {
     // Try project by title
     const proj = (content.projects || []).find((p) => fuzzy(p.title, arg));
     if (proj) {
-      print({ text: `opening Projects…`, kind: 'muted' });
+      print({ text: TERMINAL.cmd_strings.opening_projects, kind: 'muted' });
       wm.openApp('proj');
       return;
     }
@@ -139,14 +146,14 @@ export function createTerminal(content, wm, { apps }) {
     // Try post by title (and select it)
     const post = (content.posts || []).find((p) => fuzzy(p.title, arg));
     if (post) {
-      print({ text: `opening Blog…`, kind: 'muted' });
+      print({ text: TERMINAL.cmd_strings.opening_blog, kind: 'muted' });
       wm.openApp('blog');
       // Fire custom event to select the post
       document.dispatchEvent(new CustomEvent('echoos:open-post', { detail: { slug: post.slug } }));
       return;
     }
 
-    print({ text: `no app called "${arg}"`, kind: 'err' });
+    print({ text: fmt(TERMINAL.cmd_strings.no_app, { arg }), kind: 'err' });
   }
 
   function exec(cmd) {
@@ -159,16 +166,22 @@ export function createTerminal(content, wm, { apps }) {
     const origArgs = origParts.slice(1);
     const arg = origArgs.join(' ');
 
+    if (TERMINAL.games.includes(head)) {
+      print({ text: fmt(TERMINAL.cmd_strings.launching, { name: head }), kind: 'muted' });
+      wm.openApp('arcade');
+      setTimeout(() => {
+        document.dispatchEvent(new CustomEvent('echoos:start-game', { detail: { id: head } }));
+      }, 80);
+      return;
+    }
     switch (head) {
       case 'help':
-        print({ text: 'help · about · whoami · skills · projects · blog · contact', kind: 'muted' });
-        print({ text: 'open <app> · theme · sound · neofetch · date · ls · clear · exit', kind: 'muted' });
-        print({ text: 'games: tetris · snake · missile · pond · breakout · invaders', kind: 'muted' });
+        for (const line of TERMINAL.help) print({ text: line, kind: 'muted' });
         break;
 
       case 'about':
         if (content.profile) {
-          print({ text: `${content.profile.name} — ${content.profile.title} · ${content.profile.location}`, kind: 'out' });
+          print({ text: fmt(TERMINAL.cmd_strings.profile_line, { name: content.profile.name, title: content.profile.title, location: content.profile.location }), kind: 'out' });
           print({ text: content.profile.tagline, kind: 'muted' });
         }
         wm.openApp('about');
@@ -176,42 +189,42 @@ export function createTerminal(content, wm, { apps }) {
 
       case 'whoami':
         if (content.profile) {
-          print({ text: `${content.profile.name} — ${content.profile.title} · ${content.profile.location}`, kind: 'out' });
+          print({ text: fmt(TERMINAL.cmd_strings.profile_line, { name: content.profile.name, title: content.profile.title, location: content.profile.location }), kind: 'out' });
           print({ text: content.profile.tagline, kind: 'muted' });
         }
         break;
 
       case 'skills': {
         const top = deriveTopSkills();
-        print({ text: `top: ${top}`, kind: 'muted' });
+        print({ text: fmt(TERMINAL.cmd_strings.skills_top, { skills: top }), kind: 'muted' });
         wm.openApp('skills');
         break;
       }
 
       case 'projects':
         for (const p of content.projects || []) {
-          print({ text: `• ${p.title}`, kind: 'muted' });
+          print({ text: fmt(TERMINAL.cmd_strings.list_item, { value: p.title }), kind: 'muted' });
         }
         wm.openApp('proj');
         break;
 
       case 'blog':
         for (const p of (content.posts || []).slice(0, 3)) {
-          print({ text: `• ${p.title}`, kind: 'muted' });
+          print({ text: fmt(TERMINAL.cmd_strings.list_item, { value: p.title }), kind: 'muted' });
         }
         wm.openApp('blog');
         break;
 
       case 'experience':
         for (const e of content.experience || []) {
-          print({ text: `• ${e.role} — ${e.company}`, kind: 'muted' });
+          print({ text: fmt(TERMINAL.cmd_strings.experience_item, { role: e.role, company: e.company }), kind: 'muted' });
         }
         wm.openApp('exp');
         break;
 
       case 'education':
         for (const e of content.education || []) {
-          print({ text: `• ${e.degree} — ${e.school}`, kind: 'muted' });
+          print({ text: fmt(TERMINAL.cmd_strings.education_item, { degree: e.degree, school: e.school }), kind: 'muted' });
         }
         wm.openApp('about');
         // Fire event to select education tab
@@ -226,7 +239,7 @@ export function createTerminal(content, wm, { apps }) {
         break;
 
       case 'resume':
-        print({ text: 'opening resume.pdf…', kind: 'muted' });
+        print({ text: TERMINAL.messages.resume, kind: 'muted' });
         wm.openApp('resume');
         break;
 
@@ -243,12 +256,11 @@ export function createTerminal(content, wm, { apps }) {
         break;
 
       case 'neofetch': {
-        const procCount = deriveProcessCount();
         const uptime = deriveMaxYears();
-        print({ text: 'EchoOS 1.0 — paper edition', kind: 'accent' });
-        print({ text: 'host: github pages · jekyll static', kind: 'muted' });
-        print({ text: 'shell: echo-sh · wm: paperwm', kind: 'muted' });
-        print({ text: `uptime: ${uptime}+ years in AI · packages: ${(content.projects || []).length} projects, ${(content.posts || []).length} posts`, kind: 'muted' });
+        print({ text: TERMINAL.neofetch.os, kind: 'accent' });
+        print({ text: fmt(TERMINAL.cmd_strings.neofetch_host, { host: TERMINAL.neofetch.host }), kind: 'muted' });
+        print({ text: fmt(TERMINAL.cmd_strings.neofetch_shell, { shell: TERMINAL.neofetch.shell }), kind: 'muted' });
+        print({ text: fmt(TERMINAL.cmd_strings.neofetch_uptime, { uptime, projects: (content.projects || []).length, posts: (content.posts || []).length }), kind: 'muted' });
         break;
       }
 
@@ -260,12 +272,12 @@ export function createTerminal(content, wm, { apps }) {
         const v = (lcParts[1] || '').toLowerCase();
         if (v === 'light' || v === 'dark') {
           store.set({ theme: v });
-          print({ text: `theme → ${v}`, kind: 'muted' });
+          print({ text: fmt(TERMINAL.cmd_strings.theme_set, { value: v }), kind: 'muted' });
         } else {
           const current = store.get().theme || 'light';
           const next = current === 'light' ? 'dark' : 'light';
           store.set({ theme: next });
-          print({ text: `theme → ${next}`, kind: 'muted' });
+          print({ text: fmt(TERMINAL.cmd_strings.theme_set, { value: next }), kind: 'muted' });
         }
         break;
       }
@@ -274,12 +286,12 @@ export function createTerminal(content, wm, { apps }) {
         const v = (lcParts[1] || '').toLowerCase();
         if (v === 'on' || v === 'off') {
           store.set({ sound: v });
-          print({ text: `sound → ${v}`, kind: 'muted' });
+          print({ text: fmt(TERMINAL.cmd_strings.sound_set, { value: v }), kind: 'muted' });
         } else {
           const current = store.get().sound || 'on';
           const next = current === 'on' ? 'off' : 'on';
           store.set({ sound: next });
-          print({ text: `sound → ${next}`, kind: 'muted' });
+          print({ text: fmt(TERMINAL.cmd_strings.sound_set, { value: next }), kind: 'muted' });
         }
         break;
       }
@@ -292,27 +304,27 @@ export function createTerminal(content, wm, { apps }) {
 
       case 'vim':
       case 'vi':
-        print({ text: 'you are now stuck in vim. (type `open contact` to send help)', kind: 'muted' });
+        print({ text: TERMINAL.messages.vim, kind: 'muted' });
         break;
 
       case 'exit':
-        print({ text: 'there is no escape — this is a portfolio.', kind: 'muted' });
+        print({ text: TERMINAL.messages.exit, kind: 'muted' });
         break;
 
       case 'hi':
       case 'hello':
-        print({ text: 'hello! try `help`.', kind: 'muted' });
+        print({ text: TERMINAL.messages.hello, kind: 'muted' });
         break;
 
       case 'coffee':
-        print({ text: 'brewing… done. (decaf — we ship on fridays)', kind: 'accent' });
+        print({ text: TERMINAL.messages.coffee, kind: 'accent' });
         break;
 
       case 'sudo': {
         if (arg === 'make coffee') {
-          print({ text: 'brewing… done. (decaf — we ship on fridays)', kind: 'accent' });
+          print({ text: TERMINAL.messages.coffee, kind: 'accent' });
         } else if (cmd.toLowerCase().startsWith('sudo')) {
-          print({ text: 'nice try. this incident will be reported to echo.', kind: 'err' });
+          print({ text: TERMINAL.messages.sudo_denied, kind: 'err' });
         }
         break;
       }
@@ -320,39 +332,86 @@ export function createTerminal(content, wm, { apps }) {
       case 'rm': {
         const rmCmd = lc.trim();
         if (rmCmd === 'rm -rf /' || rmCmd === 'rm -rf /*') {
-          print({ text: 'refusing: the portfolio is load-bearing.', kind: 'err' });
+          print({ text: TERMINAL.messages.rm_refused, kind: 'err' });
         } else {
-          print({ text: `command not found: ${cmd} — try \`help\``, kind: 'err' });
+          print({ text: fmt(TERMINAL.cmd_strings.not_found, { cmd }), kind: 'err' });
           sfx.error();
         }
         break;
       }
 
-      case 'tetris':
-      case 'snake':
-      case 'missile':
-      case 'pond':
-      case 'breakout':
-      case 'invaders': {
-        print({ text: `launching ${head}…`, kind: 'muted' });
+      case 'arcade':
+      case 'games':
+        print({ text: TERMINAL.messages.arcade, kind: 'muted' });
         wm.openApp('arcade');
-        setTimeout(() => {
-          document.dispatchEvent(new CustomEvent('echoos:start-game', { detail: { id: head } }));
-        }, 80);
+        break;
+
+      case 'git': {
+        const sub = lcParts[1] || '';
+        if (sub === 'log') {
+          for (const line of TERMINAL.easter_eggs.git_log) print({ text: line, kind: 'muted' });
+        } else if (sub === 'status') {
+          print({ text: TERMINAL.easter_eggs.git_status, kind: 'muted' });
+        } else if (sub === 'push') {
+          print({ text: TERMINAL.easter_eggs.git_push, kind: 'err' });
+        } else {
+          print({ text: fmt(TERMINAL.cmd_strings.git_unknown, { sub }), kind: 'err' });
+        }
         break;
       }
 
-      case 'arcade':
-      case 'games':
-        print({ text: 'insert coin.', kind: 'muted' });
-        wm.openApp('arcade');
+      case 'ping':
+        print({ text: TERMINAL.easter_eggs.ping, kind: 'muted' });
+        break;
+
+      case 'uname':
+        print({ text: TERMINAL.easter_eggs.uname, kind: 'muted' });
+        break;
+
+      case 'man': {
+        const topic = arg.toLowerCase();
+        if (topic === 'life') {
+          print({ text: TERMINAL.easter_eggs.man_life, kind: 'muted' });
+        } else {
+          print({ text: TERMINAL.easter_eggs.man_generic, kind: 'muted' });
+        }
+        break;
+      }
+
+      case 'ps':
+        for (const line of TERMINAL.easter_eggs.ps) print({ text: line, kind: 'muted' });
+        break;
+
+      case 'fortune': {
+        const pool = TERMINAL.easter_eggs.fortune;
+        print({ text: pool[Math.floor(Math.random() * pool.length)], kind: 'accent' });
+        break;
+      }
+
+      case 'cat': {
+        if (!arg || arg === '.') {
+          for (const line of TERMINAL.easter_eggs.cat.split('\n')) print({ text: line, kind: 'accent' });
+        } else if (arg.includes('passwd')) {
+          print({ text: TERMINAL.easter_eggs.cat_passwd, kind: 'muted' });
+        } else {
+          print({ text: fmt(TERMINAL.cmd_strings.cat_not_found, { arg }), kind: 'err' });
+        }
+        break;
+      }
+
+      case 'curl':
+        print({ text: TERMINAL.easter_eggs.curl, kind: 'muted' });
+        break;
+
+      case 'matrix':
+        print({ text: TERMINAL.easter_eggs.matrix, kind: 'accent' });
         break;
 
       case '':
         break;
 
       default:
-        print({ text: `command not found: ${cmd} — try \`help\``, kind: 'err' });
+        print({ text: fmt(TERMINAL.cmd_strings.not_found, { cmd }), kind: 'err' });
         sfx.error();
     }
   }

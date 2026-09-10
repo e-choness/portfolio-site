@@ -1,0 +1,13 @@
+# Static copy for the notification panel and welcome card (notifications.js).
+# Consumed via: const NOTIF = {{ site.data.notifications | jsonify }};
+
+panel:
+  welcome_title: "Welcome to EchoOS"
+  welcome_text: "I'm Echo and this is my favorite portfolio on earth."
+  tour_btn: "Take the guided tour"
+
+welcome_card:
+  title: "Welcome to EchoOS"
+  text: "The Arcade is real, make yourself at home. The terminal speaks, and the projects are live. Enjoy exploring!"
+  tour_btn: "Take the tour"
+  dismiss_btn: "Dismiss"

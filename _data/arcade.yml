@@ -1,0 +1,96 @@
+# Exhibit plaque data rendered below each game in the arcade.
+# Consumed by arcade.js via: const EXHIBIT = {{ site.data.arcade | jsonify }};
+
+tetris:
+  credit: Alexey Pajitnov · 1984
+  origin: >-
+    Pajitnov wrote Tetris on an Electronika 60 terminal at the Dorodnitsyn Computing Centre
+    in Moscow. The Soviet government held the IP rights for years — Pajitnov didn't receive
+    royalties until 1996.
+  fact: >-
+    The name is a portmanteau of "tetromino" (the four-square geometric pieces) and "tennis,"
+    Pajitnov's favourite sport.
+  sources:
+    - label: Wikipedia
+      url: https://en.wikipedia.org/wiki/Tetris
+    - label: Tetris.com
+      url: https://tetris.com/
+
+snake:
+  credit: "Concept: Gremlin Industries · 1976 · Nokia version: Taneli Armanto · 1997"
+  origin: >-
+    Snake descends from Blockade (1976) by Gremlin Industries. Nokia engineer Taneli Armanto
+    ported a refined version onto the Nokia 6110 in 1997, shipping it on an estimated
+    350 million handsets worldwide.
+  fact: >-
+    Nokia's Snake predated the smartphone era by a decade and is among the most-played games
+    in history — with zero internet connection required.
+  sources:
+    - label: Wikipedia
+      url: https://en.wikipedia.org/wiki/Snake_(video_game_genre)
+
+missile:
+  credit: Dave Theurer · Atari · 1980
+  origin: >-
+    Atari engineer Dave Theurer spent nine months designing Missile Command, modelling the
+    six target cities on real California locations — including his own hometown of Marin County.
+  fact: >-
+    Theurer reported recurring nightmares about nuclear war throughout the entire development
+    period, making this one of the few cases of a game's theme psychologically affecting its creator.
+  sources:
+    - label: Wikipedia
+      url: https://en.wikipedia.org/wiki/Missile_Command
+
+pond:
+  credit: Original · EchoOS Arcade · 2024
+  origin: >-
+    Feed the Pond is an original zen simulation built for this portfolio. There are no enemies
+    or timers — fish grow as you drop food, and the only goal is to watch the pond thrive.
+  fact: >-
+    Each fish uses a steering algorithm that senses the nearest pellet within range and
+    gradually rotates toward it, producing emergent group behaviour when many pellets are
+    dropped at once.
+  sources: []
+
+breakout:
+  credit: Nolan Bushnell & Steve Bristow · Atari · 1976
+  origin: >-
+    Atari commissioned the cabinet from Steve Jobs, who secretly hired Steve Wozniak to
+    design the hardware. Wozniak reduced the chip count from roughly 150 to 44 and completed
+    the board in four sleepless nights.
+  fact: >-
+    Atari paid Jobs a $750 bonus for the chip savings. Wozniak later discovered Jobs had
+    received $5,000 total and shared only $375 — a revelation that strained their friendship
+    for years.
+  sources:
+    - label: Wikipedia
+      url: https://en.wikipedia.org/wiki/Breakout_(video_game)
+    - label: iWoz (memoir)
+      url: https://en.wikipedia.org/wiki/iWoz
+
+invaders:
+  credit: Tomohiro Nishikado · Taito · 1978
+  origin: >-
+    Nishikado designed and programmed Space Invaders largely single-handedly over a year,
+    and also built custom hardware to make the gameplay feasible on 1978-era silicon.
+  fact: >-
+    Space Invaders caused a nationwide shortage of 100-yen coins in Japan shortly after
+    launch. The Bank of Japan was forced to quadruple coin production to keep arcades stocked.
+  sources:
+    - label: Wikipedia
+      url: https://en.wikipedia.org/wiki/Space_Invaders
+
+pakupaku:
+  credit: "ABA Games (Kenta Cho) · 2022 · Inspired by Pac-Man (Toru Iwatani · Namco · 1980)"
+  origin: >-
+    Paku Paku is a one-dimensional Pac-Man distillation by indie developer Kenta Cho, part
+    of his open-source crisp-game-lib series of micro-games. The entire game logic fits in
+    under 60 lines.
+  fact: >-
+    "Paku-paku" is the Japanese onomatopoeia for a mouth snapping open and shut — the very
+    sound Toru Iwatani heard in his head when naming the original Pac-Man.
+  sources:
+    - label: crisp-game-lib (GitHub)
+      url: https://github.com/abagames/crisp-game-lib
+    - label: Pac-Man – Wikipedia
+      url: https://en.wikipedia.org/wiki/Pac-Man

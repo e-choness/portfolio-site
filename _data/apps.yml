@@ -73,8 +73,8 @@
   title: "arcade"
   x: 130
   y: 54
-  w: 840
-  h: 680
+  w: 760
+  h: 820
   desktop_icon: true
   desktop_icon_order: 1
   tab_bar: true

@@ -1,0 +1,87 @@
+# Static text content for the echo-sh terminal (terminal.js).
+# Consumed via: const TERMINAL = {{ site.data.terminal | jsonify }};
+
+help:
+  - "help · about · whoami · skills · projects · blog · contact"
+  - "open <app> · theme · sound · neofetch · date · ls · clear · exit"
+  - "games: tetris · snake · missile · pond · breakout · invaders · pakupaku"
+
+neofetch:
+  os: "EchoOS 1.0 — paper edition"
+  host: "github pages · jekyll static"
+  shell: "echo-sh · wm: paperwm"
+
+games:
+  - tetris
+  - snake
+  - missile
+  - pond
+  - breakout
+  - invaders
+  - pakupaku
+
+messages:
+  banner: "EchoOS terminal — type `help` to see commands."
+  resume: "opening resume.pdf…"
+  vim: "you are now stuck in vim. (type `open contact` to send help)"
+  exit: "I should go. I SHOULD go. I should GO."
+  hello: "hello! try `help`."
+  coffee: "brewing… done. (decaf — we ship on fridays)"
+  sudo_denied: "nice try. this incident will be reported to echo."
+  rm_refused: "refusing: the portfolio is load-bearing."
+  arcade: "insert coin."
+
+cmd_strings:
+  not_found: "command not found: {cmd} — try `help`"
+  no_app: "no app called \"{arg}\""
+  launching: "launching {name}…"
+  opening_app: "opening {label}…"
+  opening_projects: "opening Projects…"
+  opening_blog: "opening Blog…"
+  theme_set: "theme → {value}"
+  sound_set: "sound → {value}"
+  git_unknown: "git: '{sub}' is not a git command. (this is a portfolio, not a repo)"
+  cat_not_found: "cat: {arg}: No such file (this is a portfolio, not a filesystem)"
+  skills_top: "top: {skills}"
+  profile_line: "{name} — {title} · {location}"
+  neofetch_host: "host: {host}"
+  neofetch_shell: "shell: {shell}"
+  neofetch_uptime: "uptime: {uptime}+ years in AI · packages: {projects} projects, {posts} posts"
+  list_item: "• {value}"
+  experience_item: "• {role} — {company}"
+  education_item: "• {degree} — {school}"
+
+easter_eggs:
+  git_log:
+    - "commit a1b2c3d  add soul"
+    - "commit e4f5a6b  remove bugs (bugs remain)"
+    - "commit 7c8d9e0  it works on my machine"
+    - "commit f1a2b3c  final version"
+    - "commit 4d5e6f7  final version FINAL (actually final)"
+    - "commit 8a9b0c1  revert: everything"
+    - "commit 2d3e4f5  if it works, don't touch it"
+  git_status: "On branch main. Nothing to commit — portfolio is perfect."
+  git_push: "remote: Permission denied. echo controls the deploy."
+  ping: "64 bytes from echo.yin: icmp_seq=1 ttl=64 time=∞ ms"
+  uname: "EchoOS 1.0 paper-edition #1 SMP PREEMPT portfolio stable arm64"
+  man_life: "No manual entry for life. Have you tried `help`?"
+  man_generic: "RTFM — or just type `help`, it's right there."
+  ps:
+    - "PID  COMMAND               CPU%"
+    - "001  overthinking          94.2"
+    - "002  caffeine-daemon        2.1"
+    - "003  imposter-syndrome      1.8"
+    - "004  portfolio              1.4"
+    - "005  vim                    0.5  (stuck)"
+  fortune:
+    - "The best code is code you don't have to write."
+    - "It works on my machine. Ship the machine."
+    - "Two hard problems in CS: cache invalidation, naming things, and off-by-one errors."
+    - "First, solve the problem. Then write the code."
+    - "Any sufficiently advanced portfolio is indistinguishable from magic."
+    - "Make it work, make it right, make it fast — in that order."
+    - "The most powerful tool we have as developers is abstraction. The most dangerous one too."
+  cat: "  /\\_/\\\n ( o.o )\n  > ^ <"
+  cat_passwd: "root:x:0:0:echo:/home/echo:/bin/echo-sh"
+  curl: "curl: (301) Moved Permanently → you're already here."
+  matrix: "wake up, neo... (there is no spoon, but there is an arcade)"

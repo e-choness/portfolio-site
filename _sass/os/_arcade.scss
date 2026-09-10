@@ -137,6 +137,28 @@
   flex: 1 1 auto;
 }
 
+.os-arcade-exhibit-btn {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  &:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  @media (max-width: 640px) {
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
 .os-arcade-restart {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -209,4 +231,85 @@
 .os-pad-btn:active {
   background: var(--accent-soft);
   border-color: var(--accent);
+}
+
+// ── exhibit plaque ─────────────────────────────────────────────────────────
+.os-arcade-exhibit {
+  flex: 0 0 auto;
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--accent);
+  border-radius: 0 0 8px 8px;
+  background: var(--surface2);
+  font-family: var(--font-mono);
+  overflow: hidden;
+}
+.os-arcade-exhibit[hidden] { display: none; }
+
+.os-arcade-exhibit-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid var(--line);
+}
+.os-arcade-exhibit-marker {
+  color: var(--accent);
+  font-size: 11px;
+  line-height: 1;
+}
+.os-arcade-exhibit-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  flex: 1 1 auto;
+}
+.os-arcade-exhibit-credit {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--muted);
+  text-align: right;
+}
+
+.os-arcade-exhibit-body {
+  padding: 12px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.os-arcade-exhibit-origin {
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--ink);
+  margin: 0;
+}
+.os-arcade-exhibit-fact {
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin: 0;
+  padding-left: 10px;
+  border-left: 2px solid var(--accent-soft);
+}
+.os-arcade-exhibit-star {
+  color: var(--accent);
+  margin-right: 3px;
+}
+.os-arcade-exhibit-sources {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  margin-top: 2px;
+}
+.os-arcade-exhibit-src {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+  &:hover { color: var(--accent); }
 }

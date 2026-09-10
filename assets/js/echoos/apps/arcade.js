@@ -1,3 +1,5 @@
+---
+---
 // apps/arcade.js — game grid + canvas runner + HUD + touch pad (§6.7).
 // Drives the verbatim-ported games.js; the theme object is built from the
 // live computed custom properties every time a game starts.
@@ -48,6 +50,8 @@ function buildTheme() {
   };
 }
 
+const EXHIBIT = {{ site.data.arcade | jsonify }};
+
 const GLYPHS = {
   tetris:   '▦',
   snake:    '◈',
@@ -55,6 +59,7 @@ const GLYPHS = {
   pond:     '◉',
   breakout: '◼',
   invaders: '▲',
+  pakupaku: '◑',
 };
 
 export function renderArcade(bodyEl, { toast }) {
@@ -73,11 +78,13 @@ export function renderArcade(bodyEl, { toast }) {
           <span class="os-arcade-name"></span>
           <span class="os-arcade-score">SCORE 0 · HI 0</span>
           <span class="os-arcade-spacer"></span>
+          <button type="button" class="os-arcade-exhibit-btn">exhibit</button>
           <button type="button" class="os-arcade-restart">restart</button>
         </div>
         <div class="os-arcade-canvas-wrap"><canvas class="os-arcade-canvas" tabindex="0"></canvas></div>
         <p class="os-arcade-hint"></p>
         <div class="os-arcade-pad"></div>
+        <div class="os-arcade-exhibit"></div>
       </div>
     </div>`;
 
@@ -89,6 +96,29 @@ export function renderArcade(bodyEl, { toast }) {
   const scoreEl = bodyEl.querySelector('.os-arcade-score');
   const hintEl = bodyEl.querySelector('.os-arcade-hint');
   const padEl = bodyEl.querySelector('.os-arcade-pad');
+  const exhibitEl = bodyEl.querySelector('.os-arcade-exhibit');
+
+  function renderExhibit(game) {
+    const ex = EXHIBIT[game.id];
+    if (!ex) { exhibitEl.hidden = true; return; }
+    const srcs = ex.sources.length
+      ? `<div class="os-arcade-exhibit-sources">${ex.sources.map((s, i) =>
+          `<a class="os-arcade-exhibit-src" href="${s.url}" target="_blank" rel="noopener noreferrer">[${i + 1}] ${s.label}</a>`
+        ).join('')}</div>`
+      : '';
+    exhibitEl.hidden = false;
+    exhibitEl.innerHTML = `
+      <div class="os-arcade-exhibit-header">
+        <span class="os-arcade-exhibit-marker">◈</span>
+        <span class="os-arcade-exhibit-label">exhibit</span>
+        <span class="os-arcade-exhibit-credit">${ex.credit}</span>
+      </div>
+      <div class="os-arcade-exhibit-body">
+        <p class="os-arcade-exhibit-origin">${ex.origin}</p>
+        <p class="os-arcade-exhibit-fact"><span class="os-arcade-exhibit-star" aria-hidden="true">★</span>${ex.fact}</p>
+        ${srcs}
+      </div>`;
+  }
 
   // --- grid ----------------------------------------------------------------
   const hiscores = () => (window.EchoGames ? window.EchoGames.highscores() : {});
@@ -128,6 +158,7 @@ export function renderArcade(bodyEl, { toast }) {
   canvas.addEventListener('mousemove', onCanvasMove);
   canvas.addEventListener('touchstart', onCanvasTouch, { passive: false });
   canvas.addEventListener('touchmove', onCanvasTouch, { passive: false });
+  canvas.addEventListener('echoos:game-restart', () => { if (current && alive) startGame(current); });
 
   function startRunner(game) {
     if (runner) runner.stop();
@@ -162,6 +193,7 @@ export function renderArcade(bodyEl, { toast }) {
       }
       padEl.appendChild(frag);
     }
+    renderExhibit(game);
     startRunner(game);
   }
 
@@ -184,6 +216,8 @@ export function renderArcade(bodyEl, { toast }) {
     if (restart && current) startGame(current);
     const backBtn = e.target.closest('.os-arcade-back');
     if (backBtn) back();
+    const exhibitBtn = e.target.closest('.os-arcade-exhibit-btn');
+    if (exhibitBtn) exhibitEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
   // Re-start the current game when the theme changes (compare previous value to avoid restart on unrelated state).

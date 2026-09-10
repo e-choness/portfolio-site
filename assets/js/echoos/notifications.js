@@ -1,3 +1,6 @@
+---
+---
+const NOTIF = {{ site.data.notifications | jsonify }};
 // notifications.js — toast + notification panel (§6.1).
 export function initNotifications(root, { portrait = '', stats = [], onTour } = {}) {
   const toasts = document.createElement('div');
@@ -18,11 +21,11 @@ export function initNotifications(root, { portrait = '', stats = [], onTour } = 
     <div class="os-notif-welcome">
       <img class="os-notif-welcome-img" src="${portrait}" alt="">
       <div>
-        <div class="os-notif-welcome-title">Welcome to EchoOS</div>
-        <div class="os-notif-welcome-text">A different way to explore Echo Yin's professional profile.</div>
+        <div class="os-notif-welcome-title">${NOTIF.panel.welcome_title}</div>
+        <div class="os-notif-welcome-text">${NOTIF.panel.welcome_text}</div>
       </div>
     </div>
-    <button type="button" class="os-notif-tour">Take the guided tour</button>`;
+    <button type="button" class="os-notif-tour">${NOTIF.panel.tour_btn}</button>`;
   root.appendChild(panel);
 
   function renderPanel() {
@@ -71,11 +74,11 @@ export function initNotifications(root, { portrait = '', stats = [], onTour } = 
     el.innerHTML = `
       ${portraitImg}
       <div class="os-welcome-body">
-        <div class="os-welcome-title">Welcome to EchoOS</div>
-        <div class="os-welcome-text">Every app on this desktop is a section of Echo Yin's portfolio. The Arcade is real.</div>
+        <div class="os-welcome-title">${NOTIF.welcome_card.title}</div>
+        <div class="os-welcome-text">${NOTIF.welcome_card.text}</div>
         <div class="os-welcome-actions">
-          <button type="button" class="os-welcome-tour">Take the tour</button>
-          <button type="button" class="os-welcome-dismiss">Dismiss</button>
+          <button type="button" class="os-welcome-tour">${NOTIF.welcome_card.tour_btn}</button>
+          <button type="button" class="os-welcome-dismiss">${NOTIF.welcome_card.dismiss_btn}</button>
         </div>
       </div>`;
     el.querySelector('.os-welcome-tour').addEventListener('click', () => {

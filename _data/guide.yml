@@ -3,11 +3,11 @@
 # spotlight (`spot: true`). The final step has no action: the footer shows
 # "Restart tour".
 steps:
-  - text: "Hi! I'm the EchoOS guide. This desktop is Echo Yin's portfolio — every app is a section of it. Want a quick tour?"
+  - text: "Hi! I'm the EchoOS guide. This desktop is my portfolio— every app is a section of it. Want a quick tour?"
   - text: "The dock at the bottom holds every app. Click any icon to open its window — drag title bars to arrange them."
     action: "Open About"
     app: "about"
-  - text: "Projects is a card gallery of Echo's real work — live demos and GitHub links included."
+  - text: "Projects is a card gallery of my real work — live demos and GitHub links included."
     action: "Open Projects"
     app: "proj"
   - text: "The Arcade has six playable retro games, all drawn in code — no art assets anywhere."
