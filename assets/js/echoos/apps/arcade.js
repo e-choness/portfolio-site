@@ -193,6 +193,7 @@ export function renderArcade(bodyEl, { toast }) {
       }
       padEl.appendChild(frag);
     }
+    bodyEl.scrollTop = 0;
     renderExhibit(game);
     startRunner(game);
   }

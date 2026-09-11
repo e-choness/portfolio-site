@@ -170,7 +170,7 @@ Services derive \(K_i\) locally from a periodically-fetched root secret—no KMS
 
 Never assume a log's timestamp tells you which key encrypted it—queued messages can sit for minutes. Instead, every token carries its epoch as a plaintext prefix:
 
-```
+```bash
 tok:19532:a8f9c2d103b4e...
 │    │     └─ deterministic ciphertext
 │    └─────── epoch index (days since Unix epoch)
