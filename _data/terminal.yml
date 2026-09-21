@@ -4,22 +4,14 @@
 help:
   - "help · about · whoami · skills · projects · blog · contact"
   - "open <app> · theme · sound · neofetch · date · ls · clear · exit"
-  - "games: tetris · snake · missile · pond · breakout · invaders · pakupaku"
+  # {games} is filled in from _data/arcade.yml at print time
+  - "games: {games}"
   - "fun: git · ping · uname · man · ps · fortune · cat · curl · matrix · coffee"
 
 neofetch:
   os: "EchoOS 1.0 — paper edition"
   host: "github pages · jekyll static"
   shell: "echo-sh · wm: paperwm"
-
-games:
-  - tetris
-  - snake
-  - missile
-  - pond
-  - breakout
-  - invaders
-  - pakupaku
 
 messages:
   banner: "EchoOS terminal — type `help` to see commands."

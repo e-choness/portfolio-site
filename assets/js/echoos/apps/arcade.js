@@ -1,8 +1,9 @@
 ---
 ---
 // apps/arcade.js — game grid + canvas runner + HUD + touch pad (§6.7).
-// Drives the verbatim-ported games.js; the theme object is built from the
-// live computed custom properties every time a game starts.
+// Reads the registry from _data/arcade.yml and drives games.js, which fetches a
+// game's module on demand; the theme object is built from the live computed
+// custom properties every time a game starts.
 import { store } from '../store.js';
 import { beep } from '../sound.js';
 
@@ -50,20 +51,13 @@ function buildTheme() {
   };
 }
 
-const EXHIBIT = {{ site.data.arcade | jsonify }};
-
-const GLYPHS = {
-  tetris:   '▦',
-  snake:    '◈',
-  missile:  '↯',
-  pond:     '◉',
-  breakout: '◼',
-  invaders: '▲',
-  pakupaku: '◑',
-};
+// The whole arcade registry: card, HUD and exhibit copy for every game, in the
+// order they appear. games.js only knows how to run an id — everything a human
+// would want to edit lives in _data/arcade.yml.
+const ARCADE = {{ site.data.arcade | jsonify }};
 
 export function renderArcade(bodyEl, { toast }) {
-  const games = (window.EchoGames && window.EchoGames.list) || [];
+  const games = ARCADE;
   let current = null;
   let runner = null;
   let alive = true;
@@ -98,10 +92,9 @@ export function renderArcade(bodyEl, { toast }) {
   const padEl = bodyEl.querySelector('.os-arcade-pad');
   const exhibitEl = bodyEl.querySelector('.os-arcade-exhibit');
 
-  function renderExhibit(game) {
-    const ex = EXHIBIT[game.id];
-    if (!ex) { exhibitEl.hidden = true; return; }
-    const srcs = ex.sources.length
+  function renderExhibit(ex) {
+    if (!ex || !ex.origin) { exhibitEl.hidden = true; return; }
+    const srcs = (ex.sources || []).length
       ? `<div class="os-arcade-exhibit-sources">${ex.sources.map((s, i) =>
           `<a class="os-arcade-exhibit-src" href="${s.url}" target="_blank" rel="noopener noreferrer">[${i + 1}] ${s.label}</a>`
         ).join('')}</div>`
@@ -128,13 +121,23 @@ export function renderArcade(bodyEl, { toast }) {
     b.className = 'os-arcade-card';
     b.dataset.game = game.id;
     b.innerHTML = `<span class="os-arcade-card-glyph"></span><strong class="os-arcade-card-name"></strong><span class="os-arcade-card-tag"></span><span class="os-arcade-card-hi"></span>`;
-    b.querySelector('.os-arcade-card-glyph').textContent = GLYPHS[game.id] || '▪';
+    b.querySelector('.os-arcade-card-glyph').textContent = game.glyph || '▪';
     b.querySelector('.os-arcade-card-name').textContent = game.name;
     b.querySelector('.os-arcade-card-tag').textContent = game.tag;
     b.querySelector('.os-arcade-card-hi').textContent = `★ ${hiscores()[game.id] || 0}`;
     b.addEventListener('click', () => startGame(game));
+    // Hover or keyboard focus is a good enough signal to go and fetch the module.
+    const warm = () => window.EchoGames.preload([game.id]);
+    b.addEventListener('pointerenter', warm, { once: true });
+    b.addEventListener('focus', warm, { once: true });
     grid.appendChild(b);
   }
+
+  // The Arcade is open, so the games are about to be wanted. Fetch the rest in
+  // the background once the browser is idle — on touch there is no hover to
+  // warm them, and the whole set is only a few KB.
+  const whenIdle = window.requestIdleCallback || ((fn) => setTimeout(fn, 400));
+  whenIdle(() => { if (alive) window.EchoGames.preload(games.map((g) => g.id)); });
 
   // --- canvas / runner ------------------------------------------------------
   canvas.width = 620;
@@ -160,13 +163,43 @@ export function renderArcade(bodyEl, { toast }) {
   canvas.addEventListener('touchmove', onCanvasTouch, { passive: false });
   canvas.addEventListener('echoos:game-restart', () => { if (current && alive) startGame(current); });
 
+  // Paint a single line of status straight onto the canvas — used while a game's
+  // module is in flight, so the stage never shows the previous game's last frame.
+  function canvasNotice(msg) {
+    const c = canvas.getContext('2d');
+    c.fillStyle = readProp('--bg', '#f1eee8');
+    c.fillRect(0, 0, canvas.width, canvas.height);
+    c.fillStyle = readProp('--muted', '#6f6a78');
+    c.font = '13px "IBM Plex Mono", monospace';
+    c.textAlign = 'center';
+    c.fillText(msg, canvas.width / 2, canvas.height / 2);
+  }
+
+  // start() now resolves only once the game's module has arrived. The token
+  // guards against a second start — or a teardown — landing while one is in
+  // flight, which would otherwise leave an orphaned game looping on the canvas.
+  let startToken = 0;
   function startRunner(game) {
-    if (runner) runner.stop();
-    runner = window.EchoGames.start(canvas, game.id, buildTheme(), (s, over, h) => {
-      scoreEl.textContent = `SCORE ${s} · HI ${h}`;
-    });
+    const token = ++startToken;
+    if (runner) { runner.stop(); runner = null; }
     const hi = hiscores()[game.id] || 0;
     scoreEl.textContent = `SCORE 0 · HI ${hi}`;
+    // An already-fetched module resolves on a microtask, so only announce the
+    // wait if there actually is one — otherwise every restart would flash.
+    let waiting = true;
+    setTimeout(() => { if (waiting && token === startToken) canvasNotice('loading…'); }, 120);
+    window.EchoGames.start(canvas, game.id, buildTheme(), (s, over, h) => {
+      scoreEl.textContent = `SCORE ${s} · HI ${h}`;
+    }).then((r) => {
+      waiting = false;
+      if (token !== startToken || !alive) { r.stop(); return; }
+      runner = r;
+    }, () => {
+      waiting = false;
+      if (token !== startToken || !alive) return;
+      canvasNotice('could not load this game');
+      toast(`Arcade: ${game.name} failed to load`);
+    });
   }
 
   function startGame(game) {
@@ -179,15 +212,15 @@ export function renderArcade(bodyEl, { toast }) {
     padEl.innerHTML = '';
     if (game.pad) {
       const frag = document.createDocumentFragment();
-      for (const { k, l } of game.pad) {
+      for (const { key, label } of game.pad) {
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'os-pad-btn';
-        b.textContent = l;
+        b.textContent = label;
         b.style.touchAction = 'none';
         b.addEventListener('pointerdown', (e) => {
           e.preventDefault();
-          if (runner) runner.key(k);
+          if (runner) runner.key(key);
         });
         frag.appendChild(b);
       }
@@ -199,6 +232,7 @@ export function renderArcade(bodyEl, { toast }) {
   }
 
   function back() {
+    startToken++;
     if (runner) runner.stop();
     runner = null;
     current = null;

@@ -39,7 +39,7 @@ within the OS. All content comes from the same YAML files in `_data/`.
 | Desktop shell | Draggable, resizable windows; z-ordering; animated wallpaper |
 | Spotlight | ⌘K command palette — search apps, projects, posts |
 | Terminal | `echo-sh` with `open`, `theme`, `clear`, `help` and more |
-| Arcade | 6 canvas games (Blockfall, Snake, Breakout, Invaders, and more); hi-scores persist |
+| Arcade | 8 canvas games (Blockfall, Snake, Breakout, Invaders, a raycast Labyrinth, and more); hi-scores persist |
 | Blog reader | Mermaid diagrams + syntax-highlighted code blocks inside the OS window |
 | Theme | Light / dark with persisted accent color; animated portrait ring in About |
 | PWA | `manifest.webmanifest` — installable on desktop and mobile |
@@ -62,6 +62,7 @@ within the OS. All content comes from the same YAML files in `_data/`.
 ├── _config_dev.yml          # Dev override: baseurl "" for localhost
 ├── _data/                   # Content source of truth (YAML)
 │   ├── apps.yml             #   EchoOS app registry (dock order, window geometry)
+│   ├── arcade.yml           #   Arcade registry (card, pad, exhibit plaque per game)
 │   ├── profile.yml          #   name, bio, stats, social links
 │   ├── experience.yml       #   work timeline
 │   ├── projects.yml         #   project gallery
@@ -81,6 +82,8 @@ within the OS. All content comes from the same YAML files in `_data/`.
 │   └── main.scss            #   entry (@use chain)
 ├── assets/
 │   ├── js/echoos/           # OS modules (see Module map)
+│   ├── js/games.js          # Arcade runner (lazy-loads the games)
+│   ├── js/games/            #   one ES module per game + common.js helpers
 │   ├── data/content.json    # Liquid page: site data emitted as JSON for the OS
 │   └── manifest.webmanifest # PWA manifest
 ├── index.html               # EchoOS route (layout: os)
@@ -123,8 +126,10 @@ This site uses three custom Ruby plugins (`_plugins/apps_titles.rb`, `echoos_fil
 
 ## EchoOS module map
 
-All modules live in `assets/js/echoos/` (19 ES modules + `games.js`, a verbatim-port
-game library shipped separately).
+All modules live in `assets/js/echoos/` (19 ES modules). The arcade ships separately:
+`assets/js/games.js` is the runner, each game is an ES module under `assets/js/games/`
+that the runner imports on demand, and `_data/arcade.yml` is the registry that names
+and describes them — see *Adding a game*.
 
 | Module | Responsibility |
 |---|---|
@@ -173,6 +178,54 @@ manager read.
 
 The dock icon, window title, desktop icon, and Spotlight entry all come from
 `apps.yml` automatically.
+
+## Adding a game
+
+1. **Write the module** `assets/js/games/<id>.js`. It default-exports a factory that
+   receives the runner env and returns the game's handlers:
+
+   ```js
+   import { R, clear } from './common.js';
+
+   export default function mygame(env){
+     const {ctx,W,H,T,beep,addScore,gameOver,isOver}=env;
+     return {
+       key(k,down){ /* optional */ },
+       pointer(x,y,type){ /* optional — type is 'down' or 'move' */ },
+       tick(dt){ clear(ctx,W,H,T); /* update + draw one frame */ }
+     };
+   }
+   ```
+
+   `T` is the live theme (`bg`, `ink`, `muted`, `accent`, `soft`, `line`, `overlay`)
+   read from the CSS custom properties, so a game must never hard-code a colour. The
+   canvas is 620×400. No art or audio files — everything is drawn and synthesised.
+
+2. **Add one entry to `_data/arcade.yml`** — the arcade registry, in card order. It
+   carries everything else about the game, and nothing lives anywhere but here:
+
+   ```yaml
+   - id: mygame            # must match assets/js/games/<id>.js
+     name: "My Game"
+     tag: "genre"
+     glyph: "◆"            # shown on the grid card
+     hint: "arrows to move"
+     pad: [{ key: "ArrowLeft", label: "←" }]   # touch buttons; omit if pointer-only
+     credit: Someone · 1979
+     origin: >-
+       Two or three sentences for the exhibit plaque.
+     fact: >-
+       The one detail worth knowing.
+     sources:
+       - label: Wikipedia
+         url: https://en.wikipedia.org/wiki/...
+   ```
+
+That is the whole job. The grid card, the HUD, the touch pad, the exhibit plaque and
+the `echo-sh` launcher (plus the `games:` line in `help`) are all driven off that
+entry — `games.js` only ever learns an id. The module itself is fetched the first
+time the game is played, warmed on card hover and on an idle callback once the Arcade
+opens, so adding a game costs the rest of the site nothing.
 
 ## Customizing Content
 

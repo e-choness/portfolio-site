@@ -1,7 +1,18 @@
-# Exhibit plaque data rendered below each game in the arcade.
-# Consumed by arcade.js via: const EXHIBIT = {{ site.data.arcade | jsonify }};
+# The arcade registry — one entry per game, in the order the cards appear.
+# Everything about a game lives here: the catalogue fields the grid and the HUD
+# need, and the exhibit plaque rendered below the canvas.
+#
+# id     must match assets/js/games/<id>.js, which the runner imports on demand
+# pad    on-screen buttons for touch; omit for pointer-only games
+#
+# Consumed by arcade.js via: const ARCADE = {{ site.data.arcade | jsonify }};
 
-tetris:
+- id: tetris
+  name: "Blockfall"
+  tag: "tetris-like"
+  glyph: "▦"
+  hint: "← → move · ↑ rotate · space drop"
+  pad: [{ key: "ArrowLeft", label: "←" }, { key: "ArrowUp", label: "↻" }, { key: "ArrowRight", label: "→" }, { key: "ArrowDown", label: "↓" }, { key: " ", label: "⤓" }]
   credit: Alexey Pajitnov · 1984
   origin: >-
     Pajitnov wrote Tetris on an Electronika 60 terminal at the Dorodnitsyn Computing Centre
@@ -16,7 +27,12 @@ tetris:
     - label: Tetris.com
       url: https://tetris.com/
 
-snake:
+- id: snake
+  name: "Snake"
+  tag: "classic"
+  glyph: "◈"
+  hint: "arrow keys · or the pad below"
+  pad: [{ key: "ArrowLeft", label: "←" }, { key: "ArrowUp", label: "↑" }, { key: "ArrowDown", label: "↓" }, { key: "ArrowRight", label: "→" }]
   credit: "Concept: Gremlin Industries · 1976 · Nokia version: Taneli Armanto · 1997"
   origin: >-
     Snake descends from Blockade (1976) by Gremlin Industries. Nokia engineer Taneli Armanto
@@ -29,7 +45,11 @@ snake:
     - label: Wikipedia
       url: https://en.wikipedia.org/wiki/Snake_(video_game_genre)
 
-missile:
+- id: missile
+  name: "Nuclear Defence"
+  tag: "missile command"
+  glyph: "↯"
+  hint: "click to intercept"
   credit: Dave Theurer · Atari · 1980
   origin: >-
     Atari engineer Dave Theurer spent nine months designing Missile Command, modelling the
@@ -41,7 +61,11 @@ missile:
     - label: Wikipedia
       url: https://en.wikipedia.org/wiki/Missile_Command
 
-pond:
+- id: pond
+  name: "Feed the Pond"
+  tag: "zen sim"
+  glyph: "◉"
+  hint: "click to drop food"
   credit: Original · EchoOS Arcade · 2026
   origin: >-
     Feed the Pond is an original zen simulation built for this portfolio. There are no enemies
@@ -52,7 +76,11 @@ pond:
     dropped at once.
   sources: []
 
-breakout:
+- id: breakout
+  name: "Breakout"
+  tag: "brick breaker"
+  glyph: "◼"
+  hint: "arrows or mouse"
   credit: Nolan Bushnell & Steve Bristow · Atari · 1976
   origin: >-
     Atari commissioned the cabinet from Steve Jobs, who secretly hired Steve Wozniak to
@@ -68,7 +96,11 @@ breakout:
     - label: iWoz (memoir)
       url: https://en.wikipedia.org/wiki/iWoz
 
-invaders:
+- id: invaders
+  name: "Invaders"
+  tag: "shoot-em-up"
+  glyph: "▲"
+  hint: "arrows + space"
   credit: Tomohiro Nishikado · Taito · 1978
   origin: >-
     Nishikado designed and programmed Space Invaders largely single-handedly over a year,
@@ -80,7 +112,12 @@ invaders:
     - label: Wikipedia
       url: https://en.wikipedia.org/wiki/Space_Invaders
 
-pakupaku:
+- id: pakupaku
+  name: "Paku Paku"
+  tag: "1-d pac-man"
+  glyph: "◑"
+  hint: "tap / space to reverse direction"
+  pad: [{ key: " ", label: "↩" }]
   credit: "ABA Games (Kenta Cho) · 2022 · Inspired by Pac-Man (Toru Iwatani · Namco · 1980)"
   origin: >-
     Paku Paku is a one-dimensional Pac-Man distillation by indie developer Kenta Cho, part
@@ -94,3 +131,24 @@ pakupaku:
       url: https://github.com/abagames/crisp-game-lib
     - label: Pac-Man – Wikipedia
       url: https://en.wikipedia.org/wiki/Pac-Man
+
+- id: maze
+  name: "Labyrinth"
+  tag: "3d maze saver"
+  glyph: "◰"
+  hint: "↑ step · ← → turn · ↓ back · or click left / centre / right"
+  pad: [{ key: "ArrowLeft", label: "↰" }, { key: "ArrowUp", label: "↑" }, { key: "ArrowRight", label: "↱" }, { key: "ArrowDown", label: "↓" }]
+  credit: Microsoft · 1995 · OpenGL screensaver
+  origin: >-
+    3D Maze shipped with Windows 95 as a showcase for the operating system's new OpenGL
+    support. It built a fresh maze on every launch and then solved it unaided using the
+    left-hand rule — which always works, because every maze it generated was simply
+    connected. Microsoft retired it after Windows ME.
+  fact: >-
+    The default maze was papered in brick over a wooden floor and an asbestos-tile ceiling.
+    Floating OpenGL logos, globes and a wandering rat sprite shared the corridors, and
+    brushing one of the grey rocks flipped the camera upside down — after which the saver
+    followed the right-hand wall instead.
+  sources:
+    - label: 3D Maze – Wikipedia
+      url: https://en.wikipedia.org/wiki/3D_Maze

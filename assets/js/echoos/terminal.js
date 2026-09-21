@@ -2,6 +2,9 @@
 ---
 // terminal.js — echo-sh command interpreter (§6.6, patch 42).
 const TERMINAL = {{ site.data.terminal | jsonify }};
+// Launchable game ids come straight from the arcade registry — just the ids, so
+// none of the exhibit copy is duplicated into this module.
+const GAME_IDS = {{ site.data.arcade | map: 'id' | jsonify }};
 // Command set exactly as per prototype spec: help, about, whoami, skills,
 // projects, blog, experience, education, contact, resume, open, theme, sound,
 // clear, date, ls, echo, neofetch, vim/vi, exit, hi/hello, sudo, games.
@@ -166,7 +169,7 @@ export function createTerminal(content, wm, { apps }) {
     const origArgs = origParts.slice(1);
     const arg = origArgs.join(' ');
 
-    if (TERMINAL.games.includes(head)) {
+    if (GAME_IDS.includes(head)) {
       print({ text: fmt(TERMINAL.cmd_strings.launching, { name: head }), kind: 'muted' });
       wm.openApp('arcade');
       setTimeout(() => {
@@ -176,7 +179,7 @@ export function createTerminal(content, wm, { apps }) {
     }
     switch (head) {
       case 'help':
-        for (const line of TERMINAL.help) print({ text: line, kind: 'muted' });
+        for (const line of TERMINAL.help) print({ text: line.replace('{games}', GAME_IDS.join(' · ')), kind: 'muted' });
         break;
 
       case 'about':

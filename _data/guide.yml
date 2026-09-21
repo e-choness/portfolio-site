@@ -10,7 +10,7 @@ steps:
   - text: "Projects is a card gallery of my real work — live demos and GitHub links included."
     action: "Open Projects"
     app: "proj"
-  - text: "The Arcade has six playable retro games, all drawn in code — no art assets anywhere."
+  - text: "The Arcade has eight playable retro games, all drawn in code — no art assets anywhere."
     action: "Open Arcade"
     app: "arcade"
   - text: "Press ⌘K (or Ctrl+K) anytime to search apps, projects and blog posts."

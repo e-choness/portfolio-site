@@ -1,19 +1,60 @@
-// EchoOS Arcade — six canvas games, all assets generated in JS. No art files.
-// window.EchoGames.start(canvas, gameId, theme, onScore) -> {stop, pointer(x,y,type)}
+// EchoOS Arcade — the runner and a loader, nothing else.
+// Each game lives in games/<id>.js and is fetched the first time it is played,
+// so a visit that never opens the Arcade never pays for any of them. Every
+// sprite, sound and explosion is still generated in JS: no art or audio files.
+//
+// This file knows how to *run* an id; it deliberately holds no catalogue. Names,
+// tags, glyphs, hints, pads and exhibit copy all live in _data/arcade.yml and
+// reach the grid through apps/arcade.js.
+//
+// window.EchoGames.start(canvas, id, theme, onScore)
+//   -> Promise<{ stop(), pointer(x, y, type), key(k) }>
+// window.EchoGames.preload([id, ...])  — warm the cache, ignore failures
 (function(){
   const HS='echoos-hiscores';
   const hs=()=>{try{return JSON.parse(localStorage.getItem(HS)||'{}')}catch(e){return{}}};
   const setHs=(g,v)=>{const h=hs();if(v>(h[g]||0)){h[g]=v;localStorage.setItem(HS,JSON.stringify(h));}};
-  const R=Math.random;
 
-  function makeRunner(canvas, gameId, theme, onScore){
+  // games/ sits next to this file. Take the URL from the script element rather
+  // than a literal, so it keeps working under the site's baseurl; fall back to
+  // the root element's data-base if currentScript is unavailable.
+  const here=document.currentScript&&document.currentScript.src;
+  const root=document.getElementById('echoos-root');
+  const dir=here?here.replace(/[^/]*$/,'')+'games/'
+    :((root&&root.dataset.base)||'')+'/assets/js/games/';
+
+  const mods={};
+  const fetchGame=(id)=>import(dir+id+'.js');
+  // Every game imports common.js, so left alone the browser would discover it
+  // only after the game module has been fetched and parsed — two round trips for
+  // one click. Kick it off alongside instead; the module map dedupes the fetch.
+  let commonStarted=false;
+  function fetchCommon(){
+    if(commonStarted)return;
+    commonStarted=true;
+    import(dir+'common.js').catch(()=>{commonStarted=false});
+  }
+  function load(id){
+    if(!mods[id]){
+      fetchCommon();
+      mods[id]=fetchGame(id).then(m=>m.default,e=>{delete mods[id];throw e});
+    }
+    return mods[id];
+  }
+  // Warm the module cache ahead of a click. Failures are ignored here — if the
+  // game is really needed, start() will ask again and surface the error then.
+  function preload(ids){
+    for(const id of ids||[])load(id).catch(()=>{});
+  }
+
+  function makeRunner(canvas, gameId, theme, onScore, factory){
     const ctx=canvas.getContext('2d'), W=canvas.width, H=canvas.height;
     const T=theme, beep=(f,d)=>{if(T.beep)T.beep(f,d)};
     let score=0, over=false, dead=false;
     const report=()=>{setHs(gameId,score);onScore(score,over,Math.max(score,hs()[gameId]||0))};
     const addScore=(n)=>{score+=n;report()};
     const gameOver=()=>{if(over)return;over=true;beep(160,.3);report()};
-    const G=GAMES[gameId]({ctx,W,H,T,beep,addScore,gameOver,isOver:()=>over});
+    const G=factory({ctx,W,H,T,beep,addScore,gameOver,isOver:()=>over});
     let raf=null,last=0;
     const kd=e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].indexOf(e.key)>-1)e.preventDefault();if(over){canvas.dispatchEvent(new CustomEvent('echoos:game-restart',{bubbles:true}));}else if(G.key)G.key(e.key,true)};
     const ku=e=>{if(G.key)G.key(e.key,false)};
@@ -29,329 +70,9 @@
     };
   }
 
-  function clear(ctx,W,H,T){ctx.fillStyle=T.bg;ctx.fillRect(0,0,W,H);}
+  function start(canvas, gameId, theme, onScore){
+    return load(gameId).then(factory=>makeRunner(canvas,gameId,theme,onScore,factory));
+  }
 
-  const GAMES={
-    // ---------------- TETRIS ----------------
-    tetris(env){
-      const {ctx,W,H,T,beep,addScore,gameOver,isOver}=env;
-      const COLS=10,ROWS=18,C=Math.floor((H-24)/ROWS),BX=Math.max(8,Math.floor((W-COLS*C)/2)-60),BY=Math.floor((H-ROWS*C)/2);
-      const SHAPES=[[[1,1,1,1]],[[1,1],[1,1]],[[0,1,0],[1,1,1]],[[1,0,0],[1,1,1]],[[0,0,1],[1,1,1]],[[1,1,0],[0,1,1]],[[0,1,1],[1,1,0]]];
-      let grid=Array.from({length:ROWS},()=>Array(COLS).fill(0)),lines=0;
-      const spawn=()=>({m:SHAPES[Math.floor(R()*7)].map(r=>r.slice()),x:3,y:0});
-      let cur=spawn(),next=spawn(),t=0,fall=.75;
-      const rot=m=>m[0].map((_,i)=>m.map(r=>r[i]).reverse());
-      const fits=(m,x,y)=>m.every((row,j)=>row.every((v,i)=>!v||(x+i>=0&&x+i<COLS&&y+j<ROWS&&y+j>=0&&!grid[y+j][x+i])));
-      const lock=()=>{cur.m.forEach((row,j)=>row.forEach((v,i)=>{if(v&&cur.y+j>=0)grid[cur.y+j][cur.x+i]=1}));
-        let n=0;grid=grid.filter(r=>{if(r.every(v=>v)){n++;return false}return true});
-        while(grid.length<ROWS)grid.unshift(Array(COLS).fill(0));
-        addScore(4);
-        if(n){lines+=n;addScore([0,100,300,500,800][n]);beep(660+n*80,.08);fall=Math.max(.12,.75-lines*.02)}
-        cur=next;next=spawn();if(!fits(cur.m,cur.x,cur.y))gameOver();};
-      const move=dx=>{if(fits(cur.m,cur.x+dx,cur.y)){cur.x+=dx;beep(880,.02)}};
-      const drop=()=>{if(fits(cur.m,cur.x,cur.y+1))cur.y++;else lock()};
-      return {
-        key(k,down){if(!down||isOver())return;
-          if(k==='ArrowLeft')move(-1);else if(k==='ArrowRight')move(1);
-          else if(k==='ArrowDown'){drop();addScore(1);}
-          else if(k==='ArrowUp'){const r=rot(cur.m);if(fits(r,cur.x,cur.y)){cur.m=r;beep(520,.03)}}
-          else if(k===' '){while(fits(cur.m,cur.x,cur.y+1))cur.y++;lock()}},
-        tick(dt){if(!isOver()){t+=dt;if(t>fall){t=0;drop()}}
-          clear(ctx,W,H,T);
-          ctx.strokeStyle=T.line;ctx.strokeRect(BX-.5,BY-.5,COLS*C+1,ROWS*C+1);
-          const cell=(x,y,col)=>{ctx.fillStyle=col;ctx.fillRect(BX+x*C+1,BY+y*C+1,C-2,C-2)};
-          grid.forEach((row,y)=>row.forEach((v,x)=>{if(v)cell(x,y,T.ink)}));
-          cur.m.forEach((row,j)=>row.forEach((v,i)=>{if(v&&cur.y+j>=0)cell(cur.x+i,cur.y+j,T.accent)}));
-          ctx.fillStyle=T.muted;ctx.font='11px "IBM Plex Mono",monospace';ctx.textAlign='left';
-          ctx.fillText('NEXT',BX+COLS*C+18,BY+14);ctx.fillText('LINES '+lines,BX+COLS*C+18,BY+96);
-          next.m.forEach((row,j)=>row.forEach((v,i)=>{if(v){ctx.fillStyle=T.accent;ctx.fillRect(BX+COLS*C+18+i*12,BY+24+j*12,10,10)}}));}
-      };
-    },
-    // ---------------- SNAKE ----------------
-    snake(env){
-      const {ctx,W,H,T,beep,addScore,gameOver,isOver}=env;
-      const C=20,COLS=Math.floor(W/C),ROWS=Math.floor(H/C);
-      let snake=[{x:5,y:8},{x:4,y:8},{x:3,y:8}],dir={x:1,y:0},pend=dir,t=0,speed=.12;
-      let food={x:12,y:8};
-      const place=()=>{do{food={x:Math.floor(R()*COLS),y:Math.floor(R()*ROWS)}}while(snake.some(s=>s.x===food.x&&s.y===food.y))};
-      return {
-        key(k,down){if(!down)return;const d={ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1},ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0}}[k];
-          if(d&&!(d.x===-dir.x&&d.y===-dir.y))pend=d;},
-        tick(dt){if(!isOver()){t+=dt;if(t>speed){t=0;dir=pend;
-          const h={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
-          if(h.x<0||h.y<0||h.x>=COLS||h.y>=ROWS||snake.some(s=>s.x===h.x&&s.y===h.y)){gameOver();}
-          else{snake.unshift(h);
-            if(h.x===food.x&&h.y===food.y){addScore(10);beep(740,.06);speed=Math.max(.055,speed-.002);place();}
-            else snake.pop();}}}
-          clear(ctx,W,H,T);
-          ctx.fillStyle=T.soft;for(let x=0;x<COLS;x++)for(let y=0;y<ROWS;y++)if((x+y)%2)ctx.fillRect(x*C,y*C,C,C);
-          ctx.fillStyle=T.accent;ctx.beginPath();ctx.arc(food.x*C+C/2,food.y*C+C/2,C*.32,0,7);ctx.fill();
-          snake.forEach((s,i)=>{ctx.globalAlpha=1-i/snake.length*.72;ctx.fillStyle=i===0?T.ink:T.accent;ctx.fillRect(s.x*C+2,s.y*C+2,C-4,C-4)});ctx.globalAlpha=1;}
-      };
-    },
-    // ---------------- NUCLEAR DEFENCE (missile command) ----------------
-    missile(env){
-      const {ctx,W,H,T,beep,addScore,gameOver,isOver}=env;
-      let cities=[0,1,2,3,4,5].map(i=>({x:60+i*(W-120)/5,alive:true}));
-      let enemies=[],shots=[],booms=[],t=0,rate=1.6,elapsed=0;
-      return {
-        pointer(x,y,type){if(type!=='down'||y>H-40)return;
-          shots.push({x:W/2,y:H-24,tx:x,ty:y,p:0});beep(520,.05);},
-        tick(dt){if(!isOver()){elapsed+=dt;t+=dt;rate=Math.max(.5,1.6-elapsed*.02);
-          if(t>rate){t=0;const c=cities.filter(c=>c.alive);if(c.length){const tgt=c[Math.floor(R()*c.length)];
-            enemies.push({x:R()*W,y:0,tx:tgt.x,ty:H-18,p:0,tgt});}}
-          enemies.forEach(e=>{e.p+=dt*(.06+elapsed*.001);});
-          shots.forEach(s=>{s.p+=dt*1.6;if(s.p>=1){booms.push({x:s.tx,y:s.ty,r:4,grow:1});beep(300,.1)}});
-          shots=shots.filter(s=>s.p<1);
-          booms.forEach(b=>{if(b.grow)b.r+=dt*90;if(b.r>44)b.grow=0;if(!b.grow)b.r-=dt*60;});
-          booms=booms.filter(b=>b.r>2);
-          enemies=enemies.filter(e=>{const ex=e.x+(e.tx-e.x)*e.p,ey=e.y+(e.ty-e.y)*e.p;
-            for(const b of booms)if((ex-b.x)**2+(ey-b.y)**2<b.r*b.r){addScore(25);beep(900,.05);return false}
-            if(e.p>=1){e.tgt.alive=false;booms.push({x:e.tx,y:e.ty,r:6,grow:1});beep(120,.25);
-              if(!cities.some(c=>c.alive))gameOver();return false}
-            return true});}
-          clear(ctx,W,H,T);
-          ctx.fillStyle=T.soft;ctx.fillRect(0,H-16,W,16);
-          cities.forEach(c=>{ctx.fillStyle=c.alive?T.ink:T.line;ctx.fillRect(c.x-12,H-30,24,14);});
-          ctx.fillStyle=T.accent;ctx.fillRect(W/2-14,H-34,28,18);
-          ctx.strokeStyle=T.muted;enemies.forEach(e=>{const ex=e.x+(e.tx-e.x)*e.p,ey=e.y+(e.ty-e.y)*e.p;
-            ctx.globalAlpha=.4;ctx.beginPath();ctx.moveTo(e.x,e.y);ctx.lineTo(ex,ey);ctx.stroke();ctx.globalAlpha=1;
-            ctx.fillStyle=T.ink;ctx.fillRect(ex-2,ey-2,4,4);});
-          ctx.strokeStyle=T.accent;shots.forEach(s=>{const sx=s.x+(s.tx-s.x)*s.p,sy=s.y+(s.ty-s.y)*s.p;
-            ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(sx,sy);ctx.stroke();});
-          booms.forEach(b=>{ctx.fillStyle=T.accentSoft;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,7);ctx.fill();
-            ctx.strokeStyle=T.accent;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,7);ctx.stroke();});
-          ctx.fillStyle=T.muted;ctx.font='11px "IBM Plex Mono",monospace';ctx.textAlign='left';ctx.fillText('click to intercept · defend the cities',10,16);}
-      };
-    },
-    // ---------------- FEED THE POND ----------------
-    pond(env){
-      const {ctx,W,H,T,beep,addScore}=env;
-      let fish=Array.from({length:7},()=>({x:R()*W,y:40+R()*(H-80),a:R()*6.28,s:16+R()*8,v:34+R()*22,turn:0,fed:0}));
-      let food=[],ripples=[];
-      return {
-        pointer(x,y,type){if(type!=='down')return;food.push({x,y,vy:14});ripples.push({x,y,r:4});beep(660,.04);},
-        tick(dt){
-          ripples.forEach(r=>r.r+=dt*46);ripples=ripples.filter(r=>r.r<52);
-          food.forEach(f=>{f.y+=f.vy*dt;f.vy=Math.max(4,f.vy-6*dt)});
-          food=food.filter(f=>f.y<H-8);
-          fish.forEach(f=>{
-            let tgt=null,best=1e9;
-            food.forEach(p=>{const d=(p.x-f.x)**2+(p.y-f.y)**2;if(d<best&&d<220*220){best=d;tgt=p}});
-            if(tgt){const want=Math.atan2(tgt.y-f.y,tgt.x-f.x);let d=want-f.a;while(d>3.14)d-=6.28;while(d<-3.14)d+=6.28;f.a+=d*Math.min(1,dt*4);
-              if(best<(f.s*.8)**2){tgt.eaten=true;f.fed++;f.s=Math.min(34,f.s+1.2);addScore(5);beep(820+R()*160,.05);}}
-            else{f.turn+=(R()-.5)*dt*3;f.a+=f.turn*dt;}
-            f.x+=Math.cos(f.a)*f.v*dt;f.y+=Math.sin(f.a)*f.v*dt;
-            if(f.x<20||f.x>W-20)f.a=3.14-f.a;if(f.y<24||f.y>H-24)f.a=-f.a;
-            f.x=Math.max(18,Math.min(W-18,f.x));f.y=Math.max(22,Math.min(H-22,f.y));});
-          food=food.filter(f=>!f.eaten);
-          clear(ctx,W,H,T);
-          ctx.strokeStyle=T.line;ripples.forEach(r=>{ctx.globalAlpha=1-r.r/52;ctx.beginPath();ctx.arc(r.x,r.y,r.r,0,7);ctx.stroke();ctx.globalAlpha=1});
-          ctx.fillStyle=T.ink;food.forEach(f=>{ctx.beginPath();ctx.arc(f.x,f.y,3,0,7);ctx.fill()});
-          fish.forEach(f=>{
-            const ft=Math.min(1,f.fed/10);
-            ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.a);
-            ctx.fillStyle=T.muted;
-            ctx.beginPath();ctx.ellipse(0,0,f.s*.7,f.s*.34,0,0,7);ctx.fill();
-            ctx.beginPath();ctx.moveTo(-f.s*.6,0);ctx.lineTo(-f.s*1.05,-f.s*.3);ctx.lineTo(-f.s*1.05,f.s*.3);ctx.closePath();ctx.fill();
-            if(ft>0){ctx.globalAlpha=ft;ctx.fillStyle=T.accent;ctx.beginPath();ctx.ellipse(0,0,f.s*.7,f.s*.34,0,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(-f.s*.6,0);ctx.lineTo(-f.s*1.05,-f.s*.3);ctx.lineTo(-f.s*1.05,f.s*.3);ctx.closePath();ctx.fill();ctx.globalAlpha=1;}
-            ctx.fillStyle=T.bg;ctx.beginPath();ctx.arc(f.s*.4,-f.s*.08,2.2,0,7);ctx.fill();ctx.restore();});
-          ctx.fillStyle=T.muted;ctx.font='11px "IBM Plex Mono",monospace';ctx.textAlign='left';ctx.fillText('click to drop food · fish grow as they eat',10,16);}
-      };
-    },
-    // ---------------- BREAKOUT ----------------
-    breakout(env){
-      const {ctx,W,H,T,beep,addScore,gameOver,isOver}=env;
-      let pw=86,px=W/2-pw/2,keys={},lives=3;
-      let ball={x:W/2,y:H-60,vx:150,vy:-210};
-      const BC=10,BR=5,bw=(W-40)/BC,bh=18;
-      let bricks=[];for(let r=0;r<BR;r++)for(let c=0;c<BC;c++)bricks.push({x:20+c*bw,y:40+r*(bh+6),alive:true,r});
-      const reset=()=>{ball={x:W/2,y:H-60,vx:(R()>.5?1:-1)*150,vy:-210}};
-      return {
-        key(k,down){keys[k]=down},
-        pointer(x,y,type){if(type==='move')px=Math.max(0,Math.min(W-pw,x-pw/2))},
-        tick(dt){if(!isOver()){
-          if(keys.ArrowLeft)px=Math.max(0,px-320*dt);if(keys.ArrowRight)px=Math.min(W-pw,px+320*dt);
-          ball.x+=ball.vx*dt;ball.y+=ball.vy*dt;
-          if(ball.x<6||ball.x>W-6){ball.vx*=-1;beep(440,.03)}
-          if(ball.y<6){ball.vy*=-1;beep(440,.03)}
-          if(ball.y>H+10){lives--;beep(150,.2);if(lives<=0)gameOver();else reset();}
-          if(ball.vy>0&&ball.y>H-26&&ball.y<H-12&&ball.x>px-6&&ball.x<px+pw+6){
-            ball.vy=-Math.abs(ball.vy)*1.02;ball.vx+=((ball.x-(px+pw/2))/pw)*220;beep(560,.04);}
-          bricks.forEach(b=>{if(b.alive&&ball.x>b.x&&ball.x<b.x+bw-4&&ball.y>b.y&&ball.y<b.y+bh){
-            b.alive=false;ball.vy*=-1;addScore(10);beep(700+b.r*60,.05);}});
-          if(bricks.every(b=>!b.alive)){bricks.forEach(b=>b.alive=true);ball.vx*=1.15;ball.vy*=1.15;addScore(100);}}
-          clear(ctx,W,H,T);
-          bricks.forEach(b=>{if(b.alive){ctx.fillStyle=b.r%2?T.ink:T.accent;ctx.fillRect(b.x,b.y,bw-4,bh)}});
-          ctx.fillStyle=T.ink;ctx.fillRect(px,H-20,pw,8);
-          ctx.beginPath();ctx.arc(ball.x,ball.y,6,0,7);ctx.fill();
-          ctx.fillStyle=T.muted;ctx.font='11px "IBM Plex Mono",monospace';ctx.textAlign='left';ctx.fillText('lives '+lives+' · arrows or mouse',10,16);}
-      };
-    },
-    // ---------------- PAKU PAKU ----------------
-    pakupaku(env){
-      const {ctx,W,H,T,beep,addScore,gameOver,isOver}=env;
-      const LY=Math.floor(H/2);
-      let player={x:W*0.38,vx:1};
-      // enemy starts on the opposite side from player, well away
-      let enemy={x:W*0.85,eyeVx:0};
-      let dots=[],powerTicks=0,animT=0,multiplier=0;
-
-      function spawnDots(){
-        multiplier++;
-        // power dot on the side opposite to player so they must traverse the field
-        const pi=player.x<W/2 ? 11+Math.floor(R()*4) : 1+Math.floor(R()*4);
-        dots=[];
-        for(let i=0;i<16;i++) dots.push({x:12+i*((W-24)/15),isPower:i===pi});
-      }
-      spawnDots();
-
-      return {
-        key(k,down){
-          if(!down||isOver())return;
-          if(k===' '||k==='ArrowLeft'||k==='ArrowRight'||k==='ArrowUp'||k==='ArrowDown')
-            player.vx*=-1;
-        },
-        pointer(x,y,type){if(type==='down'&&!isOver())player.vx*=-1;},
-        tick(dt){
-          if(!isOver()){
-            animT+=dt;
-            const diff=1+multiplier*0.03;
-
-            // move player; wrap at edges
-            player.x+=player.vx*110*diff*dt;
-            if(player.x<-14)player.x=W+14;
-            else if(player.x>W+14)player.x=-14;
-
-            // dot collisions
-            dots=dots.filter(d=>{
-              if(Math.abs(player.x-d.x)<13){
-                if(d.isPower){beep(440,.1);if(enemy.eyeVx===0)powerTicks=3;}
-                else beep(880,.02);
-                addScore(multiplier);
-                return false;
-              }
-              return true;
-            });
-
-            // enemy AI: eyeVx!=0 means it was just eaten and is fleeing to a wall
-            const evx=enemy.eyeVx!==0?enemy.eyeVx:(player.x>enemy.x?1:-1)*(powerTicks>0?-1:1);
-            const espd=enemy.eyeVx!==0?80:powerTicks>0?26:62;
-            enemy.x=Math.max(0,Math.min(W,enemy.x+evx*espd*diff*dt));
-            // once the fleeing enemy reaches a wall it resets and chases again from the far edge
-            if((enemy.eyeVx<0&&enemy.x<=2)||(enemy.eyeVx>0&&enemy.x>=W-2))enemy.eyeVx=0;
-
-            // player-enemy collision
-            if(enemy.eyeVx===0&&Math.abs(player.x-enemy.x)<16){
-              if(powerTicks>0){
-                beep(660,.15);addScore(10*multiplier);
-                // send enemy to the wall farther from player
-                enemy.eyeVx=player.x>W/2?-1:1;
-                powerTicks=0;multiplier++;
-              } else {
-                gameOver();
-              }
-            }
-
-            powerTicks=Math.max(0,powerTicks-dt);
-            if(dots.length===0){beep(740,.1);spawnDots();}
-          }
-
-          // ── draw ──────────────────────────────────────────────────────────
-          clear(ctx,W,H,T);
-
-          // track lanes
-          ctx.strokeStyle=T.line;ctx.lineWidth=1;
-          ctx.beginPath();ctx.moveTo(0,LY-16);ctx.lineTo(W,LY-16);ctx.stroke();
-          ctx.beginPath();ctx.moveTo(0,LY+16);ctx.lineTo(W,LY+16);ctx.stroke();
-
-          // dots
-          dots.forEach(d=>{
-            const blink=d.isPower&&Math.floor(animT*4)%2===0;
-            if(!blink){
-              ctx.fillStyle=d.isPower?T.accent:T.muted;
-              ctx.beginPath();ctx.arc(d.x,LY,d.isPower?5:2.5,0,6.28);ctx.fill();
-            }
-          });
-
-          // player — pac-man with animated mouth
-          const mouth=Math.abs(Math.sin(animT*9))*0.32;
-          const fa=player.vx>0?0:Math.PI;
-          ctx.fillStyle=T.ink;
-          ctx.beginPath();ctx.moveTo(player.x,LY);
-          ctx.arc(player.x,LY,11,fa+mouth,fa+Math.PI*2-mouth);
-          ctx.closePath();ctx.fill();
-
-          // enemy — ghost shape; flickers when power is about to expire
-          if(enemy.eyeVx!==0){
-            // defeated: just floating eyes heading to a wall
-            ctx.fillStyle=T.accent;
-            ctx.beginPath();ctx.arc(enemy.x-4,LY-3,3,0,6.28);ctx.fill();
-            ctx.beginPath();ctx.arc(enemy.x+4,LY-3,3,0,6.28);ctx.fill();
-          } else {
-            const flash=powerTicks>0&&powerTicks<1&&Math.floor(animT*7)%2===0;
-            ctx.fillStyle=flash?T.ink:powerTicks>0?T.muted:T.accent;
-            const gx=enemy.x,gy=LY;
-            ctx.beginPath();
-            ctx.arc(gx,gy-3,11,Math.PI,0);
-            ctx.lineTo(gx+11,gy+9);
-            ctx.lineTo(gx+7,gy+6);ctx.lineTo(gx+3,gy+9);
-            ctx.lineTo(gx-1,gy+6);ctx.lineTo(gx-5,gy+9);
-            ctx.lineTo(gx-9,gy+6);ctx.lineTo(gx-11,gy+9);
-            ctx.closePath();ctx.fill();
-            if(powerTicks===0){
-              ctx.fillStyle=T.bg;
-              ctx.beginPath();ctx.arc(gx-4,gy-4,2.5,0,6.28);ctx.fill();
-              ctx.beginPath();ctx.arc(gx+4,gy-4,2.5,0,6.28);ctx.fill();
-            }
-          }
-
-          // HUD
-          ctx.fillStyle=T.muted;ctx.font='11px "IBM Plex Mono",monospace';ctx.textAlign='left';
-          ctx.fillText('x'+multiplier+' · tap / space to turn',10,18);
-          if(powerTicks>0){ctx.fillStyle=T.accent;ctx.textAlign='right';ctx.fillText('POWER!',W-10,18);}
-        }
-      };
-    },
-    // ---------------- INVADERS ----------------
-    invaders(env){
-      const {ctx,W,H,T,beep,addScore,gameOver,isOver}=env;
-      let px=W/2,keys={},pshots=[],eshots=[],dir=1,step=14,speed=26,wave=1;
-      const mk=()=>{const a=[];for(let r=0;r<4;r++)for(let c=0;c<8;c++)a.push({x:60+c*46,y:44+r*34,alive:true,r});return a};
-      let inv=mk(),cool=0;
-      return {
-        key(k,down){keys[k]=down;if(down&&k===' '&&cool<=0&&!isOver()){pshots.push({x:px,y:H-36});cool=.35;beep(600,.04)}},
-        pointer(x,y,type){if(type==='move')px=Math.max(16,Math.min(W-16,x));if(type==='down'&&cool<=0&&!isOver()){pshots.push({x:px,y:H-36});cool=.35;beep(600,.04)}},
-        tick(dt){if(!isOver()){cool-=dt;
-          if(keys.ArrowLeft)px=Math.max(16,px-260*dt);if(keys.ArrowRight)px=Math.min(W-16,px+260*dt);
-          let edge=false;inv.forEach(i=>{if(i.alive){i.x+=dir*speed*dt;if(i.x<18||i.x>W-18)edge=true}});
-          if(edge){dir*=-1;inv.forEach(i=>{i.y+=step;if(i.alive&&i.y>H-60)gameOver()});}
-          if(R()<dt*1.2){const a=inv.filter(i=>i.alive);if(a.length){const s=a[Math.floor(R()*a.length)];eshots.push({x:s.x,y:s.y})}}
-          pshots.forEach(s=>s.y-=340*dt);eshots.forEach(s=>s.y+=(150+wave*18)*dt);
-          pshots=pshots.filter(s=>{if(s.y<0)return false;
-            for(const i of inv)if(i.alive&&Math.abs(i.x-s.x)<15&&Math.abs(i.y-s.y)<12){i.alive=false;addScore(20);beep(840,.05);return false}
-            return true});
-          eshots=eshots.filter(s=>{if(s.y>H)return false;
-            if(Math.abs(s.x-px)<14&&s.y>H-34){gameOver();return false}return true});
-          if(inv.every(i=>!i.alive)){wave++;speed+=14;inv=mk();addScore(100);beep(980,.12);}}
-          clear(ctx,W,H,T);
-          inv.forEach(i=>{if(i.alive){ctx.fillStyle=i.r%2?T.accent:T.ink;
-            ctx.fillRect(i.x-13,i.y-8,26,16);ctx.fillStyle=T.bg;ctx.fillRect(i.x-6,i.y-3,4,4);ctx.fillRect(i.x+2,i.y-3,4,4);}});
-          ctx.fillStyle=T.accent;ctx.beginPath();ctx.moveTo(px,H-38);ctx.lineTo(px-15,H-16);ctx.lineTo(px+15,H-16);ctx.closePath();ctx.fill();
-          ctx.fillStyle=T.ink;pshots.forEach(s=>ctx.fillRect(s.x-1.5,s.y-6,3,9));
-          ctx.fillStyle=T.muted;eshots.forEach(s=>ctx.fillRect(s.x-1.5,s.y-6,3,9));
-          ctx.font='11px "IBM Plex Mono",monospace';ctx.textAlign='left';ctx.fillStyle=T.muted;ctx.fillText('wave '+wave+' · arrows + space, or mouse',10,16);}
-      };
-    }
-  };
-
-  window.EchoGames={start:makeRunner, highscores:hs, list:[
-    {id:'tetris', name:'Blockfall', tag:'tetris-like', hint:'← → move · ↑ rotate · space drop', pad:[{k:'ArrowLeft',l:'←'},{k:'ArrowUp',l:'↻'},{k:'ArrowRight',l:'→'},{k:'ArrowDown',l:'↓'},{k:' ',l:'⤓'}]},
-    {id:'snake', name:'Snake', tag:'classic', hint:'arrow keys · or the pad below', pad:[{k:'ArrowLeft',l:'←'},{k:'ArrowUp',l:'↑'},{k:'ArrowDown',l:'↓'},{k:'ArrowRight',l:'→'}]},
-    {id:'missile', name:'Nuclear Defence', tag:'missile command', hint:'click to intercept'},
-    {id:'pond', name:'Feed the Pond', tag:'zen sim', hint:'click to drop food'},
-    {id:'breakout', name:'Breakout', tag:'brick breaker', hint:'arrows or mouse'},
-    {id:'invaders', name:'Invaders', tag:'shoot-em-up', hint:'arrows + space'},
-    {id:'pakupaku', name:'Paku Paku', tag:'1-d pac-man', hint:'tap / space to reverse direction', pad:[{k:' ',l:'↩'}]}
-  ]};
+  window.EchoGames={start, load, preload, highscores:hs};
 })();
