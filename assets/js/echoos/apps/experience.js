@@ -5,6 +5,15 @@ function esc(s) {
   return d.innerHTML;
 }
 
+// "Nov. 2025 – May 2026" → one span per end, so narrow screens can break the
+// range at the dash instead of squeezing the role column.
+export function durationHtml(s) {
+  return String(s == null ? '' : s)
+    .split(/(?<=\s[–—-])\s+/)
+    .map((part) => `<span class="os-dur-part">${esc(part)}</span>`)
+    .join(' ');
+}
+
 export function renderExperience(bodyEl, { content }) {
   const container = document.createElement('div');
   container.className = 'os-exp-cards';
@@ -39,7 +48,7 @@ export function renderExperience(bodyEl, { content }) {
 
     const pill = document.createElement('div');
     pill.className = 'os-exp-pill';
-    pill.textContent = esc(e.duration);
+    pill.innerHTML = durationHtml(e.duration);
     head.appendChild(pill);
 
     card.appendChild(head);

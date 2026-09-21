@@ -1,4 +1,6 @@
 // apps/resume.js — typeset card (prototype lines 425-446). No PDF embed.
+import { durationHtml } from './experience.js';
+
 function esc(s) {
   const d = document.createElement('div');
   d.textContent = s == null ? '' : String(s);
@@ -51,7 +53,7 @@ export function renderResume(bodyEl, { content, titlebar }) {
     expRows += `
       <div class="os-resume-item">
         <div class="os-resume-item-left"><span class="os-resume-role">${esc(exp.role)}</span> · <span class="os-resume-company">${esc(companyName(exp.company))}</span></div>
-        <div class="os-resume-item-right">${esc(exp.duration)}</div>
+        <div class="os-resume-item-right">${durationHtml(exp.duration)}</div>
       </div>`;
   }
 
@@ -60,7 +62,7 @@ export function renderResume(bodyEl, { content, titlebar }) {
     eduRows += `
       <div class="os-resume-item">
         <div class="os-resume-item-left"><span class="os-resume-degree">${esc(edu.degree)}</span> · <span class="os-resume-institution">${esc(edu.school)}</span></div>
-        <div class="os-resume-item-right">${esc(edu.duration)}</div>
+        <div class="os-resume-item-right">${durationHtml(edu.duration)}</div>
       </div>`;
   }
 

@@ -175,6 +175,7 @@ body:has(#echoos-root) {
   font-weight: 500;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 // ── toasts ────────────────────────────────────────────────────────────────
@@ -475,6 +476,17 @@ body:has(#echoos-root) {
 }
 @media (max-width: 760px) {
   .os-mb-app {
+    display: none;
+  }
+  // Date over time — keeps the right cluster narrow enough to clear the brand.
+  .os-mb-clock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-size: 10px;
+    line-height: 1.25;
+  }
+  .os-mb-sep {
     display: none;
   }
   .os-tabbar {

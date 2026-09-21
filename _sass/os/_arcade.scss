@@ -175,6 +175,52 @@
   filter: brightness(1.08);
 }
 
+.os-arcade-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+// Narrow HUD: bare "‹" back, score over high score, exhibit over restart —
+// frees the row for the game name.
+@media (max-width: 640px) {
+  .os-arcade-hud {
+    gap: 12px;
+  }
+  .os-arcade-back-label,
+  .os-arcade-score-sep {
+    display: none;
+  }
+  .os-arcade-back {
+    font-size: 14px;
+    line-height: 1;
+    padding: 4px 9px;
+  }
+  .os-arcade-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .os-arcade-score {
+    display: flex;
+    flex-direction: column;
+    flex: none;
+    font-size: 10.5px;
+    line-height: 1.3;
+  }
+  .os-arcade-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .os-arcade-exhibit-btn,
+  .os-arcade-restart {
+    justify-content: center;
+    padding: 3px 10px;
+  }
+}
+
 .os-arcade-canvas-wrap {
   flex: 0 0 auto;
   display: block;

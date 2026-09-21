@@ -68,12 +68,14 @@ export function renderArcade(bodyEl, { toast }) {
       <div class="os-arcade-footnote">Every sprite, sound and explosion is generated in JavaScript — no image or audio files. High scores persist in your browser.</div>
       <div class="os-arcade-stage" hidden>
         <div class="os-arcade-hud">
-          <button type="button" class="os-arcade-back">‹ games</button>
+          <button type="button" class="os-arcade-back" aria-label="Back to games">‹<span class="os-arcade-back-label"> games</span></button>
           <span class="os-arcade-name"></span>
-          <span class="os-arcade-score">SCORE 0 · HI 0</span>
+          <span class="os-arcade-score"></span>
           <span class="os-arcade-spacer"></span>
-          <button type="button" class="os-arcade-exhibit-btn">exhibit</button>
-          <button type="button" class="os-arcade-restart">restart</button>
+          <div class="os-arcade-actions">
+            <button type="button" class="os-arcade-exhibit-btn">exhibit</button>
+            <button type="button" class="os-arcade-restart">restart</button>
+          </div>
         </div>
         <div class="os-arcade-canvas-wrap"><canvas class="os-arcade-canvas" tabindex="0"></canvas></div>
         <p class="os-arcade-hint"></p>
@@ -189,17 +191,21 @@ export function renderArcade(bodyEl, { toast }) {
   // guards against a second start — or a teardown — landing while one is in
   // flight, which would otherwise leave an orphaned game looping on the canvas.
   let startToken = 0;
+  // Score and high score sit in their own spans so mobile can stack them.
+  function setScore(s, h) {
+    scoreEl.innerHTML = `<span>SCORE ${s}</span><span class="os-arcade-score-sep"> · </span><span>HI ${h}</span>`;
+  }
   function startRunner(game) {
     const token = ++startToken;
     if (runner) { runner.stop(); runner = null; }
     const hi = hiscores()[game.id] || 0;
-    scoreEl.textContent = `SCORE 0 · HI ${hi}`;
+    setScore(0, hi);
     // An already-fetched module resolves on a microtask, so only announce the
     // wait if there actually is one — otherwise every restart would flash.
     let waiting = true;
     setTimeout(() => { if (waiting && token === startToken) canvasNotice('loading…'); }, 120);
     window.EchoGames.start(canvas, game.id, buildTheme(), (s, over, h) => {
-      scoreEl.textContent = `SCORE ${s} · HI ${h}`;
+      setScore(s, h);
     }, game.data).then((r) => {
       waiting = false;
       if (token !== startToken || !alive) { r.stop(); return; }

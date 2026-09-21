@@ -59,7 +59,9 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
     const day = now.toLocaleDateString([], { weekday: 'short' });
     const date = now.toLocaleDateString([], { month: 'short', day: 'numeric' });
     const time = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-    mbClock.textContent = `${day}, ${date} · ${time}`;
+    // Separate spans so the mobile bar can stack date over time instead of
+    // letting one long line shove the buttons into the brand.
+    mbClock.innerHTML = `<span class="os-mb-date">${day}, ${date}</span><span class="os-mb-sep"> · </span><span class="os-mb-time">${time}</span>`;
   }
   tick();
   const clockTimer = setInterval(tick, 20000);

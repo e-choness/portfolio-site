@@ -150,6 +150,29 @@ export function renderProjects(bodyEl, { content }) {
     h1.textContent = p.title;
     detail.appendChild(h1);
 
+    // Links sit right under the title so they're visible without scrolling.
+    const links = document.createElement('div');
+    links.className = 'os-proj-detail-links';
+    if (p.demo) {
+      const a = document.createElement('a');
+      a.className = 'os-proj-demo';
+      a.href = p.demo;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.textContent = 'Live Demo ↗';
+      links.appendChild(a);
+    }
+    if (p.repo) {
+      const a = document.createElement('a');
+      a.className = 'os-proj-repo';
+      a.href = p.repo;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.textContent = 'GitHub ↗';
+      links.appendChild(a);
+    }
+    if (links.childElementCount) detail.appendChild(links);
+
     if (p.desc) {
       const desc = document.createElement('p');
       desc.className = 'os-proj-desc';
@@ -172,28 +195,6 @@ export function renderProjects(bodyEl, { content }) {
     // Placeholder filled by the async fetch below.
     const bodyDiv = document.createElement('div');
     detail.appendChild(bodyDiv);
-
-    const links = document.createElement('div');
-    links.className = 'os-proj-detail-links';
-    if (p.demo) {
-      const a = document.createElement('a');
-      a.className = 'os-proj-demo';
-      a.href = p.demo;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.textContent = 'Live Demo ↗';
-      links.appendChild(a);
-    }
-    if (p.repo) {
-      const a = document.createElement('a');
-      a.className = 'os-proj-repo';
-      a.href = p.repo;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.textContent = 'GitHub ↗';
-      links.appendChild(a);
-    }
-    if (links.childElementCount) detail.appendChild(links);
 
     bodyEl.appendChild(detail);
 
