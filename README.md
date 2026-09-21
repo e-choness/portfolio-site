@@ -39,7 +39,7 @@ within the OS. All content comes from the same YAML files in `_data/`.
 | Desktop shell | Draggable, resizable windows; z-ordering; animated wallpaper |
 | Spotlight | ⌘K command palette — search apps, projects, posts |
 | Terminal | `echo-sh` with `open`, `theme`, `clear`, `help` and more |
-| Arcade | 8 canvas games (Blockfall, Snake, Breakout, Invaders, a raycast Labyrinth, and more); hi-scores persist |
+| Arcade | 9 canvas games (Blockfall, Snake, Invaders, a raycast Labyrinth, a pixel-shaded Orrery, and more); hi-scores persist |
 | Blog reader | Mermaid diagrams + syntax-highlighted code blocks inside the OS window |
 | Theme | Light / dark with persisted accent color; animated portrait ring in About |
 | PWA | `manifest.webmanifest` — installable on desktop and mobile |
@@ -63,6 +63,7 @@ within the OS. All content comes from the same YAML files in `_data/`.
 ├── _data/                   # Content source of truth (YAML)
 │   ├── apps.yml             #   EchoOS app registry (dock order, window geometry)
 │   ├── arcade.yml           #   Arcade registry (card, pad, exhibit plaque per game)
+│   ├── solar.yml            #   Orrery: every body the solar-system map draws
 │   ├── profile.yml          #   name, bio, stats, social links
 │   ├── experience.yml       #   work timeline
 │   ├── projects.yml         #   project gallery
@@ -85,6 +86,7 @@ within the OS. All content comes from the same YAML files in `_data/`.
 │   ├── js/games.js          # Arcade runner (lazy-loads the games)
 │   ├── js/games/            #   one ES module per game + common.js helpers
 │   ├── data/content.json    # Liquid page: site data emitted as JSON for the OS
+│   ├── data/solar.json      #   ditto for _data/solar.yml, fetched by the Orrery
 │   └── manifest.webmanifest # PWA manifest
 ├── index.html               # EchoOS route (layout: os)
 ├── blog/ projects/          # Server-rendered pages
@@ -191,7 +193,7 @@ The dock icon, window title, desktop icon, and Spotlight entry all come from
      const {ctx,W,H,T,beep,addScore,gameOver,isOver}=env;
      return {
        key(k,down){ /* optional */ },
-       pointer(x,y,type){ /* optional — type is 'down' or 'move' */ },
+       pointer(x,y,type){ /* optional — 'down', 'move', or 'up' to end a drag */ },
        tick(dt){ clear(ctx,W,H,T); /* update + draw one frame */ }
      };
    }
@@ -211,6 +213,7 @@ The dock icon, window title, desktop icon, and Spotlight entry all come from
      glyph: "◆"            # shown on the grid card
      hint: "arrows to move"
      pad: [{ key: "ArrowLeft", label: "←" }]   # touch buttons; omit if pointer-only
+     data: mydata          # optional: _data/mydata.yml, reaching the game as env.data
      credit: Someone · 1979
      origin: >-
        Two or three sentences for the exhibit plaque.
@@ -226,6 +229,12 @@ the `echo-sh` launcher (plus the `games:` line in `help`) are all driven off tha
 entry — `games.js` only ever learns an id. The module itself is fetched the first
 time the game is played, warmed on card hover and on an idle callback once the Arcade
 opens, so adding a game costs the rest of the site nothing.
+
+If a game carries a lot of content — the Orrery's thirteen worlds, for instance —
+put it in `_data/<name>.yml`, add a one-line `assets/data/<name>.json` Liquid page to
+emit it (copy `solar.json`), and name it with `data:` in the registry. It is fetched
+in parallel with the module and handed to the factory as `env.data`, so the figures
+stay editable as YAML instead of being buried in JavaScript.
 
 ## Customizing Content
 

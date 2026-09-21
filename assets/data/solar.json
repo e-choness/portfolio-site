@@ -1,0 +1,5 @@
+---
+layout: none
+permalink: /assets/data/solar.json
+---
+{{ site.data.solar | jsonify }}

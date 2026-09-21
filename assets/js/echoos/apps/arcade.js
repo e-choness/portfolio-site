@@ -127,7 +127,7 @@ export function renderArcade(bodyEl, { toast }) {
     b.querySelector('.os-arcade-card-hi').textContent = `★ ${hiscores()[game.id] || 0}`;
     b.addEventListener('click', () => startGame(game));
     // Hover or keyboard focus is a good enough signal to go and fetch the module.
-    const warm = () => window.EchoGames.preload([game.id]);
+    const warm = () => window.EchoGames.preload([game.id], game.data ? [game.data] : []);
     b.addEventListener('pointerenter', warm, { once: true });
     b.addEventListener('focus', warm, { once: true });
     grid.appendChild(b);
@@ -137,7 +137,10 @@ export function renderArcade(bodyEl, { toast }) {
   // the background once the browser is idle — on touch there is no hover to
   // warm them, and the whole set is only a few KB.
   const whenIdle = window.requestIdleCallback || ((fn) => setTimeout(fn, 400));
-  whenIdle(() => { if (alive) window.EchoGames.preload(games.map((g) => g.id)); });
+  whenIdle(() => {
+    if (!alive) return;
+    window.EchoGames.preload(games.map((g) => g.id), games.map((g) => g.data).filter(Boolean));
+  });
 
   // --- canvas / runner ------------------------------------------------------
   canvas.width = 620;
@@ -156,11 +159,18 @@ export function renderArcade(bodyEl, { toast }) {
   const onCanvasDown = (e) => { canvas.focus({ preventScroll: true }); arcXY(e, 'down'); };
   const onCanvasMove = (e) => arcXY(e, 'move');
   const onCanvasTouch = (e) => { e.preventDefault(); arcXY(e, e.type === 'touchstart' ? 'down' : 'move'); };
+  // 'up' is delivered for games that track a drag. It goes on the window so a
+  // release outside the canvas still ends the drag; games that only care about
+  // 'down' and 'move' ignore it.
+  const onUp = (e) => { if (runner) runner.pointer(0, 0, 'up'); void e; };
 
   canvas.addEventListener('mousedown', onCanvasDown);
   canvas.addEventListener('mousemove', onCanvasMove);
   canvas.addEventListener('touchstart', onCanvasTouch, { passive: false });
   canvas.addEventListener('touchmove', onCanvasTouch, { passive: false });
+  canvas.addEventListener('touchend', onUp);
+  canvas.addEventListener('touchcancel', onUp);
+  window.addEventListener('mouseup', onUp);
   canvas.addEventListener('echoos:game-restart', () => { if (current && alive) startGame(current); });
 
   // Paint a single line of status straight onto the canvas — used while a game's
@@ -190,7 +200,7 @@ export function renderArcade(bodyEl, { toast }) {
     setTimeout(() => { if (waiting && token === startToken) canvasNotice('loading…'); }, 120);
     window.EchoGames.start(canvas, game.id, buildTheme(), (s, over, h) => {
       scoreEl.textContent = `SCORE ${s} · HI ${h}`;
-    }).then((r) => {
+    }, game.data).then((r) => {
       waiting = false;
       if (token !== startToken || !alive) { r.stop(); return; }
       runner = r;
@@ -281,5 +291,8 @@ export function renderArcade(bodyEl, { toast }) {
     canvas.removeEventListener('mousemove', onCanvasMove);
     canvas.removeEventListener('touchstart', onCanvasTouch);
     canvas.removeEventListener('touchmove', onCanvasTouch);
+    canvas.removeEventListener('touchend', onUp);
+    canvas.removeEventListener('touchcancel', onUp);
+    window.removeEventListener('mouseup', onUp);
   };
 }

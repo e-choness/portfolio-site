@@ -152,3 +152,26 @@
   sources:
     - label: 3D Maze – Wikipedia
       url: https://en.wikipedia.org/wiki/3D_Maze
+
+- id: orrery
+  name: "Orrery"
+  tag: "solar system map"
+  glyph: "☉"
+  hint: "click a world to fly in · drag to rotate it · space pauses time · esc returns"
+  pad: [{ key: " ", label: "⏸" }, { key: "Escape", label: "‹" }]
+  data: solar          # /assets/data/solar.json, emitted from _data/solar.yml
+  credit: Original · EchoOS Arcade · 2026
+  origin: >-
+    A working orrery: the Sun, eight planets, Pluto and three comets, every sphere shaded
+    per pixel in JavaScript from a procedural texture — no image files. Click a world and
+    the map flies into it; drag to spin it on its axis.
+  fact: >-
+    Nothing here is to scale, and it cannot be. At true scale with Earth one pixel wide,
+    Neptune would sit 2.5 metres off the side of your screen and the Sun would be 109
+    pixels across. Orbit radii are hand-tuned and orbital periods compressed as
+    period^0.45, so Mercury still looks quick and Neptune still looks slow.
+  sources:
+    - label: NASA planetary fact sheet
+      url: https://nssdc.gsfc.nasa.gov/planetary/factsheet/
+    - label: Orrery – Wikipedia
+      url: https://en.wikipedia.org/wiki/Orrery
