@@ -12,7 +12,7 @@ vanilla ES modules on top of Jekyll + GitHub Pages.*
 <br/>
 
 [![GitHub Pages](https://github.com/e-choness/portfolio-site/actions/workflows/pages.yml/badge.svg)](https://github.com/e-choness/portfolio-site/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC_BY--NC--ND_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 [![Jekyll](https://img.shields.io/badge/Jekyll-4.4.1-CC342D?logo=jekyll&logoColor=white)](https://jekyllrb.com/)
 [![Last Commit](https://img.shields.io/github/last-commit/e-choness/portfolio-site)](https://github.com/e-choness/portfolio-site/commits/main)
 [![Repo Size](https://img.shields.io/github/repo-size/e-choness/portfolio-site)](https://github.com/e-choness/portfolio-site)
@@ -279,4 +279,9 @@ before deploying.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+[CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) — see [LICENSE](LICENSE).
+Share with attribution; no commercial use; no modified versions.
+
+- The resume, profile photos and personal information are **all rights reserved**.
+- Third-party libraries, logos and brand icons keep their owners' terms.
+- Revisions before this change were released under MIT and remain available under those terms.
