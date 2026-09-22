@@ -1,5 +1,6 @@
 // wm.js — window manager: open/close/focus/drag/resize/z-order/clamp (§6.4).
 import { sfx } from './sound.js';
+import { winGeom } from './store.js';
 
 export function clamp(v, lo, hi) {
   return Math.min(Math.max(v, lo), hi);
@@ -10,6 +11,7 @@ export function createWM(root, opts = {}) {
   const apps = opts.apps || [];
   const MOBILE = window.matchMedia('(max-width: 760px)');
   const byId = (id) => apps.find((a) => a.id === id);
+  const savedGeom = winGeom.load();
   const winEls = new Map();  // id -> DOM element
   const wins = new Map();    // id -> {id, open, x, y, w, h, z, minimized}
   const vw = () => window.innerWidth;
@@ -56,9 +58,8 @@ export function createWM(root, opts = {}) {
 
   // First open of a non-boot, non-anchored app: step +28/+28 off the focused
   // window instead of the fixed apps.yml x/y, which piles windows up.
-  function cascadeFrom(win) {
+  function cascadeFrom(win, f = focused && wins.get(focused)) {
     const a = workArea();
-    const f = focused && wins.get(focused);
     const STEP = 28;
     let x = f && f.open ? f.x + STEP : a.x + 104;
     let y = f && f.open ? f.y + STEP : a.y + 16;
@@ -127,12 +128,18 @@ export function createWM(root, opts = {}) {
       minimized: false,
       rendered: false,
       placed: false, // sized/placed against the live work area on first open
+      saved: false,  // geometry restored from a previous visit (Patch 82)
       max: null,     // pre-maximize rect {x,y,w,h} while maximized
       teardown: null,
     };
     const s = initialSize(app);
     win.w = s.w;
     win.h = s.h;
+    const g = savedGeom[app.id];
+    if (g && [g.x, g.y, g.w, g.h].every(Number.isFinite)) {
+      Object.assign(win, { x: g.x, y: g.y, w: Math.max(320, g.w), h: Math.max(240, g.h) });
+      win.saved = true;
+    }
     clampWin(win);
 
     // Clicking anywhere in a window focuses it.
@@ -169,10 +176,16 @@ export function createWM(root, opts = {}) {
 
   function toggleMax(win) {
     const a = workArea();
-    if (win.max) { Object.assign(win, win.max); win.max = null; }
+    if (win.max) { Object.assign(win, win.max); win.max = null; saveGeom(win); }
     else { win.max = { x: win.x, y: win.y, w: win.w, h: win.h }; Object.assign(win, a); }
     apply(win);
     setMaxState(win);
+  }
+
+  // Persist the normal (never the maximized) rect.
+  function saveGeom(win) {
+    if (MOBILE.matches) return;
+    winGeom.save(win.id, win.max || win);
   }
 
   // --- drag ---------------------------------------------------------------
@@ -205,7 +218,9 @@ export function createWM(root, opts = {}) {
     el.classList.add('os-dragging');
     document.body.classList.add('os-dragging-cursor');
 
+    let moved = false;
     const move = (ev) => {
+      moved = true;
       // Dragging a maximized window restores it under the cursor, keeping the
       // cursor at the same relative x on the title bar. Wait for real movement
       // so the two pointerdowns of a title-bar double-click don't restore it.
@@ -227,6 +242,7 @@ export function createWM(root, opts = {}) {
     const up = (ev) => {
       el.classList.remove('os-dragging');
       document.body.classList.remove('os-dragging-cursor');
+      if (moved) saveGeom(win);
       el.removeEventListener('pointermove', move);
       el.removeEventListener('pointerup', up);
       el.removeEventListener('pointercancel', up);
@@ -266,6 +282,7 @@ export function createWM(root, opts = {}) {
     const up = (ev) => {
       resizeActive = false;
       el.classList.remove('os-resizing');
+      saveGeom(win);
       el.removeEventListener('pointermove', move);
       el.removeEventListener('pointerup', up);
       el.removeEventListener('pointercancel', up);
@@ -320,8 +337,12 @@ export function createWM(root, opts = {}) {
     // Windows are pre-built before the dock exists, so the build-time size
     // can't see it: size and clamp against the real work area on first open.
     if (!win.placed) {
-      Object.assign(win, initialSize(app));
-      if (!app.open_on_boot && !app.anchor) cascadeFrom(win);
+      // A saved layout skips sizing + cascade; clampWin pulls a rect saved on
+      // a larger monitor into the current work area.
+      if (!win.saved) {
+        Object.assign(win, initialSize(app));
+        if (!app.open_on_boot && !app.anchor) cascadeFrom(win);
+      }
       clampWin(win);
       win.placed = true;
     }
@@ -410,6 +431,31 @@ export function createWM(root, opts = {}) {
     if (!focused) return null;
     const win = wins.get(focused);
     return win && win.open ? win : null;
+  }
+
+  // --- reset-windows: forget saved geometry, back to defaults -------------
+
+  function resetWindows() {
+    winGeom.clear();
+    let prev = null;
+    const open = [...wins.values()].filter((w) => w.open).sort((p, q) => p.z - q.z);
+    for (const win of wins.values()) {
+      const app = byId(win.id);
+      win.saved = false;
+      win.max = null;
+      setMaxState(win);
+      Object.assign(win, { x: app.x, y: app.y }, initialSize(app));
+      // Closed windows get first-open placement (cascade) next time.
+      win.placed = win.open;
+    }
+    for (const win of open) {
+      const app = byId(win.id);
+      if (app.anchor) anchorApp(win, app);
+      else if (!app.open_on_boot) cascadeFrom(win, prev);
+      clampWin(win);
+      apply(win);
+      prev = win;
+    }
   }
 
   // --- viewport resize: re-clamp every open window ------------------------
@@ -518,6 +564,7 @@ export function createWM(root, opts = {}) {
       return false;
     },
     getFocused,
+    resetWindows,
     getTitlebar(id) {
       const el = winEls.get(id);
       return el ? el.querySelector('.os-win-actions') : null;

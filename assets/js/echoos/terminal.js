@@ -315,6 +315,11 @@ export function createTerminal(content, wm, { apps }) {
         print({ text: TERMINAL.messages.exit, kind: 'muted' });
         break;
 
+      case 'reset-windows':
+        wm.resetWindows();
+        print({ text: TERMINAL.messages.reset_windows, kind: 'muted' });
+        break;
+
       case 'hi':
       case 'hello':
         print({ text: TERMINAL.messages.hello, kind: 'muted' });

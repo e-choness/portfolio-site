@@ -3,7 +3,7 @@
 
 help:
   - "help · about · whoami · skills · projects · blog · contact"
-  - "open <app> · theme · sound · neofetch · date · ls · clear · exit"
+  - "open <app> · theme · sound · neofetch · date · ls · clear · reset-windows · exit"
   # {games} is filled in from _data/arcade.yml at print time
   - "games: {games}"
   - "fun: git · ping · uname · man · ps · fortune · cat · curl · matrix · coffee"
@@ -23,6 +23,7 @@ messages:
   sudo_denied: "nice try. this incident will be reported to echo."
   rm_refused: "refusing: the portfolio is load-bearing."
   arcade: "insert coin."
+  reset_windows: "window layout reset"
 
 cmd_strings:
   not_found: "command not found: {cmd} — try `help`"

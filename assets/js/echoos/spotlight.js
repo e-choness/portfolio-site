@@ -37,6 +37,7 @@ export function initSpotlight(root, { apps, content, wm, store, onOpenResult }) 
       idx.push({ kind: 'post', id: p.slug, title: p.title, sub: `${p.date}`, hay: p.title });
     }
     idx.push({ kind: 'action', id: 'theme', title: 'Toggle dark / light theme', sub: 'action', hay: 'Toggle dark / light theme' });
+    idx.push({ kind: 'action', id: 'reset-windows', title: 'reset-windows', sub: 'action', hay: 'reset-windows reset windows layout' });
     return idx;
   }
 
@@ -95,6 +96,9 @@ export function initSpotlight(root, { apps, content, wm, store, onOpenResult }) 
     close();
     if (it.kind === 'app') {
       wm && wm.openApp(it.id);
+    } else if (it.kind === 'action' && it.id === 'reset-windows') {
+      if (wm) wm.resetWindows();
+      beep(500, 0.05);
     } else if (it.kind === 'action' && store) {
       // Prototype toggleThemeFn: flip theme + confirmation blip.
       const cur = store.get().theme;
