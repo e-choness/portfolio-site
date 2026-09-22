@@ -6,6 +6,7 @@
 // custom properties every time a game starts.
 import { store } from '../store.js';
 import { beep } from '../sound.js';
+import { writeRoute } from '../router.js';
 
 function readProp(name, fallback) {
   const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -13,10 +14,10 @@ function readProp(name, fallback) {
 }
 
 function hexToRgba(hex, a) {
-  if (typeof hex !== 'string') return `rgba(122, 79, 184, ${a})`;
+  if (typeof hex !== 'string') return `rgba(106, 90, 214, ${a})`;
   let h = hex.trim().replace(/^#/, '');
   if (h.length === 3) h = h.split('').map((c) => c + c).join('');
-  if (!/^[0-9a-f]{6}$/i.test(h)) return `rgba(122, 79, 184, ${a})`;
+  if (!/^[0-9a-f]{6}$/i.test(h)) return `rgba(106, 90, 214, ${a})`;
   const n = parseInt(h, 16);
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
 }
@@ -33,17 +34,17 @@ function resolveOverlay() {
     probe.remove();
     if (v && v !== 'rgba(0, 0, 0, 0)') return v;
   } catch { /* probe failed — fall through */ }
-  return hexToRgba(readProp('--bg', '#f1eee8'), 0.72);
+  return hexToRgba(readProp('--bg', '#e8e4ef'), 0.72);
 }
 
 function buildTheme() {
   return {
-    bg: readProp('--bg', '#f1eee8'),
+    bg: readProp('--bg', '#e8e4ef'),
     ink: readProp('--ink', '#211d27'),
     muted: readProp('--muted', '#6f6a78'),
-    accent: readProp('--accent', '#7a4fb8'),
-    accentSoft: readProp('--accent-soft', 'rgba(122,79,184,.11)'),
-    soft: readProp('--accent-soft', 'rgba(122,79,184,.11)'),
+    accent: readProp('--accent', '#6a5ad6'),
+    accentSoft: readProp('--accent-soft', 'rgba(106,90,214,.12)'),
+    soft: readProp('--accent-soft', 'rgba(106,90,214,.12)'),
     surface: readProp('--surface', '#fbfaf7'),
     line: readProp('--line', 'rgba(33,29,39,.13)'),
     overlay: resolveOverlay(),
@@ -93,6 +94,22 @@ export function renderArcade(bodyEl, { toast }) {
   const hintEl = bodyEl.querySelector('.os-arcade-hint');
   const padEl = bodyEl.querySelector('.os-arcade-pad');
   const exhibitEl = bodyEl.querySelector('.os-arcade-exhibit');
+  const hudEl = bodyEl.querySelector('.os-arcade-hud');
+  const wrapEl = bodyEl.querySelector('.os-arcade-canvas-wrap');
+
+  // Fit the canvas into the stage: as wide as the window allows, but never
+  // taller than the height left after the HUD, hint and touch pad — so a
+  // maximized window shows the whole play field (the exhibit scrolls below).
+  function fitCanvas() {
+    if (stage.hidden) return;
+    const chrome = hudEl.offsetHeight + hintEl.offsetHeight + padEl.offsetHeight;
+    const availH = stage.clientHeight - chrome - 2; // 2 = canvas border
+    const availW = wrapEl.clientWidth;
+    const w = Math.max(200, Math.min(availW, availH * (canvas.width / canvas.height)));
+    canvas.style.width = `${Math.floor(w)}px`;
+  }
+  const fitObserver = new ResizeObserver(fitCanvas);
+  fitObserver.observe(stage);
 
   function renderExhibit(ex) {
     if (!ex || !ex.origin) { exhibitEl.hidden = true; return; }
@@ -117,16 +134,18 @@ export function renderArcade(bodyEl, { toast }) {
 
   // --- grid ----------------------------------------------------------------
   const hiscores = () => (window.EchoGames ? window.EchoGames.highscores() : {});
+  const hiLabel = (h) => (h ? `best ${h}` : 'new');
+  const setHi = (el, h) => { el.textContent = hiLabel(h); el.classList.toggle('is-best', !!h); };
   for (const game of games) {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'os-arcade-card';
     b.dataset.game = game.id;
-    b.innerHTML = `<span class="os-arcade-card-glyph"></span><strong class="os-arcade-card-name"></strong><span class="os-arcade-card-tag"></span><span class="os-arcade-card-hi"></span>`;
+    b.innerHTML = `<span class="os-arcade-card-glyph" aria-hidden="true"></span><span class="os-arcade-card-text"><span class="os-arcade-card-head"><strong class="os-arcade-card-name"></strong><span class="os-arcade-card-hi"></span></span><span class="os-arcade-card-tag"></span></span>`;
     b.querySelector('.os-arcade-card-glyph').textContent = game.glyph || '▪';
     b.querySelector('.os-arcade-card-name').textContent = game.name;
     b.querySelector('.os-arcade-card-tag').textContent = game.tag;
-    b.querySelector('.os-arcade-card-hi').textContent = `★ ${hiscores()[game.id] || 0}`;
+    setHi(b.querySelector('.os-arcade-card-hi'), hiscores()[game.id] || 0);
     b.addEventListener('click', () => startGame(game));
     // Hover or keyboard focus is a good enough signal to go and fetch the module.
     const warm = () => window.EchoGames.preload([game.id], game.data ? [game.data] : []);
@@ -179,7 +198,7 @@ export function renderArcade(bodyEl, { toast }) {
   // module is in flight, so the stage never shows the previous game's last frame.
   function canvasNotice(msg) {
     const c = canvas.getContext('2d');
-    c.fillStyle = readProp('--bg', '#f1eee8');
+    c.fillStyle = readProp('--bg', '#e8e4ef');
     c.fillRect(0, 0, canvas.width, canvas.height);
     c.fillStyle = readProp('--muted', '#6f6a78');
     c.font = '13px "IBM Plex Mono", monospace';
@@ -220,6 +239,7 @@ export function renderArcade(bodyEl, { toast }) {
 
   function startGame(game) {
     current = game;
+    writeRoute('arcade', game.id);
     grid.hidden = true;
     footnote.hidden = true;
     stage.hidden = false;
@@ -250,7 +270,9 @@ export function renderArcade(bodyEl, { toast }) {
       padEl.appendChild(frag);
     }
     bodyEl.scrollTop = 0;
+    stage.scrollTop = 0;
     renderExhibit(game);
+    fitCanvas();
     startRunner(game);
   }
 
@@ -259,13 +281,14 @@ export function renderArcade(bodyEl, { toast }) {
     if (runner) runner.stop();
     runner = null;
     current = null;
+    writeRoute('arcade', null);
     stage.hidden = true;
     footnote.hidden = false;
     grid.hidden = false;
     // Refresh hi score display on all cards after a game session.
     const hi = hiscores();
     for (const b of grid.querySelectorAll('.os-arcade-card')) {
-      b.querySelector('.os-arcade-card-hi').textContent = `★ ${hi[b.dataset.game] || 0}`;
+      setHi(b.querySelector('.os-arcade-card-hi'), hi[b.dataset.game] || 0);
     }
   }
 
@@ -292,14 +315,17 @@ export function renderArcade(bodyEl, { toast }) {
     if (g) startGame(g);
   };
   document.addEventListener('echoos:start-game', onStart);
+  document.addEventListener('echoos:open-game', onStart); // deep link (Patch 81)
 
   // Return teardown function
   return () => {
     back();
+    fitObserver.disconnect();
     alive = false;
     if (runner) runner.stop();
     unsubTheme();
     document.removeEventListener('echoos:start-game', onStart);
+    document.removeEventListener('echoos:open-game', onStart);
     canvas.removeEventListener('mousedown', onCanvasDown);
     canvas.removeEventListener('mousemove', onCanvasMove);
     canvas.removeEventListener('touchstart', onCanvasTouch);

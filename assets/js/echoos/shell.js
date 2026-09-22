@@ -1,6 +1,12 @@
 // shell.js — menu bar, clock, dock, desktop icons, mobile home grid (§6.1).
 import { store } from './store.js';
 
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s == null ? '' : String(s);
+  return d.innerHTML;
+}
+
 export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   const MENU = document.createElement('header');
   MENU.className = 'os-menubar';
@@ -19,22 +25,38 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
     </div>`;
   root.appendChild(MENU);
 
+  // Under 760px the spotlight button shows ⌕ — ⌘K means nothing on a phone.
+  const mbSpot = MENU.querySelector('.os-mb-spotlight');
+  const MOBILE = window.matchMedia('(max-width: 760px)');
+  const applySpotLabel = () => { mbSpot.textContent = MOBILE.matches ? '⌕' : '⌘K'; };
+  applySpotLabel();
+  MOBILE.addEventListener('change', applySpotLabel);
+
   const mbApp = MENU.querySelector('.os-mb-app');
   const mbTheme = MENU.querySelector('.os-mb-theme');
   const mbSound = MENU.querySelector('.os-mb-sound');
   const mbClock = MENU.querySelector('.os-mb-clock');
 
+  // The window title bar already shows the full title; the menubar names the app.
   function labelFor(id) {
     const app = apps.find((a) => a.id === id);
-    return app ? app.title : '';
+    return app ? app.label : '';
   }
 
   function setFocusedApp(id) {
-    mbApp.textContent = id ? labelFor(id) : '—';
+    mbApp.textContent = id ? labelFor(id) : '';
+    for (const btn of tabbar.querySelectorAll('.os-tabbar-item[data-app]')) {
+      btn.classList.toggle('is-active', btn.dataset.app === id);
+    }
   }
 
   MENU.querySelector('.os-mb-spotlight').addEventListener('click', () => onSpotlight && onSpotlight());
-  MENU.querySelector('.os-mb-notif').addEventListener('click', () => notifications && notifications.togglePanel());
+  const mbNotif = MENU.querySelector('.os-mb-notif');
+  mbNotif.setAttribute('aria-pressed', 'false');
+  mbNotif.addEventListener('click', () => notifications && notifications.togglePanel());
+  const offNotif = notifications && notifications.onChange
+    ? notifications.onChange((open) => mbNotif.setAttribute('aria-pressed', String(open)))
+    : null;
 
   // --- theme --------------------------------------------------------------
   function applyTheme(theme) {
@@ -47,7 +69,7 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
 
   // --- sound --------------------------------------------------------------
   function applySound(sound) {
-    mbSound.classList.toggle('is-on', sound === 'on');
+    mbSound.setAttribute('aria-pressed', String(sound === 'on'));
   }
   mbSound.addEventListener('click', () => {
     store.set({ sound: store.get().sound === 'on' ? 'off' : 'on' });
@@ -90,9 +112,8 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
     btn.type = 'button';
     btn.className = 'os-dock-item';
     btn.dataset.app = app.id;
-    btn.title = app.label;
     btn.setAttribute('aria-label', `Open ${app.label}`);
-    btn.innerHTML = `<span class="os-dock-tile"><span class="os-glyph">${app.glyph}</span></span><span class="os-dock-dot"></span>`;
+    btn.innerHTML = `<span class="os-dock-tile"><span class="os-glyph">${app.glyph}</span></span><span class="os-dock-dot"></span><span class="os-dock-label" aria-hidden="true">${esc(app.label)}</span>`;
     btn.addEventListener('click', () => wm && wm.toggleApp(app.id));
     dock.appendChild(btn);
   }
@@ -121,6 +142,17 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   const tabbar = document.createElement('nav');
   tabbar.className = 'os-tabbar';
   tabbar.setAttribute('aria-label', 'Tab bar');
+  // Home: close every open sheet so it always lands on the grid.
+  const homeBtn = document.createElement('button');
+  homeBtn.type = 'button';
+  homeBtn.className = 'os-tabbar-item os-tabbar-home';
+  homeBtn.setAttribute('aria-label', 'Home');
+  homeBtn.innerHTML = '<span class="os-tabbar-tile"><span class="os-glyph">⌂</span></span><span class="os-tabbar-label">Home</span>';
+  homeBtn.addEventListener('click', () => {
+    if (!wm) return;
+    for (const app of apps) if (wm.isOpen(app.id)) wm.closeApp(app.id);
+  });
+  tabbar.appendChild(homeBtn);
   for (const app of apps) {
     if (!app.tab_bar) continue;
     const btn = document.createElement('button');
@@ -150,14 +182,11 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   }
   root.appendChild(home);
 
-  function setOpenApps(idsSet) {
+  function setOpenApps(idsSet, minSet = new Set()) {
     for (const btn of dock.querySelectorAll('.os-dock-item')) {
       const appId = btn.dataset.app;
-      if (idsSet.has(appId)) {
-        btn.classList.add('is-open');
-      } else {
-        btn.classList.remove('is-open');
-      }
+      btn.classList.toggle('is-open', idsSet.has(appId));
+      btn.classList.toggle('is-min', minSet.has(appId));
     }
   }
 
@@ -166,6 +195,8 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
     setOpenApps,
     destroy() {
       clearInterval(clockTimer);
+      MOBILE.removeEventListener('change', applySpotLabel);
+      if (offNotif) offNotif();
       MENU.remove();
       dock.remove();
       desktop.remove();

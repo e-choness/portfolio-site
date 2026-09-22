@@ -1,5 +1,6 @@
 // apps/projects.js — card gallery with in-window detail view (patch 73+77).
 import { url } from '../base.js';
+import { writeRoute } from '../router.js';
 
 function esc(s) {
   const d = document.createElement('div');
@@ -9,12 +10,15 @@ function esc(s) {
 
 // Module-scope: survives window re-renders (same pattern as blog.js).
 const state = { sel: null };
+// Deep-link / router listener, replaced on every render (see blog.js onOpenPost).
+let onOpenProject = null;
 
 export function renderProjects(bodyEl, { content }) {
   const projects = content.projects || [];
 
   function renderList() {
     state.sel = null;
+    writeRoute('proj', null);
     bodyEl.innerHTML = `<div class="os-proj-grid"></div>`;
     const grid = bodyEl.querySelector('.os-proj-grid');
     for (const p of projects) grid.appendChild(card(p));
@@ -109,6 +113,7 @@ export function renderProjects(bodyEl, { content }) {
   }
 
   function renderDetail(p) {
+    writeRoute('proj', p.slug || null);
     bodyEl.innerHTML = '';
 
     const back = document.createElement('button');
@@ -219,4 +224,20 @@ export function renderProjects(bodyEl, { content }) {
   } else {
     renderList();
   }
+
+  if (onOpenProject) document.removeEventListener('echoos:open-project', onOpenProject);
+  onOpenProject = (e) => {
+    const slug = e.detail && e.detail.slug;
+    const i = projects.findIndex((p) => p.slug === slug);
+    if (i >= 0) {
+      state.sel = i;
+      renderDetail(projects[i]);
+    }
+  };
+  document.addEventListener('echoos:open-project', onOpenProject);
+
+  return () => {
+    document.removeEventListener('echoos:open-project', onOpenProject);
+    onOpenProject = null;
+  };
 }

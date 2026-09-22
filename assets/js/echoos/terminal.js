@@ -127,8 +127,20 @@ export function createTerminal(content, wm, { apps }) {
     return max;
   }
 
+  // Contact and Resume were folded into About → Profile and Experience.
+  function openContact() {
+    wm.openApp('about');
+    document.dispatchEvent(new CustomEvent('echoos:set-about-tab', { detail: { tab: 'profile', section: 'contact' } }));
+  }
+
   function open(arg) {
     const lc = (arg || '').toLowerCase();
+    if (lc === 'contact') { openContact(); return; }
+    if (lc === 'resume') {
+      wm.openApp('exp');
+      document.dispatchEvent(new CustomEvent('echoos:set-exp-tab', { detail: { tab: 'resume' } }));
+      return;
+    }
 
     // Try app by id or label prefix
     const app = apps.find((a) => a.id === lc || a.label.toLowerCase().startsWith(lc));
@@ -238,12 +250,13 @@ export function createTerminal(content, wm, { apps }) {
         if (content.profile) {
           print({ text: content.profile.email, kind: 'out' });
         }
-        wm.openApp('contact');
+        openContact();
         break;
 
       case 'resume':
         print({ text: TERMINAL.messages.resume, kind: 'muted' });
-        wm.openApp('resume');
+        wm.openApp('exp');
+        document.dispatchEvent(new CustomEvent('echoos:set-exp-tab', { detail: { tab: 'resume' } }));
         break;
 
       case 'clear':
@@ -259,7 +272,8 @@ export function createTerminal(content, wm, { apps }) {
         break;
 
       case 'neofetch': {
-        const uptime = deriveMaxYears();
+        // Career length: profile.stats[0] is the one source (Patch 71).
+        const uptime = content.profile?.stats?.[0]?.display ?? `${deriveMaxYears()}+`;
         print({ text: TERMINAL.neofetch.os, kind: 'accent' });
         print({ text: fmt(TERMINAL.cmd_strings.neofetch_host, { host: TERMINAL.neofetch.host }), kind: 'muted' });
         print({ text: fmt(TERMINAL.cmd_strings.neofetch_shell, { shell: TERMINAL.neofetch.shell }), kind: 'muted' });
@@ -312,6 +326,11 @@ export function createTerminal(content, wm, { apps }) {
 
       case 'exit':
         print({ text: TERMINAL.messages.exit, kind: 'muted' });
+        break;
+
+      case 'reset-windows':
+        wm.resetWindows();
+        print({ text: TERMINAL.messages.reset_windows, kind: 'muted' });
         break;
 
       case 'hi':

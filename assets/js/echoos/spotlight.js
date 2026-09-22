@@ -37,6 +37,7 @@ export function initSpotlight(root, { apps, content, wm, store, onOpenResult }) 
       idx.push({ kind: 'post', id: p.slug, title: p.title, sub: `${p.date}`, hay: p.title });
     }
     idx.push({ kind: 'action', id: 'theme', title: 'Toggle dark / light theme', sub: 'action', hay: 'Toggle dark / light theme' });
+    idx.push({ kind: 'action', id: 'reset-windows', title: 'reset-windows', sub: 'action', hay: 'reset-windows reset windows layout' });
     return idx;
   }
 
@@ -95,6 +96,9 @@ export function initSpotlight(root, { apps, content, wm, store, onOpenResult }) 
     close();
     if (it.kind === 'app') {
       wm && wm.openApp(it.id);
+    } else if (it.kind === 'action' && it.id === 'reset-windows') {
+      if (wm) wm.resetWindows();
+      beep(500, 0.05);
     } else if (it.kind === 'action' && store) {
       // Prototype toggleThemeFn: flip theme + confirmation blip.
       const cur = store.get().theme;
@@ -137,10 +141,10 @@ export function initSpotlight(root, { apps, content, wm, store, onOpenResult }) 
     } else if (e.key === 'Enter') {
       e.preventDefault();
       openItem(items[active]);
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      close();
     }
+    // Escape is handled once, by wm.js's window keydown listener, in the order
+    // notification panel → spotlight → window. Closing here as well let the
+    // same keypress fall through and close the focused window too.
   });
 
   overlay.addEventListener('click', (e) => {

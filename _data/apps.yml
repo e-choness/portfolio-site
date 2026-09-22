@@ -57,16 +57,6 @@
   y: 120
   w: 780
   h: 500
-- id: contact
-  label: Contact
-  glyph: "@"
-  title: "contact"
-  x: 320
-  y: 110
-  w: 560
-  h: 520
-  desktop_icon: true
-  desktop_icon_order: 4
 - id: arcade
   label: Arcade
   glyph: "▲"
@@ -78,14 +68,6 @@
   desktop_icon: true
   desktop_icon_order: 1
   tab_bar: true
-- id: resume
-  label: Resume
-  glyph: "≡"
-  title: "resume.pdf"
-  x: 250
-  y: 60
-  w: 770
-  h: 690
 - id: guide
   label: Guide
   glyph: "?"

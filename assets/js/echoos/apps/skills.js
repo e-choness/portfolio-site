@@ -20,10 +20,12 @@ export function renderSkills(bodyEl, { content }) {
     }
   }
 
-  // Header line: derived process count and uptime
+  // Header line: derived process count; uptime is career length from
+  // profile.stats[0] (the one source), falling back to longest skill tenure.
+  const yearsDisplay = content.profile?.stats?.[0]?.display ?? `${maxYears}y+`;
   const top = document.createElement('div');
   top.className = 'os-skills-top';
-  top.textContent = `echo-top — ${procCount} processes running · uptime ${maxYears}y+ · load: healthy`;
+  top.textContent = `echo-top — ${procCount} processes running · uptime ${yearsDisplay} · load: healthy`;
   wrap.appendChild(top);
 
   for (const g of content.skills || []) {

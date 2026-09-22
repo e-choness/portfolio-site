@@ -8,13 +8,16 @@
 body:has(#echoos-root) {
   overflow: hidden;
   height: 100vh;
+  height: 100dvh; // iOS Safari's collapsing toolbar must not cover the tab bar
 }
 
 #echoos-root {
   position: fixed;
   inset: 0;
   overflow: hidden;
-  background: var(--bg);
+  // Static wallpaper glow (17e: bright core fading to the edges) under the
+  // animated canvas — one gradient paint, no per-frame cost.
+  background: radial-gradient(120% 90% at 50% 42%, var(--glow), transparent 62%), var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: 13.5px;
@@ -102,9 +105,6 @@ body:has(#echoos-root) {
   align-items: center;
   justify-content: space-between;
   padding: 0 14px;
-  background: color-mix(in oklab, var(--surface) 78%, transparent);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--line);
   user-select: none;
 }
@@ -144,7 +144,7 @@ body:has(#echoos-root) {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
-  color: var(--muted);
+  color: var(--ink);
   background: transparent;
   border: 1px solid var(--line);
   padding: 4px 9px;
@@ -160,13 +160,10 @@ body:has(#echoos-root) {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-.os-mb-sound.is-on {
+// Accent only for state: sound on, notification panel open.
+.os-mb-btn[aria-pressed="true"] {
   color: var(--accent);
   border-color: var(--accent);
-}
-.os-mb-sound:not(.is-on) {
-  color: var(--muted);
-  opacity: 0.45;
 }
 
 .os-mb-clock {
@@ -193,10 +190,8 @@ body:has(#echoos-root) {
   pointer-events: auto;
   max-width: 300px;
   padding: 10px 14px;
-  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--r-ctl);
-  box-shadow: var(--shadow);
   font-family: var(--font-sans);
   font-size: 12.5px;
   color: var(--ink);
@@ -217,10 +212,8 @@ body:has(#echoos-root) {
   gap: 10px;
   align-items: flex-start;
   padding: 14px 16px;
-  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--r-win);
-  box-shadow: var(--shadow);
   animation: toastin 0.25s ease;
 }
 .os-welcome-portrait {
@@ -287,10 +280,8 @@ body:has(#echoos-root) {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 16px;
-  box-shadow: var(--shadow);
   padding: 18px 20px;
   animation: toastin 0.2s ease;
 }
@@ -444,11 +435,7 @@ body:has(#echoos-root) {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: color-mix(in oklab, var(--surface) 72%, transparent);
   border: 1px solid var(--line);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 14px -6px rgba(30, 20, 50, 0.25);
 }
 .os-glyph {
   font-family: var(--font-mono);
@@ -470,6 +457,12 @@ body:has(#echoos-root) {
   white-space: nowrap;
 }
 
+@media (max-width: 400px) {
+  .os-mb-date {
+    display: none;
+  }
+}
+
 // ── mobile tab bar ────────────────────────────────────────────────────────
 .os-tabbar {
   display: none;
@@ -489,20 +482,31 @@ body:has(#echoos-root) {
   .os-mb-sep {
     display: none;
   }
+  // Touch targets: 36×32 visible, ::after extends the hit box to ≥44×44
+  // without shifting layout.
+  .os-mb-btn {
+    position: relative;
+    min-width: 36px;
+    min-height: 32px;
+  }
+  .os-mb-btn::after {
+    content: '';
+    position: absolute;
+    inset: -6px -4px;
+  }
   .os-tabbar {
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
-    height: 64px;
+    height: calc(64px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
     z-index: 6000;
     display: flex;
     align-items: center;
     justify-content: space-around;
-    padding: 0 10px;
-    background: color-mix(in oklab, var(--surface) 85%, transparent);
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
+    padding-left: 10px;
+    padding-right: 10px;
     border-top: 1px solid var(--line);
   }
   .os-tabbar-item {
@@ -522,10 +526,7 @@ body:has(#echoos-root) {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: color-mix(in oklab, var(--surface) 72%, transparent);
     border: 1px solid var(--line);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
   }
   .os-tabbar-item .os-glyph {
     font-size: 15px;
@@ -539,6 +540,12 @@ body:has(#echoos-root) {
   }
   .os-tabbar-item:hover .os-glyph,
   .os-tabbar-item:focus-visible .os-glyph {
+    color: var(--ink);
+  }
+  .os-tabbar-item.is-active .os-tabbar-tile {
+    border-color: var(--accent);
+  }
+  .os-tabbar-item.is-active .os-tabbar-label {
     color: var(--ink);
   }
 }
@@ -555,7 +562,7 @@ body:has(#echoos-root) {
   .os-home {
     position: absolute;
     inset: 0;
-    padding: calc(var(--bar-h) + 16px) 16px calc(64px + 16px);
+    padding: calc(var(--bar-h) + 16px) 16px calc(64px + 16px + env(safe-area-inset-bottom));
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
     gap: 12px;
@@ -579,11 +586,7 @@ body:has(#echoos-root) {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: color-mix(in oklab, var(--surface) 72%, transparent);
     border: 1px solid var(--line);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    box-shadow: 0 4px 14px -6px rgba(30, 20, 50, 0.25);
   }
   .os-home-item .os-glyph {
     font-size: 20px;

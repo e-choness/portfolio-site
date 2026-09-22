@@ -1,0 +1,108 @@
+// os/_glass.scss — "liquid glass" chrome, CSS only.
+//
+// Performance: the menubar, dock and tab bar already had backdrop blurs; this
+// adds saturate() to them (same pass) plus gradients and inset shadows, which
+// are paint-only. New backdrop layers are limited to small transient cards
+// (notification panel, welcome card, toasts), and the per-tile blurs on the
+// desktop / tab bar / home icons were dropped (up to 9 layers on mobile). Deliberately no SVG
+// displacement/refraction filters — costly per frame over the animated
+// wallpaper, and Chromium-only. Windows and Spotlight stay solid for reading.
+
+// ── translucent bars and cards ─────────────────────────────────────────────
+.os-menubar,
+.os-dock,
+.os-notif,
+.os-welcome,
+.os-toast {
+  background:
+    linear-gradient(180deg, var(--glass-sheen), transparent 60%),
+    var(--glass);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+.os-menubar {
+  box-shadow: inset 0 -1px 0 var(--glass-lo);
+}
+.os-dock {
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    inset 0 -1px 1px var(--glass-lo),
+    0 12px 32px -12px rgba(30, 20, 60, 0.35);
+}
+.os-notif,
+.os-welcome,
+.os-toast {
+  box-shadow: inset 0 1px 0 var(--glass-hi), var(--shadow);
+}
+@media (max-width: 760px) {
+  .os-tabbar {
+    background:
+      linear-gradient(180deg, var(--glass-sheen), transparent 70%),
+      var(--glass);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: inset 0 1px 0 var(--glass-hi);
+  }
+}
+
+// ── glass tiles: dock, desktop icons, mobile tab bar + home grid ──────────
+.os-dock-tile,
+.os-desk-icon-tile,
+.os-tabbar-tile,
+.os-home-tile {
+  background:
+    linear-gradient(180deg, var(--glass-sheen), transparent 65%),
+    color-mix(in oklab, var(--surface2) 82%, transparent); // no blur: cheap
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    inset 0 -1px 0 var(--glass-lo),
+    0 4px 14px -8px rgba(30, 20, 60, 0.35);
+}
+.os-dock-label {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  backdrop-filter: blur(12px) saturate(180%);
+  box-shadow: inset 0 1px 0 var(--glass-hi), 0 6px 16px -8px rgba(30, 20, 60, 0.35);
+}
+
+// ── liquid motion: springy dock with neighbour magnification ─────────────
+// transform only → compositor, no layout.
+.os-dock-item {
+  transition: transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.os-dock-item:hover {
+  transform: translateY(-6px) scale(1.1);
+}
+.os-dock-item:hover + .os-dock-item,
+.os-dock-item:has(+ .os-dock-item:hover) {
+  transform: translateY(-2px) scale(1.04);
+}
+.os-dock-item:active {
+  transform: translateY(-3px) scale(0.96);
+  transition-duration: 0.12s;
+}
+
+// Windows: a faint specular top edge so they sit in the same material family.
+.os-win {
+  box-shadow: var(--shadow), inset 0 1px 0 var(--glass-lo);
+}
+
+// Accessibility: users who ask for less transparency get solid surfaces.
+@media (prefers-reduced-transparency: reduce) {
+  .os-menubar,
+  .os-dock,
+  .os-notif,
+  .os-welcome,
+  .os-toast,
+  .os-tabbar,
+  .os-dock-label {
+    background: var(--surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .os-dock-item {
+    transition: none;
+  }
+}

@@ -16,9 +16,8 @@ import { renderExperience } from './apps/experience.js';
 import { renderProjects } from './apps/projects.js';
 import { renderSkills } from './apps/skills.js';
 import { renderBlog } from './apps/blog.js';
-import { renderContact } from './apps/contact.js';
-import { renderResume } from './apps/resume.js';
 import { renderArcade } from './apps/arcade.js';
+import { readRoute, writeRoute } from './router.js';
 
 const root = document.getElementById('echoos-root');
 if (!root) throw new Error('EchoOS: #echoos-root not found');
@@ -62,15 +61,44 @@ async function main() {
     .catch(() => null);
   const content = await contentPromise;
 
-  const bootDur = firstVisit ? 1150 : 350; // echoos-visited skips the long boot
+  // A deep link skips the splash entirely (Patch 81).
+  const route = resolveRoute(readRoute(), content);
+  const bootDur = route ? 0 : firstVisit ? 1150 : 350; // echoos-visited skips the long boot
   await Promise.all([contentPromise, delay(bootDur)]);
 
   finishBoot();
 
-  initOS(content || {});
+  initOS(content || {}, route);
 }
 
-function initOS(content) {
+// A route counts only if it names a known app — and, for blog/proj, a known
+// item. Anything else is ignored silently (normal boot). Arcade ids live in
+// arcade.js (Liquid-inlined), not content.json: an unknown id leaves the grid.
+function resolveRoute(r, content) {
+  if (!r || !content) return null;
+  // The Resume app became a tab of Experience; keep old #/resume links working.
+  if (r.app === 'resume') r = { app: 'exp', item: 'resume' };
+  // Contact became a section of About → Profile.
+  if (r.app === 'contact') r = { app: 'about', item: 'contact' };
+  if (!(content.apps || []).some((a) => a.id === r.app)) return null;
+  if (r.item) {
+    if (r.app === 'blog' && !(content.posts || []).some((p) => p.slug === r.item)) return null;
+    if (r.app === 'proj' && !(content.projects || []).some((p) => p.slug === r.item)) return null;
+    if (r.app === 'exp' && r.item !== 'resume') return null;
+    if (r.app === 'about' && r.item !== 'contact') return null;
+  }
+  return r;
+}
+
+const ITEM_EVENTS = {
+  blog: (item) => ['echoos:open-post', { slug: item }],
+  proj: (item) => ['echoos:open-project', { slug: item }],
+  arcade: (item) => ['echoos:open-game', { id: item }],
+  exp: (item) => ['echoos:set-exp-tab', { tab: item }],
+  about: () => ['echoos:set-about-tab', { tab: 'profile', section: 'contact' }],
+};
+
+function initOS(content, route = null) {
   const apps = content.apps || [];
 
   const notifications = initNotifications(root, {
@@ -90,11 +118,12 @@ function initOS(content) {
     toast: (msg, opts) => notifications.toast(msg, opts),
     getSpotlight: () => spotlight,
     onFocus: (id) => {
+      writeRoute(id);
       if (shellRef.current) shellRef.current.setFocusedApp(id);
       if (id === 'term' && term) term.focusInput();
     },
-    onWindowsChanged: (openIds) => {
-      if (shellRef.current) shellRef.current.setOpenApps(openIds);
+    onWindowsChanged: (openIds, minIds) => {
+      if (shellRef.current) shellRef.current.setOpenApps(openIds, minIds);
     },
     renderers: {
       about: renderAbout,
@@ -102,8 +131,6 @@ function initOS(content) {
       proj: renderProjects,
       skills: renderSkills,
       blog: renderBlog,
-      contact: renderContact,
-      resume: renderResume,
       arcade: renderArcade,
       guide: (bodyEl, ctx) => renderGuide(bodyEl, { wm, openSpotlight: () => spotlight.toggle(), content: ctx.content }),
       term: (bodyEl, ctx) => {
@@ -142,8 +169,21 @@ function initOS(content) {
   });
   shellRef.current = shell;
 
-  // about opens on boot (§6.4)
-  wm.openApp('about');
+  function openRoute(r) {
+    wm.openApp(r.app);
+    const ev = r.item && ITEM_EVENTS[r.app] && ITEM_EVENTS[r.app](r.item);
+    if (ev) document.dispatchEvent(new CustomEvent(ev[0], { detail: ev[1] }));
+  }
+
+  // about opens on boot (§6.4) — unless a deep link names another window.
+  if (route) openRoute(route);
+  else wm.openApp('about');
+
+  // Pasted links in an already-open tab.
+  window.addEventListener('hashchange', () => {
+    const r = resolveRoute(readRoute(), content);
+    if (r) openRoute(r);
+  });
 
   // Post-boot welcome toast (prototype finishBoot): two-tone chirp + 9s auto-hide.
   beep(660, 0.08);

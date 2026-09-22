@@ -185,26 +185,6 @@
   color: var(--muted);
   margin-top: 2px;
 }
-.os-about-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.os-about-actions a {
-  font-size: 12.5px;
-  border-radius: 9px;
-  padding: 8px 14px;
-  text-decoration: none;
-}
-.os-about-resume {
-  font-weight: 700;
-  background: var(--accent);
-  color: var(--accent-ink);
-}
-.os-about-resume:hover {
-  opacity: 0.88;
-  color: var(--accent-ink);
-}
 .os-about-badge {
   display: inline-flex;
   align-items: center;
@@ -226,20 +206,6 @@
 @keyframes badge-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
   50%       { box-shadow: 0 0 0 4px rgba(34,197,94,0); }
-}
-.os-about-social-link {
-  font-weight: 600;
-  border: 1px solid var(--line);
-  color: var(--ink);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  padding: 8px 10px;
-}
-.os-about-social-link:hover {
-  border-color: var(--accent);
-  color: var(--accent);
 }
 .os-about-social-icon {
   display: block;
@@ -498,6 +464,25 @@
   z-index: 10;
   background: var(--surface);
   padding-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+// Reading progress: 2px accent bar pinned to the top of the scroller. Drawn
+// above the (also sticky) back bar, hence z-index 11 rather than 1.
+.os-blog-progress {
+  position: sticky;
+  top: 0;
+  height: 2px;
+  background: transparent;
+  z-index: 11;
+}
+.os-blog-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
 }
 
 // back button (detail view)
@@ -847,6 +832,9 @@
 .os-blog-row:hover {
   background: var(--accent-soft);
 }
+.os-blog-row-top {
+  display: contents;
+}
 .os-blog-row-date {
   font-family: var(--font-mono);
   font-size: 10.5px;
@@ -859,6 +847,7 @@
 .os-blog-row-main {
   flex: 1;
   min-width: 0;
+  order: 1;
 }
 .os-blog-row-title {
   display: block;
@@ -888,6 +877,7 @@
   color: var(--accent);
   flex: none;
   padding-top: 3px;
+  order: 2;
 }
 
 .os-blog-sep {
@@ -988,9 +978,9 @@
   display: block;
   width: 100%;
   max-width: 420px;
-  height: 180px;
+  height: 140px;
   border-radius: var(--r-ctl);
-  margin: 12px auto 16px;
+  margin: 8px auto 14px;
   object-fit: cover;
   border: 1px solid var(--line);
 }
@@ -1134,91 +1124,43 @@
   text-align: center;
 }
 
-// ── contact ────────────────────────────────────────────────────────────────
-.os-contact {
+// ── profile: contact section ("say hello") ───────────────────────────────
+// Formerly the Contact app. Sits at the end of About → Profile: eyebrow,
+// pitch, then 2×2 tiles (icon · label ↗ / address); one column on mobile.
+.os-about-contact {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  min-height: 100%;
-}
-
-.os-contact-id-header {
-  display: flex;
-  align-items: center;
   gap: 10px;
-  margin-bottom: 4px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 12px;
 }
-.os-contact-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-  flex: none;
-}
-.os-contact-name {
-  font-family: var(--font-sans);
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-}
-.os-contact-title-label {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
 .os-contact-eyebrow {
   font-family: var(--font-mono);
   font-size: 10.5px;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--muted);
 }
 .os-contact-blurb {
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 13.5px;
   line-height: 1.6;
   color: var(--muted);
 }
-
-.os-contact-strip {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  background: var(--surface2);
-  border: 1px solid var(--line);
-  border-radius: var(--r-ctl);
-}
-.os-contact-strip-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent);
-  flex: none;
-}
-.os-contact-strip-text {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--muted);
-}
-
 .os-contact-social {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  margin-top: auto;
 }
 .os-contact-social-link {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 2px;
+  padding: 10px 14px;
   background: var(--surface2);
   border: 1px solid var(--line);
   border-radius: var(--r-ctl);
@@ -1228,6 +1170,9 @@
 .os-contact-social-link:hover {
   border-color: var(--accent);
   transform: translateY(-1px);
+}
+.os-contact-social-link .os-about-social-icon {
+  grid-row: 1 / span 2;
 }
 .os-contact-social-label {
   font-family: var(--font-sans);
@@ -1243,31 +1188,37 @@
   font-family: var(--font-mono);
   font-size: 10.5px;
   color: var(--muted);
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 760px) {
   .os-contact-social {
     grid-template-columns: 1fr;
-    margin-top: 0;
   }
 }
 
 // ── resume ─────────────────────────────────────────────────────────────────
 // os-resume: title-bar download button
+// Title-bar download link (Experience window). Outlined, not filled, so it
+// never reads as a selected tab next to the Experience / Resume tabs.
 .os-resume-dl {
   font: 600 11px var(--font-mono);
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
   border-radius: 8px;
-  padding: 6px 12px;
-  border: 0;
+  padding: 4px 10px;
+  margin-left: 6px;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition: background 0.15s ease;
   text-decoration: none;
   display: inline-block;
 }
+.os-resume-dl::before {
+  content: "↓ ";
+}
 .os-resume-dl:hover {
-  opacity: 0.88;
+  background: var(--accent-soft);
 }
 .os-resume-dl:focus-visible {
   outline: 2px solid var(--accent);
@@ -1275,26 +1226,34 @@
 }
 
 // os-resume-body: scrollable body wrapper; os-resume-card: typeset card
+// The resume pane is a size container: the card fills the window width (up to
+// a 1100px reading cap) and its type/padding scale with it via cqi, so the
+// document grows with the window instead of sitting at a fixed 520px.
 .os-resume-body {
+  flex: 1 1 auto;
+  min-height: 0;
   padding: 22px;
   background: var(--surface2);
-  overflow: auto;
-  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
   box-sizing: border-box;
+  container-type: inline-size;
 }
 
 .os-resume-card {
-  max-width: 520px;
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 1100px;
   margin: 0 auto;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 6px;
-  padding: 30px 34px;
+  padding: clamp(20px, 4cqi, 52px) clamp(18px, 4.4cqi, 60px);
   box-shadow: 0 6px 24px -10px rgba(30, 20, 50, 0.2);
 }
 
 .os-resume-name {
-  font-size: 22px;
+  font-size: clamp(22px, 3cqi, 34px);
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--ink);
@@ -1302,7 +1261,7 @@
 }
 
 .os-resume-title {
-  font: 600 11px var(--font-mono);
+  font: 600 clamp(11px, 1.25cqi, 13.5px) var(--font-mono);
   color: var(--accent);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -1310,20 +1269,20 @@
 }
 
 .os-resume-contact {
-  font: 10.5px var(--font-mono);
+  font: clamp(10.5px, 1.15cqi, 13px) var(--font-mono);
   color: var(--muted);
-  margin: 6px 0 16px;
+  margin: 6px 0 clamp(16px, 2.2cqi, 26px);
   word-break: break-all;
 }
 
 .os-resume-section {
   border-top: 1px solid var(--line);
-  padding-top: 14px;
-  margin-bottom: 14px;
+  padding-top: clamp(14px, 1.8cqi, 22px);
+  margin-bottom: clamp(14px, 1.8cqi, 22px);
 }
 
 .os-resume-section-head {
-  font: 600 10px var(--font-mono);
+  font: 600 clamp(10px, 1.1cqi, 12.5px) var(--font-mono);
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.14em;
@@ -1334,7 +1293,7 @@
   display: flex;
   gap: 10px;
   align-items: baseline;
-  margin-bottom: 5px;
+  margin-bottom: clamp(5px, 0.8cqi, 9px);
 }
 
 .os-resume-item-left {
@@ -1343,7 +1302,7 @@
 }
 
 .os-resume-item-right {
-  font: 10px var(--font-mono);
+  font: clamp(10px, 1.1cqi, 12.5px) var(--font-mono);
   color: var(--muted);
   white-space: nowrap;
   margin-left: 12px;
@@ -1359,6 +1318,9 @@
     line-height: 1.35;
     text-align: right;
   }
+  .os-resume-body {
+    padding: 12px;
+  }
   .os-resume-item {
     align-items: flex-start;
   }
@@ -1371,34 +1333,67 @@
   .os-resume-item-right .os-dur-part {
     display: block;
   }
+  // Experience head: logo + role + company on row one, dates on row two.
+  .os-exp-head {
+    flex-wrap: wrap;
+  }
+  .os-exp-pill {
+    order: 3;
+    flex-basis: 100%;
+    text-align: left;
+  }
+  .os-exp-pill .os-dur-part {
+    display: inline;
+  }
+  .os-exp-company {
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+  }
+  // Blog rows: date · category on one line above the title.
+  .os-blog-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .os-blog-row-top {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .os-blog-row-date {
+    width: auto;
+    padding-top: 0;
+  }
+  .os-blog-row-cat {
+    padding-top: 0;
+  }
 }
 
 .os-resume-role {
-  font-size: 12.5px;
+  font-size: clamp(12.5px, 1.45cqi, 16px);
   font-weight: 700;
   color: var(--ink);
 }
 
 .os-resume-company {
-  font-size: 12.5px;
+  font-size: clamp(12.5px, 1.45cqi, 16px);
   font-weight: 500;
   color: var(--muted);
 }
 
 .os-resume-degree {
-  font-size: 12.5px;
+  font-size: clamp(12.5px, 1.45cqi, 16px);
   font-weight: 700;
   color: var(--ink);
 }
 
 .os-resume-institution {
-  font-size: 12.5px;
+  font-size: clamp(12.5px, 1.45cqi, 16px);
   font-weight: 500;
   color: var(--muted);
 }
 
 .os-resume-skills {
-  font-size: 12px;
+  font-size: clamp(12px, 1.35cqi, 15px);
   line-height: 1.7;
   color: var(--ink);
 }
@@ -1420,20 +1415,17 @@
 .os-win[data-app="blog"] .os-win-body {
   padding: 14px 20px;
 }
-.os-win[data-app="contact"] .os-win-body {
-  padding: 28px;
-}
 .os-win[data-app="arcade"] .os-win-body {
   padding: 18px 20px;
-}
-.os-win[data-app="resume"] .os-win-body {
-  padding: 22px;
 }
 
 // Panes that own the body's height: no body padding, no body scroll — the pane
 // scrolls internally and pins its own footer. Keyed on the pane, not the app id.
+// The resume pane is a tab of Experience, whose [data-app="exp"] body padding
+// (0,3,0) would outrank a bare :has() rule — hence the extra .os-win[data-app].
 .os-win-body:has(> .os-guide),
-.os-win-body:has(> .os-term) {
+.os-win-body:has(> .os-term),
+.os-win[data-app] .os-win-body:has(> .os-resume-body) {
   padding: 0;
   overflow: hidden;
   display: flex;
@@ -1628,17 +1620,8 @@
 [data-echo-theme="dark"] .os-post-body .highlight .ge { color: #c9d1d9; font-style: italic; }
 [data-echo-theme="dark"] .os-post-body .highlight .gs { color: #c9d1d9; font-weight: bold; }
 
-// ── responsive: stacked blog list, single-column about ─────────────────────
+// ── responsive: single-column about ────────────────────────────────────────
 @media (max-width: 760px) {
-  .os-blog {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  .os-blog-list {
-    border-right: 0;
-    padding-right: 0;
-    max-height: 40%;
-  }
   .os-about-header {
     gap: 12px;
   }

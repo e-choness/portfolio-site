@@ -1,5 +1,6 @@
 // wm.js — window manager: open/close/focus/drag/resize/z-order/clamp (§6.4).
 import { sfx } from './sound.js';
+import { winGeom } from './store.js';
 
 export function clamp(v, lo, hi) {
   return Math.min(Math.max(v, lo), hi);
@@ -10,6 +11,7 @@ export function createWM(root, opts = {}) {
   const apps = opts.apps || [];
   const MOBILE = window.matchMedia('(max-width: 760px)');
   const byId = (id) => apps.find((a) => a.id === id);
+  const savedGeom = winGeom.load();
   const winEls = new Map();  // id -> DOM element
   const wins = new Map();    // id -> {id, open, x, y, w, h, z, minimized}
   const vw = () => window.innerWidth;
@@ -19,31 +21,55 @@ export function createWM(root, opts = {}) {
 
   // --- geometry -----------------------------------------------------------
 
-  // Initial sizes are viewport-derived, NOT the raw apps.yml numbers (§6.4):
-  // w = min(app.w, vw - 120), h = min(app.h, vh - 140), then clamp().
+  // Usable rectangle between the menubar and the dock. Measured, not assumed:
+  // the dock's height changes with the tooltip patch and the mobile sheet has
+  // its own geometry (see .os-sheet), so hardcoded 84/140 offsets drift.
+  function workArea() {
+    const top = 46;                                   // menubar (--bar-h) + 6
+    const dock = root.querySelector('.os-dock');
+    const r = dock && dock.offsetParent ? dock.getBoundingClientRect() : null;
+    const bottom = r ? r.top - 10 : vh() - 16;
+    return { x: 6, y: top, w: vw() - 12, h: Math.max(240, bottom - top) };
+  }
+
+  // Initial sizes are work-area-derived, NOT the raw apps.yml numbers (§6.4).
   function initialSize(app) {
-    return {
-      w: Math.min(app.w, vw() - 120),
-      h: Math.min(app.h, vh() - 140),
-    };
+    const a = workArea();
+    return { w: Math.min(app.w, a.w - 108), h: Math.min(app.h, a.h) };
   }
 
   function clampWin(win) {
-    const w = Math.min(win.w, vw() - 16);
-    const h = Math.min(win.h, vh() - 140);
-    win.w = w;
-    win.h = h;
-    win.x = clamp(win.x, 6, vw() - w - 6);
-    win.y = clamp(win.y, 46, Math.max(46, vh() - h - 84));
+    const a = workArea();
+    win.w = Math.min(win.w, a.w);
+    win.h = Math.min(win.h, a.h);
+    win.x = clamp(win.x, a.x, a.x + a.w - win.w);
+    win.y = clamp(win.y, a.y, a.y + a.h - win.h);
     return win;
   }
 
   function anchorApp(win, app) {
     if (app.anchor === 'bottom-right') {
+      const a = workArea();
       win.x = vw() - win.w - 24;
-      win.y = vh() - win.h - 90;
+      win.y = a.y + a.h - win.h - 8;
     }
     return win;
+  }
+
+  // First open of a non-boot, non-anchored app: step +28/+28 off the focused
+  // window instead of the fixed apps.yml x/y, which piles windows up.
+  function cascadeFrom(win, f = focused && wins.get(focused)) {
+    const a = workArea();
+    const STEP = 28;
+    let x = f && f.open ? f.x + STEP : a.x + 104;
+    let y = f && f.open ? f.y + STEP : a.y + 16;
+    const fitsY = (yy) => yy + win.h <= a.y + a.h;
+    // Wrap to the start when the step runs off the work area — unless the
+    // window is too tall to fit even there (short screens), in which case
+    // wrapping would stack every window on one rect; keep the x step instead
+    // and let clampWin pin y.
+    if (x + win.w > a.x + a.w || (!fitsY(y) && fitsY(a.y + 16))) { x = a.x + 104; y = a.y + 16; }
+    win.x = x; win.y = y;
   }
 
   function apply(win) {
@@ -84,6 +110,7 @@ export function createWM(root, opts = {}) {
         <span class="os-win-dot" aria-hidden="true"></span>
         <span class="os-win-title"></span>
         <div class="os-win-actions"></div>
+        <button type="button" class="os-win-max" aria-label="Maximize ${esc(app.label)}"></button>
         <button type="button" class="os-win-close" aria-label="Close ${esc(app.label)}"></button>
       </header>
       <div class="os-win-body"></div>
@@ -100,11 +127,19 @@ export function createWM(root, opts = {}) {
       z: 0,
       minimized: false,
       rendered: false,
+      placed: false, // sized/placed against the live work area on first open
+      saved: false,  // geometry restored from a previous visit (Patch 82)
+      max: null,     // pre-maximize rect {x,y,w,h} while maximized
       teardown: null,
     };
     const s = initialSize(app);
     win.w = s.w;
     win.h = s.h;
+    const g = savedGeom[app.id];
+    if (g && [g.x, g.y, g.w, g.h].every(Number.isFinite)) {
+      Object.assign(win, { x: g.x, y: g.y, w: Math.max(320, g.w), h: Math.max(240, g.h) });
+      win.saved = true;
+    }
     clampWin(win);
 
     // Clicking anywhere in a window focuses it.
@@ -117,6 +152,10 @@ export function createWM(root, opts = {}) {
       e.stopPropagation();
       closeApp(win.id);
     });
+    el.querySelector('.os-win-max').addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMax(win);
+    });
     el.querySelector('.os-win-bar').addEventListener('pointerdown', (e) => startDrag(e, win));
     el.querySelector('.os-win-resize').addEventListener('pointerdown', (e) => startResize(e, win));
 
@@ -127,7 +166,34 @@ export function createWM(root, opts = {}) {
     return win;
   }
 
+  // --- maximize -----------------------------------------------------------
+
+  function setMaxState(win) {
+    const el = winEls.get(win.id);
+    el.classList.toggle('is-max', !!win.max);
+    el.querySelector('.os-win-max').setAttribute('aria-label', `${win.max ? 'Restore' : 'Maximize'} ${byId(win.id).label}`);
+  }
+
+  function toggleMax(win) {
+    const a = workArea();
+    if (win.max) { Object.assign(win, win.max); win.max = null; saveGeom(win); }
+    else { win.max = { x: win.x, y: win.y, w: win.w, h: win.h }; Object.assign(win, a); }
+    apply(win);
+    setMaxState(win);
+  }
+
+  // Persist the normal (never the maximized) rect.
+  function saveGeom(win) {
+    if (MOBILE.matches) return;
+    winGeom.save(win.id, win.max || win);
+  }
+
   // --- drag ---------------------------------------------------------------
+
+  // Title-bar double-click is detected here, not with a `dblclick` listener:
+  // startDrag captures the pointer on the window, which retargets the click
+  // events to the window element so they never reach the bar.
+  let lastBarDown = { t: 0, x: 0, y: 0, id: null };
 
   function startDrag(e, win) {
     if (MOBILE.matches) return;
@@ -135,21 +201,48 @@ export function createWM(root, opts = {}) {
     if (resizeActive) return;
     if (e.button !== 0) return;
     focus(win.id);
-    const dx = e.clientX - win.x;
+    const prev = lastBarDown;
+    if (prev.id === win.id && e.timeStamp - prev.t < 400 &&
+        Math.abs(e.clientX - prev.x) < 6 && Math.abs(e.clientY - prev.y) < 6) {
+      lastBarDown = { t: 0, x: 0, y: 0, id: null };
+      toggleMax(win);
+      return;
+    }
+    lastBarDown = { t: e.timeStamp, x: e.clientX, y: e.clientY, id: win.id };
+    let dx = e.clientX - win.x;
     const dy = e.clientY - win.y;
+    const sx = e.clientX;
+    const sy = e.clientY;
     const el = winEls.get(win.id);
     el.setPointerCapture(e.pointerId);
     el.classList.add('os-dragging');
     document.body.classList.add('os-dragging-cursor');
 
+    let moved = false;
     const move = (ev) => {
+      moved = true;
+      // Dragging a maximized window restores it under the cursor, keeping the
+      // cursor at the same relative x on the title bar. Wait for real movement
+      // so the two pointerdowns of a title-bar double-click don't restore it.
+      if (win.max) {
+        if (Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) < 4) return;
+        const rel = dx / win.w;
+        win.w = win.max.w;
+        win.h = win.max.h;
+        win.max = null;
+        setMaxState(win);
+        dx = Math.round(rel * win.w);
+      }
+      // Loose bounds: partly under the dock is fine, the title bar is not.
+      const a = workArea();
       win.x = clamp(ev.clientX - dx, -win.w + 80, vw() - 60);
-      win.y = clamp(ev.clientY - dy, 42, vh() - 60);
+      win.y = clamp(ev.clientY - dy, 42, a.y + a.h - 40);
       apply(win);
     };
     const up = (ev) => {
       el.classList.remove('os-dragging');
       document.body.classList.remove('os-dragging-cursor');
+      if (moved) saveGeom(win);
       el.removeEventListener('pointermove', move);
       el.removeEventListener('pointerup', up);
       el.removeEventListener('pointercancel', up);
@@ -170,6 +263,8 @@ export function createWM(root, opts = {}) {
     e.stopPropagation();
     resizeActive = true;
     focus(win.id);
+    // Resizing a maximized window keeps its current rect as the new normal.
+    if (win.max) { win.max = null; setMaxState(win); }
     const sx = e.clientX;
     const sy = e.clientY;
     const sw = win.w;
@@ -179,13 +274,15 @@ export function createWM(root, opts = {}) {
     el.classList.add('os-resizing');
 
     const move = (ev) => {
+      const a = workArea();
       win.w = clamp(sw + ev.clientX - sx, 320, vw() - win.x - 8);
-      win.h = clamp(sh + ev.clientY - sy, 240, vh() - win.y - 8);
+      win.h = clamp(sh + ev.clientY - sy, 240, a.y + a.h - win.y);
       apply(win);
     };
     const up = (ev) => {
       resizeActive = false;
       el.classList.remove('os-resizing');
+      saveGeom(win);
       el.removeEventListener('pointermove', move);
       el.removeEventListener('pointerup', up);
       el.removeEventListener('pointercancel', up);
@@ -237,7 +334,21 @@ export function createWM(root, opts = {}) {
     }
     let win = wins.get(id);
     if (!win) win = buildWin(app);
-    if (app.anchor === 'bottom-right') {
+    // Windows are pre-built before the dock exists, so the build-time size
+    // can't see it: size and clamp against the real work area on first open.
+    if (!win.placed) {
+      // A saved layout skips sizing + cascade; clampWin pulls a rect saved on
+      // a larger monitor into the current work area.
+      if (!win.saved) {
+        Object.assign(win, initialSize(app));
+        if (!app.open_on_boot && !app.anchor) cascadeFrom(win);
+      }
+      clampWin(win);
+      win.placed = true;
+    }
+    if (win.max) {
+      Object.assign(win, workArea()); // the viewport may have changed while closed
+    } else if (app.anchor === 'bottom-right') {
       anchorApp(win, app);
       clampWin(win);
     }
@@ -322,22 +433,88 @@ export function createWM(root, opts = {}) {
     return win && win.open ? win : null;
   }
 
-  // --- viewport resize: re-clamp every open window ------------------------
+  // --- reset-windows: forget saved geometry, back to defaults -------------
 
-  function onResize() {
+  function resetWindows() {
+    winGeom.clear();
+    let prev = null;
+    const open = [...wins.values()].filter((w) => w.open).sort((p, q) => p.z - q.z);
     for (const win of wins.values()) {
-      if (!win.open) continue;
-      if (byId(win.id) && byId(win.id).anchor === 'bottom-right') anchorApp(win, byId(win.id));
+      const app = byId(win.id);
+      win.saved = false;
+      win.max = null;
+      setMaxState(win);
+      Object.assign(win, { x: app.x, y: app.y }, initialSize(app));
+      // Closed windows get first-open placement (cascade) next time.
+      win.placed = win.open;
+    }
+    for (const win of open) {
+      const app = byId(win.id);
+      if (app.anchor) anchorApp(win, app);
+      else if (!app.open_on_boot) cascadeFrom(win, prev);
       clampWin(win);
       apply(win);
+      prev = win;
     }
+  }
+
+  // --- viewport resize: re-clamp every open window ------------------------
+
+  function reclampAll() {
+    for (const win of wins.values()) {
+      if (!win.open) continue;
+      if (win.max) {
+        Object.assign(win, workArea());
+      } else {
+        if (byId(win.id) && byId(win.id).anchor === 'bottom-right') anchorApp(win, byId(win.id));
+        clampWin(win);
+      }
+      apply(win);
+    }
+  }
+  let resizeTimer = 0;
+  function onResize() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(reclampAll, 100);
   }
   window.addEventListener('resize', onResize);
 
   // --- keyboard -----------------------------------------------------------
 
+  // Alt+` / Alt+Shift+` cycle focus through open, non-minimized windows. The
+  // ring is snapshotted in z-order when a cycle starts — focusing raises z, so
+  // re-sorting on every press would just bounce between the top two.
+  let cycle = null; // { ids, idx, last }
+  let kbTimer = 0;
+  function cycleWindows(dir) {
+    const f = getFocused();
+    if (!cycle || !f || f.id !== cycle.last) {
+      const ids = [...wins.values()].filter((w) => w.open && !w.minimized).sort((p, q) => p.z - q.z).map((w) => w.id);
+      cycle = { ids, idx: f ? ids.indexOf(f.id) : ids.length - 1, last: null };
+    }
+    const n = cycle.ids.length;
+    cycle.idx = (cycle.idx + dir + n) % n;
+    const id = cycle.ids[cycle.idx];
+    cycle.last = id;
+    focus(id);
+    const el = winEls.get(id);
+    for (const w of winEls.values()) w.classList.remove('is-kbfocus');
+    el.classList.add('is-kbfocus');
+    clearTimeout(kbTimer);
+    kbTimer = setTimeout(() => el.classList.remove('is-kbfocus'), 600);
+  }
+
   function onKey(e) {
     const spot = opts.getSpotlight ? opts.getSpotlight() : null;
+
+    if (e.altKey && e.code === 'Backquote' && !MOBILE.matches) {
+      const t = e.target;
+      const typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA') && !t.classList.contains('os-term-input');
+      if (typing || !api.isAnyOpen()) return;
+      e.preventDefault();
+      cycleWindows(e.shiftKey ? -1 : 1);
+      return;
+    }
 
     if (e.key === 'Escape') {
       if (opts.notifications && opts.notifications.isOpen()) {
@@ -390,13 +567,13 @@ export function createWM(root, opts = {}) {
 
   function notifyWindowsChanged() {
     const openIds = new Set();
+    const minIds = new Set();
     for (const win of wins.values()) {
-      if (win.open && !win.minimized) {
-        openIds.add(win.id);
-      }
+      if (win.open && !win.minimized) openIds.add(win.id);
+      else if (win.minimized) minIds.add(win.id);
     }
     if (opts.onWindowsChanged) {
-      opts.onWindowsChanged(openIds);
+      opts.onWindowsChanged(openIds, minIds);
     }
   }
 
@@ -419,6 +596,7 @@ export function createWM(root, opts = {}) {
       return false;
     },
     getFocused,
+    resetWindows,
     getTitlebar(id) {
       const el = winEls.get(id);
       return el ? el.querySelector('.os-win-actions') : null;
@@ -432,6 +610,8 @@ export function createWM(root, opts = {}) {
       }
     },
     destroy() {
+      clearTimeout(resizeTimer);
+      clearTimeout(kbTimer);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('keydown', onKey);
       for (const el of winEls.values()) el.remove();

@@ -10,7 +10,7 @@
     } catch (e) { document.documentElement.dataset.echoTheme = 'light'; }
   </script>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>
     {% if page.title %}{{ page.title }} - {% endif %}{{ site.data.profile.name
     }} - {{ site.data.profile.title }}
@@ -18,8 +18,8 @@
 
   <link rel="icon" href="{{ '/assets/favicon.ico' | relative_url }}" type="image/x-icon" />
   <link rel="manifest" href="{{ '/assets/manifest.webmanifest' | relative_url }}" />
-  <meta name="theme-color" content="#f1eee8" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#14121a" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#e8e4ef" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#11111b" media="(prefers-color-scheme: dark)" />
 
   <!-- Fonts (§4) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -32,7 +32,7 @@
   {% seo %}
 
   <!-- Custom CSS -->
-  <link href="{{ '/assets/css/style.css' | relative_url }}" rel="stylesheet" />
+  <link href="{{ '/assets/css/os.css' | relative_url }}" rel="stylesheet" />
 </head>
 <body>
   <div id="echoos-root" data-base="{{ site.baseurl }}" data-content="{{ '/assets/data/content.json' | relative_url }}"></div>

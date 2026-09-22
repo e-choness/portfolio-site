@@ -1,6 +1,12 @@
 // os/_arcade.scss — game grid, canvas stage, HUD and mobile pad (arcade.js).
 // Pad button spec from IMPLEMENTATION-PLAN §6.7.
 
+// The window body becomes a flex column so .os-arcade (and the stage inside
+// it) get a definite height — arcade.js fits the canvas into that height.
+.os-win-body:has(> .os-arcade) {
+  display: flex;
+  flex-direction: column;
+}
 .os-arcade {
   flex: 1 1 auto;
   min-height: 0;
@@ -9,10 +15,11 @@
 }
 
 .os-arcade-grid {
-  flex: 1 1 auto;
+  flex: 0 1 auto; // shrink (and scroll) when short; footnote sits right below
+  min-height: 0;
   overflow: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   gap: 12px;
   align-content: start;
   padding: 0 2px;
@@ -22,58 +29,95 @@
   display: none;
 }
 
+// Card = one row: glyph tile │ name + score pill / tag. One visual, the
+// title, one line of metadata, one status — nothing else competes.
 .os-arcade-card {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 16px;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 12px;
+  padding: 12px 14px;
   background: var(--surface2);
   border: 1px solid var(--line);
   border-radius: 12px;
   cursor: pointer;
   text-align: left;
-  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  font: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 .os-arcade-card:hover {
   border-color: var(--accent);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
+  background: var(--surface);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -12px rgba(30, 20, 50, 0.35);
 }
 .os-arcade-card:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 .os-arcade-card-glyph {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--accent-soft);
   font-family: var(--font-mono);
-  font-size: 24px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--accent);
   line-height: 1;
   user-select: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.os-arcade-card:hover .os-arcade-card-glyph,
+.os-arcade-card:focus-visible .os-arcade-card-glyph {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.os-arcade-card-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.os-arcade-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
 }
 .os-arcade-card-name {
+  flex: 1 1 auto;
+  min-width: 0;
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 800;
+  line-height: 1.2;
   color: var(--ink);
+  overflow-wrap: anywhere; // wrap long names; never truncate
 }
 .os-arcade-card-tag {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--accent);
-  background: var(--accent-soft);
-  border-radius: 4px;
-  padding: 2px 6px;
-}
-.os-arcade-card-hi {
   font-family: var(--font-mono);
   font-size: 10.5px;
+  line-height: 1.3;
+  color: var(--muted);
+}
+.os-arcade-card-hi {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
   font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 1px 7px;
+}
+.os-arcade-card-hi.is-best {
   color: var(--accent);
-  margin-top: 2px;
+  background: var(--accent-soft);
+  border-color: transparent;
 }
 
 // ── stage ─────────────────────────────────────────────────────────────────
@@ -223,7 +267,8 @@
 
 .os-arcade-canvas-wrap {
   flex: 0 0 auto;
-  display: block;
+  display: flex;
+  justify-content: center;
   background: none;
   border: 0;
   border-radius: 0;
@@ -358,4 +403,35 @@
   text-decoration: none;
   transition: color 0.15s ease;
   &:hover { color: var(--accent); }
+}
+
+// Mobile: nine cards as a 2-column grid (5 rows) instead of 9 full-width rows.
+@media (max-width: 760px) {
+  .os-arcade-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .os-arcade-card {
+    grid-template-columns: 34px minmax(0, 1fr);
+    column-gap: 10px;
+    padding: 10px 11px;
+  }
+  .os-arcade-card-glyph {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 15px;
+  }
+  .os-arcade-card-name {
+    font-size: 14px;
+  }
+  // Narrow cards: name gets the full line; the score pill drops under the tag.
+  .os-arcade-card-head {
+    display: contents;
+  }
+  .os-arcade-card-hi {
+    order: 3;
+    align-self: flex-start;
+    margin-top: 1px;
+  }
 }

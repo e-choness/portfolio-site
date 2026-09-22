@@ -48,7 +48,7 @@ Here are some common `docker run` commands and related operations:
 
 - **`docker commit -m "nginx changed" my-nginx my-nginx-image`**: Creates a new image named `my-nginx-image` from the `my-nginx` container, with a commit message "nginx changed".
 
-- **`docker inspect -f {{.State.Pid}} [CONTAINER_ID]`**: Retrieves the PID (Process ID) of the main process running inside a specific container (e.g., `44fc0f0582d9`).
+- **`docker inspect -f {% raw %}{{.State.Pid}}{% endraw %} [CONTAINER_ID]`**: Retrieves the PID (Process ID) of the main process running inside a specific container (e.g., `44fc0f0582d9`).
 
 - **`docker pull gitlab/gitlab-ce:11.2.3-ce.0`**: Downloads a specific version of a Docker image (in this case, GitLab Community Edition version `11.2.3-ce.0`).
 

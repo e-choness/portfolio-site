@@ -7,7 +7,8 @@
 // blocks are transformed exactly like the classic route so existing markdown
 // support is preserved. On fetch failure the prototype's "read the full post on
 // the current site" note + link remains as the fallback.
-import { url } from '../base.js';
+import { url, base } from '../base.js';
+import { writeRoute } from '../router.js';
 
 function esc(s) {
   const d = document.createElement('div');
@@ -119,7 +120,31 @@ export function renderBlog(bodyEl, { content, toast }) {
     );
   }
 
+  // Reading progress: one passive scroll listener on the window body (the
+  // scroller), replaced per post and removed on list view / teardown.
+  let offProgress = null;
+  function clearProgress() {
+    if (offProgress) offProgress();
+    offProgress = null;
+  }
+  function trackProgress() {
+    clearProgress();
+    const bar = app.querySelector('.os-blog-progress > span');
+    const scroller = bodyEl;
+    const update = () => {
+      const max = scroller.scrollHeight - scroller.clientHeight;
+      const p = max > 0 ? Math.min(1, scroller.scrollTop / max) : 1;
+      bar.style.transform = `scaleX(${p})`;
+    };
+    scroller.addEventListener('scroll', update, { passive: true });
+    offProgress = () => scroller.removeEventListener('scroll', update);
+    update();
+    return update;
+  }
+
   function renderList() {
+    clearProgress();
+    writeRoute('blog', null);
     const PAGE_SIZE = 8;
     const all = filtered();
     const totalPages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
@@ -149,7 +174,12 @@ export function renderBlog(bodyEl, { content, toast }) {
     input.addEventListener('input', () => {
       state.query = input.value;
       state.page = 1;
+      // renderList() rebuilds the toolbar, so hand focus + caret to the new input.
+      const caret = input.selectionStart;
       renderList();
+      const next = app.querySelector('.os-blog-search-input');
+      next.focus({ preventScroll: true });
+      next.setSelectionRange(caret, caret);
     });
 
     app.querySelector('.os-blog-cat-btn').addEventListener('click', () => {
@@ -193,13 +223,18 @@ export function renderBlog(bodyEl, { content, toast }) {
       const row = document.createElement('button');
       row.type = 'button';
       row.className = 'os-blog-row';
+      // Date + category share .os-blog-row-top so mobile can put them on one
+      // line above the title; on desktop the wrapper is display:contents and
+      // the three columns (date · main · cat) are restored with `order`.
       row.innerHTML = `
-        <span class="os-blog-row-date">${esc(p.date || '')}</span>
+        <span class="os-blog-row-top">
+          <span class="os-blog-row-date">${esc(p.date || '')}</span>
+          ${catOf(p) ? `<span class="os-blog-row-cat">${esc(catOf(p))}</span>` : ''}
+        </span>
         <span class="os-blog-row-main">
           <span class="os-blog-row-title">${esc(p.title)}</span>
           <span class="os-blog-row-excerpt">${esc(p.excerpt || '')}</span>
-        </span>
-        ${catOf(p) ? `<span class="os-blog-row-cat">${esc(catOf(p))}</span>` : ''}`;
+        </span>`;
       row.addEventListener('click', () => {
         state.sel = posts.indexOf(p);
         renderReading(p);
@@ -255,13 +290,16 @@ export function renderBlog(bodyEl, { content, toast }) {
 
   async function renderReading(post) {
     state.catOpen = false;
+    writeRoute('blog', post.slug);
     const idx = state.sel;
     const prevPost = posts[idx + 1] || null; // older = previous
     const nextPost = posts[idx - 1] || null; // newer = next
     const imageHtml = post.image ? `<img class="os-blog-image" src="${esc(post.image)}" alt="">` : '';
     app.innerHTML = `
+      <div class="os-blog-progress"><span></span></div>
       <div class="os-blog-back-bar">
         <button type="button" class="os-blog-back">‹ all posts</button>
+        <button type="button" class="os-blog-back os-blog-copy">copy link</button>
       </div>
       <div class="os-blog-meta">${catOf(post) ? esc(catOf(post)) + ' · ' : ''}${esc(post.date || '')}</div>
       <h1 class="os-blog-h1">${esc(post.title)}</h1>
@@ -289,6 +327,22 @@ export function renderBlog(bodyEl, { content, toast }) {
         renderReading(nextPost);
       });
     }
+
+    const copyBtn = app.querySelector('.os-blog-copy');
+    let copyTimer = 0;
+    copyBtn.addEventListener('click', () => {
+      const link = location.origin + base + '/#/blog/' + encodeURIComponent(post.slug);
+      Promise.resolve()
+        .then(() => navigator.clipboard.writeText(link))
+        .then(() => {
+          copyBtn.textContent = 'copied';
+          clearTimeout(copyTimer);
+          copyTimer = setTimeout(() => { copyBtn.textContent = 'copy link'; }, 1500);
+        })
+        .catch(() => { if (toast) toast(link); });
+    });
+
+    const updateProgress = trackProgress();
 
     const heroImg = app.querySelector('.os-blog-image');
     if (heroImg) heroImg.addEventListener('error', () => heroImg.remove(), { once: true });
@@ -320,6 +374,7 @@ export function renderBlog(bodyEl, { content, toast }) {
         img.addEventListener('error', () => img.remove(), { once: true });
         app.querySelector('.os-blog-h1').after(img);
       }
+      updateProgress();
     } catch {
       if (toast) toast('Could not load post — opening in a new tab');
       fallbackNote();
@@ -349,6 +404,7 @@ export function renderBlog(bodyEl, { content, toast }) {
 
   // Return teardown function (Patch 23 contract)
   return () => {
+    clearProgress();
     clearOutsideClickListener();
     document.removeEventListener('echoos:open-post', onOpenPost);
   };

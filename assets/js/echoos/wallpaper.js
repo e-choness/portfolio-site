@@ -40,14 +40,14 @@ export function initWallpaper(root, { count = 110, isAnyOpen } = {}) {
   // Size the canvas first so particles are seeded with real w/h values.
   resize();
 
-  // Prototype particle: slow drift (vx/vy * dt * calm), dot r .8–2.3, hue 246–294.
+  // Prototype particle: slow drift (vx/vy * dt * calm), dot r .8–2.3, hue 240–280.
   particles = Array.from({ length: n }, () => ({
     x: Math.random() * Math.max(w, 1),
     y: Math.random() * Math.max(h, 1),
     vx: (Math.random() - 0.5) * 14,
     vy: (Math.random() - 0.5) * 14,
     r: 0.8 + Math.random() * 1.5,
-    h: 246 + Math.random() * 48,
+    h: 240 + Math.random() * 40, // blue-violet band of the 17e wallpaper
   }));
   // 3 drifting blobs, radius 180/270/360, each with its own orbit phase/speed.
   blobs = Array.from({ length: 3 }, (_, i) => ({
@@ -73,7 +73,7 @@ export function initWallpaper(root, { count = 110, isAnyOpen } = {}) {
       const bx = b.x + Math.cos(b.a) * 40;
       const by = b.y + Math.sin(b.a * 0.7) * 30;
       const g = ctx.createRadialGradient(bx, by, 0, bx, by, b.r);
-      g.addColorStop(0, dark ? 'rgba(150,110,220,.10)' : 'rgba(122,79,184,.07)');
+      g.addColorStop(0, dark ? 'rgba(150,130,240,.11)' : 'rgba(106,90,214,.08)');
       g.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = g;
       ctx.fillRect(bx - b.r, by - b.r, b.r * 2, b.r * 2);

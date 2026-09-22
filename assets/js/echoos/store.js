@@ -39,6 +39,22 @@ export const store = createStore({
   guideDone: ls.get('echoos-guide-done') === '1',
 });
 
+// Window geometry (Patch 82): `echoos-wins` → { [id]: { x, y, w, h } }.
+// Geometry only — open state is never restored.
+export const winGeom = {
+  load() {
+    try { return JSON.parse(ls.get('echoos-wins') || '{}') || {}; } catch { return {}; }
+  },
+  save(id, { x, y, w, h }) {
+    const all = winGeom.load();
+    all[id] = { x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(h) };
+    ls.set('echoos-wins', JSON.stringify(all));
+  },
+  clear() {
+    try { localStorage.removeItem('echoos-wins'); } catch {}
+  },
+};
+
 store.subscribe((s) => {
   persist('theme', s.theme);
   persist('sound', s.sound);
