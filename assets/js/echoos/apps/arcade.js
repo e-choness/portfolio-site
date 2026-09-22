@@ -14,10 +14,10 @@ function readProp(name, fallback) {
 }
 
 function hexToRgba(hex, a) {
-  if (typeof hex !== 'string') return `rgba(122, 79, 184, ${a})`;
+  if (typeof hex !== 'string') return `rgba(106, 90, 214, ${a})`;
   let h = hex.trim().replace(/^#/, '');
   if (h.length === 3) h = h.split('').map((c) => c + c).join('');
-  if (!/^[0-9a-f]{6}$/i.test(h)) return `rgba(122, 79, 184, ${a})`;
+  if (!/^[0-9a-f]{6}$/i.test(h)) return `rgba(106, 90, 214, ${a})`;
   const n = parseInt(h, 16);
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
 }
@@ -34,17 +34,17 @@ function resolveOverlay() {
     probe.remove();
     if (v && v !== 'rgba(0, 0, 0, 0)') return v;
   } catch { /* probe failed — fall through */ }
-  return hexToRgba(readProp('--bg', '#f1eee8'), 0.72);
+  return hexToRgba(readProp('--bg', '#e8e4ef'), 0.72);
 }
 
 function buildTheme() {
   return {
-    bg: readProp('--bg', '#f1eee8'),
+    bg: readProp('--bg', '#e8e4ef'),
     ink: readProp('--ink', '#211d27'),
     muted: readProp('--muted', '#6f6a78'),
-    accent: readProp('--accent', '#7a4fb8'),
-    accentSoft: readProp('--accent-soft', 'rgba(122,79,184,.11)'),
-    soft: readProp('--accent-soft', 'rgba(122,79,184,.11)'),
+    accent: readProp('--accent', '#6a5ad6'),
+    accentSoft: readProp('--accent-soft', 'rgba(106,90,214,.12)'),
+    soft: readProp('--accent-soft', 'rgba(106,90,214,.12)'),
     surface: readProp('--surface', '#fbfaf7'),
     line: readProp('--line', 'rgba(33,29,39,.13)'),
     overlay: resolveOverlay(),
@@ -198,7 +198,7 @@ export function renderArcade(bodyEl, { toast }) {
   // module is in flight, so the stage never shows the previous game's last frame.
   function canvasNotice(msg) {
     const c = canvas.getContext('2d');
-    c.fillStyle = readProp('--bg', '#f1eee8');
+    c.fillStyle = readProp('--bg', '#e8e4ef');
     c.fillRect(0, 0, canvas.width, canvas.height);
     c.fillStyle = readProp('--muted', '#6f6a78');
     c.font = '13px "IBM Plex Mono", monospace';

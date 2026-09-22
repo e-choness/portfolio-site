@@ -1278,20 +1278,26 @@
 
 // ── resume ─────────────────────────────────────────────────────────────────
 // os-resume: title-bar download button
+// Title-bar download link (Experience window). Outlined, not filled, so it
+// never reads as a selected tab next to the Experience / Resume tabs.
 .os-resume-dl {
   font: 600 11px var(--font-mono);
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
   border-radius: 8px;
-  padding: 6px 12px;
-  border: 0;
+  padding: 4px 10px;
+  margin-left: 6px;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition: background 0.15s ease;
   text-decoration: none;
   display: inline-block;
 }
+.os-resume-dl::before {
+  content: "↓ ";
+}
 .os-resume-dl:hover {
-  opacity: 0.88;
+  background: var(--accent-soft);
 }
 .os-resume-dl:focus-visible {
   outline: 2px solid var(--accent);

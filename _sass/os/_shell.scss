@@ -15,7 +15,9 @@ body:has(#echoos-root) {
   position: fixed;
   inset: 0;
   overflow: hidden;
-  background: var(--bg);
+  // Static wallpaper glow (17e: bright core fading to the edges) under the
+  // animated canvas — one gradient paint, no per-frame cost.
+  background: radial-gradient(120% 90% at 50% 42%, var(--glow), transparent 62%), var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: 13.5px;
