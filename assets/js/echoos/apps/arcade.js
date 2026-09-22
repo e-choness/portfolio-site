@@ -117,6 +117,7 @@ export function renderArcade(bodyEl, { toast }) {
 
   // --- grid ----------------------------------------------------------------
   const hiscores = () => (window.EchoGames ? window.EchoGames.highscores() : {});
+  const hiLabel = (h) => (h ? `best ${h}` : 'new');
   for (const game of games) {
     const b = document.createElement('button');
     b.type = 'button';
@@ -126,7 +127,7 @@ export function renderArcade(bodyEl, { toast }) {
     b.querySelector('.os-arcade-card-glyph').textContent = game.glyph || '▪';
     b.querySelector('.os-arcade-card-name').textContent = game.name;
     b.querySelector('.os-arcade-card-tag').textContent = game.tag;
-    b.querySelector('.os-arcade-card-hi').textContent = `★ ${hiscores()[game.id] || 0}`;
+    b.querySelector('.os-arcade-card-hi').textContent = hiLabel(hiscores()[game.id] || 0);
     b.addEventListener('click', () => startGame(game));
     // Hover or keyboard focus is a good enough signal to go and fetch the module.
     const warm = () => window.EchoGames.preload([game.id], game.data ? [game.data] : []);
@@ -265,7 +266,7 @@ export function renderArcade(bodyEl, { toast }) {
     // Refresh hi score display on all cards after a game session.
     const hi = hiscores();
     for (const b of grid.querySelectorAll('.os-arcade-card')) {
-      b.querySelector('.os-arcade-card-hi').textContent = `★ ${hi[b.dataset.game] || 0}`;
+      b.querySelector('.os-arcade-card-hi').textContent = hiLabel(hi[b.dataset.game] || 0);
     }
   }
 

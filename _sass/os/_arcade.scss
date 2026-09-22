@@ -25,8 +25,8 @@
 .os-arcade-card {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 16px;
+  gap: 4px;
+  padding: 12px 14px;
   background: var(--surface2);
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -358,4 +358,15 @@
   text-decoration: none;
   transition: color 0.15s ease;
   &:hover { color: var(--accent); }
+}
+
+// Mobile: nine cards as a 2-column grid (5 rows) instead of 9 full-width rows.
+@media (max-width: 760px) {
+  .os-arcade-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .os-arcade-card-name {
+    font-size: 14px;
+  }
 }
