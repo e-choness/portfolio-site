@@ -33,6 +33,8 @@ including:
   - assets/images/companies/ and assets/images/education/ (logos and
     trademarks of their respective organizations)
   - assets/images/icons/ (brand icons of their respective owners)
+  - assets/js/games/catmario/engine.js (game rules and stage data of
+    Syobon Action by Chiku, translated from the Open Syobon Action port)
 
 =======================================================================
 

@@ -137,7 +137,7 @@ export function renderArcade(bodyEl, { toast }) {
 
   // The Arcade is open, so the games are about to be wanted. Fetch the rest in
   // the background once the browser is idle — on touch there is no hover to
-  // warm them, and the whole set is only a few KB.
+  // warm them, and the whole set is ~65 KB gzipped.
   const whenIdle = window.requestIdleCallback || ((fn) => setTimeout(fn, 400));
   whenIdle(() => {
     if (!alive) return;
@@ -228,7 +228,7 @@ export function renderArcade(bodyEl, { toast }) {
     padEl.innerHTML = '';
     if (game.pad) {
       const frag = document.createDocumentFragment();
-      for (const { key, label } of game.pad) {
+      for (const { key, label, hold } of game.pad) {
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'os-pad-btn';
@@ -236,8 +236,15 @@ export function renderArcade(bodyEl, { toast }) {
         b.style.touchAction = 'none';
         b.addEventListener('pointerdown', (e) => {
           e.preventDefault();
-          if (runner) runner.key(key);
+          if (!runner) return;
+          if (hold) runner.hold(key, true); else runner.key(key);
         });
+        if (hold) {
+          const release = () => { if (runner) runner.hold(key, false); };
+          b.addEventListener('pointerup', release);
+          b.addEventListener('pointercancel', release);
+          b.addEventListener('pointerleave', release);
+        }
         frag.appendChild(b);
       }
       padEl.appendChild(frag);

@@ -175,3 +175,27 @@
       url: https://nssdc.gsfc.nasa.gov/planetary/factsheet/
     - label: Orrery – Wikipedia
       url: https://en.wikipedia.org/wiki/Orrery
+
+- id: catmario
+  name: "Cat Mario"
+  tag: "troll platformer"
+  glyph: "ω"
+  hint: "← → run · ↑ / space jump · ↓ into pipes · O gives up · esc to the title"
+  pad: [{ key: "ArrowLeft", label: "←", hold: true }, { key: "ArrowDown", label: "↓", hold: true }, { key: "ArrowRight", label: "→", hold: true }, { key: "ArrowUp", label: "▲", hold: true }]
+  credit: "Chiku (ちく) · 2007 · Open Syobon Action port: Mathew Velasquez"
+  origin: >-
+    Syobon Action (しょぼんのアクション) is a freeware platformer Chiku released in 2007. It looks
+    like Super Mario Bros. and then breaks every promise that look makes — blocks that dodge,
+    floors that drop out, a goal pole that falls on you. All nine stages in the source are
+    here, 1-1 through 3-1 with their sub-areas, their rules translated line for line from the
+    open-source C++ port and every sprite redrawn in code.
+  fact: >-
+    The player has infinite lives. There is no game over: when the counter reaches zero it
+    simply keeps going, down into the negative numbers, for as long as you are stubborn
+    enough to continue. The hero is Shobon, a 2channel text-art cat whose name comes from
+    the dejected emoticon (´・ω・`).
+  sources:
+    - label: Syobon Action – Wikipedia
+      url: https://en.wikipedia.org/wiki/Syobon_Action
+    - label: Open Syobon Action (GitHub)
+      url: https://github.com/akemin-dayo/OpenSyobonAction

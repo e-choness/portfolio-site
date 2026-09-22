@@ -8,7 +8,7 @@
 // reach the grid through apps/arcade.js.
 //
 // window.EchoGames.start(canvas, id, theme, onScore, dataName?)
-//   -> Promise<{ stop(), pointer(x, y, type), key(k) }>
+//   -> Promise<{ stop(), pointer(x, y, type), key(k), hold(k, down) }>
 // window.EchoGames.preload([id, ...], [dataName, ...])  — warm, ignore failures
 (function(){
   const HS='echoos-hiscores';
@@ -80,7 +80,10 @@
     return {
       stop(){dead=true;if(raf)cancelAnimationFrame(raf);window.removeEventListener('keydown',kd);window.removeEventListener('keyup',ku);},
       pointer(x,y,type){if(G.pointer&&!over)G.pointer(x,y,type)},
-      key(k){if(G.key&&!over){G.key(k,true);setTimeout(()=>{if(!dead&&G.key)G.key(k,false)},90)}}
+      key(k){if(G.key&&!over){G.key(k,true);setTimeout(()=>{if(!dead&&G.key)G.key(k,false)},90)}},
+      // A pad button marked hold: true stays down until the finger lifts — a
+      // platformer needs to know how long "right" is held, not just that it was.
+      hold(k,down){if(G.key&&(down?!over:!dead))G.key(k,down)}
     };
   }
 

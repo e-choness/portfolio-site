@@ -39,7 +39,7 @@ within the OS. All content comes from the same YAML files in `_data/`.
 | Desktop shell | Draggable, resizable windows; z-ordering; animated wallpaper |
 | Spotlight | ⌘K command palette — search apps, projects, posts |
 | Terminal | `echo-sh` with `open`, `theme`, `clear`, `help` and more |
-| Arcade | 9 canvas games (Blockfall, Snake, Invaders, a raycast Labyrinth, a pixel-shaded Orrery, and more); hi-scores persist |
+| Arcade | 10 canvas games (Blockfall, Snake, Invaders, a raycast Labyrinth, a pixel-shaded Orrery, all nine stages of Cat Mario, and more); hi-scores persist |
 | Blog reader | Mermaid diagrams + syntax-highlighted code blocks inside the OS window |
 | Theme | Light / dark with persisted accent color; animated portrait ring in About |
 | PWA | `manifest.webmanifest` — installable on desktop and mobile |
@@ -85,6 +85,7 @@ within the OS. All content comes from the same YAML files in `_data/`.
 │   ├── js/echoos/           # OS modules (see Module map)
 │   ├── js/games.js          # Arcade runner (lazy-loads the games)
 │   ├── js/games/            #   one ES module per game + common.js helpers
+│   │   └── catmario/engine.js #   Syobon Action's rules, translated from the C++ port
 │   ├── data/content.json    # Liquid page: site data emitted as JSON for the OS
 │   ├── data/solar.json      #   ditto for _data/solar.yml, fetched by the Orrery
 │   └── manifest.webmanifest # PWA manifest
@@ -213,6 +214,7 @@ The dock icon, window title, desktop icon, and Spotlight entry all come from
      glyph: "◆"            # shown on the grid card
      hint: "arrows to move"
      pad: [{ key: "ArrowLeft", label: "←" }]   # touch buttons; omit if pointer-only
+                           # (add hold: true to keep the key down while pressed)
      data: mydata          # optional: _data/mydata.yml, reaching the game as env.data
      credit: Someone · 1979
      origin: >-
