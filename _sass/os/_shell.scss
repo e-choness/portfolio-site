@@ -8,6 +8,7 @@
 body:has(#echoos-root) {
   overflow: hidden;
   height: 100vh;
+  height: 100dvh; // iOS Safari's collapsing toolbar must not cover the tab bar
 }
 
 #echoos-root {
@@ -494,12 +495,14 @@ body:has(#echoos-root) {
     left: 0;
     right: 0;
     bottom: 0;
-    height: 64px;
+    height: calc(64px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
     z-index: 6000;
     display: flex;
     align-items: center;
     justify-content: space-around;
-    padding: 0 10px;
+    padding-left: 10px;
+    padding-right: 10px;
     background: color-mix(in oklab, var(--surface) 85%, transparent);
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
@@ -541,6 +544,12 @@ body:has(#echoos-root) {
   .os-tabbar-item:focus-visible .os-glyph {
     color: var(--ink);
   }
+  .os-tabbar-item.is-active .os-tabbar-tile {
+    border-color: var(--accent);
+  }
+  .os-tabbar-item.is-active .os-tabbar-label {
+    color: var(--ink);
+  }
 }
 
 // ── mobile home grid ──────────────────────────────────────────────────────
@@ -555,7 +564,7 @@ body:has(#echoos-root) {
   .os-home {
     position: absolute;
     inset: 0;
-    padding: calc(var(--bar-h) + 16px) 16px calc(64px + 16px);
+    padding: calc(var(--bar-h) + 16px) 16px calc(64px + 16px + env(safe-area-inset-bottom));
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
     gap: 12px;

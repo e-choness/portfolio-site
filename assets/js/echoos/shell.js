@@ -31,6 +31,9 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
 
   function setFocusedApp(id) {
     mbApp.textContent = id ? labelFor(id) : '—';
+    for (const btn of tabbar.querySelectorAll('.os-tabbar-item[data-app]')) {
+      btn.classList.toggle('is-active', btn.dataset.app === id);
+    }
   }
 
   MENU.querySelector('.os-mb-spotlight').addEventListener('click', () => onSpotlight && onSpotlight());
@@ -121,6 +124,17 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   const tabbar = document.createElement('nav');
   tabbar.className = 'os-tabbar';
   tabbar.setAttribute('aria-label', 'Tab bar');
+  // Home: close every open sheet so it always lands on the grid.
+  const homeBtn = document.createElement('button');
+  homeBtn.type = 'button';
+  homeBtn.className = 'os-tabbar-item os-tabbar-home';
+  homeBtn.setAttribute('aria-label', 'Home');
+  homeBtn.innerHTML = '<span class="os-tabbar-tile"><span class="os-glyph">⌂</span></span><span class="os-tabbar-label">Home</span>';
+  homeBtn.addEventListener('click', () => {
+    if (!wm) return;
+    for (const app of apps) if (wm.isOpen(app.id)) wm.closeApp(app.id);
+  });
+  tabbar.appendChild(homeBtn);
   for (const app of apps) {
     if (!app.tab_bar) continue;
     const btn = document.createElement('button');
