@@ -38,7 +38,7 @@ export function initNotifications(root, { portrait = '', stats = [], onTour } = 
       const cell = document.createElement('div');
       cell.className = 'os-notif-stat';
       cell.innerHTML = `
-        <div class="os-notif-stat-val">${st.value}</div>
+        <div class="os-notif-stat-val">${st.display ?? st.value}</div>
         <div class="os-notif-stat-label">${st.label}</div>`;
       statsEl.appendChild(cell);
     }

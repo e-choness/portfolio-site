@@ -259,7 +259,8 @@ export function createTerminal(content, wm, { apps }) {
         break;
 
       case 'neofetch': {
-        const uptime = deriveMaxYears();
+        // Career length: profile.stats[0] is the one source (Patch 71).
+        const uptime = content.profile?.stats?.[0]?.display ?? `${deriveMaxYears()}+`;
         print({ text: TERMINAL.neofetch.os, kind: 'accent' });
         print({ text: fmt(TERMINAL.cmd_strings.neofetch_host, { host: TERMINAL.neofetch.host }), kind: 'muted' });
         print({ text: fmt(TERMINAL.cmd_strings.neofetch_shell, { shell: TERMINAL.neofetch.shell }), kind: 'muted' });

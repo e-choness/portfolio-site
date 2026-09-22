@@ -39,7 +39,7 @@ cmd_strings:
   profile_line: "{name} — {title} · {location}"
   neofetch_host: "host: {host}"
   neofetch_shell: "shell: {shell}"
-  neofetch_uptime: "uptime: {uptime}+ years in AI · packages: {projects} projects, {posts} posts"
+  neofetch_uptime: "uptime: {uptime} years in AI · packages: {projects} projects, {posts} posts"
   list_item: "• {value}"
   experience_item: "• {role} — {company}"
   education_item: "• {degree} — {school}"
