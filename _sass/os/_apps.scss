@@ -498,6 +498,25 @@
   z-index: 10;
   background: var(--surface);
   padding-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+// Reading progress: 2px accent bar pinned to the top of the scroller. Drawn
+// above the (also sticky) back bar, hence z-index 11 rather than 1.
+.os-blog-progress {
+  position: sticky;
+  top: 0;
+  height: 2px;
+  background: transparent;
+  z-index: 11;
+}
+.os-blog-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
 }
 
 // back button (detail view)
@@ -993,9 +1012,9 @@
   display: block;
   width: 100%;
   max-width: 420px;
-  height: 180px;
+  height: 140px;
   border-radius: var(--r-ctl);
-  margin: 12px auto 16px;
+  margin: 8px auto 14px;
   object-fit: cover;
   border: 1px solid var(--line);
 }

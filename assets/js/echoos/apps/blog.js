@@ -119,7 +119,30 @@ export function renderBlog(bodyEl, { content, toast }) {
     );
   }
 
+  // Reading progress: one passive scroll listener on the window body (the
+  // scroller), replaced per post and removed on list view / teardown.
+  let offProgress = null;
+  function clearProgress() {
+    if (offProgress) offProgress();
+    offProgress = null;
+  }
+  function trackProgress() {
+    clearProgress();
+    const bar = app.querySelector('.os-blog-progress > span');
+    const scroller = bodyEl;
+    const update = () => {
+      const max = scroller.scrollHeight - scroller.clientHeight;
+      const p = max > 0 ? Math.min(1, scroller.scrollTop / max) : 1;
+      bar.style.transform = `scaleX(${p})`;
+    };
+    scroller.addEventListener('scroll', update, { passive: true });
+    offProgress = () => scroller.removeEventListener('scroll', update);
+    update();
+    return update;
+  }
+
   function renderList() {
+    clearProgress();
     const PAGE_SIZE = 8;
     const all = filtered();
     const totalPages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
@@ -265,6 +288,7 @@ export function renderBlog(bodyEl, { content, toast }) {
     const nextPost = posts[idx - 1] || null; // newer = next
     const imageHtml = post.image ? `<img class="os-blog-image" src="${esc(post.image)}" alt="">` : '';
     app.innerHTML = `
+      <div class="os-blog-progress"><span></span></div>
       <div class="os-blog-back-bar">
         <button type="button" class="os-blog-back">‹ all posts</button>
       </div>
@@ -294,6 +318,8 @@ export function renderBlog(bodyEl, { content, toast }) {
         renderReading(nextPost);
       });
     }
+
+    const updateProgress = trackProgress();
 
     const heroImg = app.querySelector('.os-blog-image');
     if (heroImg) heroImg.addEventListener('error', () => heroImg.remove(), { once: true });
@@ -325,6 +351,7 @@ export function renderBlog(bodyEl, { content, toast }) {
         img.addEventListener('error', () => img.remove(), { once: true });
         app.querySelector('.os-blog-h1').after(img);
       }
+      updateProgress();
     } catch {
       if (toast) toast('Could not load post — opening in a new tab');
       fallbackNote();
@@ -354,6 +381,7 @@ export function renderBlog(bodyEl, { content, toast }) {
 
   // Return teardown function (Patch 23 contract)
   return () => {
+    clearProgress();
     clearOutsideClickListener();
     document.removeEventListener('echoos:open-post', onOpenPost);
   };
