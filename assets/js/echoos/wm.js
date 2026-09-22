@@ -54,6 +54,23 @@ export function createWM(root, opts = {}) {
     return win;
   }
 
+  // First open of a non-boot, non-anchored app: step +28/+28 off the focused
+  // window instead of the fixed apps.yml x/y, which piles windows up.
+  function cascadeFrom(win) {
+    const a = workArea();
+    const f = focused && wins.get(focused);
+    const STEP = 28;
+    let x = f && f.open ? f.x + STEP : a.x + 104;
+    let y = f && f.open ? f.y + STEP : a.y + 16;
+    const fitsY = (yy) => yy + win.h <= a.y + a.h;
+    // Wrap to the start when the step runs off the work area — unless the
+    // window is too tall to fit even there (short screens), in which case
+    // wrapping would stack every window on one rect; keep the x step instead
+    // and let clampWin pin y.
+    if (x + win.w > a.x + a.w || (!fitsY(y) && fitsY(a.y + 16))) { x = a.x + 104; y = a.y + 16; }
+    win.x = x; win.y = y;
+  }
+
   function apply(win) {
     const el = winEls.get(win.id);
     if (!el) return;
@@ -253,6 +270,7 @@ export function createWM(root, opts = {}) {
     // can't see it: size and clamp against the real work area on first open.
     if (!win.placed) {
       Object.assign(win, initialSize(app));
+      if (!app.open_on_boot && !app.anchor) cascadeFrom(win);
       clampWin(win);
       win.placed = true;
     }
