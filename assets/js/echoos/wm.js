@@ -19,29 +19,37 @@ export function createWM(root, opts = {}) {
 
   // --- geometry -----------------------------------------------------------
 
-  // Initial sizes are viewport-derived, NOT the raw apps.yml numbers (§6.4):
-  // w = min(app.w, vw - 120), h = min(app.h, vh - 140), then clamp().
+  // Usable rectangle between the menubar and the dock. Measured, not assumed:
+  // the dock's height changes with the tooltip patch and the mobile sheet has
+  // its own geometry (see .os-sheet), so hardcoded 84/140 offsets drift.
+  function workArea() {
+    const top = 46;                                   // menubar (--bar-h) + 6
+    const dock = root.querySelector('.os-dock');
+    const r = dock && dock.offsetParent ? dock.getBoundingClientRect() : null;
+    const bottom = r ? r.top - 10 : vh() - 16;
+    return { x: 6, y: top, w: vw() - 12, h: Math.max(240, bottom - top) };
+  }
+
+  // Initial sizes are work-area-derived, NOT the raw apps.yml numbers (§6.4).
   function initialSize(app) {
-    return {
-      w: Math.min(app.w, vw() - 120),
-      h: Math.min(app.h, vh() - 140),
-    };
+    const a = workArea();
+    return { w: Math.min(app.w, a.w - 108), h: Math.min(app.h, a.h) };
   }
 
   function clampWin(win) {
-    const w = Math.min(win.w, vw() - 16);
-    const h = Math.min(win.h, vh() - 140);
-    win.w = w;
-    win.h = h;
-    win.x = clamp(win.x, 6, vw() - w - 6);
-    win.y = clamp(win.y, 46, Math.max(46, vh() - h - 84));
+    const a = workArea();
+    win.w = Math.min(win.w, a.w);
+    win.h = Math.min(win.h, a.h);
+    win.x = clamp(win.x, a.x, a.x + a.w - win.w);
+    win.y = clamp(win.y, a.y, a.y + a.h - win.h);
     return win;
   }
 
   function anchorApp(win, app) {
     if (app.anchor === 'bottom-right') {
+      const a = workArea();
       win.x = vw() - win.w - 24;
-      win.y = vh() - win.h - 90;
+      win.y = a.y + a.h - win.h - 8;
     }
     return win;
   }
@@ -100,6 +108,7 @@ export function createWM(root, opts = {}) {
       z: 0,
       minimized: false,
       rendered: false,
+      placed: false, // sized/placed against the live work area on first open
       teardown: null,
     };
     const s = initialSize(app);
@@ -143,8 +152,10 @@ export function createWM(root, opts = {}) {
     document.body.classList.add('os-dragging-cursor');
 
     const move = (ev) => {
+      // Loose bounds: partly under the dock is fine, the title bar is not.
+      const a = workArea();
       win.x = clamp(ev.clientX - dx, -win.w + 80, vw() - 60);
-      win.y = clamp(ev.clientY - dy, 42, vh() - 60);
+      win.y = clamp(ev.clientY - dy, 42, a.y + a.h - 40);
       apply(win);
     };
     const up = (ev) => {
@@ -179,8 +190,9 @@ export function createWM(root, opts = {}) {
     el.classList.add('os-resizing');
 
     const move = (ev) => {
+      const a = workArea();
       win.w = clamp(sw + ev.clientX - sx, 320, vw() - win.x - 8);
-      win.h = clamp(sh + ev.clientY - sy, 240, vh() - win.y - 8);
+      win.h = clamp(sh + ev.clientY - sy, 240, a.y + a.h - win.y);
       apply(win);
     };
     const up = (ev) => {
@@ -237,6 +249,13 @@ export function createWM(root, opts = {}) {
     }
     let win = wins.get(id);
     if (!win) win = buildWin(app);
+    // Windows are pre-built before the dock exists, so the build-time size
+    // can't see it: size and clamp against the real work area on first open.
+    if (!win.placed) {
+      Object.assign(win, initialSize(app));
+      clampWin(win);
+      win.placed = true;
+    }
     if (app.anchor === 'bottom-right') {
       anchorApp(win, app);
       clampWin(win);
@@ -324,13 +343,18 @@ export function createWM(root, opts = {}) {
 
   // --- viewport resize: re-clamp every open window ------------------------
 
-  function onResize() {
+  function reclampAll() {
     for (const win of wins.values()) {
       if (!win.open) continue;
       if (byId(win.id) && byId(win.id).anchor === 'bottom-right') anchorApp(win, byId(win.id));
       clampWin(win);
       apply(win);
     }
+  }
+  let resizeTimer = 0;
+  function onResize() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(reclampAll, 100);
   }
   window.addEventListener('resize', onResize);
 
@@ -432,6 +456,7 @@ export function createWM(root, opts = {}) {
       }
     },
     destroy() {
+      clearTimeout(resizeTimer);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('keydown', onKey);
       for (const el of winEls.values()) el.remove();
