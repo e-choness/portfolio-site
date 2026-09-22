@@ -1,6 +1,12 @@
 // shell.js — menu bar, clock, dock, desktop icons, mobile home grid (§6.1).
 import { store } from './store.js';
 
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s == null ? '' : String(s);
+  return d.innerHTML;
+}
+
 export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   const MENU = document.createElement('header');
   MENU.className = 'os-menubar';
@@ -100,9 +106,8 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
     btn.type = 'button';
     btn.className = 'os-dock-item';
     btn.dataset.app = app.id;
-    btn.title = app.label;
     btn.setAttribute('aria-label', `Open ${app.label}`);
-    btn.innerHTML = `<span class="os-dock-tile"><span class="os-glyph">${app.glyph}</span></span><span class="os-dock-dot"></span>`;
+    btn.innerHTML = `<span class="os-dock-tile"><span class="os-glyph">${app.glyph}</span></span><span class="os-dock-dot"></span><span class="os-dock-label" aria-hidden="true">${esc(app.label)}</span>`;
     btn.addEventListener('click', () => wm && wm.toggleApp(app.id));
     dock.appendChild(btn);
   }
@@ -171,14 +176,11 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   }
   root.appendChild(home);
 
-  function setOpenApps(idsSet) {
+  function setOpenApps(idsSet, minSet = new Set()) {
     for (const btn of dock.querySelectorAll('.os-dock-item')) {
       const appId = btn.dataset.app;
-      if (idsSet.has(appId)) {
-        btn.classList.add('is-open');
-      } else {
-        btn.classList.remove('is-open');
-      }
+      btn.classList.toggle('is-open', idsSet.has(appId));
+      btn.classList.toggle('is-min', minSet.has(appId));
     }
   }
 

@@ -489,13 +489,13 @@ export function createWM(root, opts = {}) {
 
   function notifyWindowsChanged() {
     const openIds = new Set();
+    const minIds = new Set();
     for (const win of wins.values()) {
-      if (win.open && !win.minimized) {
-        openIds.add(win.id);
-      }
+      if (win.open && !win.minimized) openIds.add(win.id);
+      else if (win.minimized) minIds.add(win.id);
     }
     if (opts.onWindowsChanged) {
-      opts.onWindowsChanged(openIds);
+      opts.onWindowsChanged(openIds, minIds);
     }
   }
 

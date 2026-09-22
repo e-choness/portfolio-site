@@ -93,8 +93,8 @@ function initOS(content) {
       if (shellRef.current) shellRef.current.setFocusedApp(id);
       if (id === 'term' && term) term.focusInput();
     },
-    onWindowsChanged: (openIds) => {
-      if (shellRef.current) shellRef.current.setOpenApps(openIds);
+    onWindowsChanged: (openIds, minIds) => {
+      if (shellRef.current) shellRef.current.setOpenApps(openIds, minIds);
     },
     renderers: {
       about: renderAbout,

@@ -18,6 +18,7 @@
 }
 
 .os-dock-item {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -67,6 +68,37 @@
 }
 .os-dock-item.is-open .os-dock-dot {
   opacity: 1;
+}
+// Minimized: hollow ring instead of the filled dot.
+.os-dock-item.is-min .os-dock-dot {
+  opacity: 1;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+// Instant label (replaces the ~1s native title tooltip).
+.os-dock-label {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translate(-50%, 4px);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font: 600 10.5px var(--font-mono);
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 6px 16px -8px rgba(30, 20, 50, 0.35);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+.os-dock-item:hover .os-dock-label,
+.os-dock-item:focus-visible .os-dock-label {
+  opacity: 1;
+  transform: translate(-50%, 0);
 }
 
 @media (max-width: 760px) {
