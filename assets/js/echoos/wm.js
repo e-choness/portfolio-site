@@ -109,6 +109,7 @@ export function createWM(root, opts = {}) {
         <span class="os-win-dot" aria-hidden="true"></span>
         <span class="os-win-title"></span>
         <div class="os-win-actions"></div>
+        <button type="button" class="os-win-max" aria-label="Maximize ${esc(app.label)}"></button>
         <button type="button" class="os-win-close" aria-label="Close ${esc(app.label)}"></button>
       </header>
       <div class="os-win-body"></div>
@@ -126,6 +127,7 @@ export function createWM(root, opts = {}) {
       minimized: false,
       rendered: false,
       placed: false, // sized/placed against the live work area on first open
+      max: null,     // pre-maximize rect {x,y,w,h} while maximized
       teardown: null,
     };
     const s = initialSize(app);
@@ -143,6 +145,10 @@ export function createWM(root, opts = {}) {
       e.stopPropagation();
       closeApp(win.id);
     });
+    el.querySelector('.os-win-max').addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMax(win);
+    });
     el.querySelector('.os-win-bar').addEventListener('pointerdown', (e) => startDrag(e, win));
     el.querySelector('.os-win-resize').addEventListener('pointerdown', (e) => startResize(e, win));
 
@@ -153,7 +159,28 @@ export function createWM(root, opts = {}) {
     return win;
   }
 
+  // --- maximize -----------------------------------------------------------
+
+  function setMaxState(win) {
+    const el = winEls.get(win.id);
+    el.classList.toggle('is-max', !!win.max);
+    el.querySelector('.os-win-max').setAttribute('aria-label', `${win.max ? 'Restore' : 'Maximize'} ${byId(win.id).label}`);
+  }
+
+  function toggleMax(win) {
+    const a = workArea();
+    if (win.max) { Object.assign(win, win.max); win.max = null; }
+    else { win.max = { x: win.x, y: win.y, w: win.w, h: win.h }; Object.assign(win, a); }
+    apply(win);
+    setMaxState(win);
+  }
+
   // --- drag ---------------------------------------------------------------
+
+  // Title-bar double-click is detected here, not with a `dblclick` listener:
+  // startDrag captures the pointer on the window, which retargets the click
+  // events to the window element so they never reach the bar.
+  let lastBarDown = { t: 0, x: 0, y: 0, id: null };
 
   function startDrag(e, win) {
     if (MOBILE.matches) return;
@@ -161,14 +188,36 @@ export function createWM(root, opts = {}) {
     if (resizeActive) return;
     if (e.button !== 0) return;
     focus(win.id);
-    const dx = e.clientX - win.x;
+    const prev = lastBarDown;
+    if (prev.id === win.id && e.timeStamp - prev.t < 400 &&
+        Math.abs(e.clientX - prev.x) < 6 && Math.abs(e.clientY - prev.y) < 6) {
+      lastBarDown = { t: 0, x: 0, y: 0, id: null };
+      toggleMax(win);
+      return;
+    }
+    lastBarDown = { t: e.timeStamp, x: e.clientX, y: e.clientY, id: win.id };
+    let dx = e.clientX - win.x;
     const dy = e.clientY - win.y;
+    const sx = e.clientX;
+    const sy = e.clientY;
     const el = winEls.get(win.id);
     el.setPointerCapture(e.pointerId);
     el.classList.add('os-dragging');
     document.body.classList.add('os-dragging-cursor');
 
     const move = (ev) => {
+      // Dragging a maximized window restores it under the cursor, keeping the
+      // cursor at the same relative x on the title bar. Wait for real movement
+      // so the two pointerdowns of a title-bar double-click don't restore it.
+      if (win.max) {
+        if (Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) < 4) return;
+        const rel = dx / win.w;
+        win.w = win.max.w;
+        win.h = win.max.h;
+        win.max = null;
+        setMaxState(win);
+        dx = Math.round(rel * win.w);
+      }
       // Loose bounds: partly under the dock is fine, the title bar is not.
       const a = workArea();
       win.x = clamp(ev.clientX - dx, -win.w + 80, vw() - 60);
@@ -198,6 +247,8 @@ export function createWM(root, opts = {}) {
     e.stopPropagation();
     resizeActive = true;
     focus(win.id);
+    // Resizing a maximized window keeps its current rect as the new normal.
+    if (win.max) { win.max = null; setMaxState(win); }
     const sx = e.clientX;
     const sy = e.clientY;
     const sw = win.w;
@@ -274,7 +325,9 @@ export function createWM(root, opts = {}) {
       clampWin(win);
       win.placed = true;
     }
-    if (app.anchor === 'bottom-right') {
+    if (win.max) {
+      Object.assign(win, workArea()); // the viewport may have changed while closed
+    } else if (app.anchor === 'bottom-right') {
       anchorApp(win, app);
       clampWin(win);
     }
@@ -364,8 +417,12 @@ export function createWM(root, opts = {}) {
   function reclampAll() {
     for (const win of wins.values()) {
       if (!win.open) continue;
-      if (byId(win.id) && byId(win.id).anchor === 'bottom-right') anchorApp(win, byId(win.id));
-      clampWin(win);
+      if (win.max) {
+        Object.assign(win, workArea());
+      } else {
+        if (byId(win.id) && byId(win.id).anchor === 'bottom-right') anchorApp(win, byId(win.id));
+        clampWin(win);
+      }
       apply(win);
     }
   }

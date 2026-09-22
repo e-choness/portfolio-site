@@ -79,6 +79,8 @@ body.os-dragging-cursor {
   margin-right: 0;
 }
 
+// Maximize mirrors the close button exactly (prototype addition, Patch 76).
+.os-win-max,
 .os-win-close {
   width: 26px;
   height: 26px;
@@ -98,10 +100,19 @@ body.os-dragging-cursor {
 .os-win-close::before {
   content: "×";
 }
+.os-win-max::before {
+  content: "▢";
+  font-size: 12px;
+}
+.os-win.is-max .os-win-max::before {
+  content: "❐";
+}
+.os-win-max:hover,
 .os-win-close:hover {
   color: var(--accent);
   background: var(--accent-soft);
 }
+.os-win-max:focus-visible,
 .os-win-close:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: -2px;
@@ -125,6 +136,13 @@ body.os-dragging-cursor {
 #echoos-root *::after {
   scrollbar-width: thin;
   scrollbar-color: var(--muted) transparent;
+}
+
+.os-win.is-max {
+  border-radius: var(--r-ctl);
+}
+.os-win.is-max .os-win-resize {
+  display: none;
 }
 
 .os-win-resize {
@@ -154,7 +172,8 @@ body.os-dragging-cursor {
     border-right: 0;
     border-bottom: 0;
   }
-  .os-win-resize {
+  .os-win-resize,
+  .os-win-max {
     display: none;
   }
 }
