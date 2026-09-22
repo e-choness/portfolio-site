@@ -145,7 +145,7 @@ body:has(#echoos-root) {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
-  color: var(--muted);
+  color: var(--ink);
   background: transparent;
   border: 1px solid var(--line);
   padding: 4px 9px;
@@ -161,13 +161,10 @@ body:has(#echoos-root) {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-.os-mb-sound.is-on {
+// Accent only for state: sound on, notification panel open.
+.os-mb-btn[aria-pressed="true"] {
   color: var(--accent);
   border-color: var(--accent);
-}
-.os-mb-sound:not(.is-on) {
-  color: var(--muted);
-  opacity: 0.45;
 }
 
 .os-mb-clock {

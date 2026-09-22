@@ -28,6 +28,17 @@ export function initNotifications(root, { portrait = '', stats = [], onTour } = 
     <button type="button" class="os-notif-tour">${NOTIF.panel.tour_btn}</button>`;
   root.appendChild(panel);
 
+  // Panel open/closed listeners (the menubar ▤ button mirrors it as aria-pressed).
+  const listeners = new Set();
+  function setHidden(v) {
+    panel.hidden = v;
+    for (const fn of listeners) fn(!v);
+  }
+  function onChange(fn) {
+    listeners.add(fn);
+    return () => listeners.delete(fn);
+  }
+
   function renderPanel() {
     const d = new Date();
     panel.querySelector('.os-notif-day').textContent = d.toLocaleDateString('en-US', { weekday: 'long' });
@@ -45,7 +56,7 @@ export function initNotifications(root, { portrait = '', stats = [], onTour } = 
   }
   panel.querySelector('.os-notif-close').addEventListener('click', closePanel);
   panel.querySelector('.os-notif-tour').addEventListener('click', () => {
-    panel.hidden = true;
+    setHidden(true);
     if (onTour) onTour();
   });
 
@@ -101,7 +112,7 @@ export function initNotifications(root, { portrait = '', stats = [], onTour } = 
   }
 
   function togglePanel() {
-    panel.hidden = !panel.hidden;
+    setHidden(!panel.hidden);
     if (!panel.hidden) renderPanel();
     // Prototype: opening the notification center dismisses the welcome toast.
     if (welcomeEl) {
@@ -111,7 +122,7 @@ export function initNotifications(root, { portrait = '', stats = [], onTour } = 
   }
 
   function closePanel() {
-    panel.hidden = true;
+    if (!panel.hidden) setHidden(true);
   }
 
   function isOpen() {
@@ -132,5 +143,5 @@ export function initNotifications(root, { portrait = '', stats = [], onTour } = 
     }
   });
 
-  return { toast, welcome, togglePanel, closePanel, isOpen, dismissWelcome };
+  return { toast, welcome, togglePanel, closePanel, isOpen, dismissWelcome, onChange };
 }

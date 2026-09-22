@@ -37,20 +37,26 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   const mbSound = MENU.querySelector('.os-mb-sound');
   const mbClock = MENU.querySelector('.os-mb-clock');
 
+  // The window title bar already shows the full title; the menubar names the app.
   function labelFor(id) {
     const app = apps.find((a) => a.id === id);
-    return app ? app.title : '';
+    return app ? app.label : '';
   }
 
   function setFocusedApp(id) {
-    mbApp.textContent = id ? labelFor(id) : '—';
+    mbApp.textContent = id ? labelFor(id) : '';
     for (const btn of tabbar.querySelectorAll('.os-tabbar-item[data-app]')) {
       btn.classList.toggle('is-active', btn.dataset.app === id);
     }
   }
 
   MENU.querySelector('.os-mb-spotlight').addEventListener('click', () => onSpotlight && onSpotlight());
-  MENU.querySelector('.os-mb-notif').addEventListener('click', () => notifications && notifications.togglePanel());
+  const mbNotif = MENU.querySelector('.os-mb-notif');
+  mbNotif.setAttribute('aria-pressed', 'false');
+  mbNotif.addEventListener('click', () => notifications && notifications.togglePanel());
+  const offNotif = notifications && notifications.onChange
+    ? notifications.onChange((open) => mbNotif.setAttribute('aria-pressed', String(open)))
+    : null;
 
   // --- theme --------------------------------------------------------------
   function applyTheme(theme) {
@@ -63,7 +69,7 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
 
   // --- sound --------------------------------------------------------------
   function applySound(sound) {
-    mbSound.classList.toggle('is-on', sound === 'on');
+    mbSound.setAttribute('aria-pressed', String(sound === 'on'));
   }
   mbSound.addEventListener('click', () => {
     store.set({ sound: store.get().sound === 'on' ? 'off' : 'on' });
@@ -190,6 +196,7 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
     destroy() {
       clearInterval(clockTimer);
       MOBILE.removeEventListener('change', applySpotLabel);
+      if (offNotif) offNotif();
       MENU.remove();
       dock.remove();
       desktop.remove();
