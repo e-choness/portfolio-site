@@ -1135,11 +1135,19 @@
 }
 
 // ── contact ────────────────────────────────────────────────────────────────
+// The body keeps its padding and overflow:auto (contact may legitimately
+// scroll on short screens); the pane fills it so the tiles can rest on the
+// bottom padding via margin-top:auto.
+.os-win-body:has(> .os-contact) {
+  display: flex;
+  flex-direction: column;
+}
 .os-contact {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  min-height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .os-contact-id-header {
@@ -1177,7 +1185,8 @@
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--muted);
+  margin-top: 6px;
 }
 .os-contact-blurb {
   font-family: var(--font-sans);
@@ -1218,7 +1227,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 12px 14px;
+  padding: 10px 14px;
   background: var(--surface2);
   border: 1px solid var(--line);
   border-radius: var(--r-ctl);
