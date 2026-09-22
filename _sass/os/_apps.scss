@@ -196,15 +196,6 @@
   padding: 8px 14px;
   text-decoration: none;
 }
-.os-about-resume {
-  font-weight: 700;
-  background: var(--accent);
-  color: var(--accent-ink);
-}
-.os-about-resume:hover {
-  opacity: 0.88;
-  color: var(--accent-ink);
-}
 .os-about-badge {
   display: inline-flex;
   align-items: center;
@@ -1452,14 +1443,6 @@
     flex-wrap: nowrap;
     gap: 6px;
   }
-  .os-about-resume {
-    flex: 1 1 auto;
-    min-width: 0;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
   .os-about-actions .os-about-social-link {
     flex: none;
     padding: 8px;
@@ -1522,9 +1505,11 @@
 
 // Panes that own the body's height: no body padding, no body scroll — the pane
 // scrolls internally and pins its own footer. Keyed on the pane, not the app id.
+// The resume pane is a tab of Experience, whose [data-app="exp"] body padding
+// (0,3,0) would outrank a bare :has() rule — hence the extra .os-win[data-app].
 .os-win-body:has(> .os-guide),
 .os-win-body:has(> .os-term),
-.os-win-body:has(> .os-resume-body) {
+.os-win[data-app] .os-win-body:has(> .os-resume-body) {
   padding: 0;
   overflow: hidden;
   display: flex;

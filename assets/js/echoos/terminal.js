@@ -243,7 +243,8 @@ export function createTerminal(content, wm, { apps }) {
 
       case 'resume':
         print({ text: TERMINAL.messages.resume, kind: 'muted' });
-        wm.openApp('resume');
+        wm.openApp('exp');
+        document.dispatchEvent(new CustomEvent('echoos:set-exp-tab', { detail: { tab: 'resume' } }));
         break;
 
       case 'clear':

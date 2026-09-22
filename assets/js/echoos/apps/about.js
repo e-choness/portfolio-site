@@ -83,18 +83,10 @@ export function renderAbout(bodyEl, { content, titlebar }) {
     }
     frag.appendChild(stats);
 
-    // Actions row: accent "Download Resume" + bordered social links
-    // (prototype lines 114-119). Prototype opens resumeUrl in a new tab
-    // (no `download` attribute); match that, not the plan's `download`.
+    // Actions row: bordered social links. The resume download lives in one
+    // place only — the Experience window's title bar, next to the Resume tab.
     const actions = document.createElement('div');
     actions.className = 'os-about-actions';
-    const resume = document.createElement('a');
-    resume.className = 'os-about-resume';
-    resume.href = p.resumeUrl || '#';
-    resume.target = '_blank';
-    resume.rel = 'noopener noreferrer';
-    resume.textContent = 'Download Resume';
-    actions.appendChild(resume);
     for (const s of p.social || []) {
       const a = document.createElement('a');
       a.className = 'os-about-social-link';

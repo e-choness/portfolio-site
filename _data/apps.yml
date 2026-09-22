@@ -78,14 +78,6 @@
   desktop_icon: true
   desktop_icon_order: 1
   tab_bar: true
-- id: resume
-  label: Resume
-  glyph: "≡"
-  title: "resume.pdf"
-  x: 250
-  y: 60
-  w: 770
-  h: 690
 - id: guide
   label: Guide
   glyph: "?"

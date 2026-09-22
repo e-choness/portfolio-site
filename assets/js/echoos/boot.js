@@ -17,7 +17,6 @@ import { renderProjects } from './apps/projects.js';
 import { renderSkills } from './apps/skills.js';
 import { renderBlog } from './apps/blog.js';
 import { renderContact } from './apps/contact.js';
-import { renderResume } from './apps/resume.js';
 import { renderArcade } from './apps/arcade.js';
 import { readRoute, writeRoute } from './router.js';
 
@@ -78,10 +77,13 @@ async function main() {
 // arcade.js (Liquid-inlined), not content.json: an unknown id leaves the grid.
 function resolveRoute(r, content) {
   if (!r || !content) return null;
+  // The Resume app became a tab of Experience; keep old #/resume links working.
+  if (r.app === 'resume') r = { app: 'exp', item: 'resume' };
   if (!(content.apps || []).some((a) => a.id === r.app)) return null;
   if (r.item) {
     if (r.app === 'blog' && !(content.posts || []).some((p) => p.slug === r.item)) return null;
     if (r.app === 'proj' && !(content.projects || []).some((p) => p.slug === r.item)) return null;
+    if (r.app === 'exp' && r.item !== 'resume') return null;
   }
   return r;
 }
@@ -90,6 +92,7 @@ const ITEM_EVENTS = {
   blog: (item) => ['echoos:open-post', { slug: item }],
   proj: (item) => ['echoos:open-project', { slug: item }],
   arcade: (item) => ['echoos:open-game', { id: item }],
+  exp: (item) => ['echoos:set-exp-tab', { tab: item }],
 };
 
 function initOS(content, route = null) {
@@ -126,7 +129,6 @@ function initOS(content, route = null) {
       skills: renderSkills,
       blog: renderBlog,
       contact: renderContact,
-      resume: renderResume,
       arcade: renderArcade,
       guide: (bodyEl, ctx) => renderGuide(bodyEl, { wm, openSpotlight: () => spotlight.toggle(), content: ctx.content }),
       term: (bodyEl, ctx) => {
