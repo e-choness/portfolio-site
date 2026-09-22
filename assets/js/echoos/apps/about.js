@@ -26,7 +26,8 @@ export function renderAbout(bodyEl, { content, titlebar }) {
   if (titlebar) {
     titlebar.innerHTML = `
       <button type="button" class="os-tab-btn" data-tab="profile" role="tab" aria-selected="true">Profile</button>
-      <button type="button" class="os-tab-btn" data-tab="education" role="tab" aria-selected="false">Education</button>`;
+      <button type="button" class="os-tab-btn" data-tab="education" role="tab" aria-selected="false">Education</button>
+      ${p.resumeUrl ? `<a class="os-resume-dl" href="${esc(p.resumeUrl)}" target="_blank" rel="noopener">resume</a>` : ''}`;
   }
 
   function profilePanel() {
