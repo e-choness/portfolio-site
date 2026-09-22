@@ -7,6 +7,7 @@ help:
   # {games} is filled in from _data/arcade.yml at print time
   - "games: {games}"
   - "fun: git · ping · uname · man · ps · fortune · cat · curl · matrix · coffee"
+  - "keys: ⌘K search · esc close · alt+` switch window"
 
 neofetch:
   os: "EchoOS 1.0 — paper edition"

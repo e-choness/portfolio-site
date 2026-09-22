@@ -481,8 +481,40 @@ export function createWM(root, opts = {}) {
 
   // --- keyboard -----------------------------------------------------------
 
+  // Alt+` / Alt+Shift+` cycle focus through open, non-minimized windows. The
+  // ring is snapshotted in z-order when a cycle starts — focusing raises z, so
+  // re-sorting on every press would just bounce between the top two.
+  let cycle = null; // { ids, idx, last }
+  let kbTimer = 0;
+  function cycleWindows(dir) {
+    const f = getFocused();
+    if (!cycle || !f || f.id !== cycle.last) {
+      const ids = [...wins.values()].filter((w) => w.open && !w.minimized).sort((p, q) => p.z - q.z).map((w) => w.id);
+      cycle = { ids, idx: f ? ids.indexOf(f.id) : ids.length - 1, last: null };
+    }
+    const n = cycle.ids.length;
+    cycle.idx = (cycle.idx + dir + n) % n;
+    const id = cycle.ids[cycle.idx];
+    cycle.last = id;
+    focus(id);
+    const el = winEls.get(id);
+    for (const w of winEls.values()) w.classList.remove('is-kbfocus');
+    el.classList.add('is-kbfocus');
+    clearTimeout(kbTimer);
+    kbTimer = setTimeout(() => el.classList.remove('is-kbfocus'), 600);
+  }
+
   function onKey(e) {
     const spot = opts.getSpotlight ? opts.getSpotlight() : null;
+
+    if (e.altKey && e.code === 'Backquote' && !MOBILE.matches) {
+      const t = e.target;
+      const typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA') && !t.classList.contains('os-term-input');
+      if (typing || !api.isAnyOpen()) return;
+      e.preventDefault();
+      cycleWindows(e.shiftKey ? -1 : 1);
+      return;
+    }
 
     if (e.key === 'Escape') {
       if (opts.notifications && opts.notifications.isOpen()) {
@@ -579,6 +611,7 @@ export function createWM(root, opts = {}) {
     },
     destroy() {
       clearTimeout(resizeTimer);
+      clearTimeout(kbTimer);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('keydown', onKey);
       for (const el of winEls.values()) el.remove();

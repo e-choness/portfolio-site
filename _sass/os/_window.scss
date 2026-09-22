@@ -18,6 +18,11 @@
 .os-win:focus {
   outline: none;
 }
+// Brief ring after an Alt+` cycle so the user can see where focus went.
+.os-win.is-kbfocus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 
 .os-dragging {
   cursor: grabbing;
