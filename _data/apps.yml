@@ -57,16 +57,6 @@
   y: 120
   w: 780
   h: 500
-- id: contact
-  label: Contact
-  glyph: "@"
-  title: "contact"
-  x: 320
-  y: 110
-  w: 560
-  h: 520
-  desktop_icon: true
-  desktop_icon_order: 4
 - id: arcade
   label: Arcade
   glyph: "▲"

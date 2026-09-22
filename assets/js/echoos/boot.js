@@ -16,7 +16,6 @@ import { renderExperience } from './apps/experience.js';
 import { renderProjects } from './apps/projects.js';
 import { renderSkills } from './apps/skills.js';
 import { renderBlog } from './apps/blog.js';
-import { renderContact } from './apps/contact.js';
 import { renderArcade } from './apps/arcade.js';
 import { readRoute, writeRoute } from './router.js';
 
@@ -79,11 +78,14 @@ function resolveRoute(r, content) {
   if (!r || !content) return null;
   // The Resume app became a tab of Experience; keep old #/resume links working.
   if (r.app === 'resume') r = { app: 'exp', item: 'resume' };
+  // Contact became a section of About → Profile.
+  if (r.app === 'contact') r = { app: 'about', item: 'contact' };
   if (!(content.apps || []).some((a) => a.id === r.app)) return null;
   if (r.item) {
     if (r.app === 'blog' && !(content.posts || []).some((p) => p.slug === r.item)) return null;
     if (r.app === 'proj' && !(content.projects || []).some((p) => p.slug === r.item)) return null;
     if (r.app === 'exp' && r.item !== 'resume') return null;
+    if (r.app === 'about' && r.item !== 'contact') return null;
   }
   return r;
 }
@@ -93,6 +95,7 @@ const ITEM_EVENTS = {
   proj: (item) => ['echoos:open-project', { slug: item }],
   arcade: (item) => ['echoos:open-game', { id: item }],
   exp: (item) => ['echoos:set-exp-tab', { tab: item }],
+  about: () => ['echoos:set-about-tab', { tab: 'profile', section: 'contact' }],
 };
 
 function initOS(content, route = null) {
@@ -128,7 +131,6 @@ function initOS(content, route = null) {
       proj: renderProjects,
       skills: renderSkills,
       blog: renderBlog,
-      contact: renderContact,
       arcade: renderArcade,
       guide: (bodyEl, ctx) => renderGuide(bodyEl, { wm, openSpotlight: () => spotlight.toggle(), content: ctx.content }),
       term: (bodyEl, ctx) => {

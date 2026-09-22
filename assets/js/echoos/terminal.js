@@ -127,8 +127,20 @@ export function createTerminal(content, wm, { apps }) {
     return max;
   }
 
+  // Contact and Resume were folded into About → Profile and Experience.
+  function openContact() {
+    wm.openApp('about');
+    document.dispatchEvent(new CustomEvent('echoos:set-about-tab', { detail: { tab: 'profile', section: 'contact' } }));
+  }
+
   function open(arg) {
     const lc = (arg || '').toLowerCase();
+    if (lc === 'contact') { openContact(); return; }
+    if (lc === 'resume') {
+      wm.openApp('exp');
+      document.dispatchEvent(new CustomEvent('echoos:set-exp-tab', { detail: { tab: 'resume' } }));
+      return;
+    }
 
     // Try app by id or label prefix
     const app = apps.find((a) => a.id === lc || a.label.toLowerCase().startsWith(lc));
@@ -238,7 +250,7 @@ export function createTerminal(content, wm, { apps }) {
         if (content.profile) {
           print({ text: content.profile.email, kind: 'out' });
         }
-        wm.openApp('contact');
+        openContact();
         break;
 
       case 'resume':

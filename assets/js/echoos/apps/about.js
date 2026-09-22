@@ -83,33 +83,32 @@ export function renderAbout(bodyEl, { content, titlebar }) {
     }
     frag.appendChild(stats);
 
-    // Actions row: bordered social links. The resume download lives in one
-    // place only — the Experience window's title bar, next to the Resume tab.
-    const actions = document.createElement('div');
-    actions.className = 'os-about-actions';
+    // Contact section (formerly the Contact app): pitch + 2×2 tiles showing
+    // where each link goes. The resume download lives in one place only —
+    // the Experience window's title bar, next to the Resume tab.
+    const contact = document.createElement('section');
+    contact.className = 'os-about-contact';
+    contact.setAttribute('aria-label', 'Contact');
+    contact.innerHTML = `
+      <div class="os-contact-eyebrow">say hello</div>
+      <div class="os-contact-blurb">I'm always interested in new opportunities and exciting projects. Let's discuss how we can work together.</div>
+      <div class="os-contact-social"></div>`;
+    const social = contact.querySelector('.os-contact-social');
     for (const s of p.social || []) {
       const a = document.createElement('a');
-      a.className = 'os-about-social-link';
+      a.className = 'os-contact-social-link';
       a.href = s.url;
-      a.title = s.label;
-      a.setAttribute('aria-label', s.label);
-      const iconFile = SOCIAL_ICON_FILES[s.label];
-      if (iconFile) {
-        const img = document.createElement('img');
-        img.src = url('/assets/images/icons/' + iconFile);
-        img.width = 16;
-        img.height = 16;
-        img.alt = s.label;
-        img.className = 'os-about-social-icon';
-        a.appendChild(img);
-      } else {
-        a.textContent = s.label;
-      }
       if (!s.url.startsWith('mailto:')) a.target = '_blank';
       a.rel = 'noopener noreferrer';
-      actions.appendChild(a);
+      const host = s.url.startsWith('mailto:') ? s.url.slice(7) : new URL(s.url).host;
+      const iconFile = SOCIAL_ICON_FILES[s.label];
+      const icon = iconFile
+        ? `<img class="os-about-social-icon" src="${esc(url('/assets/images/icons/' + iconFile))}" width="16" height="16" alt="">`
+        : '<span></span>';
+      a.innerHTML = `${icon}<span class="os-contact-social-label">${esc(s.label)} ↗</span><span class="os-contact-social-host">${esc(host)}</span>`;
+      social.appendChild(a);
     }
-    frag.appendChild(actions);
+    frag.appendChild(contact);
 
     return frag;
   }
@@ -191,7 +190,17 @@ export function renderAbout(bodyEl, { content, titlebar }) {
 
   show(store.get().aboutTab || 'profile');
 
-  const onTab = (e) => { const t = e.detail && e.detail.tab; if (t) show(t); };
+  // { tab, section } — section 'contact' scrolls Profile to the contact block
+  // (terminal `contact`, `open contact`, #/contact).
+  const onTab = (e) => {
+    const t = e.detail && e.detail.tab;
+    if (!t) return;
+    show(t);
+    if (e.detail.section === 'contact') {
+      const sec = panels.querySelector('.os-about-contact');
+      if (sec) sec.scrollIntoView({ block: 'start' });
+    }
+  };
   document.addEventListener('echoos:set-about-tab', onTab);
   return () => document.removeEventListener('echoos:set-about-tab', onTab);
 }
