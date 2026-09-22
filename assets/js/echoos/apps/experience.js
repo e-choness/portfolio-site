@@ -80,7 +80,7 @@ export function renderExperience(bodyEl, { content }) {
       for (const t of e.tech) {
         const chip = document.createElement('span');
         chip.className = 'os-exp-chip';
-        chip.textContent = t;
+        chip.textContent = String(t).replace(/[\s,;]+$/, '');
         chipRow.appendChild(chip);
       }
       card.appendChild(chipRow);
