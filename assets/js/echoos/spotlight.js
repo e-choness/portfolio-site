@@ -141,10 +141,10 @@ export function initSpotlight(root, { apps, content, wm, store, onOpenResult }) 
     } else if (e.key === 'Enter') {
       e.preventDefault();
       openItem(items[active]);
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      close();
     }
+    // Escape is handled once, by wm.js's window keydown listener, in the order
+    // notification panel → spotlight → window. Closing here as well let the
+    // same keypress fall through and close the focused window too.
   });
 
   overlay.addEventListener('click', (e) => {
