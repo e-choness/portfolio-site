@@ -5,12 +5,12 @@
 // (#10111a–#201c2f) with violet petals (#423a60–#524370). Accents are tuned
 // for ≥4.5:1 text contrast. Read/overridden by the OS shell at runtime.
 :root {
-  --bg:#e8e4ef;
-  --surface:#f8f6fb;
-  --surface2:#efecf5;
+  --bg:#e6e1ef;
+  --surface:#f6f3fb;
+  --surface2:#ebe7f5;
   --ink:#1d1a2c;
-  --muted:#67627c;
-  --line:rgba(29,26,44,.12);
+  --muted:#645f7b;
+  --line:rgba(58,44,120,.14);
   --accent:#6a5ad6;
   --accent-ink:#ffffff;
   --accent-soft:rgba(106,90,214,.12);
@@ -19,7 +19,9 @@
 
   // Liquid glass (os/_glass.scss): translucent fill, specular top edge,
   // soft lower rim, sheen gradient.
-  --glass:color-mix(in oklab, var(--surface) 52%, transparent);
+  // Plain rgba (not color-mix over var(--surface)): iOS WebKit doesn't
+  // re-resolve that nested chain on a theme switch until the next input.
+  --glass:rgba(246,243,251,.55);
   --glass-hi:rgba(255,255,255,.75);
   --glass-lo:rgba(255,255,255,.28);
   --glass-sheen:rgba(255,255,255,.42);
@@ -35,19 +37,19 @@
 }
 
 [data-echo-theme="dark"] {
-  --bg:#11111b;
-  --surface:#1b1a2a;
-  --surface2:#232137;
+  --bg:#0f0f19;
+  --surface:#1c1a31;
+  --surface2:#272443;
   --ink:#ecebf5;
-  --muted:#9d98b5;
-  --line:rgba(236,235,245,.13);
+  --muted:#a09bbb;
+  --line:rgba(214,204,255,.13);
   --accent:#a597f2;
   --accent-ink:#17142b;
   --accent-soft:rgba(165,151,242,.15);
   --shadow:0 18px 50px -12px rgba(0,0,0,.6);
   --glow:rgba(82,67,112,.55);
 
-  --glass:color-mix(in oklab, var(--surface) 58%, transparent);
+  --glass:rgba(28,26,49,.6);
   --glass-hi:rgba(255,255,255,.17);
   --glass-lo:rgba(255,255,255,.05);
   --glass-sheen:rgba(255,255,255,.07);

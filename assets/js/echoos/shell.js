@@ -60,8 +60,28 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
 
   // --- theme --------------------------------------------------------------
   function applyTheme(theme) {
+    const changed = document.documentElement.dataset.echoTheme !== theme;
     document.documentElement.dataset.echoTheme = theme;
     mbTheme.textContent = theme === 'dark' ? '☀' : '☾';
+    if (changed) refreshGlass();
+  }
+
+  // iOS Safari keeps painting backdrop-filter layers with the old theme until
+  // the next touch. Dropping the blur for one frame forces those layers to be
+  // rebuilt with the new colours.
+  function refreshGlass() {
+    const els = root.querySelectorAll('.os-menubar, .os-dock, .os-tabbar, .os-notif, .os-welcome, .os-toast');
+    for (const el of els) {
+      el.style.webkitBackdropFilter = 'none';
+      el.style.backdropFilter = 'none';
+    }
+    void root.offsetHeight; // flush style so the removal is applied
+    requestAnimationFrame(() => {
+      for (const el of els) {
+        el.style.webkitBackdropFilter = '';
+        el.style.backdropFilter = '';
+      }
+    });
   }
   mbTheme.addEventListener('click', () => {
     store.set({ theme: store.get().theme === 'dark' ? 'light' : 'dark' });
