@@ -18,7 +18,7 @@
   flex: 1 1 auto;
   overflow: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
   gap: 12px;
   align-content: start;
   padding: 0 2px;
@@ -28,58 +28,100 @@
   display: none;
 }
 
+// Card = one row: glyph tile │ name + score pill / tag. One visual, the
+// title, one line of metadata, one status — nothing else competes.
 .os-arcade-card {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 12px;
   padding: 12px 14px;
   background: var(--surface2);
   border: 1px solid var(--line);
   border-radius: 12px;
   cursor: pointer;
   text-align: left;
-  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  font: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 .os-arcade-card:hover {
   border-color: var(--accent);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
+  background: var(--surface);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -12px rgba(30, 20, 50, 0.35);
 }
 .os-arcade-card:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 .os-arcade-card-glyph {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--accent-soft);
   font-family: var(--font-mono);
-  font-size: 24px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--accent);
   line-height: 1;
   user-select: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.os-arcade-card:hover .os-arcade-card-glyph,
+.os-arcade-card:focus-visible .os-arcade-card-glyph {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.os-arcade-card-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.os-arcade-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 .os-arcade-card-name {
+  flex: 1 1 auto;
+  min-width: 0;
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 800;
+  line-height: 1.2;
   color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .os-arcade-card-tag {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--accent);
-  background: var(--accent-soft);
-  border-radius: 4px;
-  padding: 2px 6px;
-}
-.os-arcade-card-hi {
   font-family: var(--font-mono);
   font-size: 10.5px;
+  line-height: 1.3;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.os-arcade-card-hi {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
   font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 1px 7px;
+}
+.os-arcade-card-hi.is-best {
   color: var(--accent);
-  margin-top: 2px;
+  background: var(--accent-soft);
+  border-color: transparent;
 }
 
 // ── stage ─────────────────────────────────────────────────────────────────
@@ -373,7 +415,27 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
+  .os-arcade-card {
+    grid-template-columns: 34px minmax(0, 1fr);
+    column-gap: 10px;
+    padding: 10px 11px;
+  }
+  .os-arcade-card-glyph {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 15px;
+  }
   .os-arcade-card-name {
     font-size: 14px;
+  }
+  // Narrow cards: name gets the full line; the score pill drops under the tag.
+  .os-arcade-card-head {
+    display: contents;
+  }
+  .os-arcade-card-hi {
+    order: 3;
+    align-self: flex-start;
+    margin-top: 1px;
   }
 }
