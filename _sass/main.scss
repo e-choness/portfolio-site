@@ -25,10 +25,7 @@
 @use "pages/project";
 @use "pages/post";
 
-@use "os/shell";
-@use "os/window";
-@use "os/dock";
-@use "os/spotlight";
-@use "os/terminal";
-@use "os/arcade";
-@use "os/apps";
+// EchoOS styles are compiled separately into assets/css/os.css (Patch 88).
+
+// Classic-site display font (Sass hoists plain-CSS imports to the top of the output).
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap");

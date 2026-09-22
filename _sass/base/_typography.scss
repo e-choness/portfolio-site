@@ -1,5 +1,6 @@
-// Typography
-@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap");
+// Typography. The Bricolage Grotesque font import lives in main.scss (classic
+// site only) so the OS stylesheet can reuse this scale without the render-
+// blocking font request.
 
 /* Fluid type scale */
 h1 {
