@@ -1276,14 +1276,18 @@
 
 // os-resume-body: scrollable body wrapper; os-resume-card: typeset card
 .os-resume-body {
+  flex: 1 1 auto;
+  min-height: 0;
   padding: 22px;
   background: var(--surface2);
-  overflow: auto;
-  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
   box-sizing: border-box;
 }
 
 .os-resume-card {
+  width: 100%;
+  box-sizing: border-box;
   max-width: 520px;
   margin: 0 auto;
   background: var(--surface);
@@ -1359,6 +1363,12 @@
     line-height: 1.35;
     text-align: right;
   }
+  .os-resume-body {
+    padding: 12px;
+  }
+  .os-resume-card {
+    padding: 20px 18px;
+  }
   .os-resume-item {
     align-items: flex-start;
   }
@@ -1426,14 +1436,12 @@
 .os-win[data-app="arcade"] .os-win-body {
   padding: 18px 20px;
 }
-.os-win[data-app="resume"] .os-win-body {
-  padding: 22px;
-}
 
 // Panes that own the body's height: no body padding, no body scroll — the pane
 // scrolls internally and pins its own footer. Keyed on the pane, not the app id.
 .os-win-body:has(> .os-guide),
-.os-win-body:has(> .os-term) {
+.os-win-body:has(> .os-term),
+.os-win-body:has(> .os-resume-body) {
   padding: 0;
   overflow: hidden;
   display: flex;
