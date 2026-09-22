@@ -9,12 +9,8 @@
   display: flex;
   gap: 7px;
   padding: 9px 11px;
-  background: color-mix(in oklab, var(--surface) 76%, transparent);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
   border: 1px solid var(--line);
   border-radius: 19px;
-  box-shadow: 0 10px 30px -10px rgba(30, 20, 50, 0.3);
 }
 
 .os-dock-item {
@@ -26,10 +22,6 @@
   background: none;
   border: 0;
   cursor: pointer;
-  transition: transform 0.15s ease;
-}
-.os-dock-item:hover {
-  transform: translateY(-4px);
 }
 .os-dock-item:hover .os-dock-tile {
   border-color: var(--accent);
@@ -46,7 +38,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface2);
   border: 1px solid var(--line);
   transition: border-color 0.15s ease;
 }
@@ -90,9 +81,7 @@
   font: 600 10.5px var(--font-mono);
   letter-spacing: 0.04em;
   color: var(--ink);
-  background: var(--surface);
   border: 1px solid var(--line);
-  box-shadow: 0 6px 16px -8px rgba(30, 20, 50, 0.35);
   transition: opacity 0.12s ease, transform 0.12s ease;
 }
 .os-dock-item:hover .os-dock-label,
