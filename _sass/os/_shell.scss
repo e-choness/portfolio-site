@@ -471,6 +471,12 @@ body:has(#echoos-root) {
   white-space: nowrap;
 }
 
+@media (max-width: 400px) {
+  .os-mb-date {
+    display: none;
+  }
+}
+
 // ── mobile tab bar ────────────────────────────────────────────────────────
 .os-tabbar {
   display: none;
@@ -489,6 +495,18 @@ body:has(#echoos-root) {
   }
   .os-mb-sep {
     display: none;
+  }
+  // Touch targets: 36×32 visible, ::after extends the hit box to ≥44×44
+  // without shifting layout.
+  .os-mb-btn {
+    position: relative;
+    min-width: 36px;
+    min-height: 32px;
+  }
+  .os-mb-btn::after {
+    content: '';
+    position: absolute;
+    inset: -6px -4px;
   }
   .os-tabbar {
     position: absolute;

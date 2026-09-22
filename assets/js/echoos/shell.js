@@ -19,6 +19,13 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
     </div>`;
   root.appendChild(MENU);
 
+  // Under 760px the spotlight button shows ⌕ — ⌘K means nothing on a phone.
+  const mbSpot = MENU.querySelector('.os-mb-spotlight');
+  const MOBILE = window.matchMedia('(max-width: 760px)');
+  const applySpotLabel = () => { mbSpot.textContent = MOBILE.matches ? '⌕' : '⌘K'; };
+  applySpotLabel();
+  MOBILE.addEventListener('change', applySpotLabel);
+
   const mbApp = MENU.querySelector('.os-mb-app');
   const mbTheme = MENU.querySelector('.os-mb-theme');
   const mbSound = MENU.querySelector('.os-mb-sound');
@@ -180,6 +187,7 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
     setOpenApps,
     destroy() {
       clearInterval(clockTimer);
+      MOBILE.removeEventListener('change', applySpotLabel);
       MENU.remove();
       dock.remove();
       desktop.remove();
