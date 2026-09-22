@@ -193,13 +193,18 @@ export function renderBlog(bodyEl, { content, toast }) {
       const row = document.createElement('button');
       row.type = 'button';
       row.className = 'os-blog-row';
+      // Date + category share .os-blog-row-top so mobile can put them on one
+      // line above the title; on desktop the wrapper is display:contents and
+      // the three columns (date · main · cat) are restored with `order`.
       row.innerHTML = `
-        <span class="os-blog-row-date">${esc(p.date || '')}</span>
+        <span class="os-blog-row-top">
+          <span class="os-blog-row-date">${esc(p.date || '')}</span>
+          ${catOf(p) ? `<span class="os-blog-row-cat">${esc(catOf(p))}</span>` : ''}
+        </span>
         <span class="os-blog-row-main">
           <span class="os-blog-row-title">${esc(p.title)}</span>
           <span class="os-blog-row-excerpt">${esc(p.excerpt || '')}</span>
-        </span>
-        ${catOf(p) ? `<span class="os-blog-row-cat">${esc(catOf(p))}</span>` : ''}`;
+        </span>`;
       row.addEventListener('click', () => {
         state.sel = posts.indexOf(p);
         renderReading(p);

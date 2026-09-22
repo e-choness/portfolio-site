@@ -847,6 +847,9 @@
 .os-blog-row:hover {
   background: var(--accent-soft);
 }
+.os-blog-row-top {
+  display: contents;
+}
 .os-blog-row-date {
   font-family: var(--font-mono);
   font-size: 10.5px;
@@ -859,6 +862,7 @@
 .os-blog-row-main {
   flex: 1;
   min-width: 0;
+  order: 1;
 }
 .os-blog-row-title {
   display: block;
@@ -888,6 +892,7 @@
   color: var(--accent);
   flex: none;
   padding-top: 3px;
+  order: 2;
 }
 
 .os-blog-sep {
@@ -1390,6 +1395,56 @@
   .os-resume-item-right .os-dur-part {
     display: block;
   }
+  // Experience head: logo + role + company on row one, dates on row two.
+  .os-exp-head {
+    flex-wrap: wrap;
+  }
+  .os-exp-pill {
+    order: 3;
+    flex-basis: 100%;
+    text-align: left;
+  }
+  .os-exp-pill .os-dur-part {
+    display: inline;
+  }
+  .os-exp-company {
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+  }
+  // Blog rows: date · category on one line above the title.
+  .os-blog-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .os-blog-row-top {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .os-blog-row-date {
+    width: auto;
+    padding-top: 0;
+  }
+  .os-blog-row-cat {
+    padding-top: 0;
+  }
+  // About: Download Resume + four icons stay on one line.
+  .os-about-actions {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+  .os-about-resume {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .os-about-actions .os-about-social-link {
+    flex: none;
+    padding: 8px;
+  }
 }
 
 .os-resume-role {
@@ -1645,17 +1700,8 @@
 [data-echo-theme="dark"] .os-post-body .highlight .ge { color: #c9d1d9; font-style: italic; }
 [data-echo-theme="dark"] .os-post-body .highlight .gs { color: #c9d1d9; font-weight: bold; }
 
-// ── responsive: stacked blog list, single-column about ─────────────────────
+// ── responsive: single-column about ────────────────────────────────────────
 @media (max-width: 760px) {
-  .os-blog {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  .os-blog-list {
-    border-right: 0;
-    padding-right: 0;
-    max-height: 40%;
-  }
   .os-about-header {
     gap: 12px;
   }
