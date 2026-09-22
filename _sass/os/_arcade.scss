@@ -1,6 +1,12 @@
 // os/_arcade.scss — game grid, canvas stage, HUD and mobile pad (arcade.js).
 // Pad button spec from IMPLEMENTATION-PLAN §6.7.
 
+// The window body becomes a flex column so .os-arcade (and the stage inside
+// it) get a definite height — arcade.js fits the canvas into that height.
+.os-win-body:has(> .os-arcade) {
+  display: flex;
+  flex-direction: column;
+}
 .os-arcade {
   flex: 1 1 auto;
   min-height: 0;
@@ -223,7 +229,8 @@
 
 .os-arcade-canvas-wrap {
   flex: 0 0 auto;
-  display: block;
+  display: flex;
+  justify-content: center;
   background: none;
   border: 0;
   border-radius: 0;

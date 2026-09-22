@@ -94,6 +94,22 @@ export function renderArcade(bodyEl, { toast }) {
   const hintEl = bodyEl.querySelector('.os-arcade-hint');
   const padEl = bodyEl.querySelector('.os-arcade-pad');
   const exhibitEl = bodyEl.querySelector('.os-arcade-exhibit');
+  const hudEl = bodyEl.querySelector('.os-arcade-hud');
+  const wrapEl = bodyEl.querySelector('.os-arcade-canvas-wrap');
+
+  // Fit the canvas into the stage: as wide as the window allows, but never
+  // taller than the height left after the HUD, hint and touch pad — so a
+  // maximized window shows the whole play field (the exhibit scrolls below).
+  function fitCanvas() {
+    if (stage.hidden) return;
+    const chrome = hudEl.offsetHeight + hintEl.offsetHeight + padEl.offsetHeight;
+    const availH = stage.clientHeight - chrome - 2; // 2 = canvas border
+    const availW = wrapEl.clientWidth;
+    const w = Math.max(200, Math.min(availW, availH * (canvas.width / canvas.height)));
+    canvas.style.width = `${Math.floor(w)}px`;
+  }
+  const fitObserver = new ResizeObserver(fitCanvas);
+  fitObserver.observe(stage);
 
   function renderExhibit(ex) {
     if (!ex || !ex.origin) { exhibitEl.hidden = true; return; }
@@ -253,7 +269,9 @@ export function renderArcade(bodyEl, { toast }) {
       padEl.appendChild(frag);
     }
     bodyEl.scrollTop = 0;
+    stage.scrollTop = 0;
     renderExhibit(game);
+    fitCanvas();
     startRunner(game);
   }
 
@@ -301,6 +319,7 @@ export function renderArcade(bodyEl, { toast }) {
   // Return teardown function
   return () => {
     back();
+    fitObserver.disconnect();
     alive = false;
     if (runner) runner.stop();
     unsubTheme();
