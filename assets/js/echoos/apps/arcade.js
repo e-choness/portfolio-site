@@ -6,6 +6,7 @@
 // custom properties every time a game starts.
 import { store } from '../store.js';
 import { beep } from '../sound.js';
+import { writeRoute } from '../router.js';
 
 function readProp(name, fallback) {
   const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -221,6 +222,7 @@ export function renderArcade(bodyEl, { toast }) {
 
   function startGame(game) {
     current = game;
+    writeRoute('arcade', game.id);
     grid.hidden = true;
     footnote.hidden = true;
     stage.hidden = false;
@@ -260,6 +262,7 @@ export function renderArcade(bodyEl, { toast }) {
     if (runner) runner.stop();
     runner = null;
     current = null;
+    writeRoute('arcade', null);
     stage.hidden = true;
     footnote.hidden = false;
     grid.hidden = false;
@@ -293,6 +296,7 @@ export function renderArcade(bodyEl, { toast }) {
     if (g) startGame(g);
   };
   document.addEventListener('echoos:start-game', onStart);
+  document.addEventListener('echoos:open-game', onStart); // deep link (Patch 81)
 
   // Return teardown function
   return () => {
@@ -301,6 +305,7 @@ export function renderArcade(bodyEl, { toast }) {
     if (runner) runner.stop();
     unsubTheme();
     document.removeEventListener('echoos:start-game', onStart);
+    document.removeEventListener('echoos:open-game', onStart);
     canvas.removeEventListener('mousedown', onCanvasDown);
     canvas.removeEventListener('mousemove', onCanvasMove);
     canvas.removeEventListener('touchstart', onCanvasTouch);

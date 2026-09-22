@@ -7,7 +7,8 @@
 // blocks are transformed exactly like the classic route so existing markdown
 // support is preserved. On fetch failure the prototype's "read the full post on
 // the current site" note + link remains as the fallback.
-import { url } from '../base.js';
+import { url, base } from '../base.js';
+import { writeRoute } from '../router.js';
 
 function esc(s) {
   const d = document.createElement('div');
@@ -143,6 +144,7 @@ export function renderBlog(bodyEl, { content, toast }) {
 
   function renderList() {
     clearProgress();
+    writeRoute('blog', null);
     const PAGE_SIZE = 8;
     const all = filtered();
     const totalPages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
@@ -283,6 +285,7 @@ export function renderBlog(bodyEl, { content, toast }) {
 
   async function renderReading(post) {
     state.catOpen = false;
+    writeRoute('blog', post.slug);
     const idx = state.sel;
     const prevPost = posts[idx + 1] || null; // older = previous
     const nextPost = posts[idx - 1] || null; // newer = next
@@ -291,6 +294,7 @@ export function renderBlog(bodyEl, { content, toast }) {
       <div class="os-blog-progress"><span></span></div>
       <div class="os-blog-back-bar">
         <button type="button" class="os-blog-back">‹ all posts</button>
+        <button type="button" class="os-blog-back os-blog-copy">copy link</button>
       </div>
       <div class="os-blog-meta">${catOf(post) ? esc(catOf(post)) + ' · ' : ''}${esc(post.date || '')}</div>
       <h1 class="os-blog-h1">${esc(post.title)}</h1>
@@ -318,6 +322,20 @@ export function renderBlog(bodyEl, { content, toast }) {
         renderReading(nextPost);
       });
     }
+
+    const copyBtn = app.querySelector('.os-blog-copy');
+    let copyTimer = 0;
+    copyBtn.addEventListener('click', () => {
+      const link = location.origin + base + '/#/blog/' + encodeURIComponent(post.slug);
+      Promise.resolve()
+        .then(() => navigator.clipboard.writeText(link))
+        .then(() => {
+          copyBtn.textContent = 'copied';
+          clearTimeout(copyTimer);
+          copyTimer = setTimeout(() => { copyBtn.textContent = 'copy link'; }, 1500);
+        })
+        .catch(() => { if (toast) toast(link); });
+    });
 
     const updateProgress = trackProgress();
 
