@@ -1226,6 +1226,9 @@
 }
 
 // os-resume-body: scrollable body wrapper; os-resume-card: typeset card
+// The resume pane is a size container: the card fills the window width (up to
+// a 1100px reading cap) and its type/padding scale with it via cqi, so the
+// document grows with the window instead of sitting at a fixed 520px.
 .os-resume-body {
   flex: 1 1 auto;
   min-height: 0;
@@ -1234,22 +1237,23 @@
   overflow-y: auto;
   overflow-x: hidden;
   box-sizing: border-box;
+  container-type: inline-size;
 }
 
 .os-resume-card {
   width: 100%;
   box-sizing: border-box;
-  max-width: 520px;
+  max-width: 1100px;
   margin: 0 auto;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 6px;
-  padding: 30px 34px;
+  padding: clamp(20px, 4cqi, 52px) clamp(18px, 4.4cqi, 60px);
   box-shadow: 0 6px 24px -10px rgba(30, 20, 50, 0.2);
 }
 
 .os-resume-name {
-  font-size: 22px;
+  font-size: clamp(22px, 3cqi, 34px);
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--ink);
@@ -1257,7 +1261,7 @@
 }
 
 .os-resume-title {
-  font: 600 11px var(--font-mono);
+  font: 600 clamp(11px, 1.25cqi, 13.5px) var(--font-mono);
   color: var(--accent);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -1265,20 +1269,20 @@
 }
 
 .os-resume-contact {
-  font: 10.5px var(--font-mono);
+  font: clamp(10.5px, 1.15cqi, 13px) var(--font-mono);
   color: var(--muted);
-  margin: 6px 0 16px;
+  margin: 6px 0 clamp(16px, 2.2cqi, 26px);
   word-break: break-all;
 }
 
 .os-resume-section {
   border-top: 1px solid var(--line);
-  padding-top: 14px;
-  margin-bottom: 14px;
+  padding-top: clamp(14px, 1.8cqi, 22px);
+  margin-bottom: clamp(14px, 1.8cqi, 22px);
 }
 
 .os-resume-section-head {
-  font: 600 10px var(--font-mono);
+  font: 600 clamp(10px, 1.1cqi, 12.5px) var(--font-mono);
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.14em;
@@ -1289,7 +1293,7 @@
   display: flex;
   gap: 10px;
   align-items: baseline;
-  margin-bottom: 5px;
+  margin-bottom: clamp(5px, 0.8cqi, 9px);
 }
 
 .os-resume-item-left {
@@ -1298,7 +1302,7 @@
 }
 
 .os-resume-item-right {
-  font: 10px var(--font-mono);
+  font: clamp(10px, 1.1cqi, 12.5px) var(--font-mono);
   color: var(--muted);
   white-space: nowrap;
   margin-left: 12px;
@@ -1316,9 +1320,6 @@
   }
   .os-resume-body {
     padding: 12px;
-  }
-  .os-resume-card {
-    padding: 20px 18px;
   }
   .os-resume-item {
     align-items: flex-start;
@@ -1368,31 +1369,31 @@
 }
 
 .os-resume-role {
-  font-size: 12.5px;
+  font-size: clamp(12.5px, 1.45cqi, 16px);
   font-weight: 700;
   color: var(--ink);
 }
 
 .os-resume-company {
-  font-size: 12.5px;
+  font-size: clamp(12.5px, 1.45cqi, 16px);
   font-weight: 500;
   color: var(--muted);
 }
 
 .os-resume-degree {
-  font-size: 12.5px;
+  font-size: clamp(12.5px, 1.45cqi, 16px);
   font-weight: 700;
   color: var(--ink);
 }
 
 .os-resume-institution {
-  font-size: 12.5px;
+  font-size: clamp(12.5px, 1.45cqi, 16px);
   font-weight: 500;
   color: var(--muted);
 }
 
 .os-resume-skills {
-  font-size: 12px;
+  font-size: clamp(12px, 1.35cqi, 15px);
   line-height: 1.7;
   color: var(--ink);
 }
