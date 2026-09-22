@@ -174,7 +174,12 @@ export function renderBlog(bodyEl, { content, toast }) {
     input.addEventListener('input', () => {
       state.query = input.value;
       state.page = 1;
+      // renderList() rebuilds the toolbar, so hand focus + caret to the new input.
+      const caret = input.selectionStart;
       renderList();
+      const next = app.querySelector('.os-blog-search-input');
+      next.focus({ preventScroll: true });
+      next.setSelectionRange(caret, caret);
     });
 
     app.querySelector('.os-blog-cat-btn').addEventListener('click', () => {
