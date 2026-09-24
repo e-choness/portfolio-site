@@ -199,3 +199,25 @@
       url: https://en.wikipedia.org/wiki/Syobon_Action
     - label: Open Syobon Action (GitHub)
       url: https://github.com/akemin-dayo/OpenSyobonAction
+
+- id: bejeweled
+  name: "Gemfall"
+  tag: "bejeweled-like"
+  glyph: "◆"
+  hint: "click two neighbours or drag to swap · arrows + space"
+  pad: [{ key: "ArrowLeft", label: "←" }, { key: "ArrowUp", label: "↑" }, { key: "ArrowDown", label: "↓" }, { key: "ArrowRight", label: "→" }, { key: " ", label: "◆" }]
+  credit: "PopCap Games · 2001 · after Shariki (Eugene Alemzhin · 1994)"
+  origin: >-
+    PopCap's three founders released it in 2001 as a free web game called Diamond Mine,
+    renamed it Bejeweled when MSN Games picked it up, and built a company on it. The swap
+    itself came from Shariki, a 1994 DOS game by Russian programmer Eugene Alemzhin. Classic
+    mode has no clock: the game ends only when no swap anywhere on the board makes a match.
+  fact: >-
+    PopCap nearly sold the whole game outright for $60,000. They kept it and licensed it
+    instead, and it went on to sell tens of millions of copies — the game that made casual
+    "match three" a genre.
+  sources:
+    - label: Bejeweled – Wikipedia
+      url: https://en.wikipedia.org/wiki/Bejeweled
+    - label: Shariki – Wikipedia
+      url: https://en.wikipedia.org/wiki/Shariki

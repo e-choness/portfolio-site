@@ -39,7 +39,7 @@ within the OS. All content comes from the same YAML files in `_data/`.
 | Desktop shell | Draggable, resizable windows; z-ordering; animated wallpaper |
 | Spotlight | ⌘K command palette — search apps, projects, posts |
 | Terminal | `echo-sh` with `open`, `theme`, `clear`, `help` and more |
-| Arcade | 10 canvas games (Blockfall, Snake, Invaders, a raycast Labyrinth, a pixel-shaded Orrery, all nine stages of Cat Mario, and more); hi-scores persist |
+| Arcade | 11 canvas games (Blockfall, Snake, Invaders, a raycast Labyrinth, a pixel-shaded Orrery, all nine stages of Cat Mario, a Bejeweled-style Gemfall, and more); hi-scores persist |
 | Blog reader | Mermaid diagrams + syntax-highlighted code blocks inside the OS window |
 | Theme | Light / dark with persisted accent color; animated portrait ring in About |
 | PWA | `manifest.webmanifest` — installable on desktop and mobile |
