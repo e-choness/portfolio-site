@@ -1,5 +1,4 @@
 ---
-layout: project
 title: "PDF Sanitizer"
 description: "An offline Windows desktop app that strips scripts, attachments, outbound links and metadata from PDF files, verifying every result before replacing the original. Built with Rust, Tauri and Svelte."
 image: "assets/images/projects/pdf-sanitizer.jpg"
@@ -9,13 +8,12 @@ technologies:
   - Svelte
   - JavaScript
 categories:
-  - Rust
-  - Desktop
   - Security
+  - Desktop
 live_url: "https://e-choness.github.io/pdf-sanitizer/"
 github_url: "https://github.com/e-choness/pdf-sanitizer"
 featured: true
-order: 4
+order: 5
 ---
 ## Project Overview
 

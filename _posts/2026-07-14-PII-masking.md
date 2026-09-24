@@ -1,19 +1,18 @@
 ---
-layout: post
 title: "The Clean Envelope: Debugging Production Pipelines Without Touching PII"
 date: 2026-07-14 21:00:00 -0000
 category: ai
 tags: [data-engineering, observability, architecture]
 author: "Echo Yin"
 image: "assets/images/blogs/pii-masking.jpg"
-excerpt: "When a production data pipeline crashes on regulated customer data, engineers can't ask for logs and customers can't share samples. This is about David's design for capturing debuggable signal — deterministic tokenization, structural metadata over raw values, and a key-rotation architecture that lets historical logs decay into cryptographic noise — plus the trade-offs it deliberately accepts."
+excerpt: "When a production data pipeline crashes on regulated customer data, engineers can't ask for logs and customers can't share samples. This is a design for capturing debuggable signal — deterministic tokenization, structural metadata over raw values, and a key-rotation architecture that lets historical logs decay into cryptographic noise — plus the trade-offs it deliberately accepts."
 ---
 
 ## Debugging Production Data Pipelines Without Touching PII
 
 Every enterprise data team eventually hits this wall: a customer reports "your data loader crashed on our data," and the two standard debugging moves—asking for logs, asking for a data sample—are both illegal. If the pipeline touches financial records, health data, or SSNs, the customer legally cannot hand you a sample, and you legally cannot persist it in your logs.
 
-This post breaks down a design philosophy for solving this: capture *diagnostic signal* without ever capturing *PII*. We'll use a real bug [Apache Arrow ADBC #2084](https://github.com/apache/arrow-adbc/issues/2824) as a case study, then build up the cryptographic architecture needed to make deterministic tracing safe at scale.
+This post breaks down a design philosophy for solving this: capture *diagnostic signal* without ever capturing *PII*. We'll use a real bug, [Apache Arrow ADBC #2084](https://github.com/apache/arrow-adbc/issues/2084), as a case study, then build up the cryptographic architecture needed to make deterministic tracing safe at scale.
 
 ## The Core Problem
 
@@ -26,7 +25,7 @@ Naive masking tries to satisfy both by blanking out values it detects as sensiti
 
 ## Case Study: Apache Arrow ADBC #2084
 
-In this [GitHub issue](https://github.com/apache/arrow-adbc/issues/2824), a data pipeline pushed a stream into Snowflake via the ADBC driver. It crashed because the Snowflake driver didn't support binding fixed-point `DECIMAL` types in parameterized queries.
+In this [GitHub issue](https://github.com/apache/arrow-adbc/issues/2084), a data pipeline pushed a stream into Snowflake via the ADBC driver. It crashed because the Snowflake driver didn't support binding fixed-point `DECIMAL` types in parameterized queries.
 
 A naive masking system, terrified of leaking `transaction_amount`, would blank the query:
 
@@ -109,7 +108,9 @@ Use a stable boundary like `Tenant_ID` as the AAD. The same PII value tokenizes 
 
 Frequency analysis needs volume to work. Shrink an attacker's window by deriving keys per time epoch via HKDF:
 
-$$\text{Key}_{\text{week}} = \text{HKDF}(\text{Master\_Secret}, \text{"2026-Week-29"})$$
+```text
+Key_week = HKDF(Master_Secret, "2026-Week-29")
+```
 
 Tokens stay deterministic *within* the week—active incidents trace cleanly—but roll over on schedule. A multi-month leaked log dump becomes nearly useless because the statistical fingerprint shifts every seven days.
 
@@ -158,13 +159,14 @@ flowchart TB
 
 ### Epoch derivation
 
-Given epoch length \(E\) (e.g., 86400 seconds for daily rotation) and Unix timestamp \(t\):
+Given epoch length `E` (e.g., 86400 seconds for daily rotation) and Unix timestamp `t`:
 
-$$i = \left\lfloor \frac{t}{E} \right\rfloor$$
+```text
+i   = floor(t / E)
+K_i = HKDF(Root_Master_Secret, "log-tokenization-context" || i)
+```
 
-$$K_i = \text{HKDF}(\text{Root\_Master\_Secret}, \text{"log-tokenization-context"} \mathbin\Vert i)$$
-
-Services derive \(K_i\) locally from a periodically-fetched root secret—no KMS round-trip per log line.
+Services derive `K_i` locally from a periodically-fetched root secret—no KMS round-trip per log line.
 
 ### Self-describing tokens
 
@@ -177,15 +179,15 @@ tok:19532:a8f9c2d103b4e...
 └──────────── token type identifier
 ```
 
-A consumer reading `tok:19532:...` doesn't care what its own clock says—it fetches \(K_{19532}\) and moves on.
+A consumer reading `tok:19532:...` doesn't care what its own clock says—it fetches `K_19532` and moves on.
 
 ### The three-key sliding cache
 
 Every service keeps exactly three keys warm in memory:
 
-- \(K_{i-1}\) — past key, for late-arriving or retried logs
-- \(K_i\) — current key, default for new writes
-- \(K_{i+1}\) — future key, pre-warmed for clock-drifted callers
+- `K_(i-1)` — past key, for late-arriving or retried logs
+- `K_i` — current key, default for new writes
+- `K_(i+1)` — future key, pre-warmed for clock-drifted callers
 
 ```mermaid
 sequenceDiagram
@@ -205,9 +207,9 @@ sequenceDiagram
 
 ### Runtime flow at a key boundary
 
-1. Compute current epoch \(i = \lfloor t/E \rfloor\) from local clock.
-2. Check cache for \(K_{i-1}, K_i, K_{i+1}\); background-fetch any missing ones (never block the main thread).
-3. If within a drift cushion (e.g., <10 seconds to boundary) and an inbound payload already uses \(K_{i+1}\), switch to \(K_{i+1}\) to match the caller.
+1. Compute current epoch `i = floor(t / E)` from local clock.
+2. Check cache for `K_(i-1)`, `K_i`, `K_(i+1)`; background-fetch any missing ones (never block the main thread).
+3. If within a drift cushion (e.g., <10 seconds to boundary) and an inbound payload already uses `K_(i+1)`, switch to `K_(i+1)` to match the caller.
 4. Tokenize with the selected epoch's key; prefix as `tok:epoch:value`.
 5. Emit the log. Even with a 10-minute queue delay, the consumer reads the epoch prefix and fetches the matching key—no ambiguity.
 

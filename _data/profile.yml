@@ -3,30 +3,31 @@ name: "Echo Yin"
 title: "Senior A.I. Engineer"
 email: "echoybl1123@gmail.com"
 location: "Calgary, AB, Canada"
-tagline: "Passionate about creating innovative AI solutions"
+tagline: "Building governed, observable AI systems and the tools around them"
 
 # About section
 about:
   description: |
-    I'm a senior AI engineer with over 10 years of experience building intelligent systems and machine learning solutions that transform how businesses operate. 
-    My journey in AI began with fascination for neural networks and has evolved into expertise in designing scalable, production-ready AI systems.
+    I'm a senior AI engineer with over 10 years in software, the last several focused on machine learning and applied AI. I started out on enterprise systems, moved into online game programming and developer tooling, and since my master's in Computer Science I've concentrated on production AI: RAG pipelines, MCP tooling and agentic systems, most recently for a federal agency.
 
-    I specialize in deploying machine learning models, with deep expertise in applied AI techniques like RAG, MCP and toolings. 
-     When I'm not tackling models, you can find me researching cutting-edge AI techniques, contributing to open-source ML projects, or mentoring aspiring engineers.
+    On my own time I build open-source AI infrastructure, like Aegis, a governed gateway between apps and LLMs, and a CUDA benchmark for extreme learning machines, and I write up what I learn along the way.
 
   image: assets/images/profile/portrait-small.jpg
   resume_url: assets/resume.pdf
   ctrl_url: "https://e-choness.github.io/ctrl-alt-deploy/blog/"
 
-# Statistics
+# Statistics — only numbers a reader can check on this site. Entries with
+# `count:` are computed at build time (projects = _projects, posts = _posts).
+# The first entry is also the Skills monitor and terminal uptime. Three entries:
+# the notification panel lays them out in a 3-column grid.
 stats:
-  - label: "Years Experience"
+  - label: "Years in Software"
     value: 10
     display: "10+"
-  - label: "Projects Completed"
-    value: 38
-  - label: "Happy Clients"
-    value: 66
+  - label: "Projects"
+    count: projects
+  - label: "Posts"
+    count: posts
 
 # Social Media Links
 social:
@@ -35,9 +36,3 @@ social:
   twitter: "https://x.com/_echo_yin"
   email: "mailto:echoybl1123@gmail.com"
 
-# Typing animation texts
-typed_strings:
-  - "Senior A.I. Engineer"
-  - "Problem Solver"
-  - "Tech Enthusiast"
-  - "Creative Thinker"

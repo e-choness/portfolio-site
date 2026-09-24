@@ -1,11 +1,10 @@
 ---
-layout: post
 title: "Socket Programming in C/C++: Building a TCP Server–Client Echo"
 date: 2024-06-09
 category: networking
 tags: ["sockets", "tcp", "server-client", "linux", "networking", "c", "c++"]
 author: "Echo Yin"
-image: "assets/images/blogs/server-client.png"
+image: "assets/images/blogs/server-client.jpg"
 excerpt: "A practical walkthrough of TCP socket programming in C/C++, from basic concepts to a working echo server and client."
 ---
 > When developing networked applications in C/C++, understanding the fundamentals of sockets is crucial. A socket is an endpoint for communication between two machines, identified by an IP address, a port, and a transport protocol (TCP or UDP).
@@ -73,7 +72,8 @@ It creates a TCP socket, binds it to a port, listens for connections, accepts cl
 #include <arpa/inet.h>
 #include <strings.h> // For bzero
 
-#define SERVER_PORT 666
+// Ports below 1024 need root on Linux; bind() would fail with EACCES
+#define SERVER_PORT 6666
 
 int main(void) {
     int sock;
@@ -85,6 +85,11 @@ int main(void) {
         perror("socket creation failed");
         return -1;
     }
+
+    // Allow restarting the server right away; otherwise bind() fails with
+    // "Address already in use" while the old socket sits in TIME_WAIT
+    int opt = 1;
+    setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
     // Clear the server address structure
     bzero(&server_addr, sizeof(server_addr));
@@ -147,15 +152,21 @@ int main(void) {
 }
 ```
 
-This program uses the following system calls:
+Walking through the server in order:
 
-- `socket()` – create a TCP socket.
-- `bind()` – associate the socket with a local IP address and port.
-- `listen()` – mark the socket as passive, ready to accept new connections.
-- `accept()` – block until a client connects, returning a new connected socket.
-- `read()` / `write()` – receive and send data over the connection.
+1. **`socket(AF_INET, SOCK_STREAM, 0)`**: ask the kernel for a new endpoint. `AF_INET` means IPv4, `SOCK_STREAM` means a reliable byte stream (TCP), and `0` lets the kernel pick the protocol for that combination. The return value is a **file descriptor**, a small integer like any open file's.
+2. **`setsockopt(… SO_REUSEADDR …)`**: after the server exits, its port lingers in the `TIME_WAIT` state for up to a couple of minutes. Without this option, restarting the server during that window fails with "Address already in use".
+3. **`bzero` + filling `server_addr`**: describe the address to listen on. `INADDR_ANY` means every local interface. `htonl` / `htons` convert the address and port to network byte order (explained below). Forgetting `htons` on the port is a classic bug: the server ends up listening on a completely different port number.
+4. **`bind()`**: attach the socket to that address and port. This is where "port already in use" and "permission denied" (ports below 1024) show up.
+5. **`listen(sock, 128)`**: switch the socket from "could connect somewhere" to "accepts connections". `128` is the **backlog**: how many completed connections the kernel queues while your code is busy before `accept()` picks them up.
+6. **The `while (1)` loop, `accept()`**: block until a client connects, then return a **new** descriptor for that one connection. The listening socket stays open for the next client. `client` receives the client's address, which `inet_ntop` / `ntohs` turn back into a readable IP and port.
+7. **`read()`**: receive up to `sizeof(buf) - 1` bytes, leaving room for the `'\0'` added afterwards so the buffer can be printed as a C string. `read` returns the number of bytes received, `0` if the client closed the connection, or `-1` on error.
+8. **`write()`**: send the same bytes back: the "echo".
+9. **`close(client_sock)`**: end this connection and go back to `accept()` for the next one.
 
-The server behaves as a simple **echo server**: it reads whatever the client sends and writes the same bytes back.
+This server handles **one client at a time**: while it's reading from one, the next waits in the backlog. Real servers handle many at once, with a thread or process per connection, or with an event loop (`poll`, `epoll`) that watches all sockets from one thread.
+
+The server behaves as a simple **echo server**: it reads whatever the client sends and writes the same bytes back. It calls `read()` once per client, which is fine for a short message on a local connection; in general TCP is a byte stream, so one `write()` can arrive as several `read()`s and real servers loop until they have a complete message.
 
 ## Example: TCP echo client in C
 
@@ -170,7 +181,7 @@ The client connects to the server, sends a single message, and prints the echoed
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#define SERVER_PORT 666
+#define SERVER_PORT 6666
 #define SERVER_IP "127.0.0.1"
 
 int main(int argc, char *argv[]) {
@@ -226,6 +237,15 @@ int main(int argc, char *argv[]) {
 }
 ```
 
+And the client, step by step:
+
+1. **Argument check**: the message to send comes from the command line (`./echo_client hello`).
+2. **`socket()`**: the same call as on the server; clients need a socket too.
+3. **`inet_pton(AF_INET, SERVER_IP, …)`**: "presentation to network": convert the text address `"127.0.0.1"` into the 32-bit binary form the kernel expects. (`inet_ntop` on the server goes the other way.)
+4. **`connect()`**: perform the TCP three-way handshake with the server. The client doesn't call `bind()`: the kernel assigns it a temporary local port automatically.
+5. **`write()`** the message, then **`read()`** the reply into `buf`, again leaving room for the terminating `'\0'`.
+6. **`close()`**: send a FIN, ending the connection cleanly.
+
 The client uses `inet_pton()` to convert the string IP address (`"127.0.0.1"`) into the binary form required by the `connect()` call.
 Once connected, both client and server use `read()` and `write()` to exchange data over the TCP connection.
 
@@ -239,18 +259,18 @@ sequenceDiagram
     participant S as Server
 
     Note over S: socket(), bind(), listen()
+    S->>S: accept() blocks
 
-    C->>S: socket()
-    C->>S: connect(server_ip, port)
-    S->>S: accept()
+    C->>C: socket()
+    C->>S: connect(server_ip, port): TCP handshake
+    Note over S: accept() returns a new connected socket
 
     C->>S: write(message)
     S->>S: read()
     S->>C: write(echoed message)
+    S->>S: close(client_sock)
     C->>C: read(echoed message)
-
-    C->>S: close()
-    S->>S: close()
+    C->>C: close()
 ```
 
 This diagram emphasizes that once the server has called `listen()`, it waits in `accept()` until a client connects.

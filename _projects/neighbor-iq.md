@@ -1,5 +1,4 @@
 ---
-layout: project
 title: "NeighborIQ"
 description: "AI-powered real estate intelligence platform for neighborhood insights, ML price predictions, and automated data ingestion. Built with FastAPI, Vue 3, and Docker."
 image: "assets/images/projects/neighbor-iq.jpg"
@@ -12,7 +11,6 @@ categories:
   - Fullstack
   - AI/ML
   - GIS
-live_url: "https://github.com/e-choness/NeighborIQ"
 github_url: "https://github.com/e-choness/NeighborIQ"
 featured: true
 order: 4

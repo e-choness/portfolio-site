@@ -7,8 +7,12 @@
 // it per app and only shows it while that app is the focused one, so a window
 // that re-renders in the background never hijacks the URL.
 
-export function readRoute() {
-  const m = location.hash.match(/^#\/([a-z]+)(?:\/([^/?#]+))?/i);
+// legacy: also accept the old one-page anchors (#about, #experience, …) that
+// boot.js maps onto app ids. First load only, so an in-page heading anchor
+// such as #skills never opens an app.
+export function readRoute(legacy = false) {
+  const re = legacy ? /^#\/?([a-z]+)(?:\/([^/?#]+))?/i : /^#\/([a-z]+)(?:\/([^/?#]+))?/i;
+  const m = location.hash.match(re);
   if (!m) return null;
   let item = null;
   if (m[2]) {

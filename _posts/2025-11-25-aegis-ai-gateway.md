@@ -1,6 +1,5 @@
 ---
-layout: post
-title: "Building Aegis An Enterprise AI Gateway"
+title: "Building Aegis: An Enterprise AI Gateway"
 date: 2025-11-25 12:00:00 -0000
 category: ai
 tags: [ai, python, llm, enterprise, infrastructure, security, compliance, pipeda]
@@ -20,6 +19,24 @@ Before Aegis, AI integration looked like this: every team would pick their favor
 First, there was no centralized control. If Anthropic changed their API, you'd have to update code across dozens of services. Second, costs were spiraling out of control—teams would use expensive Opus models for simple tasks like summarizing commit messages. Third, and most critically, there was no way to prevent sensitive data from leaving your network. A developer might accidentally include a customer's credit card number in a prompt, and it would go straight to a cloud API.
 
 I decided early on that Aegis needed to be the single point of control for all AI traffic in an organization. But I also wanted it to be invisible to developers—something that just worked without requiring major changes to existing workflows.
+
+Here is the path every request takes; the rest of this post walks through each stage:
+
+```mermaid
+flowchart TD
+  app([App / SDK]) -- "submit, get job ID" --> cls[Classify data<br/>regex, ~0.2 ms]
+  cls --> r{RESTRICTED?}
+  r -- yes --> local[Local Ollama only<br/>never leaves the network]
+  r -- no --> pii[Mask PII<br/>Presidio + CA SIN]
+  pii --> bud{Pre-flight budget<br/>estimate OK?}
+  bud -- no --> rej([Rejected before any LLM call])
+  bud -- yes --> route[Route by task:<br/>Haiku / Sonnet / Opus]
+  route --> cb[Circuit breaker chain<br/>Anthropic → Azure OpenAI → Ollama]
+  cb --> scan[Scan response for new PII<br/>restore placeholders]
+  local --> audit
+  scan --> audit[(Audit log: TimescaleDB<br/>metrics: Prometheus)]
+  audit --> done([Job complete: client polls result])
+```
 
 ## Provider Agnosticism: The Foundation
 
@@ -51,11 +68,11 @@ The classifier looks for patterns that indicate data sensitivity:
 - **INTERNAL**: Default for unclassified data
 - **PUBLIC**: Explicitly marked public content
 
-I implemented this as a compiled regex engine that runs in about 0.2ms on average. The tradeoff was that it might miss some edge cases that a more sophisticated classifier would catch, but the speed and predictability were worth it. False negatives are acceptable here because the system defaults to more restrictive routing.
+I implemented this as a compiled regex engine that runs in about 0.2ms on average. The tradeoff was that it might miss some edge cases that a more sophisticated classifier would catch, but the speed and predictability were worth it. False negatives are the real risk: anything the patterns miss falls through to INTERNAL, which is allowed to reach a cloud provider. That's why the classifier isn't the only line of defense; PII masking (below) runs independently on everything bound for the cloud.
 
 ## PIPEDA Compliance: The Hard Invariant
 
-The most important design constraint was Canadian privacy law compliance. RESTRICTED data must never leave the local network. I didn't want this to be a configuration option—I wanted it to be a code invariant that couldn't be accidentally disabled.
+The most important design constraint was Canadian privacy law compliance under PIPEDA. The rule I chose to meet it is strict: RESTRICTED data must never leave the local network. I didn't want this to be a configuration option—I wanted it to be a code invariant that couldn't be accidentally disabled.
 
 I enforced this at four independent layers:
 
@@ -162,10 +179,10 @@ Building Aegis taught me that enterprise software requires balancing technical e
 
 I also learned that deterministic systems are easier to operate than probabilistic ones. While ML could have made some components smarter, the debugging and compliance benefits of rules-based logic were worth the tradeoffs.
 
-The async job model was controversial internally—some wanted synchronous APIs—but it enabled the scalability and reliability that enterprise customers demanded.
+The async job model was the decision I went back and forth on most—a synchronous API is simpler for every client—but polling is what lets slow models and queued requests coexist without timeouts.
 
 ## Looking Forward
 
-Aegis has proven that you can build enterprise-grade AI infrastructure without sacrificing developer experience. The provider-agnostic design means it can evolve with the AI landscape, and the strong compliance foundations give organizations confidence to adopt AI more broadly.
+Aegis shows that you can build enterprise-grade AI infrastructure without sacrificing developer experience. The provider-agnostic design means it can evolve with the AI landscape, and the strong compliance foundations give organizations confidence to adopt AI more broadly.
 
 The next challenges will be around multi-modal inputs, more sophisticated routing algorithms, and integration with existing enterprise identity systems. But the core architecture—governance through abstraction, compliance through invariants, and optimization through intelligence will remain the same.

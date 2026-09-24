@@ -29,8 +29,10 @@ vanilla ES modules on top of Jekyll + GitHub Pages.*
 EchoOS is a desktop shell — wallpaper, dock, windows, spotlight (⌘K / Ctrl+K), a
 terminal, a theme toggle, and a first-run guided tour. All content is rendered
 client-side from `assets/data/content.json`, so navigating the site never reloads
-the page. Blog posts and project pages are server-rendered by Jekyll and linked from
-within the OS. All content comes from the same YAML files in `_data/`.
+the page. Blog posts and projects open inside their windows (Blog, Projects); their old
+standalone URLs are small redirect stubs that forward into the OS and keep shared links,
+search snippets and link previews working. All content comes from `_data/`,
+`_posts/` and `_projects/`.
 
 ## Features
 
@@ -64,23 +66,18 @@ within the OS. All content comes from the same YAML files in `_data/`.
 │   ├── apps.yml             #   EchoOS app registry (dock order, window geometry)
 │   ├── arcade.yml           #   Arcade registry (card, pad, exhibit plaque per game)
 │   ├── solar.yml            #   Orrery: every body the solar-system map draws
-│   ├── profile.yml          #   name, bio, stats, social links
+│   ├── profile.yml          #   who the site is about: name, bio, stats, social links
 │   ├── experience.yml       #   work timeline
-│   ├── projects.yml         #   project gallery
 │   ├── skills.yml           #   skill groups
-│   ├── education.yml        #   degrees
-│   └── blog.yml             #   blog settings / categories
-├── _includes/               # Classic-route partials (hero, about, ...)
-├── _layouts/                # os.html (EchoOS shell), default.html (classic route)
-├── _plugins/                # Ruby build hooks (apps_titles.rb, echoos_filters.rb, post_json.rb)
+│   └── education.yml        #   degrees
+├── _layouts/                # os.html (the EchoOS shell), redirect.html (post/project URL stubs)
+├── _plugins/                # build hooks: profile_config, apps_titles, echoos_filters, post_json, project_json
 ├── _posts/                  # Blog posts (Markdown, mermaid/markmap supported)
-├── _projects/               # Individual project pages
+├── _projects/               # Projects (front matter + Markdown write-up)
 ├── _sass/                   # Sass sources
-│   ├── abstracts/           #   tokens, variables, mixins
-│   ├── base/                #   base, typography, animations, utilities
-│   ├── os/                  #   shell, window, dock, spotlight, terminal, arcade, apps
-│   ├── components/ layout/ pages/
-│   └── main.scss            #   entry (@use chain)
+│   ├── abstracts/           #   tokens, variables
+│   ├── base/                #   base, typography (used by rendered posts)
+│   └── os/                  #   shell, window, dock, spotlight, terminal, arcade, apps, glass, print
 ├── assets/
 │   ├── js/echoos/           # OS modules (see Module map)
 │   ├── js/games.js          # Arcade runner (lazy-loads the games)
@@ -89,8 +86,9 @@ within the OS. All content comes from the same YAML files in `_data/`.
 │   ├── data/content.json    # Liquid page: site data emitted as JSON for the OS
 │   ├── data/solar.json      #   ditto for _data/solar.yml, fetched by the Orrery
 │   └── manifest.webmanifest # PWA manifest
-├── index.html               # EchoOS route (layout: os)
-├── blog/ projects/          # Server-rendered pages
+├── index.html               # EchoOS (layout: os)
+├── 404.html                 # EchoOS again, opening the "Not found" window
+├── feed.xml                 # RSS feed of the posts
 ├── Gemfile / Dockerfile / docker-compose.yml
 └── .github/workflows/pages.yml
 ```
@@ -240,14 +238,17 @@ stay editable as YAML instead of being buried in JavaScript.
 
 ## Customizing Content
 
-All content lives in `_data/`. Edit the YAML and rebuild — EchoOS and all server-rendered pages pick it up.
+Edit and rebuild; EchoOS, the resume and the SEO/social tags all pick it up.
 
-- **Profile** — `_data/profile.yml` (name, bio, stats, social links, resume URL).
+- **Profile** — `_data/profile.yml` is the single source for name, title, bio, stats and social links; `_plugins/profile_config.rb` feeds it to the SEO tags, feed and page titles.
 - **Experience** — `_data/experience.yml` (roles, companies, durations, bullets).
-- **Projects** — `_data/projects.yml` (title, description, tech chips, links, image).
-- **Skills** — `_data/skills.yml` (groups of skills with levels).
+- **Projects** — one file per project in `_projects/` (title, description, technologies, categories, `live_url` / `live_label`, `github_url`, `website_url`, image or video, `featured`, `order`).
+- **Skills** — `_data/skills.yml` (groups of skills with years used).
 - **Education** — `_data/education.yml` (degree, school, duration, notes).
-- **Blog** — `_data/blog.yml` (categories, colors) + `_posts/`.
+- **Blog** — `_posts/`; a post's `category` becomes its category in the Blog window.
+
+After changing profile, experience, education, skills or featured projects, regenerate
+`assets/resume.pdf` from the Experience → Resume tab (steps in the Round 8.1 notes).
 
 ### Writing a blog post
 
@@ -255,7 +256,6 @@ Create `_posts/YYYY-MM-DD-post-title.md`:
 
 ```markdown
 ---
-layout: post
 title: "Your Post Title"
 date: 2026-01-15 10:00:00 -0000
 category: javascript
@@ -268,15 +268,16 @@ excerpt: "Brief description"
 Content in Markdown. Fenced ```mermaid``` and markmap blocks render inline in the OS reader.
 ```
 
-The post index (`/blog/`) is server-rendered; inside EchoOS every post opens in the
-Blog app's reader pane (per-post JSON under `assets/data/posts/`, generated by
-`_plugins/post_json.rb`).
+Every post opens in the Blog window's reader (per-post JSON under `assets/data/posts/`,
+generated by `_plugins/post_json.rb`). Link to another post with
+`{% post_url 2025-07-10-chapter-1-1-docker-basics %}`: inside the OS the link opens that
+post in the same window.
 
 ## Deployment
 
 `main` deploys to GitHub Pages through `.github/workflows/pages.yml`
 (actions/checkout → ruby/setup-ruby → configure-pages → build → upload → deploy). The
-workflow also sanity-checks the build artifacts (`content.json`, `classic/index.html`)
+workflow also sanity-checks the build artifacts (`index.html`, `content.json`, `404.html`)
 before deploying.
 
 ## License

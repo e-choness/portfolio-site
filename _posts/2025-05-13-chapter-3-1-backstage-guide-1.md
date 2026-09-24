@@ -1,10 +1,12 @@
 ---
-layout: "post"
 title: "Chapter 3.1 - Building Your Internal Developer Portal with Backstage - A Comprehensive Guide"
 date: "2025-05-13"
 category: "devops"
 tags: ["Platform Engineering", "Backstage", "Chapter Three"]
 author: "Echo Yin"
+# The template examples use GitHub-style ${{ }} expressions; without this,
+# Liquid swallows them and every one renders as a bare "$".
+render_with_liquid: false
 excerpt: "This guide explores the essentials of internal developer portals, their key features, and provides a hands-on tutorial for building one using Backstage, covering setup, GitHub integration, and template creation for efficient service bootstrapping."
 ---
 
@@ -28,11 +30,11 @@ Now that we understand what we truly want in a developer portal, let's start bui
 
 A developer portal will have diverse functionalities, and the design/coding part itself is a massive project that not all teams can afford. This means we need a tool to quickly build the portal. Fortunately, such a tool already exists: **Backstage**.
 
-Backstage is an open platform for building developer portals. It's not a developer portal itself, but rather a tool for building one. Backstage includes:1
+Backstage is an open platform for building developer portals. It's not a developer portal itself, but rather a tool for building one. Backstage includes:
 
-- **Software Catalog:** For managing all your software, such as microservices, libraries, data pipelines, websites, and ML models.2
+- **Software Catalog:** For managing all your software, such as microservices, libraries, data pipelines, websites, and ML models.
 
-- **Software Templates:** For quickly spinning up new projects and standardizi3ng your tooling with enterprise best practices.
+- **Software Templates:** For quickly spinning up new projects and standardizing your tooling with enterprise best practices.
 
 - **Documentation:** Adopting a "docs-as-code" approach to easily create, maintain, find, and consume technical documentation.
 
@@ -65,12 +67,10 @@ These are likely already familiar to most DevOps engineers:
 Run the following command:
 
 ```bash
-npx @backstage/create-app
+npx @backstage/create-app@latest
 ```
 
-This command will prompt you to choose the version. For this tutorial, select version **1.4.0**.
-
-The command will then ask for a name for your application. Enter a descriptive name, like "my-portal", press Enter, and wait for the application to finish setting up.
+The command will ask for a name for your application. Enter a descriptive name, like "my-portal", press Enter, and wait for the application to finish setting up.
 
 Once the setup is complete, navigate into your newly created directory and run:
 
@@ -78,7 +78,7 @@ Once the setup is complete, navigate into your newly created directory and run:
 yarn dev
 ```
 
-That's it\! Your Backstage developer portal is now up and running.
+That's it! Your Backstage developer portal is now up and running.
 
 Take some time to explore the interface and get familiar with the basic layout of the software catalog, templates, and documentation sections.
 
@@ -181,25 +181,44 @@ The `template.yaml` file defines how the template appears in the portal's user i
 
 **Example Parameters:**
 
+Each entry under `parameters` is one page of the form, written as JSON Schema; `ui:field` swaps in Backstage's pickers.
+
 ```yaml
 parameters:
-  - id: service_name
-    title: Service Name
-    type: string
-    description: Unique name of the service
-    ui:autofocus: true
-    ui:options:
-      rows: 1
-  - id: owner
-    title: Owner
-    type: string
-    description: Owner of the service
-    ui:field: OwnerPicker
-    ui:options:
-      allowedKinds: ["Group"]
+  - title: Service details
+    required: [service_name, owner]
+    properties:
+      service_name:
+        title: Service Name
+        type: string
+        description: Unique name of the service
+        ui:autofocus: true
+      owner:
+        title: Owner
+        type: string
+        description: Owner of the service
+        ui:field: OwnerPicker
+        ui:options:
+          catalogFilter:
+            kind: Group
+  - title: Repository
+    required: [repoUrl, gitguardian_api_key]
+    properties:
+      repoUrl:
+        title: Repository Location
+        type: string
+        ui:field: RepoUrlPicker
+        ui:options:
+          allowedHosts: [github.com]
+      gitguardian_api_key:
+        title: GitGuardian API key
+        type: string
+        ui:field: Secret # masked in the form, never logged
 ```
 
 **Example Steps:**
+
+Steps read the form through `parameters.*` (inside the skeleton files the same values are `values.*`), and sensitive fields through `secrets.*`:
 
 ```yaml
 steps:
@@ -209,31 +228,35 @@ steps:
     input:
       url: ./skeleton
       values:
-        service_name: ${{ values.service_name }}
-        owner: ${{ values.owner }}
-        github_token: ${{ secrets.GITHUB_TOKEN }} # Ensure this is securely handled
-        gitguardian_api_key: ${{ secrets.GITGUARDIAN_API_KEY }} # Ensure this is securely handled
+        service_name: ${{ parameters.service_name }}
+        owner: ${{ parameters.owner }}
 
   - id: publish
     name: Publish
     action: publish:github
     input:
-      repoUrl: github.com?owner=${{ values.owner }}&repo=${{ values.service_name }}
+      repoUrl: ${{ parameters.repoUrl }}
+      # Stored as a GitHub Actions secret on the new repo, never written to a file
+      secrets:
+        GITGUARDIAN_API_KEY: ${{ secrets.gitguardian_api_key }}
 
   - id: register
     name: Register
     action: catalog:register
     input:
-      catalogInfoUrl: ${{ steps.publish.output.catalogInfoUrl }}
+      repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+      catalogInfoPath: /catalog-info.yaml
 ```
+
+Keep tokens out of `fetch:template` values: anything passed there can be rendered into the skeleton's files and committed to the new repository. Backstage publishes with the integration token from `app-config.yaml`, and the GitGuardian key goes to the repository as an Actions secret.
 
 From the file above, we can infer its specific definition:
 
-1. First, it requires two input parameters: `service_name` and `owner`.
+1. First, it asks for the service details: `service_name` and `owner`.
 
-2. Then, it selects a repository location using an additional parameter (`GITGUARDIAN_API_KEY` for the CI pipeline).
+2. Then, it asks for a repository location and the GitGuardian API key the CI pipeline needs.
 
-3. Next, it fetches the template, renders it, publishes it to GitHub, and registers it in our portal.
+3. Next, it fetches the template, renders it, publishes it to GitHub (setting the key as a repository secret), and registers it in our portal.
 
 ### Registering the Template
 
@@ -258,17 +281,32 @@ Remember to restart your `yarn dev` server after these changes.
 
 Now that everything is set up, it's time to see it in action.
 
-Visit `http://localhost:3000`, then click the "Create" button and select our template:
+Visit `http://localhost:3000`, then click the "Create" button and select our template.
 
 Enter the necessary information. You'll need to create a GitGuardian API key here: [https://dashboard.gitguardian.com/api/personal-access-tokens](https://dashboard.gitguardian.com/api/personal-access-tokens).
 
-Once everything is set up, click "Next," and then observe the results:
+Once everything is set up, click "Next." Here is what happens behind that button:
 
-You can view your newly created service in our catalog:
+```mermaid
+sequenceDiagram
+  actor Dev as Developer
+  participant UI as Backstage frontend :3000
+  participant BE as Backstage backend :7007
+  participant GH as GitHub
+  participant CAT as Software Catalog
+  Dev->>UI: Create → pick template, fill in the form
+  UI->>BE: run template (parameters + secrets)
+  BE->>BE: fetch:template renders ./skeleton
+  BE->>GH: publish:github creates the repo, pushes files,<br/>sets GITGUARDIAN_API_KEY secret
+  GH-->>BE: repoContentsUrl
+  BE->>CAT: catalog:register reads catalog-info.yaml
+  GH->>GH: push triggers Actions: tests + ggshield scan
+  Dev->>UI: open the new component
+  UI->>CAT: owner, docs, links
+  UI->>GH: CI status for the component
+```
 
-We also created and rendered the files:
-
-Finally, let's check the CI status:
+The new service appears in the catalog with its owner and the rendered files, and its page shows the CI runs.
 
 It appears the pipelines have completed successfully. You can click on them to view more details, including detailed steps and logs. If you prefer to view them in your CI software (GitHub Actions, in this case), you can click the corresponding link to jump directly there. For your reference, this repository was created using the template above.
 
@@ -284,4 +322,4 @@ In real-world scenarios, a developer portal can be much more as integrations gro
 
 It's important to note that this tutorial is only for a quick local start. For production use, further considerations and adjustments are necessary based on your specific situation. For instance, we currently use static configuration, which means catalog information would be lost if the development server were restarted. To address this, you would need to configure Postgres for the portal. Another example is using `yarn dev` to start both the frontend and backend; in production, you might want to separate them, deploy them as containers in K8s, and create Ingress for them.
 
-In the next part of this tutorial, we will explore the mechanisms of Backstage plugins and see how to extend its functionality to a higher level.
+Backstage plugins, which extend the portal much further than templates, are the natural next step from here.

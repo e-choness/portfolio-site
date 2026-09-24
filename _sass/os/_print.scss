@@ -1,0 +1,93 @@
+// os/_print.scss — printing the resume. Experience → Resume copies its card
+// into a top-level #os-print host on `beforeprint` (apps/experience.js); here
+// everything else is hidden and the card is set as a Letter page. The same
+// path produces assets/resume.pdf (see docs/reference/NOTES.md, Round 8).
+
+@media print {
+  @page {
+    size: Letter;
+    margin: 0;
+  }
+
+  body:has(> #os-print) > :not(#os-print) {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  // Fixed print palette, whatever the OS theme: black-on-white prints cleanly.
+  #os-print {
+    --ink: #1d1a2c;
+    --muted: #5b5672;
+    --accent: #5a4ac6;
+    --line: #dcd6ea;
+    --surface: #fff;
+    width: 8.5in;
+    container-type: inline-size; // the card's cqi sizes resolve against the page
+    font-family: var(--font-sans);
+    color: var(--ink);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  #os-print .os-resume-card {
+    max-width: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: #fff;
+    padding: 0.34in 0.55in 0.1in;
+  }
+
+  #os-print .os-resume-name {
+    font-size: 28px;
+  }
+
+  #os-print .os-resume-contact {
+    word-break: normal;
+    margin-bottom: 12px;
+  }
+
+  // Screen spacing is roomier than a page can afford; keep it to one Letter page.
+  #os-print .os-resume-summary {
+    font-size: 12px;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+  #os-print .os-resume-section {
+    padding-top: 7px;
+    margin-bottom: 7px;
+  }
+  #os-print .os-resume-section-head {
+    margin-bottom: 5px;
+  }
+  #os-print .os-resume-entry {
+    margin-bottom: 5px;
+  }
+  #os-print .os-resume-bullets,
+  #os-print .os-resume-proj {
+    font-size: 11.5px;
+    line-height: 1.35;
+  }
+  #os-print .os-resume-role,
+  #os-print .os-resume-company,
+  #os-print .os-resume-degree,
+  #os-print .os-resume-institution {
+    font-size: 12px;
+  }
+  #os-print .os-resume-item {
+    margin-bottom: 3px;
+  }
+  #os-print .os-resume-skills {
+    font-size: 11.5px;
+    line-height: 1.45;
+  }
+
+  // Keep a role and its bullets together across a page break.
+  #os-print .os-resume-entry {
+    break-inside: avoid;
+  }
+}

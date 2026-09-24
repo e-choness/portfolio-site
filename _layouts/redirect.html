@@ -1,0 +1,45 @@
+---
+# Old per-post and per-project URLs (/blog/YYYY/MM/DD/slug/, /projects/slug/).
+# The site is EchoOS now, so these pages aren't meant to be seen: they keep
+# links shared before the switch working, carry the title/description/image
+# that search results and link previews read, and hold the content for
+# crawlers and no-JS readers. Browsers are forwarded straight to the post or
+# project inside its OS window (the OS also intercepts clicks on these URLs,
+# see boot.js, so in-site links never load this page).
+---
+{%- if page.collection == "projects" -%}
+  {%- assign route = "/#/proj/" | append: page.slug -%}
+  {%- assign kind = "project" -%}
+{%- else -%}
+  {%- assign slug = page.url | split: "/" | last -%}
+  {%- assign route = "/#/blog/" | append: slug -%}
+  {%- assign kind = "post" -%}
+{%- endif -%}
+{%- assign target = route | relative_url -%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>location.replace({{ target | jsonify }});</script>
+  <title>{{ page.title }} · {{ site.title }}</title>
+  {% seo title=false %}
+  {% unless page.image %}
+  <meta property="og:image" content="{{ '/assets/images/og-card.jpg' | absolute_url }}" />
+  <meta name="twitter:image" content="{{ '/assets/images/og-card.jpg' | absolute_url }}" />
+  {% endunless %}
+  <link rel="icon" href="{{ '/assets/favicon.ico' | relative_url }}" type="image/x-icon" />
+  <style>
+    body { max-width: 44rem; margin: 3rem auto; padding: 0 1.5rem; font-family: system-ui, sans-serif; line-height: 1.6; color: #1d1a2c; }
+    pre { overflow-x: auto; background: #f4f2f8; padding: 12px; border-radius: 8px; }
+    img { max-width: 100%; height: auto; }
+  </style>
+</head>
+<body>
+  <p><a href="{{ target }}">Open this {{ kind }} in EchoOS →</a></p>
+  <main>
+    <h1>{{ page.title }}</h1>
+    {{ content }}
+  </main>
+</body>
+</html>

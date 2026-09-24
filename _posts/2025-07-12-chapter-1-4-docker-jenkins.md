@@ -1,491 +1,308 @@
 ---
-layout: "post"
-title: "Chapter 1.4 - Dockerized Jenkins - Linux Deployment and Pipeline Execution"
+title: "Chapter 1.4 - Jenkins in Docker: Every Build in a Clean Container"
 date: "2025-07-12"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
-excerpt: "This guide outlines how to deploy Jenkins on a Linux server using Docker and run Pipeline scripts within Docker containers. This approach simplifies using various Node.js or Java sandbox environments."
+excerpt: "Run Jenkins as a container and have every pipeline build inside a disposable container of its own: Node.js and Maven builds without installing either on the server, cached dependencies, SSH deploys, and how to get it all onto a server that can't reach Docker Hub. Each Jenkinsfile is broken down block by block."
 ---
 
-## Deploying Jenkins
+A long-lived Jenkins server tends to accumulate things: three Node versions, two JDKs, a Maven someone upgraded by hand. Builds start depending on whatever happens to be installed, and nobody dares touch the machine.
 
-Due to common network restrictions in some regions, directly pulling Docker images might be challenging. A recommended workaround is to download the Jenkins and Jenkins agent images on a local machine with VPN access and then transfer them to your server.
+Docker removes that problem at both ends:
 
-### 1. Download and Transfer Jenkins Images
+- **Jenkins itself runs in a container**, with its state in a volume. Upgrading means pulling a new image.
+- **Every build runs in a fresh container** of whatever toolchain the project asks for: `node:22` for one job, `maven:3.9` for the next. Nothing is installed on the server, and two projects can use different versions side by side.
 
-First, pull the necessary Docker images and save them as `.tar` files. We'll use the `lts-jdk21` tag to get the latest Long-Term Support version for JDK 21.
+## How the pieces fit
 
-```bash
-# Get the latest LTS Jenkins image for JDK 21
-docker pull jenkins/jenkins:lts-jdk21
+The Jenkins container doesn't run Docker *inside* itself. It gets the host's Docker socket mounted in, so when a pipeline asks for a `node:22` container, the host's daemon starts it as a **sibling** of Jenkins:
 
-# Save the Docker image to a local file
-docker save -o jenkins-lts-jdk21.tar jenkins/jenkins:lts-jdk21
-
-# Get the latest Jenkins agent image for JDK 21
-docker pull jenkins/ssh-agent:latest-jdk21
-
-# Save the Docker image to a local file
-docker save -o jenkins-ssh-agent-latest-jdk21.tar jenkins/ssh-agent:latest-jdk21
+```mermaid
+flowchart LR
+  dev([Developer]) -- "Build with Parameters" --> J
+  subgraph Host["Server (Docker host)"]
+    J["jenkins container<br/>Docker CLI only"] -- "/var/run/docker.sock" --> D[(Host Docker daemon)]
+    D -- "docker run" --> N["node:22 build container<br/>workspace shared"]
+    D -- "docker run" --> M["maven build container<br/>~/.m2 cache mounted"]
+  end
+  G[(Git server)] -- checkout --> J
+  N -- "scp dist/" --> T[(Deploy target)]
+  M -- "scp jar + ssh restart" --> T
 ```
 
-Next, transfer these `.tar` files to your Linux server. Replace `152.22.3.186` with your server's IP address and adjust the `scp` port (`-P 2222`) if needed.
+**A security note before you start.** Access to the Docker socket is root access to the host: anything that can talk to it can start a privileged container that mounts `/`. Mounting it into Jenkins means that anyone who can edit a Jenkinsfile, or log in to Jenkins, effectively has root on this server. That's acceptable for a team's own build box; it's not acceptable on a machine shared with things you need to protect. The alternative is dedicated build agents, where the controller never touches Docker itself.
 
-```bash
-# Upload to the server
-+scp -P 2222 jenkins-lts-jdk21.tar root@152.22.3.186:/home/docker-images
-+scp -P 2222 jenkins-ssh-agent-latest-jdk21.tar root@152.22.3.186:/home/docker-images
+## 1. A Jenkins image with the Docker CLI
 
-```
-
-### 2. Create a Custom Jenkins Image with Docker Support
-
-To allow Jenkins to interact with the Docker daemon on your host, you'll need a custom Jenkins image that includes the Docker CLI. Create a `Dockerfile` with the following content:
+The official image doesn't include the `docker` command, and the plugins we need have to be installed. Create a `Dockerfile`:
 
 ```dockerfile
-# Use the official Jenkins JDK 21 image as the base
 FROM jenkins/jenkins:lts-jdk21
 
-# Switch to root user to install Docker CLI and create necessary groups
 USER root
 
-# Install necessary packages for Docker CLI (curl, gnupg2, lsb-release, software-properties-common are often pre-installed or not strictly needed for static binary)
-RUN apt-get update && apt-get install -y \
-    curl \
-    gnupg2 \
-    lsb-release \
-    software-properties-common \
-    # Clean up apt caches to reduce image size
-    && rm -rf /var/lib/apt/lists/*
+# Docker CLI only (no daemon): the static binary from download.docker.com
+ARG DOCKER_VERSION=27.3.1
+RUN curl -fsSL "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz" \
+    | tar -xz --strip-components=1 -C /usr/local/bin docker/docker
 
-# Install a specific version of Docker CLI from the static binaries
-# Choose a stable version that matches your host's Docker version or a recent one
-ARG DOCKER_VERSION=26.1.4
-RUN curl -fsSL "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz" | tar xzvf - --strip-components=1 -C /usr/local/bin docker/docker
+# The socket belongs to the host's "docker" group. The same GID inside the
+# image lets the jenkins user use it without being root.
+ARG DOCKER_GID=999
+RUN (getent group ${DOCKER_GID} || groupadd -g ${DOCKER_GID} docker) \
+    && usermod -aG ${DOCKER_GID} jenkins
 
-# Create the 'docker' group if it doesn't exist and add the 'jenkins' user to it
-# The GID of the 'docker' group inside the container should ideally match the GID of the 'docker' group on the host.
-# You might need to find the GID on your host (e.g., `getent group docker | cut -d: -f3`) and specify it here:
-# RUN groupadd -g <HOST_DOCKER_GID> docker || true && usermod -aG docker jenkins
-# For simplicity, we assume the default 'docker' group creation is sufficient or pre-exists.
-RUN groupadd docker || true && usermod -aG docker jenkins
-
-# Switch back to the jenkins user
 USER jenkins
+
+# Plugins baked into the image, so a rebuilt container comes up ready
+RUN jenkins-plugin-cli --plugins \
+    workflow-aggregator \
+    docker-workflow \
+    git \
+    credentials-binding \
+    ssh-credentials \
+    junit
 ```
 
-Build your new Jenkins image. Replace `my-jenkins-docker-2468-jdk21` with a descriptive tag.
+Line by line:
+
+- **`FROM jenkins/jenkins:lts-jdk21`**: the Long-Term Support line on Java 21. LTS releases are the ones to run in production; weekly releases change too often.
+- **`USER root`**: package-level changes need root; we switch back afterwards.
+- **`ARG DOCKER_VERSION` + `RUN curl … | tar`**: download Docker's static binaries and extract only the `docker` client into `/usr/local/bin`. `--strip-components=1` drops the `docker/` directory prefix from the archive. Keep the CLI version close to the host's daemon version.
+- **`ARG DOCKER_GID` + `groupadd`/`usermod`**: this is the step most setups get wrong. On the host, `/var/run/docker.sock` is owned by the group `docker` with some numeric ID (often 999, but it varies). File permissions are checked by *number*, so the jenkins user must belong to a group with that same GID or every build fails with `permission denied … docker.sock`. `getent group ${DOCKER_GID} || groupadd …` creates the group only if no group in the image already has that number; `usermod -aG` accepts the number either way.
+- **`USER jenkins`**: Jenkins runs unprivileged, as in the official image.
+- **`jenkins-plugin-cli --plugins …`**: installs plugins at build time. `workflow-aggregator` is Pipeline itself, `docker-workflow` lets pipelines run in containers, `credentials-binding` and `ssh-credentials` handle secrets, and `junit` publishes test reports.
+
+Build it with the host's docker GID:
 
 ```bash
-docker build -t my-jenkins-docker:lts-jdk21 .
+docker build \
+  --build-arg DOCKER_GID="$(getent group docker | cut -d: -f3)" \
+  -t my-jenkins:lts-jdk21 .
 ```
 
-Save the newly built image and transfer it to your server:
+`getent group docker` prints `docker:x:999:…`; `cut -d: -f3` takes the third colon-separated field, the GID. Run this on the server that will host Jenkins, or pass that server's number.
 
-```bash
-docker save -o my-jenkins-docker-2468-jdk21.tar my-jenkins-docker-2468-jdk21
-scp -P 2222 my-jenkins-docker-2468-jdk21.tar root@152.22.3.186:/home/docker-images
-```
+## 2. Run it with Compose
 
-### 3. Load Images on the Server
-
-Once the `.tar` files are on your server, load them into Docker:
-
-```bash
-# On your server
-docker load -i /home/docker-images/jenkins-lts-jdk21.tar
-docker load -i /home/docker-images/jenkins-ssh-agent-jdk21.tar
-docker load -i /home/docker-images/my-jenkins-docker-lts-jdk21.tar
-```
-
-### 4. Configure and Start Jenkins with Docker Compose
-
-Create a `docker-compose.yml` file in a directory on your server. This file defines the Jenkins service and its dependencies.
+Save as `compose.yml` next to the Dockerfile:
 
 ```yaml
-version: "3.8" # Use a recent Docker Compose file format version
-
 services:
   jenkins:
-    image: my-jenkins-docker-lts-jdk21 # Use your custom Jenkins image
-    ports:
-      - "8086:8080" # Map host port 8086 to container port 8080 (Jenkins UI)
-      - "50000:50000" # Map host port 50000 to container port 50000 (for Jenkins agents)
-    volumes:
-      # Persistent storage for Jenkins data
-      - jenkins_home:/var/jenkins_home
-      # Mount the Docker socket to allow Jenkins to run Docker commands
-      - /var/run/docker.sock:/var/run/docker.sock
-      # Optional: Mount the Docker CLI binary if it's not installed in the image
-      # - /usr/bin/docker:/usr/bin/docker
-    # Recommended: Set a restart policy to ensure Jenkins restarts with the Docker daemon
+    image: my-jenkins:lts-jdk21
     restart: unless-stopped
-    # Optional: Set resource limits
-    # deploy:
-    #   resources:
-    #     limits:
-    #       cpus: '2'
-    #       memory: '4G'
-
-  ssh-agent:
-    image: jenkins/ssh-agent:jdk21
-    # This agent typically connects to Jenkins via JNLP, no direct port mapping needed unless specific use case.
-    # It's usually managed by Jenkins itself when running pipeline steps.
+    ports:
+      - "8086:8080"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
-  jenkins_home: # Define the named volume for Jenkins data persistence
+  jenkins_home:
 ```
 
-Navigate to the directory containing `docker-compose.yml` and start Jenkins:
+- **`ports: "8086:8080"`**: the web UI on host port 8086. Port 50000, which you'll see in other guides, is only for inbound agents; this setup doesn't use any.
+- **`jenkins_home:/var/jenkins_home`**: *all* Jenkins state (jobs, build history, credentials, plugins) lives here. Back up this volume and you've backed up Jenkins.
+- **`/var/run/docker.sock:/var/run/docker.sock`**: the host's Docker socket, as discussed above.
+- **`restart: unless-stopped`**: come back after reboots.
 
 ```bash
-docker compose up -d # Start Jenkins in detached mode
+docker compose up -d
+docker compose logs -f jenkins          # wait for "Jenkins is fully up and running"
+docker compose exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 ```
 
-To stop and remove Jenkins:
+Open `http://your-server:8086`, paste the initial admin password, choose **Install suggested plugins**, and create your admin user. To check the Docker wiring, run `docker compose exec jenkins docker ps`: it should list the Jenkins container itself.
+
+`docker compose down` stops and removes the container but **keeps** the `jenkins_home` volume; only `down -v` deletes it.
+
+## 3. Credentials
+
+Deployments need an SSH key that the target server accepts. Generate a dedicated one, never your personal key:
 
 ```bash
-docker compose down # Stop and remove all containers, networks, volumes, and images defined in the Docker Compose file
+ssh-keygen -t ed25519 -f jenkins_deploy -C "jenkins deploy" -N ""
+ssh-copy-id -i jenkins_deploy.pub deploy@203.0.113.20
 ```
 
-After starting, Jenkins will be accessible at `http://152.22.3.186:8086/`.
+- **`-f jenkins_deploy`**: write the pair to `jenkins_deploy` and `jenkins_deploy.pub`.
+- **`-N ""`**: no passphrase, since Jenkins has to use it unattended; protect it through Jenkins' credential store instead.
+- **`ssh-copy-id`**: appends the public key to the `deploy` user's `authorized_keys` on the target.
 
----
+In Jenkins, go to **Manage Jenkins → Credentials → (global) → Add Credentials**, choose **SSH Username with private key**, set the ID to `deploy-key`, the username to `deploy`, and paste the contents of `jenkins_deploy`. Add your Git credentials the same way if the repositories are private. Then delete the private key file from wherever you generated it.
 
-## Jenkins Configuration
+## 4. A Node.js pipeline
 
-### 1. Install Plugins
+Create a **Pipeline** job, set **Definition** to **Pipeline script from SCM**, point it at the application's repository, and commit this as `Jenkinsfile` in that repository:
 
-Install the **Git Parameter Plug-In** to enable automatic loading of repository branches in your CI builds. You can do this via **Manage Jenkins** > **Manage Plugins** > **Available Plugins**.
+```groovy
+pipeline {
+    agent {
+        docker {
+            image 'node:22'
+            args '-v /var/cache/jenkins-npm:/tmp/npm-cache'
+        }
+    }
 
-After installation, configure the Git Parameter in **Manage Jenkins** > **System**.
+    parameters {
+        choice(name: 'TARGET', choices: ['staging', 'production'], description: 'Where to deploy')
+    }
 
-### 2. Add Credentials
+    environment {
+        DEPLOY_DIR = '/var/www/shop'
+    }
 
-You'll need to add SSH and SCP credentials for Jenkins to interact with your Git repositories and remote servers.
+    stages {
+        stage('Install') {
+            steps {
+                sh 'npm ci --cache /tmp/npm-cache'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'npm test'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'npm run build'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                script {
+                    env.DEPLOY_HOST = params.TARGET == 'production' ? '203.0.113.20' : '203.0.113.21'
+                }
+                withCredentials([sshUserPrivateKey(credentialsId: 'deploy-key',
+                                                   keyFileVariable: 'SSH_KEY',
+                                                   usernameVariable: 'SSH_USER')]) {
+                    sh '''
+                        ssh -i "$SSH_KEY" -o StrictHostKeyChecking=accept-new \
+                            "$SSH_USER@$DEPLOY_HOST" "rm -rf $DEPLOY_DIR/next && mkdir -p $DEPLOY_DIR/next"
+                        scp -i "$SSH_KEY" -o StrictHostKeyChecking=accept-new -r dist/. \
+                            "$SSH_USER@$DEPLOY_HOST:$DEPLOY_DIR/next/"
+                        ssh -i "$SSH_KEY" "$SSH_USER@$DEPLOY_HOST" \
+                            "rm -rf $DEPLOY_DIR/previous; mv $DEPLOY_DIR/current $DEPLOY_DIR/previous 2>/dev/null; mv $DEPLOY_DIR/next $DEPLOY_DIR/current"
+                    '''
+                }
+            }
+        }
+    }
 
-Generate an SSH key pair on your local machine or Jenkins server (if you plan to use a key generated there):
-
-```bash
-ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa_jenkins # Use a specific filename to avoid overwriting
+    post {
+        success { echo "Deployed to ${params.TARGET}" }
+        failure { echo 'Build failed; check the stage logs above' }
+    }
+}
 ```
 
-Copy the **private key** content (from `id_rsa_jenkins` or similar file) and add it as a "SSH Username with private key" credential in Jenkins (**Manage Jenkins** > **Manage Credentials** > **(global)** > **Add Credentials**).
+Block by block:
 
-### 3. Create a New Pipeline Job
+- **`agent { docker { image 'node:22' … } }`**: run the whole pipeline inside a `node:22` container. Jenkins checks out the repository first and shares the workspace with the container (when Jenkins itself runs in a container, the plugin does this with `--volumes-from`), so `npm` sees your code.
+- **`args '-v /var/cache/jenkins-npm:/tmp/npm-cache'`**: extra `docker run` arguments. **The left side is a path on the Docker host**, not inside the Jenkins container, because it's the host's daemon that starts the build container. Create it once on the server with `sudo mkdir -p /var/cache/jenkins-npm && sudo chown 1000:1000 /var/cache/jenkins-npm`: builds run as Jenkins' user ID, 1000.
+- **`parameters { choice(...) }`**: adds a **Build with Parameters** dropdown. Jenkins registers parameters on the first run, so that run uses the defaults.
+- **`environment { DEPLOY_DIR = … }`**: variables available to every `sh` step.
+- **`npm ci --cache /tmp/npm-cache`**: install exactly what `package-lock.json` specifies, with downloads cached on the host between builds.
+- **`stage('Test')`**: a failing command fails the stage, and the pipeline stops before anything is deployed.
+- **`script { env.DEPLOY_HOST = … }`**: a bit of Groovy to pick the target host from the parameter.
+- **`withCredentials([sshUserPrivateKey(...)])`**: writes the `deploy-key` credential to a temporary file for the duration of the block and exposes its path as `$SSH_KEY` and the username as `$SSH_USER`. The key is masked in the log and deleted afterwards.
+- **The `sh '''…'''` block**: uploads into a fresh `next/` directory, then swaps it into place, keeping the old release as `previous/`. A half-finished upload never serves traffic, and rolling back is one `mv`.
+  - `StrictHostKeyChecking=accept-new` trusts a server's host key the first time and refuses if it later changes. That's safer than the common `=no`, which accepts anything, including an attacker.
+  - The triple single quotes matter: Groovy doesn't interpolate `'''` strings, so `$SSH_KEY` is expanded by the shell, which keeps the secret out of Groovy and out of the logs.
+- **`post { … }`**: runs after all stages, by outcome. This is the place for chat notifications.
 
-Create a new Jenkins job, selecting "Pipeline" as the type.
+## 5. A Java / Maven pipeline
 
-### 4. Configure Pipeline Job
+For Maven there's no need for a custom image: the official `maven` images bundle a JDK.
 
-In the job configuration, set up the **Git Parameter** to read branches during the build process.
+```groovy
+pipeline {
+    agent {
+        docker {
+            image 'maven:3.9-eclipse-temurin-21'
+            args '-v /var/cache/jenkins-m2:/var/maven/.m2'
+        }
+    }
 
-Under the "Build Triggers" or "General" section (depending on your Jenkins version and installed plugins), you can add a "Choice Parameter" or similar to select between "production" or "development" modes before the build starts. This value can then be accessed in your Pipeline script.
+    environment {
+        DEPLOY_HOST = '203.0.113.20'
+        APP_DIR     = '/opt/shop-api'
+    }
 
-### 5. Specify Pipeline Script Location
+    stages {
+        stage('Build & test') {
+            steps {
+                sh 'mvn -B -Dmaven.repo.local=/var/maven/.m2/repository clean package'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'deploy-key',
+                                                   keyFileVariable: 'SSH_KEY',
+                                                   usernameVariable: 'SSH_USER')]) {
+                    sh '''
+                        scp -i "$SSH_KEY" -o StrictHostKeyChecking=accept-new \
+                            target/shop-api.jar "$SSH_USER@$DEPLOY_HOST:$APP_DIR/shop-api.jar.new"
+                        ssh -i "$SSH_KEY" "$SSH_USER@$DEPLOY_HOST" \
+                            "mv $APP_DIR/shop-api.jar.new $APP_DIR/shop-api.jar && sudo systemctl restart shop-api"
+                    '''
+                }
+            }
+        }
+    }
 
-Choose **Pipeline script from SCM** and configure it to point to your Git repository and the `Jenkinsfile` within it. For example, if your `Jenkinsfile` is on the `config` branch, specify that.
+    post {
+        always {
+            junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
+        }
+    }
+}
+```
 
----
+What's different from the Node pipeline:
 
-## Running Pipeline Scripts
+- **`image 'maven:3.9-eclipse-temurin-21'`**: Maven 3.9 on the Eclipse Temurin JDK 21. Match the JDK to your project; tags exist for 17, 21 and newer.
+- **`-v /var/cache/jenkins-m2:/var/maven/.m2`** plus **`-Dmaven.repo.local=…`**: keep the downloaded dependency repository on the host between builds, so each build doesn't re-download half of Maven Central. As before, the host directory must be owned by UID 1000.
+- **`mvn -B`**: batch mode, with no interactive prompts and no download progress bars flooding the log.
+- **`clean package`**: compile, run the unit tests, build the jar. A failing test fails the build.
+- **Deploy**: upload as `.jar.new`, then rename and restart in one SSH command, so the service never starts from a half-copied file. The `deploy` user needs a narrow sudo rule for exactly that one command: `deploy ALL=(root) NOPASSWD: /usr/bin/systemctl restart shop-api`.
+- **`junit …`** in `post { always }`: publish the test results even when the build fails, which is exactly when you want to see them. Jenkins then shows test trends and failure details per build.
 
-### Node.js Environment
+## 6. When the server can't reach Docker Hub
 
-To run Node.js applications within your Jenkins pipelines, install the **Docker Pipeline** plugin. This plugin allows your pipeline to build and use Docker containers.
+Some build servers sit on networks without internet access, or with registry access blocked. Images can be carried over as files: `docker save` writes an image, with all its layers, to a tar archive, and `docker load` reads it back.
 
-Before running, ensure you have the required Node.js Docker images available on your Jenkins server. Pull and save them as you did for Jenkins images:
+On a machine that can pull:
 
 ```bash
-# Pull latest Node.js LTS versions (replace with desired versions)
-docker pull node:18
-docker pull node:20
 docker pull node:22
-
-# Save to local files (example for Node.js 20)
-docker save -o node20.tar node:20
-
-# Upload to server
-scp -P 2222 node20.tar root@152.22.3.186:/home/docker-images
-
-# On server, load the images
-docker load -i /home/docker-images/node20.tar
+docker pull maven:3.9-eclipse-temurin-21
+docker save -o build-images.tar node:22 maven:3.9-eclipse-temurin-21 my-jenkins:lts-jdk21
+scp build-images.tar deploy@203.0.113.10:/tmp/
 ```
 
-Here's an example of a **Pipeline script** that uses a Node.js 20 Docker image:
-
-```groovy
-pipeline {
-    agent {
-        docker {
-            image 'node:20'
-            // Mount NPM cache directory for faster builds.
-            // Using a path within the Jenkins workspace for easy permissions management.
-            args '-v ${WORKSPACE}/.npm:/home/node/.npm'
-        }
-    }
-    environment {
-        // Define environment variables for your project
-        GIT_URL="http://152.22.3.186:8081/mall/h5.git" // Use HTTPS for better security if available
-        GIT_AUTH = "" // Replace with your Jenkins Credentials ID for Git
-        GIT_BRANCH = "${branch}" // Parameter from Jenkins job
-        PROJECT_ENV = "${project_env}" // Parameter from Jenkins job (e.g., "vip", "dev")
-        VIP_HOST = '152.22.3.186'
-        VIP_REMOTE_DIR = "/mnt/mall/h5"
-        LOCAL_BUILD_DIR = "${WORKSPACE}/h5_vip/dist/" // Assuming 'dist' is output dir
-    }
-    stages {
-        stage('Git Checkout') {
-            steps {
-                echo "🏆 WORKSPACE: ${WORKSPACE}"
-                echo "🎯 Branch: ${GIT_BRANCH}"
-                echo "🏅 Project Environment: ${PROJECT_ENV}"
-                script {
-                    checkout([
-                        $class: 'GitSCM',
-                        branches: [[name: "${GIT_BRANCH}" ]],
-                        doGenerateSubmoduleConfigurations: false,
-                        extensions: [[$class: 'CleanBeforeCheckout']], // Add clean checkout for consistency
-                        submoduleCfg: [],
-                        userRemoteConfigs: [[
-                            credentialsId: "${GIT_AUTH}",
-                            url: "${GIT_URL}"
-                        ]]
-                    ])
-                }
-                sh 'pwd'
-                sh 'ls -la'
-            }
-        }
-        stage('Build and Deploy Frontend') {
-            when {
-                expression {
-                    // Only proceed if the previous stage was successful or skipped
-                    currentBuild.result == null || currentBuild.result == 'SUCCESS'
-                }
-            }
-            steps {
-                sh 'pwd'
-                script {
-                    switch (PROJECT_ENV) {
-                        case "vip":
-                            // Navigate to the project directory, install dependencies, build
-                            sh '''
-                            ls -la
-                            cd h5_vip
-                            npm install --cache /home/node/.npm --registry=https://registry.npmmirror.com/ # Use a reliable registry
-                            npm run build
-                            '''
-                            // Ensure the 'dist' directory exists and rename it as needed
-                            sh 'cd h5_vip && mv dist test_dir'
-
-                            withCredentials([sshUserPrivateKey(credentialsId: '', // Fill this with your credentials ID
-                                keyFileVariable: 'SSH_KEY')]) {
-                                // Connect to remote server, remove old deployment, and upload new files
-                                sh '''
-                                ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no root@${VIP_HOST} "rm -rf ${VIP_REMOTE_DIR}/test_dir"
-                                scp -i ${SSH_KEY} -o StrictHostKeyChecking=no -P 22 -r "${WORKSPACE}/h5_vip/test_dir" root@${VIP_HOST}:${VIP_REMOTE_DIR}
-                                '''
-                            }
-                            break
-                        case "dev":
-                            echo "Development deployment logic (not implemented in this example)"
-                            break
-                    }
-                }
-            }
-        }
-    }
-    post {
-        success {
-            echo 'Success: Build and deployment completed.'
-        }
-        failure {
-            echo 'Failure: Build or deployment failed. Check logs for details.'
-        }
-        always {
-            // Clean up workspace if needed
-            // cleanWs()
-        }
-    }
-}
-```
-
-### Java Environment
-
-To run Java applications with Maven, create a custom Docker image based on `openjdk:11` (or your desired Java version) and install Maven.
-
-Here's the `Dockerfile` for your custom Java/Maven image:
-
-```dockerfile
-# Use the official OpenJDK 11 image as the base
-FROM openjdk:11
-
-# Set environment variables for Maven
-ENV MAVEN_VERSION=3.9.6 # Update to a recent stable Maven version
-ENV MAVEN_HOME=/opt/maven
-ENV PATH="${MAVEN_HOME}/bin:${PATH}"
-
-# Install necessary packages for downloading and extracting Maven
-# Install `gnupg` for verifying Maven downloads (good practice, though not strictly used in this Dockerfile)
-USER root
-RUN apt-get update && apt-get install -y \
-    wget \
-    tar \
-    gnupg \
-    # Clean up apt caches to reduce image size
-    && rm -rf /var/lib/apt/lists/*
-
-# Download, extract, and symlink Maven
-RUN wget https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz -O /tmp/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
-    && tar xzf /tmp/apache-maven-${MAVEN_VERSION}-bin.tar.gz -C /opt \
-    && ln -s /opt/apache-maven-${MAVEN_VERSION} ${MAVEN_HOME} \
-    && rm /tmp/apache-maven-${MAVEN_VERSION}-bin.tar.gz
-
-# Create a non-root user 'jenkins' with UID 1000 and GID 1000
-# This matches the default Jenkins user UID in the official Jenkins image, which is good for volume permissions.
-RUN groupadd -r jenkins --gid 1000 && useradd -r -g jenkins -m -d /home/jenkins --uid 1000 jenkins \
-    && mkdir -p /home/jenkins/.m2/repository \
-    && chown -R jenkins:jenkins /home/jenkins/.m2
-
-# Switch to the non-root user
-USER jenkins
-
-# Verify Maven version
-RUN mvn -version
-```
-
-Build your new Java/Maven image. Replace `my-openjdk-maven:3.9.6` with your chosen tag.
+On the build server:
 
 ```bash
-docker build -t my-openjdk-maven:3.9.6 .
+docker load -i /tmp/build-images.tar
+docker image ls          # the images appear with their original names and tags
 ```
 
-Save the image and transfer it to your server:
+- **`docker save -o file image …`**: several images can share one archive, and layers they have in common are stored once.
+- **`docker load`** restores the names and tags too, so the Jenkinsfiles don't change. Just make sure the tags match exactly what the pipelines ask for.
 
-```bash
-docker save -o my-openjdk-maven-3.9.6.tar my-openjdk-maven:3.9.6
-scp -P 2222 my-openjdk-maven-3.9.6.tar root@106.55.8.163:/home/docker-images
-```
+If you do this often, run your own registry inside the network instead ([Chapter 1.2]({% post_url 2025-07-11-chapter-1-2-docker-advanced %})) and push the images there once.
 
-Load the image on your server:
+## Troubleshooting
 
-```bash
-docker load -i ./my-openjdk-maven-3.9.6.tar
-```
+| Symptom | Cause | Fix |
+|---|---|---|
+| `permission denied while trying to connect to the Docker daemon socket` | The `docker` group GID in the image doesn't match the host's. | Rebuild with `--build-arg DOCKER_GID=$(getent group docker \| cut -d: -f3)`. |
+| `docker: not found` in the build log | The Jenkins image has no Docker CLI. | Use the custom image from step 1. |
+| `EACCES` writing to the npm or `.m2` cache | The host cache directory isn't owned by UID 1000. | `sudo chown -R 1000:1000 /var/cache/jenkins-npm`. |
+| Parameters missing on the first run | Jenkins only learns about `parameters {}` by running the pipeline once. | Run it once with the defaults. |
+| `Host key verification failed` | The target's host key changed, or was never accepted. | Check that it's really your server, then update `known_hosts`. |
 
-### Caching Maven Dependencies
-
-To cache downloaded Maven packages and avoid re-downloading them on every build, you can mount a host directory as the Maven local repository within the container.
-
-First, identify the UID/GID of the `jenkins` user inside your Maven Docker image:
-
-```bash
-docker run --rm my-openjdk-maven:3.9.6 id jenkins
-# Expected output: uid=1000(jenkins) gid=1000(jenkins) groups=1000(jenkins)
-```
-
-On your **host machine**, create a directory for Maven caching and ensure it's owned by the same UID/GID that the `jenkins` user has inside the Docker container (typically 1000:1000 for standard Jenkins/Maven setups):
-
-```bash
-sudo mkdir -p /opt/jenkins-maven-cache
-sudo chown -R 1000:1000 /opt/jenkins-maven-cache
-sudo chmod -R 775 /opt/jenkins-maven-cache # Give group write permissions for flexibility
-```
-
-Now, here's a **Pipeline script** example that uses the custom Java/Maven Docker image and caches Maven dependencies:
-
-```groovy
-pipeline {
-    agent {
-        docker {
-            image 'my-openjdk-maven:3.9.6'
-            // Mount the host's Maven repository to the container's Maven home
-            // Ensure the host path (/opt/jenkins-maven-cache) is correctly owned/permissioned
-            args '-v /opt/jenkins-maven-cache:/home/jenkins/.m2/repository:rw'
-        }
-    }
-    environment {
-        // Define environment variables for your project
-        GIT_URL="http://106.55.8.163:8081/mall/springboot-mall.git" // Use HTTPS if available
-        GIT_AUTH = "" // Fill with your Jenkins Credentials ID for Git
-        GIT_BRANCH = "${branch}" // Parameter from Jenkins job
-        PROJECT_ENV = "${project_env}" // Parameter from Jenkins job (e.g., "pro", "dev")
-        VIP_HOST = '152.22.3.186' // Your VIP server's IP address
-        VIP_REMOTE_DIR = "/mnt/mall/admin"
-    }
-    stages {
-        stage('Git Checkout') {
-            steps {
-                echo 'Checking out Git repository...'
-                script {
-                    checkout([
-                        $class: 'GitSCM',
-                        branches: [[name: "${GIT_BRANCH}" ]],
-                        doGenerateSubmoduleConfigurations: false,
-                        extensions: [
-                            // Only pull the latest commit for faster checkouts
-                            [$class: 'CloneOption', depth: 1, shallow: true, noTags: true]
-                        ],
-                        submoduleCfg: [],
-                        userRemoteConfigs: [[
-                            credentialsId: "${GIT_AUTH}",
-                            url: "${GIT_URL}"
-                        ]]
-                    ])
-                }
-            }
-        }
-        stage('Maven Build') {
-            steps {
-                echo 'Starting Maven build...'
-                // Execute Maven package, skipping tests, and specifying the local repository path
-                sh "mvn clean package -Dmaven.test.skip=true -Dmaven.repo.local=/home/jenkins/.m2/repository -U"
-            }
-        }
-        stage('Deploy Backend') {
-            when {
-                expression {
-                    // Only proceed if the previous stage was successful or skipped
-                    currentBuild.result == null || currentBuild.result == 'SUCCESS'
-                }
-            }
-            steps {
-                script {
-                    switch (PROJECT_ENV) {
-                        case "pro":
-                            // Use SSH credentials for deployment
-                            withCredentials([sshUserPrivateKey(credentialsId: '',  keyFileVariable: 'SSH_KEY')]) {
-                                // Transfer compiled JAR and dependencies, then restart the service
-                                sh '''
-                                scp -i ${SSH_KEY} -o StrictHostKeyChecking=no -P 22 "${WORKSPACE}/admin/target/lib" "root@${VIP_HOST}:${VIP_REMOTE_DIR}"
-                                scp -i ${SSH_KEY} -o StrictHostKeyChecking=no -P 22 "${WORKSPACE}/admin/target/admin-2.3.jar" "root@${VIP_HOST}:${VIP_REMOTE_DIR}"
-                                ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no root@${VIP_HOST} '/mnt/sh/admin-8000.sh restart;'
-                                '''
-                            }
-                            break
-                        case "dev":
-                            echo "Development deployment logic (not implemented in this example)"
-                            break
-                    }
-                }
-            }
-        }
-    }
-    post {
-        success {
-            echo 'Success: Java build and deployment completed.'
-        }
-        failure {
-            echo 'Failure: Java build or deployment failed. Check logs for details.'
-        }
-        always {
-            // Clean up workspace if needed
-            // cleanWs()
-        }
-    }
-}
-```
-
-This comprehensive guide should help you deploy Jenkins with Docker and run your Node.js and Java pipelines efficiently. Remember to replace placeholder values like IP addresses, credentials, and image versions with your actual details.
+[Chapter 1.5]({% post_url 2025-07-13-chapter-1-5-docker-gitlab %}) runs the other half of a self-hosted software pipeline: GitLab, with its container registry and CI runners.

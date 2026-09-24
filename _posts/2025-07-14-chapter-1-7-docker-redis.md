@@ -1,224 +1,170 @@
 ---
-layout: "post"
-title: "Chapter 1.7 - Dockerizing Redis - Deployment and Management"
+title: "Chapter 1.7 - Redis in Docker: Persistence, Memory Limits and Safe Upgrades"
 date: "2025-07-14"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
-excerpt: "Just starting out with Redis and Docker? This guide aims to gently walk you through the essentials. We'll cover how to get Redis up and running in a Docker container, how to use your own configuration files, and crucially, how to keep your data safe. When the day comes to update your Redis version, we'll show you how to do it without fear. Consider this your friendly companion in the world of Dockerized Redis."
+excerpt: "Run Redis in a container with a configuration you understand: which persistence mode fits a cache versus a queue, why the stock config file makes a published port unreachable, memory limits and eviction, passwords, backups, and an upgrade you can roll back."
 ---
 
-## Redis: Docker Deployment and Management
+Redis is the Swiss-army knife next to most applications: a cache, a session store, a rate limiter, a job queue. It's also deceptively easy to run badly. The defaults are tuned for a developer laptop, and a Redis instance exposed to the internet without a password is still one of the most commonly exploited services.
 
-### Overview
+This chapter sets it up properly: a config file you understand, data on a volume, memory that can't run away, and an upgrade path.
 
-Redis (Remote Dictionary Server) is an open-source, in-memory, and persistent Key-Value database written in ANSI C. It supports networked operations, provides various language APIs, and features a log-structured persistence model.
+## First, decide what this Redis is for
 
-### 1. Downloading the Redis Docker Image
+Two settings follow from that one decision: **persistence** and **what happens when memory fills up**.
 
-To get started, pull the specific Redis Docker image you intend to use. For example, to pull the latest stable version (8.0.3):
+| Use | Persistence | When memory is full |
+|---|---|---|
+| **Cache** (data can be rebuilt from the database) | none, or snapshots only | evict old keys: `allkeys-lru` |
+| **Sessions, rate limits** (losing them is annoying, not fatal) | snapshots (RDB) | `volatile-lru`, evicting keys that have a TTL |
+| **Queues, source-of-truth data** | append-only file (AOF), ideally plus RDB | `noeviction`: reject writes rather than silently lose data |
 
-```bash
-docker pull redis:8.0.3
-```
+The two persistence mechanisms:
 
-For the latest official stable release, you can often use the `latest` tag:
+- **RDB snapshots**: Redis periodically forks and writes the whole dataset to `dump.rdb`. Compact and fast to restart from, but you lose whatever changed since the last snapshot.
+- **AOF (append-only file)**: every write is appended to a log. With `appendfsync everysec` you lose at most about a second of writes on a crash. Files are larger, and Redis compacts them in the background.
 
-```bash
-docker pull redis:latest
-```
-
-However, for production environments, it's highly recommended to pin to a specific version to ensure predictable deployments.
-
-### 2. Running a Basic Redis Container
-
-You can quickly run a Redis container for testing or basic use. The `--rm` flag ensures the container is removed upon exit, and `--appendonly yes` enables AOF persistence.
+## Quick start for development
 
 ```bash
-docker run -d --rm -p 6389:6379 --name redis-dev redis:8.0.3 redis-server --appendonly yes
+docker run -d --name redis-dev -p 127.0.0.1:6379:6379 redis:8.0
+docker exec -it redis-dev redis-cli ping      # PONG
 ```
 
-- `-d`: Runs the container in detached mode (in the background).
-- `--rm`: Automatically removes the container when it exits.
-- `-p 6389:6379`: Maps port `6389` on your host to Redis's default port `6379` inside the container.
-- `--name redis-dev`: Assigns the name `redis-dev` to your container. Using a distinct name like `redis-dev` is good practice for temporary or development instances to avoid conflicts with persistent ones.
-- `redis:8.0.3`: Specifies the Docker image to use (replace with your desired version).
-- `redis-server --appendonly yes`: The command executed inside the container to start Redis with AOF persistence enabled.
+Fine on a laptop, and deliberately bound to `127.0.0.1`. Everything below is about running it for real.
 
-### 3. Running Redis with Custom Configuration
+## A production configuration
 
-For production or more controlled environments, it's best practice to run Redis with your own configuration file and persistent data.
-
-#### Option A: Building a Custom Docker Image (Recommended for Immutable Infrastructure)
-
-This method embeds your `redis.conf` directly into a new Docker image.
-
-1. **Create `redis.conf`:** First, obtain a copy of the official Redis configuration file. You can do this by running a temporary container and copying the default config:
-
-   ```bash
-   # Run a temporary Redis container
-   docker run -d --name temp-redis redis:8.0.3
-
-   # Copy the default redis.conf from the container to your host
-   docker cp temp-redis:/usr/local/etc/redis/redis.conf $HOME/_docker/redis/conf/redis.conf
-
-   # Stop and remove the temporary container
-   docker stop temp-redis
-   docker rm temp-redis
-   ```
-
-   **Note:** The default path for `redis.conf` inside the official Redis Docker images has changed over versions. For Redis 8.x, it's typically `/usr/local/etc/redis/redis.conf`. Always verify this path for the specific Redis image version you are using.
-
-   Now, modify `$HOME/_docker/redis/conf/redis.conf` to suit your needs. A key change for persistence is setting `dir /data` to ensure data is saved to a mounted volume.
-
-2. **Create a `Dockerfile`:** In the same directory as your `redis.conf`, create a `Dockerfile`:
-
-   ```dockerfile
-   FROM redis:8.0.3
-   RUN mkdir -p /etc/redis
-
-   # Set timezone (adjust to your needs, e.g., America/New_York)
-   ENV TZ=America/Edmonton
-   RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
-   # Copy your custom redis.conf into the image
-   COPY ./redis.conf /etc/redis/redis.conf
-
-   # Specify the command to run Redis with your config
-   CMD [ "redis-server", "/etc/redis/redis.conf" ]
-
-   # Expose the default Redis port
-   EXPOSE 6379
-   ```
-
-   **Note:** The timezone environment variable is commonly `TZ` rather than `TimeZone`.
-
-3. **Build the Docker Image:** Build your custom image, tagging it appropriately:
-
-   ```bash
-   docker image build -t my-redis:8.0.3 .
-   ```
-
-   (Replace `my-redis` with your preferred image name).
-
-#### Option B: Mounting Configuration and Data Volumes (Recommended for Flexible Management)
-
-This approach uses volume mounts to provide your configuration file and persistent data directory to a standard Redis image. This is often preferred as it allows you to update configurations without rebuilding the image.
-
-1. **Prepare Directories and Configuration:**
-
-   - Create host directories for Redis data and configuration:
-
-     ```bash
-     mkdir -p $HOME/_docker/redis/data
-     mkdir -p $HOME/_docker/redis/conf
-     ```
-
-   - Copy the `redis.conf` file (obtained as described in Option A, step 1) into `$HOME/_docker/redis/conf/redis.conf`.
-   - Edit `$HOME/_docker/redis/conf/redis.conf` and set the `dir` directive to `/data`. This ensures Redis uses the mounted data volume for persistence. Ensure `appendonly yes` is set within the `redis.conf` if you intend to use AOF persistence.
-
-2. **Run the Container with Volumes:**
-
-   ```bash
-   docker run -d \
-     -p 6379:6379 \
-     --name redis-prod \
-     --restart always \
-     -v $HOME/_docker/redis/data:/data \
-     -v $HOME/_docker/redis/conf/redis.conf:/usr/local/etc/redis/redis.conf \
-     -v /etc/localtime:/etc/localtime:ro \
-     redis:8.0.3 redis-server /usr/local/etc/redis/redis.conf
-   ```
-
-   - `-p 6379:6379`: Mapping port `6379` on the host to the container's default Redis port. It's common to use the default port if only one Redis instance is on the host.
-   - `--name redis-prod`: Assigning a more production-oriented name.
-   - `--restart always`: Configures the container to restart automatically upon Docker daemon restart or container exit.
-   - `-v $HOME/_docker/redis/data:/data`: Mounts your host's data directory to `/data` inside the container for persistent data storage.
-   - `-v $HOME/_docker/redis/conf/redis.conf:/usr/local/etc/redis/redis.conf`: Mounts your custom configuration file. **Ensure the destination path within the container is correct for your Redis image version (e.g., `/usr/local/etc/redis/redis.conf` for Redis 8.x official images).**
-   - `-v /etc/localtime:/etc/localtime:ro`: Mounts the host's timezone information for accurate logging timestamps.
-   - `redis-server /usr/local/etc/redis/redis.conf`: Starts Redis using your mounted configuration file. It's best to control AOF (or RDB) persistence directly within the `redis.conf` file.
-
-### 4. Modifying Configuration and Restarting
-
-After making changes to your `redis.conf` file (e.g., `$HOME/_docker/redis/conf/redis.conf`), you need to restart the Redis container for the changes to take effect:
+The official image ships **without** a config file (Redis runs on built-in defaults), so download the annotated example for your version and keep it next to your deployment:
 
 ```bash
-docker restart redis-prod
+mkdir -p ~/redis/conf
+curl -fsSL -o ~/redis/conf/redis.conf \
+  https://raw.githubusercontent.com/redis/redis/8.0/redis.conf
 ```
 
-### 5. Upgrading Redis in a Docker Context
+It's long and heavily commented, which makes it good documentation. These are the lines to change (they already exist in the file; edit them in place rather than appending duplicates):
 
-Upgrading Redis involves replacing the existing container with a new one running the desired Redis version, while ensuring data persistence.
+```ini
+# --- Network ---------------------------------------------------------------
+bind 0.0.0.0 -::
+protected-mode yes
+port 6379
 
-**Important Considerations Before Upgrade:**
+# --- Auth ------------------------------------------------------------------
+requirepass use-a-long-random-password
 
-- **Backup Data:** Always back up your Redis data (`dump.rdb` and AOF files from your mounted `/data` volume) before any upgrade. While the volume mount preserves data, an explicit backup provides an additional safety net.
-- **Version Compatibility:** Review the official Redis release notes for breaking changes or migration steps between your current version and the target version. Major version upgrades (e.g., 6.x to 8.x) often require careful planning and may involve data migration tools or specific upgrade paths. Pay close attention to license changes, especially when moving to Redis 8.0 or later.
-- **Downtime:** Plan for potential downtime during the upgrade process. For zero-downtime upgrades, consider using Redis Sentinel or Cluster.
+# --- Persistence -----------------------------------------------------------
+dir /data
+appendonly yes
+appendfsync everysec
+save 3600 1 300 100 60 10000
 
-**Upgrade Steps (Example: Upgrading from 6.2.19 to 8.0.3):**
+# --- Memory ----------------------------------------------------------------
+maxmemory 512mb
+maxmemory-policy noeviction
+```
 
-1. **Pull the New Redis Image:**
+Section by section:
 
-   First, pull the Docker image for the new Redis version you want to use.
+- **`bind 0.0.0.0 -::`**: listen on all interfaces *inside the container*. The example file binds `127.0.0.1`, which inside a container means only the container itself can connect: your published port and your app containers would all get "connection refused". The `-` before `::` means "don't fail if IPv6 isn't available".
+- **`protected-mode yes`**: refuse remote connections unless a password is set. With `requirepass` configured it no longer blocks anything, but it's a safety net if the password line is ever removed.
+- **`requirepass`**: clients must `AUTH` first. Use a long random value (`openssl rand -base64 32`). For several apps with different permissions, Redis 6+ ACLs (`user … on >password ~keys:* +@read`) are the finer-grained option.
+- **`dir /data`**: where snapshots and the AOF are written. We'll mount a volume there.
+- **`appendonly yes` + `appendfsync everysec`**: turn on the AOF and flush it to disk once a second; this is the queue/source-of-truth profile from the table above. For a pure cache, set `appendonly no`.
+- **`save 3600 1 300 100 60 10000`**: RDB snapshot rules, read in pairs: after 3600 s if at least 1 key changed, after 300 s if 100 changed, after 60 s if 10,000 changed. `save ""` disables snapshots.
+- **`maxmemory 512mb`**: the ceiling for data. Without it, Redis grows until the container's memory limit (or the kernel) kills it.
+- **`maxmemory-policy noeviction`**: when full, reject writes with an error. A cache would use `allkeys-lru` here instead, evicting the least recently used keys.
 
-   ```bash
-   docker pull redis:8.0.3
-   ```
+## Running it
 
-2. **Stop the Current Redis Container:**
+```bash
+docker network create backend
 
-   Stop the running Redis container to ensure no new data is written during the upgrade.
+docker run -d --name redis \
+  --network backend \
+  --restart unless-stopped \
+  --memory 768m \
+  -p 127.0.0.1:6379:6379 \
+  -v redis_data:/data \
+  -v ~/redis/conf/redis.conf:/usr/local/etc/redis/redis.conf:ro \
+  redis:8.0 redis-server /usr/local/etc/redis/redis.conf
+```
 
-   ```bash
-   docker stop redis-prod
-   ```
+- **`--network backend`**: app containers on the same network connect to `redis:6379`.
+- **`--memory 768m`**: the container's hard limit, deliberately larger than `maxmemory` (512 MB). Redis needs headroom beyond the data itself: connection buffers, and the fork that writes RDB snapshots and rewrites the AOF, which can briefly need extra memory for pages being modified.
+- **`-p 127.0.0.1:6379:6379`**: reachable from the host for `redis-cli`, not from the network. Omit it if only containers use Redis.
+- **`-v redis_data:/data`**: persistence files live in a named volume.
+- **`-v …redis.conf:/usr/local/etc/redis/redis.conf:ro`**: your config, read-only. The path inside the container is your choice; it just has to match the next argument.
+- **`redis-server /usr/local/etc/redis/redis.conf`**: replace the image's default command so Redis starts with that file.
 
-3. **Rename/Remove the Old Container (Optional but Recommended):**
+Check it (the examples from here on assume the password is in a shell variable, for example `read -rs REDIS_PASSWORD`, which reads it without echoing):
 
-   If you plan to reuse the container name, remove the old container. If you want to keep it for rollback, rename it.
+```bash
+docker exec -it -e REDISCLI_AUTH="$REDIS_PASSWORD" redis redis-cli
+127.0.0.1:6379> INFO persistence
+127.0.0.1:6379> CONFIG GET maxmemory*
+```
 
-   ```bash
-   docker rm redis-prod # If you want to remove it
-   # OR
-   docker rename redis-prod redis-prod_old # If you want to keep it
-   ```
+`REDISCLI_AUTH` passes the password through the environment instead of `-a`, which would show it in the process list and prints a warning.
 
-4. **Update Your `redis.conf` (If Necessary):**
+Most settings can be changed live (`CONFIG SET maxmemory 1gb`) and written back to the file with `CONFIG REWRITE`. With the file mounted read-only, that write fails on purpose: edit the host file and `docker restart redis` instead, so the file on the host stays the source of truth.
 
-   If the new Redis version has introduced configuration changes or new best practices, update your `redis.conf` file (`$HOME/_docker/redis/conf/redis.conf`) to align with the new version's recommendations. This is critical for major version upgrades.
+## Backups
 
-   **Important:** The location of the default `redis.conf` inside the container might change between major Redis versions (e.g., from `/etc/redis/redis.conf` in older versions to `/usr/local/etc/redis/redis.conf` in newer ones). Ensure your volume mount in the `docker run` command for the new container points to the correct _internal_ path for the new Redis image.
+Everything Redis persists is in the volume: `dump.rdb` and, with AOF on, the `appendonlydir/` directory (Redis 7+ splits the AOF into several files plus a manifest). To take a consistent copy:
 
-5. **Start a New Redis Container with the New Version:**
+```bash
+docker exec -e REDISCLI_AUTH="$REDIS_PASSWORD" redis redis-cli BGSAVE
+docker exec -e REDISCLI_AUTH="$REDIS_PASSWORD" redis redis-cli LASTSAVE      # repeat until the timestamp changes
+docker run --rm -v redis_data:/data -v "$PWD":/backup alpine \
+  tar czf "/backup/redis-$(date +%F).tgz" -C /data .
+```
 
-   Start a new container using the new Redis image and pointing to your existing data and configuration volumes. This is crucial for data persistence.
+- **`BGSAVE`**: write a fresh snapshot in the background, without blocking clients.
+- **`LASTSAVE`**: the Unix time of the last successful save; when it changes, the snapshot is complete.
+- **The `alpine` container**: a throwaway container that mounts the same volume and your current directory, then archives the volume's contents. This is the general-purpose way to back up any named volume.
 
-   ```bash
-   docker run -d \
-     -p 6379:6379 \
-     --name redis-prod \
-     --restart always \
-     -v $HOME/_docker/redis/data:/data \
-     -v $HOME/_docker/redis/conf/redis.conf:/usr/local/etc/redis/redis.conf \
-     -v /etc/localtime:/etc/localtime:ro \
-     redis:8.0.3 redis-server /usr/local/etc/redis/redis.conf
-   ```
+## Upgrading
 
-   Ensure that the volume mounts (`-v`) for data and configuration are identical to your previous setup, **with the correct internal path for the `redis.conf` based on the new Redis image version.**
+Newer Redis versions read older RDB and AOF files, but not the other way round. So the plan is: keep the old container around until the new one has proven itself, and have a backup for the moment you can't go back.
 
-6. **Verify the Upgrade:**
+```mermaid
+flowchart TD
+  A[Back up /data] --> B[docker pull redis:8.0.3]
+  B --> C[docker stop redis]
+  C --> D[docker rename redis redis-old]
+  D --> E[Compare redis.conf with the new<br/>version's example file]
+  E --> F[docker run new container<br/>same volume and config]
+  F --> G{Version, DBSIZE<br/>and app checks OK?}
+  G -- yes --> H[docker rm redis-old]
+  G -- no --> I[Stop the new container<br/>restore the backup into the volume]
+  I --> J[docker start redis-old]
+```
 
-   After the new container starts, verify that Redis is running the correct version and that your data is intact. You can check the Redis version by connecting to it:
+Checks after the switch:
 
-   ```bash
-   docker exec redis-prod redis-cli INFO server | grep redis_version
-   ```
+```bash
+docker exec -e REDISCLI_AUTH="$REDIS_PASSWORD" redis redis-cli INFO server | grep redis_version
+docker exec -e REDISCLI_AUTH="$REDIS_PASSWORD" redis redis-cli DBSIZE
+```
 
-   And check for your keys:
+Compare `DBSIZE` with the number before the upgrade. Resist `KEYS *` on a real instance: it walks the entire keyspace in one blocking call and freezes every client until it finishes. `SCAN` gives you a sample without blocking.
 
-   ```bash
-   docker exec redis-prod redis-cli KEYS "*"
-   ```
+Before a major version jump, diff your `redis.conf` against the new version's example file: directives do get renamed or removed, and Redis refuses to start on an unknown directive, which is at least an easy failure to spot.
 
-This systematic approach minimizes downtime and ensures data integrity during Redis upgrades in a Docker environment.
+## A note on licensing
+
+Redis changed its license in 2024 (to RSALv2/SSPL) and added AGPLv3 as an option with Redis 8. For most teams running it internally this changes nothing, but if you offer Redis as a service or redistribute it, check the terms. **Valkey**, a Linux Foundation fork of Redis 7.2, remains BSD-licensed, is a drop-in replacement for the commands above (`valkey/valkey` image, `valkey-cli`), and is what several cloud providers now offer.
+
+## Checklist
+
+- Password (or ACLs) set, and the port never published to the internet.
+- `bind 0.0.0.0` inside the container, so containers and published ports can actually reach it.
+- Persistence chosen deliberately: none for caches, AOF for anything you can't lose.
+- `maxmemory` set, with the container limit comfortably above it.
+- The volume backed up after a `BGSAVE`; upgrades keep the old container until verified.
+
+[Chapter 1.8]({% post_url 2025-07-14-chapter-1-8-docker-network %}) looks at what has been connecting all these containers: Docker's network modes.

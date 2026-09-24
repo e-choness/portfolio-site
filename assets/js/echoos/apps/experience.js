@@ -23,76 +23,110 @@ export function durationHtml(s) {
     .join(' ');
 }
 
-function extractGitHubPath(social) {
-  if (!social) return '';
-  const entry = Array.isArray(social)
-    ? social.find((s) => s.label && s.label.toLowerCase().includes('github'))
-    : null;
-  const rawUrl = entry ? entry.url : null;
-  if (!rawUrl) return '';
-  try {
-    const u = new URL(rawUrl);
-    return u.hostname + u.pathname;
-  } catch {
-    return '';
-  }
-}
-
 function companyName(fullText) {
   if (!fullText) return '';
   const idx = fullText.indexOf('/');
   return idx > -1 ? fullText.substring(0, idx).trim() : fullText;
 }
 
-function buildSkillLine(skills) {
-  if (!skills || !skills.length) return '';
-  return skills
-    .map((g) => (g.items || []).map((s) => s.name).join(', '))
-    .filter(Boolean)
-    .join(' · ');
+// "https://www.linkedin.com/in/x/" → "linkedin.com/in/x"
+function shortUrl(u) {
+  try {
+    const x = new URL(u);
+    return (x.hostname.replace(/^www\./, '') + x.pathname).replace(/\/$/, '');
+  } catch {
+    return '';
+  }
 }
 
-// Typeset resume card (prototype lines 425-446). No PDF embed.
+function socialUrl(social, label) {
+  const entry = (social || []).find((s) => s.label && s.label.toLowerCase().includes(label));
+  return entry ? entry.url : '';
+}
+
+// First sentence of a project description ("… framework. A small kernel …").
+function firstSentence(s) {
+  const text = String(s || '');
+  const i = text.indexOf('. ');
+  return i > -1 ? text.slice(0, i + 1) : text;
+}
+
+// The resume: the single rendering of it. The Resume tab shows it, and
+// printing the tab (Ctrl+P, or the build step that writes assets/resume.pdf)
+// prints this same card — see printResume() and os/_print.scss.
 function resumeHtml(content) {
   const p = content.profile;
-  const githubPath = extractGitHubPath(p.social);
-  const skillLine = buildSkillLine(content.skills || []);
+  const link = (href, text) => `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(text)}</a>`;
+  const contact = [
+    link(`mailto:${p.email}`, p.email),
+    esc(p.location),
+    p.siteUrl && link(p.siteUrl, shortUrl(p.siteUrl)),
+    socialUrl(p.social, 'github') && link(socialUrl(p.social, 'github'), shortUrl(socialUrl(p.social, 'github'))),
+    socialUrl(p.social, 'linkedin') && link(socialUrl(p.social, 'linkedin'), shortUrl(socialUrl(p.social, 'linkedin'))),
+  ].filter(Boolean).join(' · ');
 
-  let expRows = '';
-  for (const exp of content.experience || []) {
-    expRows += `
-      <div class="os-resume-item">
-        <div class="os-resume-item-left"><span class="os-resume-role">${esc(exp.role)}</span> · <span class="os-resume-company">${esc(companyName(exp.company))}</span></div>
-        <div class="os-resume-item-right">${durationHtml(exp.duration)}</div>
-      </div>`;
-  }
+  const expRows = (content.experience || []).map((exp) => `
+      <div class="os-resume-entry">
+        <div class="os-resume-item">
+          <div class="os-resume-item-left"><span class="os-resume-role">${esc(exp.role)}</span> · <span class="os-resume-company">${esc(companyName(exp.company))}</span></div>
+          <div class="os-resume-item-right">${durationHtml(exp.duration)}</div>
+        </div>
+        ${(exp.bullets || []).length ? `<ul class="os-resume-bullets">${exp.bullets.slice(0, 3).map((b) => `<li>${esc(String(b).replace(/\.$/, ''))}</li>`).join('')}</ul>` : ''}
+      </div>`).join('');
 
-  let eduRows = '';
-  for (const edu of content.education || []) {
-    eduRows += `
+  // content.projects is already sorted by `order`
+  const projRows = (content.projects || []).filter((pr) => pr.featured).slice(0, 3).map((pr) => `
+      <div class="os-resume-entry">
+        <div class="os-resume-item">
+          <div class="os-resume-item-left"><span class="os-resume-role">${pr.url ? link(pr.url, pr.title) : esc(pr.title)}</span></div>
+          ${pr.repo ? `<div class="os-resume-item-right">${link(pr.repo, shortUrl(pr.repo))}</div>` : ''}
+        </div>
+        <div class="os-resume-proj">${esc(firstSentence(pr.desc))} <span class="os-resume-tech">${esc((pr.tech || []).join(' · '))}</span></div>
+      </div>`).join('');
+
+  const eduRows = (content.education || []).map((edu) => `
       <div class="os-resume-item">
-        <div class="os-resume-item-left"><span class="os-resume-degree">${esc(edu.degree)}</span> · <span class="os-resume-institution">${esc(edu.school)}</span></div>
+        <div class="os-resume-item-left"><span class="os-resume-degree">${esc(edu.degree)}</span> · <span class="os-resume-institution">${esc(edu.school)}${edu.gpa ? ` · GPA ${esc(edu.gpa)}` : ''}</span></div>
         <div class="os-resume-item-right">${durationHtml(edu.duration)}</div>
-      </div>`;
-  }
+      </div>`).join('');
+
+  const skillRows = (content.skills || []).map((g) => `
+      <span class="os-resume-skillgroup"><b>${esc(g.group)}</b> ${esc((g.items || []).map((s) => s.name).join(', '))}</span>`).join('');
+
+  const summary = (p.about || [])[0];
 
   return `
     <div class="os-resume-body">
       <div class="os-resume-card">
         <div class="os-resume-name">${esc(p.name)}</div>
         <div class="os-resume-title">${esc(p.title)}</div>
-        <div class="os-resume-contact">${esc(p.email)} · ${esc(p.location)}${githubPath ? ' · ' + esc(githubPath) : ''}</div>
+        <div class="os-resume-contact">${contact}</div>
+        ${summary ? `<p class="os-resume-summary">${esc(summary)}</p>` : ''}
         <div class="os-resume-section">
           <div class="os-resume-section-head">Experience</div>
           ${expRows}
         </div>
+        ${projRows ? `<div class="os-resume-section"><div class="os-resume-section-head">Selected Projects</div>${projRows}</div>` : ''}
         <div class="os-resume-section">
           <div class="os-resume-section-head">Education</div>
           ${eduRows}
         </div>
-        ${skillLine ? `<div class="os-resume-section"><div class="os-resume-section-head">Core Skills</div><div class="os-resume-skills">${esc(skillLine)}</div></div>` : ''}
+        ${skillRows ? `<div class="os-resume-section"><div class="os-resume-section-head">Skills</div><div class="os-resume-skills">${skillRows}</div></div>` : ''}
       </div>
     </div>`;
+}
+
+// The card lives inside a positioned, clipped window, which print CSS can't
+// lift out cleanly. Before printing, copy it into a top-level #os-print host;
+// os/_print.scss hides everything else. Only while the Resume tab is showing.
+function printResume(bodyEl) {
+  const card = bodyEl.querySelector('.os-resume-card');
+  if (!card) return;
+  document.getElementById('os-print')?.remove();
+  const host = document.createElement('div');
+  host.id = 'os-print';
+  host.appendChild(card.cloneNode(true));
+  document.body.appendChild(host);
 }
 
 export function renderExperience(bodyEl, { content, titlebar }) {
@@ -126,7 +160,17 @@ export function renderExperience(bodyEl, { content, titlebar }) {
   // Terminal `resume` and the #/exp/resume deep link switch tabs by event.
   const onTab = (e) => { const t = e.detail && e.detail.tab; if (t) show(t); };
   document.addEventListener('echoos:set-exp-tab', onTab);
-  return () => document.removeEventListener('echoos:set-exp-tab', onTab);
+
+  const onBeforePrint = () => { if (state.tab === 'resume') printResume(bodyEl); };
+  const onAfterPrint = () => document.getElementById('os-print')?.remove();
+  window.addEventListener('beforeprint', onBeforePrint);
+  window.addEventListener('afterprint', onAfterPrint);
+
+  return () => {
+    document.removeEventListener('echoos:set-exp-tab', onTab);
+    window.removeEventListener('beforeprint', onBeforePrint);
+    window.removeEventListener('afterprint', onAfterPrint);
+  };
 
   function renderCards() {
     const container = document.createElement('div');

@@ -1,155 +1,210 @@
 ---
-layout: "post"
-title: "Chapter 1.12 Leverage Docker Multi-Stage for Optimized and Secure Docker Images"
+title: "Chapter 1.12 - Multi-Stage Builds: From a 1.3 GB Image to 7 MB"
 date: "2025-07-17"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
-excerpt: "This guide explains how to leverage Docker's multi-stage builds to create optimized and secure Docker images for Go applications. It addresses the common challenge of minimizing image size and preventing source code inclusion in production images, particularly for compiled languages like Go."
+excerpt: "Build with the full toolchain, ship only the result. A Go service goes from 1.31 GB to 7.24 MB with a two-stage Dockerfile, explained line by line, plus distroless and Alpine runtime choices, a Node.js frontend served by Nginx, BuildKit cache mounts, and running tests as a build stage."
 ---
 
-## The Problem: Large Images and Exposed Source Code
+The obvious Dockerfile for a compiled program starts from the language's official image, copies the source, builds, and runs. It works, and it ships everything: the compiler, the package cache, the source code, a full Debian userland. None of it is needed at run time, all of it has to be pulled onto every server, and every package in it is something a vulnerability scanner will flag.
 
-Docker's promise is "Build, Ship, and Run Any App, Anywhere." While it largely delivers, a common pitfall when building applications, especially with compiled languages like Go, is including the entire source code in the final image. For Go, only the compiled binary is needed at runtime. Packaging the source code introduces several risks:
+**Multi-stage builds** fix this inside a single Dockerfile: one stage has the full toolchain and builds the program; the final stage starts from something tiny and copies in only the finished binary.
 
-- **Increased Image Size:** Unnecessary files bloat the image, leading to longer download times and higher storage consumption.
-- **Security Vulnerabilities:** Exposing source code in production images can create attack vectors if not properly secured.
-- **Unnecessary Dependencies:** Build-time tools and dependencies, even for scripting languages, often get included, further increasing image size.
+## The starting point
 
----
-
-## Example: A Simple Go Service
-
-Let's consider a basic Go service that we want to package into a minimal Docker image. Here's the source code ( `main.go`):
+A small Go service, `main.go`, using only the standard library:
 
 ```go
 package main
 
 import (
-	"github.com/gin-gonic/gin"
+	"fmt"
+	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
-	router := gin.Default()
-	router.GET("/ping", func(c *gin.Context) {
-		c.String(http.StatusOK, "PONG")
+	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "pong")
 	})
-	router.Run(":8080")
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Printf("listening on :%s", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 ```
 
----
+and a `go.mod`:
 
-## The Solution: Multi-Stage Builds
+```text
+module example.com/pingsvc
 
-The ultimate goal is to place the final executable file into the smallest possible image (e.g., based on Alpine Linux). How do we get that compiled file efficiently?
+go 1.22
+```
 
-Initially, a common approach involved:
-
-1. **Compiling in a "Builder" Container:** Using a standard container (like Ubuntu or a `golang` image) to set up the compilation environment and compile the application.
-2. **Extracting and Copying:** Transferring the compiled binary from the builder container to the host machine using Docker volumes, and then mounting that binary into a minimal runtime image (like Alpine).
-
-While theoretically feasible, this method is cumbersome. It requires a two-step build process and a separate script to orchestrate the steps. Furthermore, ensuring compatibility of the compiled binary between different base images (e.g., a binary compiled in Ubuntu running in Alpine) can be tricky.
-
----
-
-## Multi-Stage Builds to the Rescue
-
-Docker 17.05 introduced **Multi-Stage Builds**, a significantly simpler and more efficient way to achieve our goal. With multi-stage builds, you can use multiple `FROM` statements within a single `Dockerfile`. Each `FROM` instruction starts a new build stage, optionally using a different base image. You can then easily copy artifacts from one stage to another, ensuring only the necessary files are included in the final image.
-
-Let's update our `Dockerfile` to leverage multi-stage builds. We'll use **Go 1.22** and the latest **Docker best practices**.
+The naive Dockerfile:
 
 ```dockerfile
-# Stage 1: Build the Go application
-FROM golang:1.22-alpine AS build-env
-
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy the Go module files first to leverage Docker's build cache
-COPY go.mod go.sum ./
-
-# Download Go module dependencies
-# This step is cached as long as go.mod and go.sum don't change
-RUN go mod download
-
-# Copy the rest of the application source code
+FROM golang:1.22
+WORKDIR /src
 COPY . .
+RUN go build -o /usr/local/bin/pingsvc .
+CMD ["pingsvc"]
+```
 
-# Build the application
-# CGO_ENABLED=0 is crucial for static binaries when building for Alpine
-# -ldflags="-s -w" reduces the binary size by stripping debug information
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-s -w" -o /usr/local/bin/app-server .
+Built on my machine, that image is **1.31 GB**, for a program whose binary is a few megabytes.
 
----
+## The multi-stage version
 
-# Stage 2: Create the minimal runtime image
-# Use a minimal base image like scratch for the smallest possible image
-# or alpine for a slightly larger but still very small image with basic utilities.
-# For most Go applications, scratch is ideal if you only need the binary.
+```dockerfile
+# syntax=docker/dockerfile:1
+
+# ---- Stage 1: build ----
+FROM golang:1.22-alpine AS build
+WORKDIR /src
+
+COPY go.mod ./
+RUN --mount=type=cache,target=/go/pkg/mod go mod download
+
+COPY . .
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 go build -ldflags="-s -w" -o /out/pingsvc .
+
+# ---- Stage 2: runtime ----
 FROM scratch
-
-# Set the working directory (optional for scratch, as it's just the root)
-WORKDIR /
-
-# Copy the compiled binary from the 'build-env' stage
-COPY --from=build-env /usr/local/bin/app-server /usr/local/bin/app-server
-
-# Expose the port the application listens on
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=build /out/pingsvc /pingsvc
+USER 65534:65534
 EXPOSE 8080
-
-# Define the command to run the application when the container starts
-CMD ["/usr/local/bin/app-server"]
+ENTRYPOINT ["/pingsvc"]
 ```
 
-### Explanation and Best Practices:
+The result: **7.24 MB**, about 180 times smaller.
 
-- **`FROM golang:1.22-alpine AS build-env`**:
-  - We use `golang:1.22-alpine` as the base image for the build stage. Alpine is chosen because it's a very small Linux distribution, which helps keep the intermediate build image smaller, though its size doesn't affect the final image directly.
-  - `AS build-env` gives this stage a name, making it easy to reference later.
-- **`WORKDIR /app`**: Sets `/app` as the working directory for subsequent commands in this stage.
-- **`COPY go.mod go.sum ./` followed by `RUN go mod download`**: This is a crucial **Docker build cache optimization**. By copying only the module files first and downloading dependencies, Docker can cache this layer. If your `go.mod` and `go.sum` files don't change, subsequent builds will reuse this cached layer, speeding up the process significantly.
-- **`COPY . .`**: Copies the rest of your application's source code into the working directory.
-- **`RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-s -w" -o /usr/local/bin/app-server .`**:
-  - **`CGO_ENABLED=0`**: Disables Cgo, which is essential for building static Go binaries. This ensures the binary doesn't rely on C libraries present in the build environment but potentially missing in the minimal runtime environment (like `scratch` or Alpine).
-  - **`GOOS=linux`**: Explicitly sets the target operating system to Linux, which is appropriate for Docker containers.
-  - **`-a -installsuffix cgo`**: These flags are often used together when building static binaries. `-a` forces rebuilding of packages that are already up-to-date. `-installsuffix cgo` is used to differentiate the package path from the default for Cgo builds.
-  - **`-ldflags="-s -w"`**: These linker flags reduce the size of the final executable:
-    - `-s`: Omits the symbol table.
-    - `-w`: Omits DWARF debugging information.
-  - **`-o /usr/local/bin/app-server .`**: Specifies the output path and name for the compiled binary. `/usr/local/bin` is a standard location for executables.
-- **`FROM scratch`**:
-  - This is the most minimal Docker base image possible. It contains literally nothing, not even an operating system. It's perfect for statically compiled binaries like those produced by Go when `CGO_ENABLED=0`.
-  - Alternatively, you could use `FROM alpine:latest` if your application needs some basic shell utilities or other system libraries not included in a `scratch` image. For most Go applications, `scratch` is preferred for maximum minimization.
-- **`WORKDIR /`**: Sets the working directory in the final image. For `scratch`, this effectively means the root.
-- **`COPY --from=build-env /usr/local/bin/app-server /usr/local/bin/app-server`**: This is the core of multi-stage builds. It copies the compiled `app-server` binary from the `build-env` stage (which is in `/usr/local/bin/app-server` within that stage) to `/usr/local/bin/app-server` in our final `scratch` image.
-- **`EXPOSE 8080`**: Informs Docker that the container listens on port 8080 at runtime. This is purely informational and doesn't publish the port.
-- **`CMD ["/usr/local/bin/app-server"]`**: Defines the default command to execute when the container starts. We specify the full path to our compiled binary. Using the exec form (square brackets) is a best practice.
+```mermaid
+flowchart LR
+  subgraph S1["Stage 1: build (golang:1.22-alpine)"]
+    src[source + go.mod] --> dl[go mod download]
+    dl --> b[go build]
+    b --> bin["/out/pingsvc"]
+  end
+  subgraph S2["Stage 2: runtime (scratch) → the image you ship"]
+    certs[CA certificates]
+    app["/pingsvc"]
+  end
+  bin -- "COPY --from=build" --> app
+  S1 -. "discarded: compiler, source,<br/>module cache, Alpine userland" .-> x([not shipped])
+```
 
----
+### Line by line
 
-## Building and Running the Image
+**Stage 1, the build:**
 
-With this single `Dockerfile`, you can now build your Docker image:
+- **`# syntax=docker/dockerfile:1`**: use the current Dockerfile syntax through BuildKit, the default builder in modern Docker. It's needed for the `--mount` flags below.
+- **`FROM golang:1.22-alpine AS build`**: start a stage from the Go toolchain on Alpine and **name it** `build`, so later stages can refer to it.
+- **`COPY go.mod ./` then `RUN … go mod download`**: fetch dependencies in their own layer before copying the source. As in [Chapter 1.1]({% post_url 2025-07-10-chapter-1-1-docker-basics %}), editing code then reuses this layer. With third-party modules you'd copy `go.sum` as well.
+- **`--mount=type=cache,target=/go/pkg/mod`**: a **BuildKit cache mount**. The module cache persists between builds on this machine but is never written into the image, so even when this layer has to rerun, downloads come from the local cache.
+- **`--mount=type=cache,target=/root/.cache/go-build`**: the same for Go's compiler cache, so rebuilds only recompile what changed.
+- **`CGO_ENABLED=0`**: build a pure-Go, statically linked binary that doesn't depend on the C library. This is what makes an empty runtime image possible: `scratch` has no libc to link against.
+- **`-ldflags="-s -w"`**: strip the symbol table (`-s`) and DWARF debug information (`-w`) for a smaller binary. You lose debugger symbols, not stack traces.
+- **`-o /out/pingsvc`**: write the binary to a predictable path for the next stage to copy.
+
+(You'll still find `-a -installsuffix cgo` in many guides. Those flags date from before Go 1.10's build cache; today `-a` only forces a full rebuild of the standard library every time.)
+
+**Stage 2, the runtime:**
+
+- **`FROM scratch`**: an empty image: no shell, no package manager, no userland. Only what you copy in exists.
+- **`COPY --from=build /etc/ssl/certs/ca-certificates.crt …`**: the CA bundle, so the service can verify certificates on outbound HTTPS calls. Without it, any `https://` request fails with `x509: certificate signed by unknown authority`. (The Alpine Go image already has the bundle installed.)
+- **`COPY --from=build /out/pingsvc /pingsvc`**: the binary, and nothing else, from stage 1.
+- **`USER 65534:65534`**: run as UID/GID 65534, the conventional "nobody". `scratch` has no `/etc/passwd`, but numeric IDs work without one. Otherwise the process runs as root.
+- **`ENTRYPOINT ["/pingsvc"]`**: the binary is the container's process. Arguments passed to `docker run pingsvc …` are appended to it.
+
+Build and check:
 
 ```bash
-docker build -t cnych/docker-multi-stage-demo:latest .
+docker build -t pingsvc:1.0 .
+docker image ls pingsvc
+docker run --rm -p 8080:8080 pingsvc:1.0
+curl http://localhost:8080/ping        # pong
 ```
 
-This command builds the image, tagging it as `cnych/docker-multi-stage-demo:latest`. Docker automatically handles the stages, ensuring only the final minimal image is produced.
+Only the last stage becomes the image; the build stage stays behind as cache.
 
-To run the container and test it:
+## What you give up with `scratch`, and the alternatives
+
+An empty image has no shell. `docker exec -it … sh` fails with `executable file not found`, and there's no `curl` or `ps` for debugging. That's a security win, since there's nothing for an attacker to use either, but it changes how you debug: use logs and metrics, or attach a tools container to the target's namespaces ([Chapter 1.8]({% post_url 2025-07-14-chapter-1-8-docker-network %})'s container mode).
+
+If `scratch` is too bare, there are two common middle grounds:
+
+| Runtime base | Size | Includes | Choose it when |
+|---|---|---|---|
+| `scratch` | ~0 | nothing | static binaries (Go, Rust); you add certs yourself |
+| `gcr.io/distroless/static-debian12:nonroot` | ~2 MB | CA certs, time zone data, a non-root user, no shell | static binaries, without the manual extras |
+| `alpine:3.20` | ~8 MB | shell, `apk` package manager | you need a few tools, or the binary needs libc (musl) |
+
+With distroless, stage 2 shrinks to:
+
+```dockerfile
+FROM gcr.io/distroless/static-debian12:nonroot
+COPY --from=build /out/pingsvc /pingsvc
+ENTRYPOINT ["/pingsvc"]
+```
+
+The certificates and the non-root user are already in the base image.
+
+## The same idea for a JavaScript frontend
+
+Multi-stage isn't only for compiled languages. A React or Vue app needs Node.js and hundreds of megabytes of `node_modules` to *build*, but the result is a folder of static files:
+
+```dockerfile
+# ---- build: Node, dependencies, bundler ----
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# ---- runtime: just a web server and the built files ----
+FROM nginx:1.27-alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+```
+
+- **`npm ci`**: installs exactly what `package-lock.json` specifies, *including* dev dependencies, because the bundler needs them.
+- **`npm run build`**: produces the static site in `dist/` (Vite's default; Create React App uses `build/`).
+- **Stage 2** is stock Nginx plus the built files. No Node.js, no `node_modules` and no source code reach production.
+
+## Tests as a build stage
+
+Stages don't have to end up in an image. A stage that runs the test suite turns "the build passes" into "the tests pass":
+
+```dockerfile
+FROM build AS test
+RUN go test ./...
+```
 
 ```bash
-docker run --rm -p 8080:8080 cnych/docker-multi-stage-demo:latest
+docker build --target test .          # build up to the test stage; fails if tests fail
+docker build -t pingsvc:1.0 .         # the default: the last stage, the runtime image
 ```
 
-- `--rm`: Automatically removes the container when it exits.
-- `-p 8080:8080`: Maps port 8080 on your host to port 8080 inside the container.
+- **`FROM build AS test`**: a stage that starts from the `build` stage's result, so the source and toolchain are already there.
+- **`--target test`**: stop at that stage. CI can run this first and only build and push the runtime image if it succeeds.
 
-Once the container is running, open your browser and navigate to `http://127.0.0.1:8080/ping`. You should see "PONG" returned, confirming your application is running successfully within a highly optimized Docker image.
+A normal `docker build` skips the test stage entirely: BuildKit only builds stages the final image actually depends on.
 
----
+## Checklist
 
-This approach drastically simplifies the build process, reduces image size, and improves the security posture of your Dockerized Go applications by eliminating unnecessary build tools and source code from the final production image.
+- Build tools in an early stage; the final stage starts from the smallest base that works.
+- Copy **only** artifacts across stages: binaries, built assets, never source or caches.
+- Dependency manifests before source, and cache mounts for package managers.
+- Non-root `USER` in the final stage, and CA certificates if the service makes HTTPS calls.
+- Pin base image versions in both stages.
+
+That's the end of the Docker chapter. We started with `docker run hello-world`; by now you've built images, wired services together on networks, run databases and CI in containers, managed remote hosts and a cluster, and shipped images a fraction of their naive size.

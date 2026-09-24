@@ -1,5 +1,4 @@
 ---
-layout: project
 title: "EcoManage"
 description: "A full-stack renewable energy and resource management dashboard to monitor, analyze, and optimize consumption. Built with React, Node.js, and TypeScript."
 image: "assets/images/projects/eco-manage.jpg"
@@ -9,10 +8,7 @@ technologies:
   - Node.js
   - MongoDB
 categories:
-  - TypeScript
-  - node.js
   - Fullstack
-live_url: "https://github.com/e-choness/eco-manage"
 github_url: "https://github.com/e-choness/eco-manage"
 featured: true
 order: 3

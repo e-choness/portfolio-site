@@ -22,17 +22,6 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Offset content for fixed header */
-main {
-  padding-top: var(--header-height);
-  min-height: calc(100vh - var(--header-height));
-}
-
-/* Ensure in-page anchors are not hidden behind fixed header */
-section[id] {
-  scroll-margin-top: calc(var(--header-height) + 16px);
-}
-
 /* Responsive media */
 img,
 video,

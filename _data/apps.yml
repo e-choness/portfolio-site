@@ -75,3 +75,12 @@
   w: 340
   h: 430
   anchor: bottom-right
+# System app: opened by the OS itself (404.html), never listed in the dock,
+# desktop, tab bar, home grid, Spotlight or terminal.
+- id: notfound
+  label: Not found
+  glyph: "!"
+  title: "error — not found"
+  w: 460
+  h: 300
+  system: true

@@ -1,684 +1,293 @@
 ---
-layout: "post"
-title: "Chapter 1.5 - Setting Up and Managing GitLab with Docker"
+title: "Chapter 1.5 - Self-Hosted GitLab in Docker: Setup, Runners, Backups and Upgrades"
 date: "2025-07-13"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
-excerpt: "This guide provides a comprehensive guide to setting up, managing, and maintaining a GitLab instance using Docker, Docker Compose, and Docker Swarm. It covers essential topics such as installation, backup and restore procedures, GitLab Runner configuration, and troubleshooting common issues."
+excerpt: "Run GitLab CE in a container with Docker Compose, give it working SSH clone URLs, attach a CI runner that builds and pushes Docker images, and set up the parts people skip until it's too late: backups that include the secrets, restores, and version upgrades that follow the required path."
 ---
 
-## Setting Up and Managing GitLab with Docker
+GitLab bundles Git hosting, merge requests, CI/CD and a container registry into one application. The official `gitlab/gitlab-ce` image packages all of it (Rails, PostgreSQL, Redis, Gitaly, Nginx) into a single container, which makes it the easiest way to self-host.
 
-### Download GitLab Image
+Plan for resources: GitLab needs **at least 4 GB of RAM, and 8 GB to be comfortable**, plus a few CPU cores. On less than that it starts, then swaps itself to a standstill.
 
-First, you'll need to download the GitLab Community Edition (CE) Docker image.
+## 1. Run GitLab with Compose
+
+Create a directory for it and a `compose.yml`:
+
+```yaml
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:18.2.1-ce.0
+    container_name: gitlab
+    hostname: gitlab.example.com
+    restart: unless-stopped
+    shm_size: "256m"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "2222:22"
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://gitlab.example.com'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2222
+        gitlab_rails['time_zone'] = 'America/Edmonton'
+        gitlab_rails['backup_keep_time'] = 604800
+        registry_external_url 'https://registry.example.com'
+    volumes:
+      - ./config:/etc/gitlab
+      - ./logs:/var/log/gitlab
+      - ./data:/var/opt/gitlab
+```
+
+Line by line:
+
+- **`image: gitlab/gitlab-ce:18.2.1-ce.0`**: pin an exact version. GitLab upgrades must follow a specific path (section 7), and `latest` would jump you across versions on the next pull.
+- **`hostname`**: the container's own hostname; GitLab uses it in a few generated places.
+- **`shm_size: "256m"`**: GitLab's metrics exporter uses shared memory, and Docker's 64 MB default is too small for it.
+- **`ports`**: web on 80/443, and GitLab's SSH on host port **2222**, because the host's own SSH server already owns 22.
+- **`GITLAB_OMNIBUS_CONFIG`**: lines of Ruby that GitLab applies as if they were in `gitlab.rb`:
+  - `external_url`: the address users see. With an `https://` URL and a public DNS name, GitLab requests a Let's Encrypt certificate automatically (it needs port 80 reachable for that).
+  - `gitlab_shell_ssh_port = 2222`: tells GitLab that SSH is on 2222, so the clone URLs it shows read `ssh://git@gitlab.example.com:2222/group/project.git`. Without this line it displays port 22, and every copied clone command fails.
+  - `time_zone`: for timestamps in the UI and in emails.
+  - `backup_keep_time`: delete local backups older than 7 days (in seconds).
+  - `registry_external_url`: turns on the built-in container registry at its own hostname (section 5).
+- **`volumes`**: the three places GitLab keeps state. `config` holds `gitlab.rb` and the **secrets**, `logs` the logs, and `data` repositories, uploads, the database and backups. These bind mounts sit next to `compose.yml`, which makes them easy to find and to back up.
+
+Start it and watch the first boot, which takes a few minutes:
 
 ```bash
-docker pull gitlab/gitlab-ce:latest
+docker compose up -d
+docker compose logs -f gitlab       # wait until the log settles and the UI answers
 ```
 
-### Run GitLab Container
+A `502` page during those first minutes is normal: Nginx is up before Rails is.
 
-To run the GitLab container, execute the following command. This command maps necessary ports and volumes for persistent data.
+The first login is `root`, with a generated password:
 
 ```bash
-sudo docker run \
-  --hostname gitlab.example.com \
-  --publish 8443:443 \
-  --publish 8081:80 \
-  --publish 2222:22 \
-  --name gitlab \
-  --restart always \
-  --volume $HOME/_docker/gitlab/config:/etc/gitlab \
-  --volume $HOME/_docker/gitlab/logs:/var/log/gitlab \
-  --volume $HOME/_docker/gitlab/data:/var/opt/gitlab \
-  -v /etc/localtime:/etc/localtime:ro \
-  -d \
-  gitlab/gitlab-ce:latest
+docker compose exec gitlab cat /etc/gitlab/initial_root_password
 ```
 
-Note on Port Conflicts:
+That file is deleted automatically after 24 hours. Log in and change the password straight away.
 
-The example above maps port 2222 on the host to port 22 in the container to avoid potential conflicts with the host's SSH service.
+## 2. The SSH port, and the alternative
 
-If you prefer to keep GitLab's SSH port as `22` and change your host's SSH daemon port instead:
-
-1. **Modify Host SSH Port:** Edit `/etc/ssh/sshd_config` on your host machine. Uncomment `Port 22` and change `22` to `2222`.
-
-   ```bash
-   # /etc/ssh/sshd_config
-   Port 2222
-   ```
-
-2. **Restart SSH Service:**
-
-   ```bash
-   sudo systemctl restart sshd
-   ```
-
-3. **Update Firewall Rules:** Add rules to your firewall to allow connections on port `2222`.
-
-   ```bash
-   sudo iptables -A INPUT -p tcp --dport 2222 -j ACCEPT
-   sudo iptables -A OUTPUT -p tcp --sport 2222 -j ACCEPT
-   ```
-
-   Verify the rules have been added:
-
-   ```bash
-   sudo iptables -L -n
-   ```
-
-   After changing the host SSH port, you can use the standard port `22` for GitLab in the `docker run` command:
-
-   ```bash
-   # ...
-   --publish 22:22 \
-   # ...
-   ```
-
-   When cloning repositories, you would then use the standard SSH URL:
-
-   ```bash
-   git clone git@gitlab.example.com:myuser/awesome-project.git
-   ```
-
-   If you keep the host's SSH port at `22` and map GitLab to `2222` as in the initial `docker run` command, you'll need to specify the port when cloning:
-
-   ```bash
-   git clone ssh://git@gitlab.example.com:2222/myuser/awesome-project.git
-   ```
-
----
-
-### Fixing Container Permissions
-
-If your GitLab container fails to start due to permission issues, you can try fixing them by executing:
+With the setup above, users clone with the port in the URL, and GitLab shows exactly that string:
 
 ```bash
-docker exec -it gitlab update-permissions
-docker restart gitlab
+git clone ssh://git@gitlab.example.com:2222/team/api.git
 ```
 
----
+If you'd rather have plain `git@gitlab.example.com:team/api.git` URLs, GitLab must own port 22 on that address. Either give GitLab its own IP address, or move the host's SSH server to another port (edit `Port` in `/etc/ssh/sshd_config`, open the new port in your firewall, **test logging in on it from a second terminal before you close the first**, then restart `sshd`). After that, map `"22:22"` and drop the `gitlab_shell_ssh_port` line.
 
-### Manual Container Backup
+## 3. Changing configuration
 
-There are two primary methods for manually backing up your GitLab data:
-
-1. **Entering the Container:**
-
-   ```bash
-   docker exec -it gitlab bash
-   gitlab-rake gitlab:backup:create
-   exit
-   ```
-
-2. **Executing Directly from Host:**
-
-   ```bash
-   docker exec gitlab gitlab-rake gitlab:backup:create
-   ```
-
-If you encounter a `Errno::EACCES: Permission denied @ dir_s_mkdir - /var/opt/gitlab/backups/db` error, it indicates incorrect permissions or ownership. You need to grant the correct permissions and change the owner to `git`. Run these commands inside the container:
+Anything in `GITLAB_OMNIBUS_CONFIG` is applied on every container start. For settings you'd rather keep in a file, edit `./config/gitlab.rb` on the host, then:
 
 ```bash
-docker exec -it gitlab bash
-chmod -R 755 /var/opt/gitlab/backups
-chown -R git:git /var/opt/gitlab/backups
-exit
+docker compose exec gitlab gitlab-ctl reconfigure
 ```
 
----
+`reconfigure` regenerates every component's configuration from `gitlab.rb` and restarts whatever changed. If a setting seems to be ignored, check that it isn't also set in `GITLAB_OMNIBUS_CONFIG`: the environment variable wins.
 
-### Automated Backup
+## 4. Backups (and the part everyone forgets)
 
-You can automate backups using a `cron` job on the host machine.
-
-1. Create a Backup Script:
-
-   Create a file named gitlab.backup.sh in $HOME/\_docker/gitlab/ (or your preferred location) and add the following content:
-
-   ```bash
-   #!/bin/bash
-   docker exec gitlab gitlab-rake gitlab:backup:create
-   ```
-
-   Make the script executable:
-
-   ```bash
-   chmod +x $HOME/_docker/gitlab/gitlab.backup.sh
-   ```
-
-2. Schedule with Crontab:
-
-   Open your crontab for editing:
-
-   ```bash
-   crontab -e
-   ```
-
-   Add the following line to schedule a daily backup at 2 AM:
-
-   ```bash
-   0 2 * * * $HOME/_docker/gitlab/gitlab.backup.sh
-   ```
-
-   **Crontab Field Reference:**
-
-   - `*`: Minute (0-59)
-
-   - `*`: Hour (0-23, 0 is midnight)
-
-   - `*`: Day of month (1-31)
-
-   - `*`: Month (1-12)
-
-   - `*`: Day of week (0-6, 0 is Sunday)
-
-   - `command`: The command to execute
-
-   After saving, reload the cron service:
-
-   ```bash
-   sudo systemctl reload cron.service # Or service crond reload on older systems
-   ```
-
----
-
-### Backup Retention Policy
-
-To retain backups for a specific duration (e.g., 7 days), edit the GitLab configuration file `gitlab.rb` located in your mounted volume (`$HOME/_docker/gitlab/config/gitlab.rb` in this setup).
-
-Find the line `gitlab_rails['backup_keep_time']` and uncomment it, then set its value to the desired retention time in seconds (7 days = 604800 seconds).
-
-```ruby
-# /etc/gitlab/gitlab.rb
-gitlab_rails['backup_keep_time'] = 604800
-```
-
-After modifying `gitlab.rb`, reconfigure the GitLab container for the changes to take effect:
+GitLab's backup task dumps the database, repositories and uploads into one tar file under `./data/backups`:
 
 ```bash
-docker exec gitlab gitlab-ctl reconfigure
+docker compose exec gitlab gitlab-backup create
 ```
 
----
+That file is **not enough to restore**. The configuration and the encryption secrets live in `./config`, which `gitlab-backup` doesn't touch:
 
-### Backup Restoration
+- **`gitlab-secrets.json`** holds the keys that encrypt CI/CD variables, two-factor secrets and runner tokens in the database. Restore a backup without it and all of those become unreadable.
+- **`gitlab.rb`** is your configuration.
 
-To restore a GitLab backup, you'll need the timestamp of the backup file. The format of backup files has changed in recent GitLab versions.
-
-For older versions, you might see timestamps like 1406691018.
-
-For newer versions, the format is TIMESTAMP_DATE_VERSION_gitlab_backup.tar, for example, 1721392543_2024_07_19_17.0.1.
+Back up both together, and copy them **off the machine**; a backup that lives on the same disk as GitLab doesn't survive the disk. A nightly script:
 
 ```bash
-# Example for an older backup timestamp
-docker exec gitlab gitlab-rake gitlab:backup:restore BACKUP=1406691018
+#!/bin/bash
+# /opt/gitlab/backup.sh: nightly GitLab backup, run from cron
+set -euo pipefail
+cd /opt/gitlab
 
-# Example for a newer backup file name (replace with your actual backup file name, excluding the _gitlab_backup.tar extension)
-docker exec gitlab gitlab-rake gitlab:backup:restore BACKUP=1721392543_2024_07_19_17.0.1
+docker compose exec -T gitlab gitlab-backup create CRON=1
+tar czf "data/backups/gitlab-config-$(date +%F).tgz" config
+
+rsync -a --delete data/backups/ backup@203.0.113.50:/backups/gitlab/
 ```
 
----
+- **`set -euo pipefail`**: stop at the first failing command, treat unset variables as errors, and fail a pipeline if any part of it fails. Without it, a failed backup would still be rsynced away as if it had worked.
+- **`exec -T`**: don't allocate a terminal; cron has none, and `exec` errors out without this flag.
+- **`CRON=1`**: silence progress output unless something goes wrong, so cron only emails you on failure.
+- **`tar czf … config`**: the configuration and secrets, next to the data backup.
+- **`rsync -a --delete`**: mirror the backup directory to another machine. `--delete` keeps the copy in step with GitLab's own 7-day retention.
 
-### Container Management
+Schedule it with `crontab -e`:
 
-Here are some common Docker commands for managing your GitLab container:
+```text
+0 2 * * * /opt/gitlab/backup.sh
+```
 
-- **Stop Container:**
+(minute 0, hour 2, every day of the month, every month, every day of the week).
 
-  ```bash
-  docker stop gitlab
-  ```
+### Restoring
 
-- **Remove Container:**
-
-  ```bash
-  docker rm gitlab
-  ```
-
-- **Start Container:**
-
-  ```bash
-  docker start gitlab
-  ```
-
-- **Edit GitLab Configuration (inside container):**
-
-  ```bash
-  docker exec -it gitlab vi /etc/gitlab/gitlab.rb
-  ```
-
-- **Restart GitLab Container:**
-
-  ```bash
-  docker restart gitlab
-  ```
-
----
-
-### Installing GitLab with Docker Compose
-
-Docker Compose simplifies the setup, installation, and upgrades of Docker-based GitLab instances.
-
-1. **Install Docker Compose:** Follow the official Docker documentation to install Docker Compose.
-
-2. **Create `docker-compose.yml`:** Create a `docker-compose.yml` file and add the following configuration. This example includes common settings like `external_url`, `time_zone`, and `backup_keep_time`.
-
-   ```yaml
-   version: "3.8" # Use a recent Docker Compose file format version
-   services:
-     gitlab:
-       image: "gitlab/gitlab-ce:latest"
-       restart: always
-       hostname: "gitlab.example.com"
-       environment:
-         GITLAB_OMNIBUS_CONFIG: |
-           external_url 'https://gitlab.example.com'
-           gitlab_rails['time_zone'] = 'Asia/Shanghai'
-           gitlab_rails['backup_keep_time'] = 259200 # 3 days in seconds
-           # registry_external_url 'http://192.168.188.222:5008' # Uncomment and configure if using an external Docker Registry
-           # Add any other configurations as needed
-       ports:
-         - "8081:80"
-         - "8443:443"
-         - "22:22"
-       volumes:
-         - ./gitlab-data/config:/etc/gitlab
-         - ./gitlab-data/logs:/var/log/gitlab
-         - ./gitlab-data/data:/var/opt/gitlab
-         - /etc/localtime:/etc/localtime:ro # Read-only mount for timezone
-   ```
-
-3. Start GitLab:
-
-   Navigate to the directory containing your docker-compose.yml file and run:
-
-   ```bash
-   docker compose up -d
-   ```
-
-   (Note: `docker compose` is the newer command; `docker-compose` also works but is considered legacy.)
-
----
-
-### Using Docker Swarm
-
-For a highly available and scalable GitLab deployment, you can use Docker Swarm.
-
-1. Create docker-compose.yml for Swarm:
-
-   Create a docker-compose.yml file with the following Swarm-specific configurations. This example also includes a GitLab Runner service.
-
-   ```yaml
-   version: "3.8" # Use a recent Docker Compose file format version
-   services:
-     gitlab:
-       image: gitlab/gitlab-ce:latest
-       container_name: gitlab
-       ports:
-         - "22:22"
-         - "80:80"
-         - "443:443"
-       volumes:
-         - /srv/gitlab/data:/var/opt/gitlab
-         - /srv/gitlab/logs:/var/log/gitlab
-         - /srv/gitlab/config:/etc/gitlab
-         - /etc/localtime:/etc/localtime:ro
-       environment:
-         GITLAB_OMNIBUS_CONFIG: "from_file('/omnibus_config.rb')"
-       configs:
-         - source: gitlab_config
-           target: /omnibus_config.rb
-       secrets:
-         - gitlab_root_password
-     gitlab-runner:
-       image: gitlab/gitlab-runner:alpine
-       container_name: gitlab-runner
-       deploy:
-         mode: replicated
-         replicas: 1 # Adjust replica count as needed
-       volumes: # Mount Docker socket for Docker executor
-         - /var/run/docker.sock:/var/run/docker.sock
-         - gitlab_runner_config:/etc/gitlab-runner # Volume for runner config
-   configs:
-     gitlab_config: # Renamed for clarity and to avoid conflict with service name
-       file: ./gitlab.rb
-   secrets:
-     gitlab_root_password:
-       file: ./root_password.txt
-   volumes: # Define volumes for GitLab Runner config
-     gitlab_runner_config:
-   ```
-
-2. Create gitlab.rb (for Swarm):
-
-   Create a gitlab.rb file in the same directory as your docker-compose.yml.
-
-   ```ruby
-   external_url 'https://my.domain.com/'
-   gitlab_rails['initial_root_password'] = File.read('/run/secrets/gitlab_root_password')
-   gitlab_rails['backup_keep_time'] = 604800
-   gitlab_rails['time_zone'] = 'Asia/Shanghai'
-
-   # If you're running GitLab Runner and encountering SSL issues,
-   # and plan to handle SSL termination externally (e.g., with a load balancer),
-   # you might set these, but generally it's recommended to configure SSL directly in GitLab if possible.
-   # For a Swarm setup, often an external proxy handles SSL, in which case these might not be needed
-   # or should point to the correct certs if GitLab is responsible for SSL termination.
-   # nginx['redirect_http_to_https'] = false
-   # nginx['ssl_certificate'] = "/etc/gitlab/ssl/fullchain.pem"
-   # nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/privkey.pem"
-   ```
-
-3. Create root_password.txt:
-
-   Create a root_password.txt file with your desired initial root password.
-
-   ```bash
-   MySuperSecretAndSecurePass0rd! #Use your imagination here
-   ```
-
-4. Deploy the Stack:
-
-   Ensure you are in the same directory as your docker-compose.yml and gitlab.rb files, then deploy the stack:
-
-   ```bash
-   docker stack deploy --compose-file docker-compose.yml gitlab
-   ```
-
----
-
-### Registering GitLab Runner
-
-After deploying the GitLab Runner service, you need to register it with your GitLab instance. Refer to the official GitLab Runner registration documentation for the most up-to-date instructions.
-
-You can register the runner interactively:
+A restore must go onto the **same GitLab version** that created the backup:
 
 ```bash
-docker run --rm -it -v gitlab_runner_config:/etc/gitlab-runner gitlab/gitlab-runner register
+# 1. Put the config backup back: gitlab.rb and gitlab-secrets.json into ./config
+# 2. Start GitLab (same version), then stop the processes that write to the database
+docker compose exec gitlab gitlab-ctl stop puma
+docker compose exec gitlab gitlab-ctl stop sidekiq
+
+# 3. Restore; BACKUP is the file name without _gitlab_backup.tar
+docker compose exec gitlab gitlab-backup restore BACKUP=1752900000_2025_07_19_18.2.1
+
+# 4. Restart and verify
+docker compose restart gitlab
+docker compose exec gitlab gitlab-rake gitlab:check SANITIZE=true
 ```
 
-Follow the prompts:
+Rehearse this on a spare machine before you need it. A restore you've never run is a hope, not a backup.
 
-- **Enter the GitLab instance URL:** (e.g., `https://gitlab.example.com/`)
+## 5. The container registry
 
-- **Enter the registration token:** Get this from your GitLab instance under `Admin Area > CI/CD > Runners` or `Project > Settings > CI/CD > Runners`.
+The `registry_external_url` line from section 1 serves a Docker registry at `registry.example.com`, with GitLab handling authentication. Every project gets an image namespace: `registry.example.com/team/api`.
 
-- **Enter a description for the runner:** (e.g., `My Docker Runner`)
-
-- **Enter tags for the runner:** (e.g., `docker,linux`) - **Important:** If you leave this blank, the runner will pick up any untagged jobs. If you add tags, jobs must have matching tags to be picked up.
-
-- **Enter an executor:** Choose `docker` for running jobs in Docker containers.
-
-- **Enter the default Docker image:** (e.g., `ubuntu:latest`)
-
----
-
-### Updating Runner Configuration
-
-If you modify the `config.toml` file for your GitLab Runner, you'll need to restart the runner container for the changes to take effect. Always restart the entire container, not just the `gitlab-runner restart` command inside the container.
+It needs its own DNS name pointing at the server. GitLab obtains its certificate automatically if Let's Encrypt is enabled; otherwise put a certificate for that name in `./config/ssl/`. Users log in with a personal access token that has the `read_registry` / `write_registry` scopes, never their password:
 
 ```bash
-docker restart gitlab-runner
+docker login registry.example.com
 ```
 
----
+## 6. CI: a runner that builds Docker images
 
-### Upgrading GitLab Runner
+GitLab only coordinates CI; jobs run on a **runner**. We'll run the runner as a container on a separate machine (ideally, since builds are heavy) or on the same host.
 
-To upgrade your GitLab Runner to the latest version (or a specific tag):
+```mermaid
+flowchart LR
+  dev([git push]) --> GL[GitLab]
+  GL -- "job for branch/tag" --> R[gitlab-runner]
+  R -- "starts job container<br/>docker:27-cli" --> J[CI job]
+  J -- "/var/run/docker.sock" --> D[(Host Docker daemon)]
+  D -- "docker build" --> I[image]
+  J -- "docker push" --> REG[(GitLab Container Registry)]
+  REG -. "docker pull" .-> S[Deploy server]
+```
 
-1. **Pull the latest image:**
+### Start and register the runner
 
-   ```bash
-   docker pull gitlab/gitlab-runner:latest
-   ```
+```bash
+docker run -d --name gitlab-runner --restart unless-stopped \
+  -v /srv/gitlab-runner/config:/etc/gitlab-runner \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  gitlab/gitlab-runner:latest
+```
 
-2. **Stop and remove the existing container:**
+In GitLab, create the runner first: **Admin Area → CI/CD → Runners → New instance runner** (or a project's **Settings → CI/CD → Runners**). Set its tags there, for example `docker`. GitLab then shows an authentication token starting with `glrt-`. (The older "registration token" flow is deprecated since GitLab 16.)
 
-   ```bash
-   docker stop gitlab-runner && docker rm gitlab-runner
-   ```
+```bash
+docker exec -it gitlab-runner gitlab-runner register \
+  --url https://gitlab.example.com \
+  --token glrt-xxxxxxxxxxxxxxxxxxxx \
+  --executor docker \
+  --docker-image alpine:3.20
+```
 
-3. **Start the container with the updated image (using your original `docker run` command):**
+- **`--executor docker`**: each job runs in its own container, started from the image the job names.
+- **`--docker-image alpine:3.20`**: the default image for jobs that don't name one.
 
-   ```bash
-   docker run -d --name gitlab-runner --restart always \
-     -v /var/run/docker.sock:/var/run/docker.sock \
-     -v gitlab_runner_config:/etc/gitlab-runner \
-     gitlab/gitlab-runner:latest
-   ```
+### The runner's config
 
-   (Note: Replace `gitlab_runner_config` with the actual volume name or host path you are using for the runner configuration.)
-
----
-
-### GitLab CI Templates and Configuration
-
-Here's an example of a `config.toml` for a Docker executor:
+Registration writes `/srv/gitlab-runner/config/config.toml`. For jobs that build images, it should look like this:
 
 ```toml
-concurrent = 1
-check_interval = 0
-
-[session_server]
-  session_timeout = 1800
+concurrent = 2
 
 [[runners]]
-  name = "My Project Runner"
-  url = "https://g.example.com/" # Your GitLab instance URL
-  token = "xxx-y1vb" # Runner token from GitLab
+  name = "docker-builder"
+  url = "https://gitlab.example.com"
+  token = "glrt-xxxxxxxxxxxxxxxxxxxx"
   executor = "docker"
 
   [runners.docker]
-    # environment = ['GIT_SSL_NO_VERIFY=true'] # Use with caution, disables SSL verification
-    tls_verify = false # Use with caution, disables TLS verification for Docker daemon
-    image = "node:20-alpine" # Use a modern Node.js version, e.g., 20 or latest LTS
+    image = "alpine:3.20"
     privileged = false
-    pull_policy = "if-not-present" # Pulls image only if it doesn't exist locally
-    disable_entrypoint_overwrite = false
-    oom_kill_disable = false
-    disable_cache = false
-    volumes = ["/cache", "/var/run/docker.sock:/var/run/docker.sock"] # /var/run/docker.sock for Docker-in-Docker functionality
-    shm_size = 0
-
-  [runners.cache]
-    # Configure cache if needed (e.g., S3, GCS, Azure)
-    # [runners.cache.s3]
-    # [runners.cache.gcs]
-    # [runners.cache.azure]
+    pull_policy = "if-not-present"
+    volumes = ["/cache", "/var/run/docker.sock:/var/run/docker.sock"]
 ```
 
-Important volumes Configuration:
+- **`concurrent = 2`**: how many jobs this runner process executes at once.
+- **`privileged = false`**: jobs don't get elevated privileges.
+- **`pull_policy = "if-not-present"`**: reuse images already on the machine instead of pulling on every job.
+- **`volumes`**: `/cache` is a volume for the runner's job cache; the Docker socket line is **socket binding**. Job containers talk to the host's Docker daemon, so `docker build` inside a job works without Docker-in-Docker.
 
-The volumes = ["/cache", "/var/run/docker.sock:/var/run/docker.sock"] configuration is crucial for enabling Docker-in-Docker (dind) functionality within your CI jobs. It allows your CI jobs to build and push Docker images. Without it, you might encounter errors like:
+The runner watches `config.toml` and reloads it within seconds; there's no need to restart it after edits.
 
-```bash
-ERROR: error during connect: Get http://docker:2375/v1.40/info: dial tcp: lookup docker on 8.8.8.8:53: no such host
-```
+Socket binding is simple and fast, and builds reuse the host's layer cache. The trade-off is the same as with Jenkins: any job can control the host's Docker daemon, including other projects' containers. Keep socket-bound runners for trusted projects. The alternative, **Docker-in-Docker**, gives each job its own daemon in a `docker:dind` service container. It's better isolated, but it needs `privileged = true` and a cold cache per job. Pick one per runner, and don't mix the two.
 
-`pull_policy = "if-not-present":`
+### The pipeline
 
-This policy optimizes image pulling by only downloading the Docker image if it's not already present locally.
-
-"This job is stuck because the project doesn't have any runners online assigned to it."
-
-This error typically means your job's tags don't match your runner's tags, or your runner has tags and your job doesn't.
-
-To resolve this:
-
-- Ensure your CI jobs are configured with the correct `tags` that match your runner's tags in `config.toml`.
-
-- Alternatively, if you want your runner to pick up all jobs, ensure the runner has **no tags** assigned during registration or in its `config.toml`.
-
----
-
-### Building and Pushing Docker Images in CI
-
-Here's an updated example of a `.gitlab-ci.yml` template for building and pushing Docker images to a registry, including a `docker:dind` service for Docker-in-Docker:
+`.gitlab-ci.yml` in the project:
 
 ```yaml
-# Use a recent Docker image for building, e.g., 25.x
-image: docker:25.0.3-git
-
-variables:
-  # Define your CI/CD variables for registry access
-  # These should be set as CI/CD variables in your GitLab project settings
-  # CI_REGISTRY_USER: Your GitLab username or deploy token username
-  # CI_REGISTRY_PASSWORD: Your GitLab personal access token or deploy token password
-  # CI_REGISTRY: Your Docker registry URL (e.g., registry.gitlab.com or your custom registry)
-  # CI_REGISTRY_IMAGE: The full image path including registry, group/project, and image name
-
 stages:
   - build
-  - deploy
 
-.docker_build_template:
+build-image:
   stage: build
-  services:
-    - docker:25.0.3-dind # Use the corresponding dind version
+  image: docker:27-cli
+  tags: [docker]
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
   script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
-
-docker-build-master:
-  extends: .docker_build_template
-  variables:
-    # For master/main branch, tag with 'latest' and commit SHA
-    IMAGE_TAG: latest
-  script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE:$IMAGE_TAG" -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" .
-    - docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
+    - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
-    # Example: Run service after building (adjust for your deployment strategy)
-    # - if [ $(docker ps -aq --filter name=docker-service-name) ]; then docker rm -f docker-service-name;fi
-    # - docker run -itd -p 5000:5000 --name docker-service-name "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
-  rules:
-    - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
-
-docker-build-branch:
-  extends: .docker_build_template
-  rules:
-    - if: "$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
+    - |
+      if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then
+        docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" "$CI_REGISTRY_IMAGE:latest"
+        docker push "$CI_REGISTRY_IMAGE:latest"
+      fi
 ```
 
-**Explanation of Variables:**
+- **`image: docker:27-cli`**: the job container only needs the Docker client; the daemon is the host's, through the bound socket.
+- **`tags: [docker]`**: only runners carrying the `docker` tag pick this job up. If a job sits at "stuck: no runners", the tags don't match.
+- **`$CI_REGISTRY`, `$CI_REGISTRY_IMAGE`, `$CI_REGISTRY_USER`, `$CI_REGISTRY_PASSWORD`**: predefined by GitLab when the registry is enabled. The user is `gitlab-ci-token`, and the password is a job token that's valid only while this job runs. You don't create or store any credentials.
+- **`--password-stdin`**: pass the password on standard input, so it never appears in the process list or the job log.
+- **`--pull`**: always check for a newer base image, so security fixes in `FROM` images reach your builds.
+- **Tag with `$CI_COMMIT_SHORT_SHA`**: every build gets a unique, traceable tag. `latest` is moved only on the default branch, so feature branches can't overwrite what production pulls.
 
-- `CI_REGISTRY_USER`: Your GitLab username or a [Deploy Token username](https://docs.gitlab.com/ee/user/project/deploy_tokens/).
+## 7. Upgrading GitLab
 
-- `CI_REGISTRY_PASSWORD`: The password for your GitLab user or the Deploy Token. **Always use a [Personal Access Token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html) (PAT) with `write_registry` scope or a [Deploy Token](https://www.google.com/search?q=https://docs.gitlab.com/ee/user/project/deploy_tokens.html) instead of your actual GitLab password for automation.**
+GitLab upgrades have **required stops**: you can't jump from any version to any other, because database migrations must run in order. The official [Upgrade Path tool](https://gitlab-com.gitlab.io/support/toolbox/upgrade-path/) lists the exact versions to pass through for your starting point.
 
-- `CI_REGISTRY`: The address of your Docker registry (e.g., `registry.gitlab.com` for GitLab's built-in registry or `192.168.188.222:8070` for a custom registry).
+```mermaid
+flowchart TD
+  A[Back up: gitlab-backup + config/] --> B[Look up the path in the Upgrade Path tool]
+  B --> C[Set image: to the next stop in compose.yml]
+  C --> D[docker compose up -d]
+  D --> E[Follow the logs until migrations finish<br/>and the UI answers]
+  E --> F{Background migrations<br/>done? Admin → Monitoring}
+  F -- no --> F
+  F -- yes --> G{More stops?}
+  G -- yes --> C
+  G -- no --> H[Done]
+```
 
-- `CI_REGISTRY_IMAGE`: The full path to your image in the registry (e.g., `registry.gitlab.com/my-group/my-project/my-image` or `192.168.188.222:5008/docker/docker-static-service-template`).
+- **One stop at a time.** Change the `image:` tag to the next version on the path, then `docker compose up -d`. The container runs the migrations on start.
+- **Wait for background migrations** (Admin Area → Monitoring → Background migrations) before taking the next step. Skipping ahead while they're still running is the classic way to break an upgrade.
+- **If `reconfigure` aborts** with "Removed configurations found in gitlab.rb", a setting you use was removed in the new version. The log names it. Go back to the previous tag, remove or replace the setting in `gitlab.rb`, run `gitlab-ctl reconfigure` there, then try the upgrade again.
 
----
+## Troubleshooting
 
-### Error Handling: "Uploading artifacts to coordinator... too large archive"
+| Symptom | Likely cause |
+|---|---|
+| `502` right after start or upgrade | Still booting or migrating; watch `docker compose logs -f`. |
+| Clone URL shows port 22 but SSH is on 2222 | `gitlab_shell_ssh_port` isn't set. |
+| Job stuck: "no runners online assigned" | Tags on the job and the runner don't match, or "Run untagged jobs" is off. |
+| `Uploading artifacts … too large archive` | Raise **Admin → Settings → CI/CD → Maximum artifacts size**, and `client_max_body_size` in any proxy in front. |
+| CI variables unreadable after a restore | `gitlab-secrets.json` wasn't restored with the backup. |
 
-This error indicates that the artifacts generated by your CI job exceed the maximum allowed size.
-
-1. GitLab Instance Setting:
-
-   As a GitLab administrator, go to Admin Area > Settings > CI/CD and increase the Maximum artifacts size (MB) value.
-
-2. Nginx Proxy Configuration:
-
-   If you are using an Nginx proxy in front of GitLab, you may also need to increase the client_max_body_size in your Nginx configuration. For example:
-
-   ```nginx
-   client_max_body_size 100m; # Adjust to a suitable size, e.g., 100m
-   ```
-
-   After modifying Nginx configuration, remember to reload or restart your Nginx service.
-
----
-
-### Upgrading GitLab Versions
-
-Upgrading GitLab can be complex, especially across major versions. GitLab enforces specific upgrade paths to ensure data integrity. Always consult the [official GitLab upgrade documentation](https://docs.gitlab.com/ee/update/) for the most accurate and up-to-date upgrade paths.
-
-The provided examples illustrate a multi-step upgrade process:
-
-- **Example Path 1:** `13.9.2` -> `13.12.12` -> `14.0.11` -> `14.1.6`
-
-- **Example Path 2:** `12.9.2` -> `12.10.14` -> `13.0.14` -> `13.1.11` -> `13.8.8` -> `13.12.10`
-
-- **Example Path 3:** `11.5.0` -> `11.11.8` -> `12.0.12` -> `12.1.17` -> `12.10.14` -> `13.0.14` -> `13.1.11` -> `13.2.10`
-
-**General Upgrade Steps for Docker Installations:**
-
-1. **Backup your current GitLab instance** before any upgrade.
-
-2. **Identify the correct upgrade path** from your current version to your target version using the official GitLab documentation.
-
-3. **Pull the necessary intermediate Docker images** for each step in your upgrade path. For instance, if upgrading from `13.9.2` to `14.1.6` via `13.12.12` and `14.0.11`:
-
-   ```bash
-   docker pull gitlab/gitlab-ce:13.12.12-ce.0
-   docker pull gitlab/gitlab-ce:14.0.11-ce.0
-   docker pull gitlab/gitlab-ce:14.1.6-ce.0
-   # ... and any other versions in your specific path
-   ```
-
-   _Note:_ The `-ce.0` suffix might vary based on specific releases; typically, `gitlab/gitlab-ce:X.Y.Z` is sufficient.
-
-4. **Stop your current GitLab container.**
-
-   ```bash
-   docker stop gitlab
-   ```
-
-5. **Run the container with the _next_ version in your upgrade path.** You will likely need to adjust your `docker run` command or `docker-compose.yml` to specify the exact version tag.
-
-   ```bash
-   # Example: Upgrade from 13.9.2 to 13.12.12
-   docker run \
-     --hostname gitlab.example.com \
-     --publish 8443:443 --publish 8081:80 -p 2222:22 \
-     --name gitlab \
-     --restart always \
-     --volume $HOME/_docker/gitlab/config:/etc/gitlab \
-     --volume $HOME/_docker/gitlab/logs:/var/log/gitlab \
-     --volume $HOME/_docker/gitlab/data:/var/opt/gitlab \
-     -v /etc/localtime:/etc/localtime:ro \
-     -d \
-     gitlab/gitlab-ce:13.12.12-ce.0 # Specify the target version
-   ```
-
-6. **Monitor the logs** (`docker logs -f gitlab`) for any upgrade-related messages, especially during the `gitlab-ctl reconfigure` phase that runs automatically.
-
-7. **Address any configuration changes** required by the new version. For instance, in the example given, GitLab 14.0 deprecated and removed Unicorn in favor of Puma. You might need to edit `gitlab.rb` to remove old Unicorn settings and ensure Puma is configured correctly.
-
-   If an error like "Removed configurations found in gitlab.rb. Aborting reconfigure." appears, it means you have old configurations that are no longer supported. You must revert to the previous working version, modify `gitlab.rb` to remove the deprecated settings, run `gitlab-ctl reconfigure` on the _previous_ version to apply the changes, and then attempt the upgrade to the next version.
-
-   ```bash
-   # If the upgrade fails due to config, stop the failed container
-   docker stop gitlab
-   docker rm gitlab
-
-   # Rerun the container with the *previous working version*
-   docker run ... gitlab/gitlab-ce:13.9.2-ce.0 # Or your previous version
-
-   # Once the previous version is running, go inside and fix the config
-   docker exec -it gitlab vi /etc/gitlab/gitlab.rb
-   # Remove/comment out Unicorn-related settings or other deprecated items
-
-   # Reconfigure the previous version to ensure config is valid
-   docker exec gitlab gitlab-ctl reconfigure
-
-   # Stop and remove the previous version container
-   docker stop gitlab
-   docker rm gitlab
-
-   # Now, attempt to run the container with the next version in the path again
-   docker run ... gitlab/gitlab-ce:13.12.12-ce.0
-   ```
-
-8. **Repeat** steps 5-7 for each intermediate version in your upgrade path until you reach your final target version.
+[Chapter 1.6]({% post_url 2025-07-13-chapter-1-6-docker-mysql %}) moves on to running databases in containers, starting with MySQL.

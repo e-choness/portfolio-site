@@ -48,25 +48,21 @@ export function renderSkills(bodyEl, { content }) {
       label.textContent = s.name;
       li.appendChild(label);
 
-      // Prototype row: name · years (26px) · bar 170×7 · pct (34px).
-      const years = document.createElement('span');
-      years.className = 'os-skills-years';
-      years.textContent = `${s.years}y`;
-      li.appendChild(years);
-
+      // Row: name · bar · years. The bar is years used relative to the
+      // longest-used skill, not a self-rated percentage.
       const track = document.createElement('div');
       track.className = 'os-skills-track';
       const fill = document.createElement('div');
       fill.className = 'os-skills-fill';
       fill.style.width = '0%';
-      fill.dataset.level = String(s.level);
+      fill.dataset.level = String(maxYears ? Math.round(((s.years || 0) / maxYears) * 100) : 0);
       track.appendChild(fill);
       li.appendChild(track);
 
-      const pct = document.createElement('span');
-      pct.className = 'os-skills-pct';
-      pct.textContent = `${s.level}%`;
-      li.appendChild(pct);
+      const years = document.createElement('span');
+      years.className = 'os-skills-years';
+      years.textContent = `${s.years}y`;
+      li.appendChild(years);
 
       list.appendChild(li);
     }

@@ -1,8 +1,8 @@
 ---
-layout: project
 title: "Bubble UP!"
 description: "A vibrant puzzle game built with Unity, challenging players with fast-paced, Tetris-inspired gameplay. Master chain reactions and aim for high scores in this bubbly, arcade-style adventure."
-image: "assets/images/projects/bubble-up.gif"
+image: "assets/images/projects/bubble-up.jpg"
+video: "assets/images/projects/bubble-up.mp4"
 technologies:
   - Unity
   - C#
@@ -12,9 +12,10 @@ categories:
   - Game Development
   - Mobile
 live_url: "https://store.steampowered.com/app/3655340/Bubble_UP/"
-github_url: "https://www.bubbleupgame.com/"
+live_label: "Steam"
+website_url: "https://www.bubbleupgame.com/"
 featured: false
-order: 6
+order: 7
 ---
 ## **What is Bubble UP!**
 

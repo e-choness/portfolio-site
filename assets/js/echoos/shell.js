@@ -123,11 +123,15 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   store.subscribe(applyAll);
   applyAll(store.get());
 
+  // System apps (e.g. the 404 window) are opened by the OS itself, never from
+  // a launcher, so the dock, desktop, tab bar and home grid skip them.
+  const launchers = apps.filter((a) => !a.system);
+
   // --- dock ---------------------------------------------------------------
   const dock = document.createElement('nav');
   dock.className = 'os-dock';
   dock.setAttribute('aria-label', 'Dock');
-  for (const app of apps) {
+  for (const app of launchers) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'os-dock-item';
@@ -143,7 +147,7 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   const desktop = document.createElement('div');
   desktop.className = 'os-desktop';
   desktop.setAttribute('aria-label', 'Desktop');
-  const desktopApps = apps
+  const desktopApps = launchers
     .filter((a) => a.desktop_icon)
     .sort((a, b) => (a.desktop_icon_order || 0) - (b.desktop_icon_order || 0));
   for (const app of desktopApps) {
@@ -173,7 +177,7 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
     for (const app of apps) if (wm.isOpen(app.id)) wm.closeApp(app.id);
   });
   tabbar.appendChild(homeBtn);
-  for (const app of apps) {
+  for (const app of launchers) {
     if (!app.tab_bar) continue;
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -190,7 +194,7 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   const home = document.createElement('div');
   home.className = 'os-home';
   home.setAttribute('aria-label', 'Apps');
-  for (const app of apps) {
+  for (const app of launchers) {
     const icon = document.createElement('button');
     icon.type = 'button';
     icon.className = 'os-home-item';

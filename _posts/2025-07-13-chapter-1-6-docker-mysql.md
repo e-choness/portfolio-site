@@ -1,232 +1,233 @@
 ---
-layout: "post"
-title: "Chapter 1.6 - Deploying MySQL with Docker to Best Practices"
+title: "Chapter 1.6 - MySQL in Docker: Data That Survives, Config That Works"
 date: "2025-07-13"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
-excerpt: "This guide provides a comprehensive overview of how to deploy and manage MySQL using Docker, incorporating the latest standards and best practices for data persistence, configuration, and security. Learn to leverage Docker volumes, optimize my.cnf, and implement essential security measures for a robust database environment."
+excerpt: "Run MySQL 8.4 in a container the way you'd want to run it in production: data in a volume, credentials out of your shell history, a my.cnf that doesn't stop the server from starting, health checks, consistent backups and upgrades. Plus the first-start behaviour that surprises almost everyone."
 ---
 
-MySQL is the world's most popular open-source relational database management system (RDBMS), widely used for web applications. It is a product of Oracle.
+Databases are the containers people are most nervous about, and reasonably so: a web server container can be thrown away, but the data can't. The good news is that the rules are few. Keep the data in a **volume**, never inside the container. Keep configuration in a **file on the host**. And back up with the database's own tools rather than by copying files.
 
-This guide provides a comprehensive overview of how to deploy and manage MySQL using Docker, incorporating the latest standards and best practices.
+## The shape of it
 
-### 1. Downloading the Docker Image
-
-To begin, you need to pull the official MySQL Docker image. It's highly recommended to use the latest stable or Long Term Support (LTS) version for enhanced features, performance, and security. As of July 2025, MySQL 8.4 is the latest LTS release.
-
-You can pull the image using the `docker pull` command:
-
-```bash
-# Or for the absolute latest version:
-docker pull mysql:latest
-# Or for the latest Long Term Support release:
-# docker pull mysql:latest-lts
+```mermaid
+flowchart LR
+  subgraph Host
+    cnf["./mysql/conf.d/app.cnf<br/>(edited on the host)"]
+    env["./mysql.env<br/>passwords"]
+    vol[("mysql_data volume<br/>managed by Docker")]
+  end
+  subgraph C["mysql container (replaceable)"]
+    conf["/etc/mysql/conf.d/app.cnf"]
+    data["/var/lib/mysql"]
+    d[mysqld]
+  end
+  cnf -- "bind mount :ro" --> conf
+  vol -- "named volume" --> data
+  env -. "environment, first start" .-> d
+  conf --> d
+  data <--> d
+  app([App containers]) -- "mysql:3306 on a Docker network" --> d
 ```
 
-This command fetches the specified MySQL image from Docker Hub.
+The container itself holds nothing you can't recreate. Remove it, upgrade it, move it to another host: as long as the same volume and config are attached, MySQL picks up exactly where it stopped.
 
-### 2. Running the MySQL Container
+## Choosing a version
 
-When running a database in Docker, data persistence is crucial. Docker **named volumes** are the recommended way to manage data, ensuring your database files are not lost when the container is stopped, removed, or updated.
+MySQL now has two release tracks:
 
-Here's an updated `docker run` command incorporating best practices:
+- **LTS** (8.4): bug and security fixes only, supported for years. **This is what you want for data you care about.**
+- **Innovation** (9.x): new features every quarter, each release supported only until the next.
+
+`mysql:latest` follows Innovation. Pin the LTS line instead:
 
 ```bash
-docker volume create mysql_data
+docker pull mysql:8.4
+```
 
-docker run --name mysql-server \
-  -p 3306:3306 \
-  -v mysql_data:/var/lib/mysql \
-  -v /path/to/your/custom/my.cnf:/etc/mysql/conf.d/my.cnf:ro \
-  -e MYSQL_ROOT_PASSWORD=your_strong_password \
+## Running it
+
+Put the passwords in a file rather than on the command line, where they'd end up in your shell history and in `ps` output. Create `mysql.env`:
+
+```bash
+MYSQL_ROOT_PASSWORD=change-me-to-something-long
+MYSQL_DATABASE=shop
+MYSQL_USER=shop
+MYSQL_PASSWORD=another-long-random-password
+```
+
+and restrict it: `chmod 600 mysql.env`. Then:
+
+```bash
+docker network create backend
+
+docker run -d --name mysql \
+  --network backend \
+  --restart unless-stopped \
+  -p 127.0.0.1:3306:3306 \
+  --env-file ./mysql.env \
   -e TZ=America/Edmonton \
-  -d mysql:latest
+  -v mysql_data:/var/lib/mysql \
+  -v "$PWD/mysql/conf.d:/etc/mysql/conf.d:ro" \
+  mysql:8.4
 ```
 
-Let's break down each option:
+- **`--network backend`**: your application containers join the same network and reach the database as `mysql:3306` (Docker's DNS resolves the container name).
+- **`-p 127.0.0.1:3306:3306`**: publish the port on the host's loopback only, so you can connect from the host with a client, but the database isn't exposed to the network. Drop the line entirely if only containers need access.
+- **`--env-file ./mysql.env`**: the variables above:
+  - `MYSQL_ROOT_PASSWORD`: the root password.
+  - `MYSQL_DATABASE`: a database to create.
+  - `MYSQL_USER` / `MYSQL_PASSWORD`: an application user with full rights on that database *only*. Your app connects as this user, never as root.
+- **`-e TZ=…`**: the container's time zone. MySQL takes its `system_time_zone` from it, so `NOW()` matches your local time.
+- **`-v mysql_data:/var/lib/mysql`**: the data directory in a named volume. Docker creates it on first use.
+- **`-v …/conf.d:/etc/mysql/conf.d:ro`**: your configuration (next section), read-only.
 
-- `--name mysql-server`: Assigns a descriptive name to your container (`mysql-server`), making it easier to reference.
+`docker logs -f mysql` shows the first-start initialization, then `ready for connections`.
 
-- `-p 3306:3306`: Maps port 3306 (default MySQL port) from the container to port 3306 on your host machine. This allows external applications to connect to your MySQL instance.
+### The first-start surprise
 
-- `-v mysql_data:/var/lib/mysql`: This creates and mounts a **named Docker volume** called `mysql_data` to `/var/lib/mysql` inside the container. This directory is where MySQL stores its data files, ensuring data persistence.
+Those `MYSQL_*` variables are applied **only when the data directory is empty**, that is, on the very first start with a new volume. After that, MySQL uses what's stored in the volume, and the variables are ignored. If you change `MYSQL_ROOT_PASSWORD` later and restart, the password doesn't change. That's by design: the entrypoint won't overwrite an existing database. To change credentials on a running database, use SQL (`ALTER USER …`).
 
-- `-v /path/to/your/custom/my.cnf:/etc/mysql/conf.d/my.cnf:ro`: This mounts a custom `my.cnf` configuration file from your host machine (`/path/to/your/custom/my.cnf`) into the container's configuration directory. The `:ro` flag ensures it's mounted as read-only, preventing accidental modifications from within the container. This is the preferred way to manage MySQL configurations.
-
-- `-e MYSQL_ROOT_PASSWORD=your_strong_password`: Sets the password for the `root` user within MySQL. **Always use a strong, unique password for production environments.**
-
-- `-e TZ=America/Edmonton`: Sets the container's timezone to "America/Edmonton" (current location). This is generally a better approach than setting `default-time_zone` in `my.cnf` for Docker containers, as it ensures consistency across the container's environment.
-
-- `-d`: Runs the container in detached mode (in the background).
-
-Note on Bind Mounts vs. Named Volumes:
-
-While the original article used bind mounts (-v $HOME/\_docker/mysql/data:/var/lib/mysql), Docker named volumes (-v mysql_data:/var/lib/mysql) are generally preferred for database persistence. Named volumes are fully managed by Docker, are easier to back up, and ensure better portability.
-
-### 3. Accessing the Container and Viewing Logs
-
-You can execute commands inside your running MySQL container using `docker exec`.
-
-To get a bash shell inside the `mysql-server` container:
+The same rule applies to initialization scripts. Any `.sql` or `.sh` file mounted into `/docker-entrypoint-initdb.d/` runs once, on that first start, in alphabetical order. That's handy for creating a schema or seed data:
 
 ```bash
-docker exec -it mysql-server bash
+-v "$PWD/initdb:/docker-entrypoint-initdb.d:ro"
 ```
 
-To view the MySQL Server logs, which are streamed to Docker's standard output:
+## Configuration that works
 
-```bash
-docker logs mysql-server
-```
+Create `mysql/conf.d/app.cnf`. The official image reads every `.cnf` file in `/etc/mysql/conf.d/` on top of its defaults:
 
-### 4. Configuring MySQL
+```ini
+[mysqld]
+# Full Unicode, including emoji
+character-set-server = utf8mb4
+collation-server     = utf8mb4_0900_ai_ci
 
-For advanced configurations, create a custom `my.cnf` file on your host machine and mount it into the container as shown in the `docker run` command. Below are common configurations that should be included in your `my.cnf` (e.g., at `/path/to/your/custom/my.cnf`):
+# Binary log: needed for replication and point-in-time recovery
+server-id                  = 1
+binlog_expire_logs_seconds = 604800
+max_binlog_size            = 100M
 
-```yaml
-# For advice on how to change settings please see
-# https://dev.mysql.com/doc/refman/8.4/en/server-configuration-defaults.html
+# Memory for caching data and indexes: the most important tuning knob
+innodb_buffer_pool_size = 1G
+
+# Connections
+max_connections = 200
 
 [client]
 default-character-set = utf8mb4
-
-[mysql]
-default-character-set = utf8mb4
-
-[mysqld]
-character-set-client-handshake = FALSE
-character-set-server = utf8mb4
-collation-server = utf8mb4_unicode_ci
-
-# Ignore case sensitivity of database table names (common for development/testing, but consider implications for production)
-lower_case_table_names = 1
-
-# Set server ID for replication (must be unique in a replication topology)
-server-id = 1
-
-# Enable binary logging for replication and point-in-time recovery
-log_bin = /var/lib/mysql/mysql-bin.log
-binlog_format = ROW # Recommended format for reliability in replication
-max_binlog_size = 100M # Maximum size of each binary log file
-binlog_expire_logs_seconds = 864000 # Expire binary logs after 10 days (864000 seconds)
-
-# Basic InnoDB settings (adjust based on your server's RAM)
-# innodb_buffer_pool_size = 70% of your RAM for dedicated server, else 10%
-# Example for a server with 2GB RAM:
-# innodb_buffer_pool_size = 1400M
-
-# Data directory and socket path (usually handled by Docker image, but can be specified)
-datadir=/var/lib/mysql
-socket=/var/lib/mysql/mysql.sock
-
-# Disabling symbolic-links is recommended to prevent assorted security risks
-symbolic-links=0
-
-# Error log path (optional, Docker logs are usually sufficient)
-# log-error=/var/log/mysqld.log
-
-# PID file path (usually handled by Docker image)
-# pid-file=/var/run/mysqld/mysqld.pid
 ```
 
-**Key Configuration Details:**
+- **`character-set-server` / `collation-server`**: store text as `utf8mb4`, real 4-byte UTF-8 (MySQL's older `utf8` can't store emoji). `utf8mb4_0900_ai_ci` is MySQL 8's default collation: accent- and case-insensitive comparisons, based on a recent Unicode standard.
+- **`server-id`**: a unique number per server; required as soon as you add replication.
+- **`binlog_expire_logs_seconds`**: the binary log (on by default since MySQL 8) records every change. Keeping 7 days of it lets you replay changes after restoring the last dump, known as point-in-time recovery. Older logs are purged automatically.
+- **`innodb_buffer_pool_size`**: how much memory InnoDB uses to cache data and indexes. On a dedicated database host, 50–70% of RAM is typical; on a shared machine, size it so MySQL and everything else fit. If it's too large, the container gets killed for exceeding its memory.
+- **`max_connections`**: the ceiling on concurrent connections. Your application's connection pool size, times its replica count, has to fit under it.
 
-- **`utf8mb4` Character Set:** `utf8mb4` is the recommended character set for full Unicode support, including emojis. The configuration ensures that both client and server use this character set.
+**Leave these to the image:** `datadir`, `socket` and `pid-file`. Moving the socket, in particular, breaks the `mysql` client inside the container and the image's own startup scripts. You'll also find old guides setting `character-set-client-handshake`, which was removed in MySQL 8.0; setting it now stops the server from starting.
 
-- **`lower_case_table_names`:** Setting this to `1` makes table names case-insensitive. Be consistent with this setting across all MySQL instances in a replication setup.
+**One setting to decide on day one:** `lower_case_table_names`. MySQL 8 only accepts it when the data directory is **first initialized**. Setting it later, or changing it, makes the server refuse to start. If you need case-insensitive table names (common when migrating from Windows), put `lower_case_table_names = 1` in the file *before* the first start.
 
-- **Time Zone (`default-time_zone`):** While the original article set `default-time_zone=+8:00` in `my.cnf`, it's generally more robust to set the `TZ` environment variable in the `docker run` command as shown above. This affects the entire container, not just MySQL. If you still prefer setting it in `my.cnf`, ensure the value is appropriate (e.g., `+08:00` or a named timezone like `Asia/Shanghai` if timezone tables are loaded).
+After editing the file, restart to apply it: `docker restart mysql`. Many settings can also be changed live with `SET PERSIST`, which MySQL writes to `mysqld-auto.cnf` inside the volume.
 
-- **Binary Logging (`log_bin`, `binlog_format`, `max_binlog_size`, `binlog_expire_logs_seconds`):** Binary logs are essential for data recovery, point-in-time recovery, and replication.
-
-  - `server-id`: A unique identifier for the MySQL server in a replication topology.
-
-  - `log_bin`: Enables binary logging and specifies the path to the log files.
-
-  - `binlog_format`: `ROW` format is generally preferred for its deterministic nature and data integrity during replication.
-
-  - `max_binlog_size`: Controls the maximum size of individual binary log files.
-
-  - `binlog_expire_logs_seconds`: (MySQL 8.0+) Defines how long binary log files are retained before being automatically purged. For MySQL 5.7, use `expire_logs_days`.
-
-- **`innodb_buffer_pool_size`:** This is one of the most critical settings for InnoDB performance, defining the amount of memory allocated for caching data and indexes. Adjust this value based on your available RAM.
-
-### 5. Applying Configuration Changes and Restarting
-
-After modifying your `my.cnf` file on the host, you need to restart the MySQL container for the changes to take effect:
+## Connecting
 
 ```bash
-docker restart mysql-server
+# a client session inside the container
+docker exec -it mysql mysql -u shop -p shop
+
+# from the host, through the loopback-published port
+mysql -h 127.0.0.1 -P 3306 -u shop -p shop
 ```
 
-### 6. Entering the Database and Verification
+From another container on the `backend` network, the connection string is `mysql://shop:…@mysql:3306/shop`: the hostname is the container name.
 
-To connect to your MySQL database inside the container:
+Check that the settings took effect:
+
+```sql
+SHOW VARIABLES LIKE 'character_set_server';
+SHOW VARIABLES LIKE 'innodb_buffer_pool_size';
+SHOW BINARY LOGS;
+SELECT NOW(), @@system_time_zone;
+```
+
+## Health checks
+
+"The container is running" doesn't mean "MySQL accepts connections": the first start takes a while. In Compose, a health check makes dependent services wait:
+
+```yaml
+services:
+  mysql:
+    image: mysql:8.4
+    env_file: mysql.env
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/conf.d:/etc/mysql/conf.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  api:
+    image: yourname/shop-api:1.4.2
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
+```
+
+- **`mysqladmin ping`**: succeeds only once the server answers. `-h 127.0.0.1` forces a TCP connection, which isn't available during initialization, so the check can't pass too early.
+- **`start_period: 30s`**: failures during the first 30 seconds don't count against `retries`.
+- **`condition: service_healthy`**: `api` isn't started until MySQL's check passes. Plain `depends_on: [mysql]` only waits for the container to *start*.
+
+## Backups
+
+Don't copy the volume's files while MySQL is running. InnoDB keeps changes in memory and in its logs, so a live file copy is inconsistent and may not start. Use `mysqldump`:
 
 ```bash
-# Enter the mysql container's bash shell
-docker exec -it mysql-server bash
-
-# Then, login to MySQL as root (you'll be prompted for the password)
-mysql -uroot -p
+docker exec mysql sh -c \
+  'exec mysqldump --all-databases --single-transaction --routines --events -uroot -p"$MYSQL_ROOT_PASSWORD"' \
+  | gzip > "backup-$(date +%F).sql.gz"
 ```
 
-Once logged into the MySQL prompt, you can verify your configurations:
+- **`sh -c '…'`**: run inside the container, so `$MYSQL_ROOT_PASSWORD` is expanded from the *container's* environment. The password never appears on your host's command line.
+- **`--single-transaction`**: take a consistent snapshot of InnoDB tables without locking them; the app keeps running during the backup.
+- **`--routines --events`**: include stored procedures and scheduled events, which are skipped by default.
+- **`| gzip`**: SQL dumps compress very well.
 
-- **Check binary logs status:**
+Restoring:
 
-  ```sql
-  SHOW BINARY LOGS;
-  ```
+```bash
+gunzip -c backup-2025-07-13.sql.gz | docker exec -i mysql sh -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"'
+```
 
-- **Check server ID:**
+`-i` connects your pipe to the container's standard input. Schedule the dump nightly with cron, copy it off the machine, and test a restore into a scratch container now and then:
 
-  ```sql
-  SHOW VARIABLES LIKE '%server_id%';
-  ```
+```bash
+docker run -d --name restore-test -e MYSQL_ROOT_PASSWORD=test mysql:8.4
+```
 
-- **Check character set and collation:**
+For large databases, where a dump takes too long, look at Percona XtraBackup or MySQL Shell's dump utilities.
 
-  ```sql
-  SHOW VARIABLES LIKE 'character_set_%';
-  SHOW VARIABLES LIKE 'collation_%';
-  ```
+## Upgrading
 
-- **Check timezone:**
+Within the LTS line (8.4.x to 8.4.y), upgrading is just pulling the new image and recreating the container with the same volume and config. The server upgrades its data dictionary automatically on start (no more `mysql_upgrade` since 8.0.16).
 
-  ```sql
-  SELECT @@GLOBAL.time_zone, @@SESSION.time_zone;
-  SHOW VARIABLES LIKE '%time_zone%';
-  ```
+Between major lines (8.0 → 8.4), take a dump first, read the release notes for removed settings, then change the tag. Downgrades aren't supported: once a newer version has started on the volume, your way back is the dump.
 
-### 7. Additional Best Practices
+## A checklist
 
-- **Security:**
+- Data in a named volume; configuration mounted read-only.
+- Passwords in an env file with `600` permissions, or in Docker/Compose secrets.
+- The app connects as its own user, never root.
+- The port isn't published to the network unless something outside Docker really needs it.
+- A memory limit on the container that's larger than `innodb_buffer_pool_size` plus headroom.
+- Nightly `mysqldump`, copied off the host, restore tested.
 
-  - **Strong Passwords:** Always use complex passwords for all MySQL users.
-
-  - **Least Privilege:** Create dedicated users for specific applications with only the necessary privileges. Avoid using `root` for application connections.
-
-  - **Network Isolation:** Use Docker networks (`docker network create`) to isolate your database container from other services that don't need direct access.
-
-  - **Regular Updates:** Keep your Docker daemon and MySQL images updated to receive the latest security patches.
-
-- **Monitoring:** Implement monitoring solutions (e.g., Prometheus, Grafana) to track MySQL performance metrics within your Docker containers.
-
-- **Backup and Recovery:** Regularly back up your MySQL data (the `mysql_data` volume) and, critically, **test your restore process** to ensure data integrity. Binary logs are essential for point-in-time recovery.
-
-- **Resource Allocation:** In production, consider setting resource limits (CPU, memory) for your MySQL container to prevent it from consuming all host resources.
-
-### 8. Troubleshooting
-
-- **Container Fails to Start:** Check `docker logs mysql-server` for error messages. Common issues include incorrect `MYSQL_ROOT_PASSWORD`, port conflicts, or malformed `my.cnf`.
-
-- **Data Loss:** If you didn't use a persistent volume, your data will be lost when the container is removed. Always use named volumes for databases.
-
-- **Connection Issues:** Ensure the port mapping (`-p`) is correct and no firewall rules are blocking the connection.
-
-### Conclusion
-
-By leveraging Docker for your MySQL deployments, you gain significant advantages in terms of portability, isolation, and simplified management. Adhering to the best practices outlined in this guide, from utilizing named volumes for data persistence and carefully configuring `my.cnf` to prioritizing strong security measures and regular backups will ensure a robust, scalable, and maintainable MySQL environment. Continuously monitor your database performance and keep your Docker images updated to maintain optimal operation and security.
+[Chapter 1.7]({% post_url 2025-07-14-chapter-1-7-docker-redis %}) applies the same approach to Redis, where the default configuration hides a few traps of its own.

@@ -1,5 +1,4 @@
 ---
-layout: project
 title: "CUDA ELM Feature Extraction Benchmark"
 description: "GPU-accelerated Extreme Learning Machine feature-extraction and benchmarking toolkit. Reproducible experiments, modern CUDA/C++ design, and interactive demos for researchers exploring fast ELM variants."
 image: "assets/images/projects/feature-extraction-media.jpg"
@@ -13,9 +12,8 @@ technologies:
   - FastAPI
   - Python
 categories:
-  - C++
-  - GPU
   - AI/ML
+  - GPU
   - Benchmark
 live_url: "https://e-choness.github.io/feature_extraction_cuda_elm"
 github_url: "https://github.com/e-choness/feature_extraction_cuda_elm"

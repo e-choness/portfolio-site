@@ -1,405 +1,301 @@
 ---
-layout: "post"
-title: "Chapter 1.11 - Docker Swarm - Orchestrate Your Containers with Ease"
+title: "Chapter 1.11 - Docker Swarm: From One Host to a Cluster"
 date: "2025-07-17"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
-excerpt: "Docker Swarm, an integrated part of Docker Engine, transforms multiple hosts into a single, powerful cluster. This guide covers core concepts like nodes, services, and tasks, demonstrating how to initialize, expand, and manage your Swarm, deploying multi-service applications with best practices for efficient, scalable, and resilient container orchestration."
+excerpt: "Join three machines into a Docker Swarm cluster, run replicated services behind the routing mesh, and deploy the Compose project from the previous chapters as a stack, with rolling updates, automatic rollback, configs, secrets and the rules for stateful services. Every command and stack key is explained."
 ---
 
-Docker Swarm, powered by SwarmKit, is Docker Engine's native clustering and orchestration solution. As one of Docker's core projects, it's central to providing container cluster services and supporting the broader Docker ecosystem.
+Compose runs an application on **one** host. When that host needs maintenance, or one machine isn't enough, you want a cluster: several hosts acting as one, placing containers wherever there's room and replacing them when a machine dies.
 
-Docker Swarm allows you to transform multiple Docker hosts into a single, large virtual Docker host, enabling the rapid creation of a container cloud platform. Swarm mode includes built-in key-value storage and offers a host of powerful features such as fault-tolerant decentralized design, integrated service discovery, load balancing, routing mesh, dynamic scaling, rolling updates, and secure transport. These capabilities allow native Docker Swarm clusters to effectively compete with orchestrators like Kubernetes.
+**Swarm mode** is the orchestrator built into Docker Engine. There's nothing extra to install, it reads the same Compose file format, and a working cluster takes about three commands. It's far simpler than Kubernetes; you give up Kubernetes' enormous ecosystem in exchange. For small and medium setups that's often the right trade.
 
-Before diving into Docker Swarm, let's understand some fundamental concepts.
+## The concepts
 
-## Core Concepts
+### Nodes: managers and workers
 
-### Nodes
+Every Docker host in a swarm is a **node**.
 
-Any Docker-enabled host can either initialize a new Swarm cluster or join an existing one, thereby becoming a **node** within that Swarm. Nodes are categorized into two types: **manager nodes** and **worker nodes**.
-
-- **Manager Nodes**: These nodes are responsible for managing the Swarm cluster. Most `docker swarm` commands can only be executed on manager nodes (the `docker swarm leave` command is an exception and can be run on worker nodes). A Swarm cluster can have multiple manager nodes, but only one is elected as the **leader** using the Raft consensus protocol. The leader is responsible for making all scheduling decisions and maintaining the desired state of the cluster.
-- **Worker Nodes**: These are the execution nodes for tasks. Manager nodes dispatch **services** to worker nodes for execution. By default, manager nodes also act as worker nodes, meaning they can run tasks. However, you can configure services to run exclusively on worker nodes or even specific manager nodes.
+- **Managers** hold the cluster state and schedule work. They replicate that state among themselves with the **Raft** consensus protocol, and one of them is the elected **leader**.
+- **Workers** just run containers. By default, managers run containers too.
 
 ```mermaid
 flowchart TB
-    subgraph managers_zone[" "]
-        direction TB
-        state_store["Internal distributed state store"]
-        
-        subgraph managers[" "]
-            direction LR
-            M1["Manager"]
-            M2["Manager"]
-            M3["Manager"]
-        end
-        
-        state_store --- M1
-        state_store --- M2
-        state_store --- M3
-        
-        M1 <--> M2
-        M2 <--> M3
-    end
-    
-    subgraph workers_zone[" "]
-        direction LR
-        W1["Worker"]
-        W2["Worker"]
-        W3["Worker"]
-        W4["Worker"]
-        W5["Worker"]
-        W6["Worker"]
-    end
-    
-    M1 --> W1
-    M1 --> W2
-    M2 --> W3
-    M2 --> W4
-    M2 --> W5
-    M3 --> W4
-    M3 --> W5
-    M3 --> W6
+  subgraph M["Managers: Raft replicated state"]
+    direction LR
+    M1["manager-1<br/>(leader)"] <--> M2[manager-2]
+    M2 <--> M3[manager-3]
+    M1 <--> M3
+  end
+  M1 -- "schedules tasks" --> W1[worker-1]
+  M1 --> W2[worker-2]
+  M1 --> W3[worker-3]
 ```
 
-### Services and Tasks
+Raft needs a **majority** of managers to agree on any change, which gives the rule for how many to run:
 
-- **Task**: In Swarm, a **task** is the smallest schedulable unit, essentially representing a single running container.
-- **Service**: A **service** is a collection of tasks that define the properties and behavior of your applications within the Swarm. Services come in two primary modes:
-  - **Replicated Services**: These services run a specified number of identical tasks across various worker nodes, distributing the workload.
-  - **Global Services**: These services run exactly one task on _every_ available worker node in the Swarm, suitable for agents or monitoring tools that need to be present on all nodes.
+| Managers | Can lose | Notes |
+|---|---|---|
+| 1 | 0 | fine for a lab; the cluster can't change while it's down |
+| 3 | 1 | the usual production choice |
+| 5 | 2 | larger clusters |
 
-You specify the service mode using the `--mode` parameter with the `docker service create` command.
+Always use an **odd** number: 4 managers tolerate no more failures than 3, and give you one more machine that can break. If a majority is lost, running containers keep running, but nothing can be scheduled or changed until quorum returns.
 
-```mermaid
-flowchart LR
-    subgraph service["Service"]
-        direction TB
-        replicas["3 nginx replicas"]
-        manager["Swarm Manager"]
-        replicas --- manager
-    end
+### Services and tasks
 
-    subgraph node1["available node"]
-        direction LR
-        task1["nginx.1"]
-        container1["nginx:latest"]
-        task1 --- container1
-    end
+You don't start containers in a swarm; you declare a **service** ("run 3 replicas of `nginx:1.27`, published on port 80"), and the managers make it true. Each replica is a **task**, and each task runs one container on some node. If a node dies, its tasks are rescheduled elsewhere to get back to 3.
 
-    subgraph node2["available node"]
-        direction LR
-        task2["nginx.2"]
-        container2["nginx:latest"]
-        task2 --- container2
-    end
+- **Replicated** services run a set number of tasks wherever there's capacity.
+- **Global** services run exactly one task on **every** node (managers included, unless constrained), which suits monitoring agents and log shippers.
 
-    subgraph node3["available node"]
-        direction LR
-        task3["nginx.3"]
-        container3["nginx:latest"]
-        task3 --- container3
-    end
+## 1. Build a lab cluster
 
-    service -->|"task"| node1
-    service -->|"task"| node2
-    service -->|"task"| node3
-```
-
-## Setting Up a Docker Swarm Cluster
-
-For this guide, we'll use `docker-machine` to simulate our Swarm hosts. While `docker-machine` is less commonly used for production Swarm deployments today (as most setups involve cloud VMs or bare metal servers directly), it's excellent for demonstration and learning.
-
-### Initialize the Manager Node
-
-First, let's create our manager node and initialize the Swarm cluster on it.
+Three VMs with Docker, using the cloud-init file from [Chapter 1.10]({% post_url 2025-07-16-chapter-1-10-docker-machine %}):
 
 ```bash
-# Create a virtual machine for the manager
-docker-machine create -d virtualbox manager
-
-# Configure your shell to connect to the manager's Docker daemon
-eval $(docker-machine env manager)
-
-# SSH into the manager node and initialize the Swarm
-# Replace 192.168.99.101 with the IP address of your manager machine.
-# You can find this IP by running `docker-machine ip manager`.
-docker-machine ssh manager 'docker swarm init --advertise-addr $(docker-machine ip manager)'
+for n in manager worker-1 worker-2; do
+  multipass launch --name "$n" --cpus 2 --memory 2G --disk 10G --cloud-init docker.yaml
+done
+multipass list          # note each VM's IPv4 address
 ```
 
-The `docker swarm init` command automatically makes the node where it's executed a manager node. The output will provide a `docker swarm join` command for adding worker nodes. **Copy this command, as you'll need it for the worker nodes.**
+Nodes talk to each other on three ports, which must be open between them (not to the internet):
 
-**Note:** Always use the actual IP address of the manager node for `--advertise-addr`. This ensures other nodes can correctly connect to the manager.
+| Port | Protocol | Used for |
+|---|---|---|
+| 2377 | TCP | cluster management (joining, Raft) |
+| 7946 | TCP + UDP | node-to-node gossip, discovering who's alive |
+| 4789 | UDP | overlay network traffic (VXLAN) |
 
-### Add Worker Nodes
+### Initialize and join
 
-After initializing the manager, create additional `docker-machine` instances to act as worker nodes and join them to the Swarm.
+On the manager:
 
 ```bash
-# Create a virtual machine for worker1
-docker-machine create -d virtualbox worker1
-
-# Configure your shell to connect to worker1's Docker daemon
-eval $(docker-machine env worker1)
-
-# SSH into worker1 and join the swarm using the command from the manager's initialization output
-# Replace the token and IP with the actual values from your manager's output.
-docker-machine ssh worker1 'docker swarm join --token SWMTKN-1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 192.168.99.101:2377'
-
-# Repeat for worker2
-docker-machine create -d virtualbox worker2
-eval $(docker-machine env worker2)
-docker-machine ssh worker2 'docker swarm join --token SWMTKN-1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 192.168.99.101:2377'
+multipass exec manager -- docker swarm init --advertise-addr 192.168.64.10
 ```
 
-You'll see a message like "This node joined a swarm as a worker." confirming the successful addition.
+- **`swarm init`**: turn this Engine into a single-node swarm, with itself as the leader.
+- **`--advertise-addr`**: the address other nodes should use to reach this manager. Always set it on machines with more than one network interface, or Swarm may advertise the wrong one.
 
-## Inspecting the Swarm Cluster
-
-Now that we have a basic Swarm cluster (one manager, two workers), let's inspect its status.
-
-**Ensure your shell is connected to the manager node:**
+The output contains a ready-made join command with a secret **token**. Run it on each worker:
 
 ```bash
-eval $(docker-machine env manager)
+multipass exec worker-1 -- docker swarm join --token SWMTKN-1-3xqa… 192.168.64.10:2377
+multipass exec worker-2 -- docker swarm join --token SWMTKN-1-3xqa… 192.168.64.10:2377
 ```
 
-### View Swarm Nodes
+Lost the command? `docker swarm join-token worker` prints it again (`join-token manager` for adding managers). Treat these tokens like passwords: anyone holding one can join a machine to your cluster.
 
-To see all nodes in your Swarm and their status:
+From here on, run commands against the manager. A Docker context saves typing `multipass exec` every time:
 
 ```bash
+docker context create swarm --docker "host=ssh://deploy@192.168.64.10"
+docker context use swarm
 docker node ls
 ```
 
-You should see an output similar to this (Engine Version will be much newer):
-
-```bash
-ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
-<manager-id> * manager             Ready               Active              Leader              26.1.4
-<worker1-id>                  worker1             Ready               Active                                  26.1.4
-<worker2-id>                  worker2             Ready               Active                                  26.1.4
+```text
+ID                            HOSTNAME   STATUS   AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+p1l3k9…      *                manager    Ready    Active         Leader           27.3.1
+a8d2x7…                       worker-1   Ready    Active                          27.3.1
+q0m5c1…                       worker-2   Ready    Active                          27.3.1
 ```
 
-- The `*` next to the manager ID indicates it's the current node you're connected to.
-- `Ready` status means the node is healthy and part of the Swarm.
-- `Active` availability means the node is available for task scheduling.
-- `Leader` indicates the current manager leader.
+- **`STATUS Ready`**: the node is reachable and healthy.
+- **`AVAILABILITY Active`**: it accepts new tasks. `Drain` means it's being emptied for maintenance.
+- **`MANAGER STATUS`**: `Leader`, `Reachable` (another manager), or blank for workers.
 
-### Deploying a Service
-
-Let's deploy a simple Nginx service to our Swarm. We'll use a recent and stable Nginx image.
+## 2. Run a service
 
 ```bash
-docker service create --replicas 3 -p 80:80 --name nginx nginx:stable-alpine
-```
-
-- `--replicas 3`: This tells Swarm to maintain 3 instances of the Nginx container. Swarm will distribute these across your available worker (and manager, by default) nodes.
-- `-p 80:80`: Publishes port 80 of the service to port 80 on any node running a task for this service. Swarm's routing mesh handles load balancing requests across the service's tasks.
-- `--name nginx`: Assigns the name "nginx" to our service.
-- `nginx:stable-alpine`: Specifies the Docker image to use for the service. `stable-alpine` is a good choice for production due to its small size and stability.
-
-You'll see progress as Swarm deploys the tasks.
-
-### View Services
-
-To list all services running in your Swarm:
-
-```bash
+docker service create --name web --replicas 3 -p 80:80 nginx:1.27
 docker service ls
+docker service ps web
 ```
 
-Output:
+```text
+ID       NAME    IMAGE        NODE       DESIRED STATE   CURRENT STATE
+x1…      web.1   nginx:1.27   worker-1   Running         Running 20 seconds ago
+x2…      web.2   nginx:1.27   worker-2   Running         Running 20 seconds ago
+x3…      web.3   nginx:1.27   manager    Running         Running 20 seconds ago
+```
+
+- **`--replicas 3`**: the desired state. Swarm spreads the tasks across nodes.
+- **`-p 80:80`**: publish through the **routing mesh**. *Every* node now listens on port 80, including nodes running no `web` task, and forwards each connection to a healthy task anywhere in the cluster. Point a load balancer or DNS at all nodes, and any of them can take traffic.
+
+```mermaid
+flowchart LR
+  c([Client]) --> n1[worker-1 :80]
+  c --> n2[worker-2 :80]
+  c --> n3[manager :80]
+  subgraph mesh["Routing mesh (ingress network)"]
+    n1 & n2 & n3 --> vip(["service VIP<br/>load-balances"])
+  end
+  vip --> t1[web.1]
+  vip --> t2[web.2]
+  vip --> t3[web.3]
+```
+
+### Scaling, updating, rolling back
 
 ```bash
-ID                  NAME                MODE                REPLICAS            IMAGE                 PORTS
-<service-id>        nginx               replicated          3/3                 nginx:stable-alpine   *:80->80/tcp
+docker service scale web=5
+
+docker service update \
+  --image nginx:1.27.2 \
+  --update-parallelism 1 \
+  --update-delay 10s \
+  --update-failure-action rollback \
+  web
+
+docker service rollback web
+docker service logs -f web
 ```
 
-The `3/3` under `REPLICAS` indicates that 3 desired tasks are running out of 3.
+- **`scale web=5`**: change the desired count; Swarm adds or removes tasks to match.
+- **`service update --image`**: a **rolling update**. With `--update-parallelism 1` and `--update-delay 10s`, it replaces one task, waits 10 seconds, then moves to the next, so most replicas keep serving throughout.
+- **`--update-failure-action rollback`**: if new tasks fail to start, Swarm automatically goes back to the previous version.
+- **`service rollback`**: the manual version, which returns to the service's previous definition.
+- **`service logs`**: the logs of every task, from whichever node each runs on, in one stream.
 
-### View Service Tasks
-
-To see which nodes are running the tasks for a specific service:
+Take a node out for maintenance by draining it: Swarm moves its tasks elsewhere, and `active` brings it back:
 
 ```bash
-docker service ps nginx
+docker node update --availability drain worker-1
+docker node update --availability active worker-1
 ```
 
-Output:
+## 3. Deploy a whole application as a stack
 
-```bash
-ID                  NAME                IMAGE                 NODE                DESIRED STATE       CURRENT STATE           ERROR               PORTS
-<task-id-1>         nginx.1             nginx:stable-alpine   worker1             Running             Running X minutes ago
-<task-id-2>         nginx.2             nginx:stable-alpine   worker2             Running             Running X minutes ago
-<task-id-3>         nginx.3             nginx:stable-alpine   manager             Running             Running X minutes ago
-```
-
-This shows which node each task of the `nginx` service is running on.
-
-### Accessing Service Logs
-
-To view the aggregated logs for all tasks belonging to a service:
-
-```bash
-docker service logs nginx
-```
-
-### Removing a Service
-
-To remove a service from the Swarm:
-
-```bash
-docker service rm nginx
-```
-
-This will stop and remove all tasks associated with the `nginx` service.
-
-## Deploying Multiple Services with Docker Stack
-
-Just as you use `docker-compose.yml` to define and manage multiple interdependent containers, in Docker Swarm, you use a Compose file (often named `docker-compose.yml` or a more specific `stack.yml`) with `docker stack` commands to deploy multiple interconnected services. This allows you to deploy entire applications as a single unit.
-
-Let's illustrate by deploying a WordPress application, which typically involves both a WordPress service and a database service.
-
-Create a file named `docker-compose.yml` (or `stack.yml`) with the following content:
+A **stack** is a Compose file deployed to a swarm. Here's the proxy/API/Redis project from [Chapter 1.9]({% post_url 2025-07-16-chapter-1-9-docker-compose %}), adapted for a cluster, as `stack.yml`:
 
 ```yaml
-version: "3.9" # Use the latest Compose file format for Swarm compatibility
-
 services:
-  wordpress:
-    image: wordpress:latest # Use latest for demonstration, consider a specific version for production
+  proxy:
+    image: nginx:1.27
     ports:
       - "80:80"
-    networks:
-      - overlay
-    environment:
-      WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress_password # Use a strong, unique password in production
+    configs:
+      - source: nginx_conf
+        target: /etc/nginx/conf.d/default.conf
     deploy:
-      mode: replicated
+      replicas: 2
+
+  api:
+    image: yourname/shop-api:1.0
+    environment:
+      REDIS_URL: redis://redis:6379
+    deploy:
       replicas: 3
-      restart_policy: # Best practice: Define restart policies for robustness
-        condition: on_failure
-      update_config: # Best practice: Control rolling updates
+      update_config:
         parallelism: 1
         delay: 10s
-        failure_action: rollback
         order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
 
-  db:
-    image: mysql:8.0 # Use a recent stable MySQL version
-    networks:
-      - overlay
+  redis:
+    image: redis:8.0
+    command: ["redis-server", "--appendonly", "yes"]
     volumes:
-      - db-data:/var/lib/mysql # Persist database data
-    environment:
-      MYSQL_ROOT_PASSWORD: secure_root_password # Change this to a strong password!
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress_password # Must match the wordpress service's password
+      - redis-data:/data
     deploy:
       placement:
-        constraints: [node.role == manager] # Pin DB to manager for simplicity, but consider dedicated storage for production
-      restart_policy:
-        condition: on_failure
-    # Best practice: Don't expose database ports directly to the outside unless absolutely necessary.
-    # It's better to access it internally by other services in the overlay network.
+        constraints:
+          - node.labels.redis == true
 
-  visualizer:
-    image: dockersamples/visualizer:latest # Use latest for demonstration
-    ports:
-      - "8080:8080"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock" # Allows Visualizer to read Docker events
-    deploy:
-      placement:
-        constraints: [node.role == manager] # Pin Visualizer to manager
-      restart_policy:
-        condition: on_failure
+configs:
+  nginx_conf:
+    file: ./nginx/default.conf
 
 volumes:
-  db-data: # Define the named volume for database persistence
-
-networks:
-  overlay: # Define the overlay network for inter-service communication
-    driver: overlay
-    attachable: true # Allows standalone containers to join if needed
+  redis-data:
 ```
 
-**Key Enhancements and Best Practices:**
+What's different from the Compose version, and why:
 
-- **`version: '3.9'`**: Using the latest Compose file format (3.9) ensures compatibility with the latest Docker Swarm features.
-- **Specific Image Versions**: While `latest` is used for demonstration, in production, always pin to a specific, immutable image version (e.g., `wordpress:6.5.4-php8.2-apache`, `mysql:8.0.37`). This prevents unexpected breaking changes.
-- **Strong Passwords**: Emphasize using strong, unique passwords for production deployments.
-- **`restart_policy`**: Crucial for service resilience. `on_failure` ensures a task is restarted if it exits with a non-zero status.
-- **`update_config`**: Essential for controlled rolling updates.
-  - `parallelism`: How many tasks to update at once. `1` is safest.
-  - `delay`: Pause between updating tasks.
-  - `failure_action`: What to do if an update fails (`rollback` or `continue`).
-  - `order`: Whether to `start-first` (new task before stopping old) or `stop-first`. `start-first` provides better uptime during updates.
-- **Named Volumes (`db-data`)**: Used for persistent storage of database data. This is critical to prevent data loss if the database container is restarted or moved.
-- **Overlay Networks**:
-  - `driver: overlay`: The standard network driver for Swarm services, enabling communication across nodes.
-  - `attachable: true`: Allows standalone containers (not part of a service) to join this network, which can be useful for debugging.
-- **`placement.constraints`**: Used to control where services are deployed.
-  - `node.role == manager`: This pins the `db` and `visualizer` services to run only on manager nodes. While convenient for this example, for a highly available database in production, you'd typically use dedicated storage solutions (e.g., cloud block storage, shared file systems, or a database cluster) rather than pinning to a single manager node. The Visualizer is fine on a manager.
-- **No Exposed DB Ports**: By default, the `db` service doesn't expose any ports to the host (`ports:` section is omitted). This is a security best practice, as the `wordpress` service can communicate with `db` directly over the `overlay` network using its service name (`db`).
-- **Docker Samples Visualizer**: The `visualizer` service provides a web-based interface (accessible on port 8080 of a manager node) to visualize your Swarm cluster's services and their placement.
+- **`image: yourname/shop-api:1.0` instead of `build: .`**: Swarm doesn't build. Every node pulls images from a registry, so build and push first: `docker build -t yourname/shop-api:1.0 . && docker push yourname/shop-api:1.0`.
+- **`configs:` instead of a bind mount for `default.conf`**: a bind mount points at a file on *whichever node* the task lands on, and the file won't be there. A **config** is stored in the cluster (in the managers' Raft store) and delivered into the container on any node. It's read-only and meant for non-secret files.
+- **`deploy:`**: Swarm-only settings (plain `docker compose up` ignores most of them):
+  - `replicas`: how many tasks.
+  - `update_config`: the rolling-update behaviour from section 2, per service. `order: start-first` starts the new task *before* stopping the old one, so capacity never dips during an update.
+  - `restart_policy: condition: on-failure`: restart a task that exits with an error. (The valid values are `none`, `on-failure` and `any`, with a hyphen.)
+  - `placement.constraints`: only schedule `redis` on nodes with the label `redis=true`.
+- **No `depends_on` with conditions**: Swarm starts services independently and restarts failing tasks until their dependencies are up. That's why the app from Chapter 1.9 waits for its Redis connection before listening.
+- **Service discovery by VIP**: in a stack, `api` resolves to a single **virtual IP** that load-balances across all `api` tasks. Unlike the Compose setup, Nginx doesn't need a reload after scaling.
 
-Save this `docker-compose.yml` file on your **manager node**.
+### Stateful services need a home
 
-### Deploying the Stack
-
-To deploy the services defined in your `docker-compose.yml` file as a stack:
+The `redis-data` volume is created on **the node where the task runs**; volumes don't move between nodes. If `redis` were rescheduled to another node, it would start with an empty volume there. That's why it's pinned: label the one node that should hold the data.
 
 ```bash
-docker stack deploy -c docker-compose.yml wordpress
+docker node update --label-add redis=true worker-2
 ```
 
-- `docker stack deploy`: The command for deploying multi-service applications on Swarm.
-- `-c docker-compose.yml`: Specifies the Compose file to use.
-- `wordpress`: This is the **stack name**. All services defined in the Compose file will be prefixed with this name (e.g., `wordpress_wordpress`, `wordpress_db`, `wordpress_visualizer`).
+For real persistence across node failures, either run the database outside the swarm (a managed service, or a dedicated host) or use a volume driver backed by shared or replicated storage.
 
-### Viewing Stacks
-
-To list all deployed stacks in your Swarm:
+### Deploy it
 
 ```bash
-docker stack ls
+docker stack deploy -c stack.yml shop
+docker stack services shop
+docker stack ps shop
 ```
 
-Output:
+- **`stack deploy -c stack.yml shop`**: create or update everything in the file, named with the `shop_` prefix (`shop_api`, `shop_redis`). It also creates an **overlay network**, `shop_default`, spanning every node, so tasks reach each other by service name across machines.
+- **Re-running the same command** after editing the file applies the changes, using each service's `update_config`.
+- **`stack services`** shows replica counts per service; **`stack ps`** shows every task and its node.
+
+## 4. Secrets
+
+Passwords shouldn't live in stack files or environment variables, which show up in `docker inspect`. Swarm secrets are encrypted in the managers' store and mounted as files, in memory, only into the services that ask for them:
 
 ```bash
-NAME                SERVICES
-wordpress           3
+openssl rand -base64 32 | docker secret create redis_password -
 ```
 
-### Removing a Stack
+```yaml
+services:
+  redis:
+    image: redis:8.0
+    command: ["sh", "-c", "exec redis-server --appendonly yes --requirepass \"$$(cat /run/secrets/redis_password)\""]
+    secrets:
+      - redis_password
 
-To remove all services and networks associated with a stack:
+secrets:
+  redis_password:
+    external: true
+```
+
+- **`docker secret create redis_password -`**: create a secret from standard input (the `-`), so it never touches disk or your shell history.
+- **`secrets:` on the service**: the secret appears in the container as the file `/run/secrets/redis_password`.
+- **`$$(cat …)`**: `$$` escapes the `$` from Compose's own variable substitution, so the container's shell sees `$(cat …)` and reads the file at startup.
+- **`external: true`**: the secret already exists in the cluster; the stack file only references it.
+
+The `api` service then needs the same secret: add `secrets: [redis_password]` to it and have the app read `/run/secrets/redis_password` when it builds its Redis URL. Many official images read secrets from files directly through `*_FILE` variables, for example `MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root`.
+
+## 5. Tearing down
 
 ```bash
-docker stack rm wordpress
+docker stack rm shop              # services, networks and configs
+docker volume ls                  # volumes remain, on each node where they were created
+docker swarm leave                # on a worker; add --force on the last manager
 ```
 
-Output:
+`stack rm` deliberately leaves volumes alone. Remove them per node with `docker volume rm shop_redis-data` once you're sure.
 
-```bash
-Removing service wordpress_db
-Removing service wordpress_visualizer
-Removing service wordpress_wordpress
-Removing network wordpress_overlay
-Removing network wordpress_default
-```
+## Troubleshooting
 
-**Important Note on Data Volumes**: The `docker stack rm` command **does not remove** any data volumes created by the services in the stack (e.g., `db-data`). If you wish to remove these volumes, you must do so explicitly using `docker volume rm`:
+| Symptom | Check |
+|---|---|
+| Tasks stuck in `Pending` | No node satisfies the constraints or has enough resources: `docker service ps --no-trunc <service>` shows the reason. |
+| Tasks stuck in `Preparing` / pull errors | Workers can't pull the image: registry login (`--with-registry-auth` on deploy) or the image doesn't exist. |
+| Published port unreachable on some nodes | Ports 7946 and 4789 blocked between nodes, so the routing mesh can't forward. |
+| Data "disappeared" after a restart | The task moved to another node with its own empty volume; add a placement constraint. |
+| `The swarm does not have a leader` | Majority of managers lost; restore them, or rebuild from one with `docker swarm init --force-new-cluster`. |
 
-```bash
-docker volume ls # To list all volumes
-docker volume rm wordpress_db-data # Assuming the volume was named wordpress_db-data by the stack
-```
+[Chapter 1.12]({% post_url 2025-07-17-chapter-1-12-docker-multistage %}) closes the chapter by shrinking the images all these nodes pull: multi-stage builds.

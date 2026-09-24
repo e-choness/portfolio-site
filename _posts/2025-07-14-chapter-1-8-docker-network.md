@@ -1,381 +1,228 @@
 ---
-layout: "post"
-title: "Chapter 1.8 - Understanding Docker Network Modes"
+title: "Chapter 1.8 - Docker Networking: Bridge, User-Defined Networks, Host, Container and None"
 date: "2025-07-14"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
-excerpt: "Docker provides several network modes that determine how containers connect to the host machine and to each other. Understanding these modes is crucial for designing robust and efficient containerized applications."
+excerpt: "How containers actually get an IP address, find each other by name and reach the outside world, and when to use each of Docker's network modes. Includes a frontend/backend isolation setup, what -p really does to your firewall, and hands-on checks for each mode."
 ---
 
-## Understanding Docker Network Modes
+Every chapter so far has quietly relied on networking: Nginx reaching `app:3000`, an API connecting to `mysql:3306`. This chapter opens that up: how a container gets an address, how names resolve, what publishing a port really does, and when to pick each network mode.
 
-Docker provides several network modes that determine how containers connect to the host machine and to each other. Understanding these modes is crucial for designing robust and efficient containerized applications.
+| Mode | What the container gets | Typical use |
+|---|---|---|
+| **default `bridge`** | its own IP on a private network; no name resolution | quick one-off containers |
+| **user-defined bridge** | its own IP, **DNS by container name**, isolation per network | almost everything on one host |
+| **`host`** | no network isolation; shares the host's interfaces | network tools, extreme performance needs (Linux only) |
+| **`container:<name>`** | shares another container's network stack | sidecars, debugging |
+| **`none`** | only a loopback interface | jobs that must have no network |
 
-### 1. Bridge Mode (Default)
+(`overlay` for multi-host clusters appears in [Chapter 1.11]({% post_url 2025-07-17-chapter-1-11-docker-swarm %}); `macvlan`, which puts containers directly on your LAN, is for special cases.)
 
-The Bridge network mode is the default and most commonly used networking option for Docker containers.
+## The default bridge: how it works
 
-How it Works:
-
-When the Docker daemon starts, it creates a virtual bridge named `docker0` on the host machine. All Docker containers launched on this host by default connect to this virtual bridge. This virtual bridge functions similarly to a physical network switch, connecting all containers on the host machine into a Layer 2 network.
-
-- Each new container is assigned an IP address from the `docker0` subnet.
-- The `docker0` bridge's IP address is set as the default gateway for the containers.
-- Docker creates a pair of virtual Ethernet devices called `veth pair`. One end of the `veth pair` (named `eth0`) is placed inside the new container, acting as the container's network interface. The other end, typically named `vethxxxx` (e.g., `vethabc123`), remains on the host and is attached to the `docker0` bridge.
-
-This setup allows containers to communicate with each other on the same host and with the outside world (via NAT).
-
-Port Publishing (-p / --publish):
-
-When you use `docker run -p <host_port>:<container_port> (or --publish)`, Docker automatically configures Destination Network Address Translation (DNAT) rules in the host's iptables. These rules forward incoming traffic from the specified host port to the corresponding port on the container, making the container's service accessible from outside the host. You can inspect these rules using `sudo iptables -t nat -vnL`.
-
-Visual Representation:
+When Docker starts, it creates a virtual switch called **`docker0`** on the host, with a private subnet, `172.17.0.0/16` by default. Each container started without `--network` is plugged into it:
 
 ```mermaid
 flowchart TB
-
     subgraph HOST["host"]
         direction TB
-
-        subgraph D1["docker1"]
-            D1ETH["eth0<br/>172.12.0.2/24"]
+        subgraph D1["container 1"]
+            D1ETH["eth0<br/>172.17.0.2/16"]
         end
-
-        subgraph D2["docker2"]
-            D2ETH["eth0<br/>172.12.0.3/24"]
+        subgraph D2["container 2"]
+            D2ETH["eth0<br/>172.17.0.3/16"]
         end
-
-        subgraph NET["Docker bridge network"]
-            V1["veth*"]
-            V2["veth*"]
-            DOCKER0["docker0<br/>172.12.0.2/24"]
+        subgraph NET["docker0 bridge"]
+            V1["veth…"]
+            V2["veth…"]
+            DOCKER0["docker0<br/>172.17.0.1/16 (gateway)"]
         end
-
-        ETH0["eth0<br/>10.11.55.5/24"]
-
+        ETH0["host eth0<br/>10.11.55.5/24"]
         D1ETH <-->|"veth pair"| V1
         D2ETH <-->|"veth pair"| V2
-
         V1 --> DOCKER0
         V2 --> DOCKER0
-
-        DOCKER0 -->|"IP forwarding"| ETH0
+        DOCKER0 -->|"NAT (masquerade)"| ETH0
     end
 ```
 
-**Demonstration:**
+- Each container gets a **veth pair**: a virtual cable with one end inside the container (appearing as `eth0`) and the other end on the host, plugged into `docker0`.
+- The container's default gateway is `docker0` itself, `172.17.0.1`.
+- Outbound traffic is **NATed** through the host's real interface, so the internet sees the host's IP.
 
-1. Run Containers in Default Bridge Mode:
+See it for yourself:
 
-   By default, if you don't specify the `--network` parameter, Docker uses the bridge network mode. We'll use a basic alpine image for these examples, which is small and common.
+```bash
+docker run -d --name b1 alpine sleep 3600
+docker run -d --name b2 alpine sleep 3600
+docker exec b1 ip addr show eth0       # 172.17.0.2
+docker exec b1 ip route                # default via 172.17.0.1
+docker exec b1 ping -c 2 172.17.0.3    # works by IP…
+docker exec b1 ping -c 2 b2            # …but not by name: "bad address 'b2'"
+```
 
-   ```bash
-   docker run -d --name docker_bri1 alpine sleep 3600
-   docker run -d --name docker_bri2 alpine sleep 3600
-   ```
+That last line is the default bridge's big limitation: **no DNS between containers**. It exists mainly for backward compatibility. For anything with more than one container, use a user-defined network.
 
-   - `docker run -d`: Runs the container in detached mode (in the background).
-   - `--name`: Assigns a readable name to the container.
-   - `alpine`: The Docker image to use.
-   - `sleep 3600`: Keeps the container running for 1 hour.
+### What `-p` actually does
 
-2. Inspect the docker0 Bridge (on the host):
+Publishing a port (`-p 8080:80`) makes Docker add NAT rules to the host's firewall (iptables or nftables): traffic arriving at host port 8080 is rewritten to the container's IP and port 80. You can see them with `sudo iptables -t nat -L DOCKER -n`.
 
-   You can view the docker0 bridge and connected veth interfaces using Linux network tools.
+This has a consequence that surprises many people: **those rules sit in front of host firewalls like `ufw` and firewalld.** `ufw deny 8080` does *not* block a port Docker has published; the traffic is NATed to the container before `ufw`'s rules ever see it. So:
 
-   ```bash
-   # You might need to install bridge-utils and net-tools if not already present
-   # For Debian/Ubuntu: sudo apt-get update && sudo apt-get install bridge-utils net-tools
-   # For CentOS/RHEL: sudo yum install bridge-utils net-tools
+- Publish only what must be reachable from outside.
+- Bind to a specific address when you only need local access: `-p 127.0.0.1:8080:80`.
+- For containers that only talk to each other, don't publish at all. They don't need it on a shared network.
 
-   sudo brctl show
-   ```
+## User-defined bridge networks: the one you'll use
 
-   This command shows the `docker0` bridge and the `veth` interfaces (e.g., `vethxxxx`) that connect your containers to it.
+```bash
+docker network create backend
+docker run -d --name api   --network backend alpine sleep 3600
+docker run -d --name cache --network backend alpine sleep 3600
+docker exec api ping -c 2 cache
+# PING cache (172.19.0.3): 56 data bytes
+# 64 bytes from 172.19.0.3: seq=0 ttl=64 time=0.081 ms
+```
 
-3. Inspect Container Network Configuration:
+What you gain over the default bridge:
 
-   Access one of the containers and check its network settings.
+- **DNS by container name.** Docker runs an embedded DNS server (at `127.0.0.11` inside each container) that resolves container names, and network aliases, to their current IPs. IPs change when containers are recreated; names don't. That's why connection strings use `mysql:3306`, never an IP.
+- **Isolation between networks.** Containers on different user-defined networks can't reach each other at all, which gives you a simple way to separate tiers.
+- **Live attach and detach.** `docker network connect` / `disconnect` changes a running container's networks without restarting it.
 
-   ```bash
-   docker exec -it docker_bri1 sh
-   ```
+### Isolating tiers
 
-   Inside the `docker_bri1` container, execute:
+A container can be on several networks at once. That lets you build a front door that only the proxy passes through:
 
-   ```bash
-   / ip a
-   / ip r
-   ```
+```mermaid
+flowchart LR
+  u([Internet]) -- ":443 published" --> proxy
+  subgraph FE["network: frontend"]
+    proxy[nginx]
+    api1[api]
+  end
+  subgraph BE["network: backend"]
+    api2[api]
+    db[(mysql)]
+    cache[(redis)]
+  end
+  proxy --> api1
+  api1 -. "same container,<br/>on both networks" .- api2
+  api2 --> db
+  api2 --> cache
+```
 
-   - `ip a`: Shows network interfaces and assigned IP addresses (e.g., `eth0`).
-   - `ip r`: Displays the routing table, showing `docker0`'s IP as the default gateway.
+```bash
+docker network create frontend
+docker network create backend
 
-   Type `exit` to leave the container's shell.
+docker run -d --name db    --network backend  -e MYSQL_ROOT_PASSWORD=… mysql:8.4
+docker run -d --name api   --network backend  yourname/api:1.4.2
+docker network connect frontend api
+docker run -d --name proxy --network frontend -p 443:443 nginx:1.27
+```
 
-**Custom Bridge Networks (Recommended for Multi-Container Communication):**
+- **`api`** is on both networks: Nginx can reach it, and it can reach the database.
+- **`proxy`** is only on `frontend`: even if Nginx is compromised, `db` isn't resolvable or routable from it.
+- **`db`** publishes no port and sits only on `backend`: the only way in is through `api`.
 
-While the default `bridge` network allows containers on the same host to communicate by their IP addresses, using **custom bridge networks** is the highly recommended approach for inter-container communication. Custom networks provide better isolation, automatic DNS resolution for container names, and easier management compared to the legacy `--link` parameter.
+Compose ([Chapter 1.9]({% post_url 2025-07-16-chapter-1-9-docker-compose %})) creates a network like this for every project automatically, which is why services in a Compose file can reach each other by service name with no setup.
 
-**Demonstration with Custom Bridge Network:**
+### Inspecting networks
 
-1. Create a New Custom Docker Network:
+{% raw %}
+```bash
+docker network ls                                  # all networks
+docker network inspect backend                     # subnet, gateway, and every attached container with its IP
+docker inspect -f '{{range $k, $v := .NetworkSettings.Networks}}{{$k}}={{$v.IPAddress}} {{end}}' api
+```
+{% endraw %}
 
-   This creates a new, isolated bridge network.
+The last command prints every network the `api` container is on, with its IP on each: `backend=172.19.0.3 frontend=172.20.0.2`.
 
-   ```bash
-   docker network create -d bridge my-net
-   ```
+## Host mode: no network isolation
 
-   - `-d bridge`: Specifies the network driver as `bridge`. Other drivers like `overlay` (for Docker Swarm) exist, but `bridge` is for single-host setups.
+```bash
+docker run -d --name h1 --network host nginx:1.27
+curl -I http://localhost:80        # served directly on the host's port 80, no -p needed
+```
 
-2. **Run Containers and Connect to the New `my-net` Network:**
-
-   ```bash
-   docker run -it --rm --name busybox1 --network my-net busybox sh
-   ```
-
-   - `--rm`: Automatically removes the container when it exits.
-   - `busybox`: A very small image useful for testing.
-
-   Open a **new terminal** and run another container, connecting it to the _same_ `my-net` network:
-
-   ```bash
-   docker run -it --rm --name busybox2 --network my-net busybox sh
-   ```
-
-3. Verify Container Connection:
-
-   In a third terminal, list your running containers:
-
-   ```bash
-   docker container ls
-   ```
-
-   You should see `busybox1` and `busybox2` listed.
-
-4. Test Inter-Container Communication (DNS Resolution):
-
-   Go back to the terminal where busybox1 is running and ping busybox2 by its container name:
-
-   ```bash
-   / # ping busybox2
-   PING busybox2 (172.19.0.3): 56 data bytes
-   64 bytes from 172.19.0.3: seq=0 ttl=64 time=0.072 ms
-   64 bytes from 172.19.0.3: seq=1 ttl=64 time=0.118 ms
-   ^C # Press Ctrl+C to stop
-   ```
-
-   As you can see, `busybox2` is resolved to its IP address (e.g., `172.19.0.3`), and the `ping` is successful. This demonstrates that containers within the same custom network can communicate directly using their service names, thanks to Docker's built-in DNS service.
-
-   Similarly, from the `busybox2` container, you can `ping busybox1`:
-
-   ```bash
-   / # ping busybox1
-   PING busybox1 (172.19.0.2): 56 data bytes
-   64 bytes from 172.19.0.2: seq=0 ttl=64 time=0.064 ms
-   64 bytes from 172.19.0.2: seq=1 ttl=64 time=0.143 ms
-   ^C # Press Ctrl+C to stop
-   ```
-
-   This confirms successful communication between `busybox1` and `busybox2`.
-
-**For multiple interconnected containers, Docker Compose is highly recommended.** Docker Compose allows you to define and run multi-container Docker applications, simplifying networking, volume management, and service orchestration.
-
-### 2. Host Mode
-
-When a container is started with the `host` network mode, it does not get its own isolated Network Namespace. Instead, it shares the host machine's Network Namespace. This means:
-
-- The container will not have its own virtual network interfaces or unique IP address.
-- It will directly use the host's IP address and port space. If a service inside the container listens on port 80, it will be accessible on the host's IP address at port 80, provided no other process on the host is already using that port.
-- However, other aspects of the container, such as its filesystem, process list, and user namespace, remain isolated from the host.
-
-Use Cases:
-
-Host mode is useful for performance-critical applications or when you need the container to directly access network services on the host without any network address translation (NAT) overhead, such as when running a network monitoring tool or a high-performance proxy.
-
-Visual Representation:
+The container skips network namespacing entirely: it sees the host's interfaces and binds straight to the host's ports. Filesystem, processes and users are still isolated.
 
 ```mermaid
 flowchart TB
+    subgraph HOST["host network namespace"]
+        direction TB
+        n1["nginx (container)<br/>listening on :80"]
+        n2["node_exporter (container)<br/>listening on :9100"]
+        ETH0["eth0<br/>10.11.55.5/24"]
+        n1 --- ETH0
+        n2 --- ETH0
+    end
+```
 
+Use it for tools that need to see the host's real network (monitoring agents, packet capture) or when NAT overhead genuinely matters at very high packet rates. The costs:
+
+- **Port conflicts are back.** Two host-mode containers can't both listen on 80, and neither can a host process.
+- **`-p` is ignored**, since there's nothing to publish.
+- **It's a Linux feature.** On Docker Desktop, the "host" is the Desktop's Linux VM, so a host-mode container shares the VM's network, not your laptop's, unless you turn on the newer host networking option in Desktop's settings.
+
+## Container mode: sharing another container's network
+
+```bash
+docker run -d --name web nginx:1.27
+docker run -it --rm --network container:web alpine sh
+/ # wget -qO- http://localhost        # that's nginx, in the other container
+```
+
+The second container joins the first one's network namespace: same interfaces, same IP, same `localhost`, same port space. Filesystems and processes stay separate.
+
+```mermaid
+flowchart LR
+  subgraph NS["one network namespace (web's)"]
+    web[nginx container]
+    side[helper container]
+    lo(["localhost / eth0 172.19.0.4"])
+    web --- lo
+    side --- lo
+  end
+```
+
+This is the **sidecar** pattern (Kubernetes pods work exactly this way): a log shipper, a proxy or a metrics exporter that talks to the main app over `localhost`. It's also the best debugging trick for minimal images that ship no tools: attach a `busybox` or `nicolaka/netshoot` container to the target's network and use its `curl`, `dig` and `tcpdump` as if you were inside.
+
+## None: no network at all
+
+```bash
+docker run --rm --network none alpine ip addr
+# 1: lo: <LOOPBACK,UP,LOWER_UP> …    (nothing else)
+```
+
+```mermaid
+flowchart TB
     subgraph HOST["host"]
         direction TB
-
-        subgraph D1["docker1"]
-            D1_ADDR["10.11.55.5:xxxxx"]
+        subgraph C["container (own network namespace)"]
+            LO["lo<br/>127.0.0.1"]
         end
-
-        subgraph D2["docker2"]
-            D2_ADDR["10.11.55.5:xxxxx"]
-        end
-
-        ETH0["eth0<br/>10.11.55.5/24"]
+        DOCKER0["docker0"]
+        ETH0["eth0"]
+        DOCKER0 --- ETH0
     end
 ```
 
-**Demonstration:**
+Only a loopback interface, and nothing connects it to `docker0` or the host. It's useful for jobs that process untrusted input and must not exfiltrate anything, such as file converters, or batch jobs that read and write mounted volumes only.
 
-1. **Run Containers in Host Mode:**
+## Troubleshooting
 
-   ```bash
-   docker run -d --network host --name docker_host1 alpine sleep 3600
-   docker run -d --network host --name docker_host2 alpine sleep 3600
-   ```
+| Symptom | Check |
+|---|---|
+| Name doesn't resolve (`bad address`) | Both containers on the same **user-defined** network? `docker network inspect <net>`. |
+| Connection refused between containers | The service listens on `127.0.0.1` inside its container; it must listen on `0.0.0.0` to be reachable from others. |
+| Port reachable from the internet despite `ufw` | Docker's NAT rules bypass it; bind to `127.0.0.1` or don't publish. |
+| Container can't reach the internet | `docker exec c ping -c1 1.1.1.1` (routing) vs `ping google.com` (DNS); check the host's IP forwarding and the daemon's `dns` setting. |
+| Subnet clashes with your VPN or office LAN | Pick other ranges with `"default-address-pools"` in `/etc/docker/daemon.json`. |
 
-   _Note: Running multiple containers in host mode that try to bind to the same port will result in port conflicts._
+The "listens on `127.0.0.1`" row catches almost everyone once: a dev server bound to localhost works inside its own container and nowhere else.
 
-2. **Inspect Container Network Configuration (inside the container):**
-
-   ```bash
-   docker exec -it docker_host1 sh
-   ```
-
-   Inside the `docker_host1` container, execute:
-
-   ```bash
-   / ip a
-   / ip r
-   ```
-
-   You will observe that the IP addresses and network interfaces listed are the same as those on the host machine, demonstrating that the container is sharing the host's network stack.
-
-   Type `exit` to leave the container's shell.
-
-### 3. Container Mode (or `container:NAME_OR_ID`)
-
-This mode specifies that a newly created container should share the Network Namespace of an already existing container, rather than sharing with the host.
-
-- The new container will not create its own network interfaces or configure its own IP address.
-- It will share the IP address, port range, and network configuration (e.g., DNS servers, routing table) of the specified existing container.
-- The two containers, while sharing network resources, still maintain isolation in other aspects like their filesystem, process list, and user namespace.
-- Processes in both containers can communicate with each other via the loopback interface (`lo`).
-
-Use Cases:
-
-This mode is commonly used in "sidecar" patterns, where a helper container shares the network stack with a primary application container. For example, an Nginx reverse proxy might share the network namespace with a web application container to simplify configuration and inter-process communication.
-
-Visual Representation:
-
-```mermaid
-flowchart TB
-    subgraph host["host"]
-        direction TB
-        
-        subgraph containers[" "]
-            direction LR
-            docker1["docker1"]
-            docker2["docker2"]
-        end
-        
-        eth0_c["eth0<br/>172.12.0.3/24"]
-        veth["veth*"]
-        docker0["docker0<br/>172.12.0.2/24"]
-        eth0_h["eth0<br/>10.11.55.5/24"]
-        
-        docker1 --- eth0_c
-        docker2 --- eth0_c
-        eth0_c --- veth
-        veth --- docker0
-        docker0 --- |"ip forwarding"| eth0_h
-    end
-```
-
-**Demonstration:**
-
-1. Start a "Base" Container (e.g., in bridge mode):
-
-   First, we need a container whose network stack will be shared.
-
-   ```bash
-   docker run -d --name docker_bri1 alpine sleep 3600
-   ```
-
-2. **Start a New Container in `container` Mode, Sharing `docker_bri1`'s Network:**
-
-   ```bash
-   docker run -d --network container:docker_bri1 --name docker_con1 alpine sleep 3600
-   ```
-
-3. **Inspect Network Configuration of Both Containers:**
-
-   ```bash
-   docker exec -it docker_con1 sh
-   ```
-
-   Inside `docker_con1`, execute `ip a` and `ip r`. Note the IP address.
-
-   ```bash
-   / ip a
-   / ip r
-   ```
-
-   Type `exit`. Now, do the same for `docker_bri1`:
-
-   ```bash
-   docker exec -it docker_bri1 sh
-   ```
-
-   Inside `docker_bri1`, execute `ip a` and `ip r`.
-
-   ```bash
-   / ip a
-   / ip r
-   ```
-
-   You will observe that `docker_con1` and `docker_bri1` have the exact same IP addresses and network interfaces, confirming they share the same network stack.
-
-   Type `exit` to leave the container's shell.
-
-### 4. None Mode
-
-In `none` network mode, a Docker container has its own isolated Network Namespace, but Docker does not configure any network interfaces within it. This means:
-
-- The container will have no network card, no IP address, and no routing information.
-- It is completely isolated from the network, both external and internal.
-- You would need to manually add network interfaces and configure IP addresses and routes within the container if you wanted it to have network connectivity.
-
-Use Cases:
-
-This mode is typically used for specialized containers that do not require any network access, or when you need full control over the container's networking configuration and plan to set it up manually using other tools. It's often used for security-critical environments where network isolation is paramount.
-
-Visual Representation:
-
-(Container is isolated and has no network connectivity by default.)
-
-**Demonstration:**
-
-1. **Run a Container in None Mode:**
-
-   ```bash
-   docker run -d --network none --name docker_non1 alpine sleep 3600
-   ```
-
-2. **Inspect Network Configuration (inside the container):**
-
-   ```bash
-   docker exec -it docker_non1 sh
-   ```
-
-   Inside the `docker_non1` container, execute:
-
-   ```bash
-   / ip a
-   / ip r
-   ```
-
-   You will see only the loopback interface (`lo`) and no other network interfaces or routing entries, confirming the lack of network configuration.
-
-   Type `exit` to leave the container's shell.
-
----
-
-### Further Topics: Cross-Host Communication
-
-This guide focuses on single-host Docker networking. For Docker containers to communicate across different host machines, you would typically use advanced networking solutions like:
-
-- **Overlay Networks (Docker Swarm Mode):** Built-in Docker Swarm capability that enables communication between containers running on different nodes in a Swarm cluster.
-- **Third-Party Container Network Interface (CNI) Plugins:** Solutions like Calico, Flannel, or Weave Net provide more sophisticated networking capabilities, often used in larger container orchestration platforms like Kubernetes.
-
-These topics, especially cross-host communication, are more advanced and are often covered in the context of container orchestration platforms like Kubernetes.
+[Chapter 1.9]({% post_url 2025-07-16-chapter-1-9-docker-compose %}) stops typing long `docker run` and `docker network` commands and describes whole multi-container applications in one file.

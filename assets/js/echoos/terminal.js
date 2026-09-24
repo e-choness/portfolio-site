@@ -103,9 +103,9 @@ export function createTerminal(content, wm, { apps }) {
       }
     }
     return allSkills
-      .sort((a, b) => (b.level || 0) - (a.level || 0))
+      .sort((a, b) => (b.years || 0) - (a.years || 0))
       .slice(0, 5)
-      .map((s) => `${s.name} ${s.level}%`)
+      .map((s) => `${s.name} ${s.years}y`)
       .join(' · ');
   }
 

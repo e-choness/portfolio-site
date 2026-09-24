@@ -1,11 +1,10 @@
 ---
-layout: post
 title: "Designing Decoupled Game Backends with the Publish-Subscribe Pattern"
 date: 2024-06-03
 category: backend
 tags: ["game development", "backend", "architecture"]
 author: "Echo Yin"
-image: "assets/images/blogs/game-backend.png"
+image: "assets/images/blogs/game-backend.jpg"
 excerpt: "How the publish-subscribe pattern helps decouple game backend modules, reduce tangled dependencies, and keep business logic maintainable under changing requirements."
 ---
 > The publish-subscribe (event listener) pattern is one of the most effective tools I have used to decouple game backend modules and keep business code maintainable under heavy change pressure.
@@ -38,19 +37,43 @@ class LogicRole {
 // Event dispatch:
 class LogicEventDispatch {
 public:
+    void RegisterEventHandler(int type, EventHandler* handler) {
+        handlers_[type].push_back(handler);
+    }
+
     int NotifyEvent(EventPara* event_para) {
-        for (auto handler : handlerList) {
-            // Step 1: enqueue derived events
-            // Step 2: handle main event
-            handler->OnEventUpdate(event_para);
-            // Step 3: handle derived event queue
+        // Step 1: an event raised while another is being handled is queued
+        // (copied), not handled recursively
+        if (dispatching_) {
+            pending_.push_back(*event_para);
+            return 0;
         }
+        dispatching_ = true;
+        Dispatch(*event_para);            // Step 2: main event, every subscriber
+        while (!pending_.empty()) {       // Step 3: drain derived events in order
+            EventPara next = pending_.front();
+            pending_.pop_front();
+            Dispatch(next);
+        }
+        dispatching_ = false;
         return 0;
     }
+
+private:
+    void Dispatch(EventPara& event) {
+        // Only the handlers registered for this event type
+        for (EventHandler* handler : handlers_[event.type]) {
+            handler->OnEventUpdate(&event);
+        }
+    }
+
+    std::unordered_map<int, std::vector<EventHandler*>> handlers_;
+    std::deque<EventPara> pending_;
+    bool dispatching_ = false;
 };
 
 // Event handling: developers focus on registration and OnEventUpdate, then write business logic.
-class LogicRolePartner {
+class LogicRolePartner : public EventHandler {
 public:
     int init() {
         LogicEventDispatch::Instance().RegisterEventHandler(event_a, this);
@@ -58,7 +81,7 @@ public:
         return 0;
     }
 
-    int OnEventUpdate(EventPara* event_para) {
+    int OnEventUpdate(EventPara* event_para) override {
         switch (event_para->type) {
         case event_a:
             HandleEventA(event_para);
@@ -72,6 +95,16 @@ public:
     }
 };
 ```
+
+How the three pieces fit together:
+
+- **Publishing (`LogicRole`)**: a module that has something to announce builds an `EventPara` and hands it to the dispatcher. It doesn't know, or care, who's listening.
+- **The dispatcher (`LogicEventDispatch`)**:
+  - `RegisterEventHandler(type, handler)` appends a handler to the list for one event type, in `handlers_`, a map from event type to handlers.
+  - `NotifyEvent` has two modes. If no dispatch is in progress, it dispatches the event to its handlers, then drains `pending_` until it's empty. If a dispatch *is* in progress (a handler published an event), it only copies the event into `pending_` and returns. That queue-instead-of-recurse rule is what keeps event chains from blowing the stack.
+  - Events are **copied** into the queue (`std::deque<EventPara>`), because the original is usually a local variable in the publishing handler, gone by the time the queue is drained.
+  - `Dispatch` looks up the handlers for this event's type only, so subscribers never see events they didn't register for.
+- **Subscribing (`LogicRolePartner`)**: the module registers for the event types it cares about in `init()`, and handles them all in one `OnEventUpdate`, switching on `type`. It implements the `EventHandler` interface, so the dispatcher can hold handlers from any module in one list.
 
 ### Pub-sub architecture at a glance
 
@@ -170,14 +203,19 @@ A typical event dispatch cycle might look like this:
 
 ```mermaid
 graph TD
-    E[Event arrives at LogicEventDispatch] --> Q[Step 1: Enqueue derived events]
-    Q --> H[Step 2: Handle main event for each subscriber]
-    H --> DQ[Step 3: Drain derived event queue]
+    E[NotifyEvent called] --> C{Already dispatching?}
+    C -- yes --> Q[Step 1: Queue it as a derived event<br/>and return]
+    C -- no --> H[Step 2: Main event to every subscriber<br/>registered for its type]
+    H -. handlers raise new events .-> Q
+    H --> DQ{Step 3: Derived queue empty?}
+    DQ -- no --> N[Dispatch the next queued event]
+    N --> DQ
+    DQ -- yes --> X[Done]
 
     style E fill:#ff7f0e,stroke:#b35500,color:#fff;
     style Q fill:#fdd0a2,stroke:#c97c3a;
     style H fill:#2ca02c,stroke:#165a1c,color:#fff;
-    style DQ fill:#98df8a,stroke:#4a7b3a;
+    style N fill:#98df8a,stroke:#4a7b3a;
 ```
 
 Developers working on business logic mostly care about:
@@ -200,11 +238,11 @@ For example:
 - Adding an item triggers an item-change event; if the item auto-uses itself, it may trigger another item-change event.
 - Completing a quest may chain into another quest completion event.
 
-To avoid unbounded recursion, follow a strict order inside your dispatcher:
+To avoid unbounded recursion, follow a strict order inside your dispatcher (this is what `NotifyEvent` above does):
 
-1. Enqueue any derived events instead of handling them immediately.
-2. Handle the current (main) event.
-3. Process the derived event queue afterward.
+1. Enqueue any events raised during dispatch (derived events) instead of handling them immediately.
+2. Finish handling the current (main) event for every subscriber.
+3. Process the derived event queue afterward, one event at a time.
 
 Also, consider limiting the maximum queue depth for derived events.
 If the limit is exceeded, log and alert early in test environments to detect accidental infinite event chains.

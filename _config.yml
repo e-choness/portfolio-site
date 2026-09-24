@@ -1,11 +1,8 @@
-# Site settings
-title: Echo Yin
-email: echoybl1123@gmail.com
-description: >-
-  Passionate about creating innovative AI solutions.
+# Site settings. Who the site is about (title, description, author, email,
+# social links) comes from _data/profile.yml via _plugins/profile_config.rb.
 baseurl: "/portfolio-site" # the subpath of your site, e.g. /blog
-repository: e-choness/portfolio-site # Change to <your-username>/<your-username>.github.io (or remove it if you don't need remote projects) # the base hostname & protocol for your site
-url: "https://e-choness.github.io" # the base hostname & protocol for your site
+repository: e-choness/portfolio-site
+url: "https://e-choness.github.io" # hostname + protocol; baseurl is the subpath
 
 # Build settings
 markdown: kramdown
@@ -40,38 +37,13 @@ collections:
     permalink: /blog/:year/:month/:day/:title/
 
 # Defaults
+# Posts and projects are read inside the OS (Blog / Projects windows). Their
+# own URLs are redirect stubs (_layouts/redirect.html), kept out of the sitemap.
 defaults:
   - scope: { path: "", type: "posts" }
-    values: { layout: post }
+    values: { layout: redirect, sitemap: false }
   - scope: { path: "", type: "projects" }
-    values: { layout: project }
-
-# Blog settings
-blog:
-  title: "Blog"
-  description: "Thoughts on web development, technology, and career insights"
-  author: "Echo Yin"
-
-projects:
-  title: "Projects"
-  description: "Explore my portfolio of projects showcasing various technologies and skills"
-  author: "Echo Yin"
-
-# Site data
-author:
-  name: Echo Yin
-  title: Senior A.I. Engineer
-  location: "Calgary, AB, Canada"
-  years_experience: 5
-  projects_completed: 25
-  happy_clients: 15
-
-# Social links
-social:
-  github: e-choness
-  linkedin: echoybl0451
-  twitter: _echo_yin
-  email: echoybl1123@gmail.com
+    values: { layout: redirect, sitemap: false }
 
 # Theme settings
 sass:

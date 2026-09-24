@@ -1,7 +1,7 @@
 // apps/blog.js — Blog window, prototype layout (EchoOS.dc.html lines 260-316):
 // toolbar (⌕ search, category dropdown with ✓ marks, filtered/total count),
 // flat post rows (82px date / title / 2-line clamp excerpt / cat badge) and a
-// reading view (‹ all posts, cat · date, h1, excerpt) followed by the full
+// reading view (‹ all posts, cat · date, h1, hero image) followed by the full
 // markdown post rendered in-window from the per-post JSON
 // (_plugins/post_json.rb → assets/data/posts/<slug>.json). Mermaid and markmap
 // blocks are transformed exactly like the classic route so existing markdown
@@ -304,7 +304,6 @@ export function renderBlog(bodyEl, { content, toast }) {
       <div class="os-blog-meta">${catOf(post) ? esc(catOf(post)) + ' · ' : ''}${esc(post.date || '')}</div>
       <h1 class="os-blog-h1">${esc(post.title)}</h1>
       ${imageHtml}
-      <p class="os-blog-excerpt">${esc(post.excerpt || '')}</p>
       <div class="os-blog-loading">Loading…</div>
       <div class="os-blog-nav">
         <button type="button" class="os-blog-nav-btn os-blog-nav-prev"${!prevPost ? ' disabled' : ''}>‹ Previous</button>
@@ -352,9 +351,10 @@ export function renderBlog(bodyEl, { content, toast }) {
     const fallbackNote = () => {
       holder.innerHTML = `
         <div class="os-blog-note">
-          <div class="os-blog-note-text">In the Jekyll build, the full markdown post renders here inside the window.</div>
-          <a class="os-blog-note-link" href="${esc(post.url)}" target="_blank" rel="noopener">Read the full post on the current site ↗</a>
+          <div class="os-blog-note-text">This post couldn't be loaded. Check your connection and try again.</div>
+          <button type="button" class="os-blog-note-link">Try again</button>
         </div>`;
+      holder.querySelector('.os-blog-note-link').addEventListener('click', () => renderReading(post));
     };
     try {
       const res = await fetch(url(`/assets/data/posts/${post.slug}.json`));
@@ -376,7 +376,7 @@ export function renderBlog(bodyEl, { content, toast }) {
       }
       updateProgress();
     } catch {
-      if (toast) toast('Could not load post — opening in a new tab');
+      if (toast) toast('Could not load post');
       fallbackNote();
     }
   }

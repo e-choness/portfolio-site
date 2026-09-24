@@ -1,8 +1,7 @@
 ---
-layout: post
 title: "A Modern Introduction to C++ Multithreading (C++11 to C++20)"
 date: 2024-06-19
-category: networking
+category: backend
 tags: ["c++11", "c++17", "c++20", "multithreading", "concurrency", "std::thread", "std::async"]
 author: "Echo Yin"
 image: "assets/images/blogs/cpp-20-multithread.jpg"
@@ -59,7 +58,7 @@ int main() {
 ```
 
 This example demonstrates two threads incrementing the same variable and printing from different threads.
-However, it also contains a classic race condition: both `ThreadProc1` and `ThreadProc2` read and write the shared `number` without synchronization, so their operations can interleave unpredictably.
+However, it also contains a classic race condition: both `ThreadProc1` and `ThreadProc2` read and write the shared `number` without synchronization, so their operations can interleave unpredictably. Formally this is a *data race*, which C++ defines as undefined behavior: numbers can be skipped or printed twice, and the compiler is allowed to assume it never happens.
 
 ### Prefer `std::jthread` in C++20
 
@@ -138,18 +137,83 @@ The key operation is `cv.wait(lock, predicate)` which:
 - Wakes up when another thread calls `cv.notify_one()` or `cv.notify_all()`.
 - Re-acquires the mutex and re-checks the predicate, looping to protect against spurious wake-ups.
 
-This pattern is ideal for classic coordination problems, such as forcing threads to work in a specific order like printing `ABCABC...` from three threads.
+This pattern is ideal for classic coordination problems, such as a producer handing work to a consumer, or forcing threads to work in a specific order like printing `ABCABC...` from three threads.
+
+```cpp
+#include <condition_variable>
+#include <iostream>
+#include <mutex>
+#include <queue>
+#include <thread>
+
+std::mutex m;
+std::condition_variable cv;
+std::queue<int> jobs;
+bool done = false;
+
+void producer() {
+    for (int i = 1; i <= 3; ++i) {
+        {
+            std::lock_guard<std::mutex> lock(m);
+            jobs.push(i);            // change the shared state under the lock...
+        }
+        cv.notify_one();             // ...then wake a waiter
+    }
+    {
+        std::lock_guard<std::mutex> lock(m);
+        done = true;
+    }
+    cv.notify_one();
+}
+
+void consumer() {
+    std::unique_lock<std::mutex> lock(m);
+    while (true) {
+        // Sleeps until notified AND the predicate holds; spurious wake-ups
+        // and a notify that arrived before we waited are both handled
+        cv.wait(lock, [] { return !jobs.empty() || done; });
+        if (jobs.empty()) break;     // done and fully drained
+        int job = jobs.front();
+        jobs.pop();
+        std::cout << "processed " << job << '\n';
+    }
+}
+
+int main() {
+    std::thread c(consumer);
+    std::thread p(producer);
+    p.join();
+    c.join();
+}
+```
+
+Walking through it:
+
+- **The shared state**: a queue of jobs and a `done` flag, protected by one mutex `m`, plus the condition variable `cv` used to signal changes to that state.
+- **`producer`**:
+  - Each job is pushed while holding the lock, inside its own `{ }` block so the `lock_guard` releases it at the closing brace.
+  - `notify_one()` happens *after* the lock is released. Notifying while still holding it works too, but the woken consumer would immediately block on the mutex the producer still holds.
+  - Setting `done = true` follows the same pattern: change the state under the lock, then notify.
+- **`consumer`**:
+  - Takes a `std::unique_lock` rather than a `lock_guard`, because `wait` has to *unlock* the mutex while sleeping and re-lock it on waking, which only `unique_lock` allows.
+  - `cv.wait(lock, predicate)` is equivalent to `while (!predicate()) cv.wait(lock);`. The loop is what makes spurious wake-ups harmless.
+  - After waking with the lock held, the queue is safe to read. "Empty and done" is the exit condition, so every job the producer pushed is processed before the consumer quits.
+- **`main`** starts the consumer first on purpose. Start them the other way round and the program still works, because of the predicate check described below.
 
 ```mermaid
 sequenceDiagram
     participant Producer
     participant Consumer
 
-    Producer->>Consumer: notify_one() when data ready
-    Consumer->>Consumer: wait(lock, predicate)
-    Note over Consumer: Sleeps until notified
-    Consumer->>Consumer: Re-check predicate under lock
+    Consumer->>Consumer: lock, wait(lock, predicate)
+    Note over Consumer: predicate false: releases the lock and sleeps
+    Producer->>Producer: lock, push job, unlock
+    Producer->>Consumer: notify_one()
+    Consumer->>Consumer: wakes, re-acquires the lock, re-checks predicate
+    Note over Consumer: predicate true: process the job
 ```
+
+The predicate is what makes this safe. If the producer notifies before the consumer starts waiting, the notification is lost, but `wait` checks the predicate first and never sleeps.
 
 ## 4. Lock-free programming with atomic variables
 
@@ -202,6 +266,40 @@ When the worker sets the value on the promise, the future becomes ready.
 `std::packaged_task<R(Args...)>` wraps a callable and manages the promise internally.
 When you invoke the packaged task, it automatically stores the return value into the associated future, simplifying some patterns.
 
+```cpp
+#include <future>
+#include <iostream>
+#include <thread>
+
+int main() {
+    // promise / future: a one-shot channel from a worker thread
+    std::promise<int> promise;
+    std::future<int> answer = promise.get_future();
+
+    std::thread worker([p = std::move(promise)]() mutable {
+        p.set_value(6 * 7);                    // fulfils the future
+    });
+    std::cout << "answer: " << answer.get() << '\n';   // blocks until set_value
+    worker.join();
+
+    // packaged_task: wraps a callable; running it fulfils the future
+    std::packaged_task<int(int, int)> task([](int a, int b) { return a + b; });
+    std::future<int> sum = task.get_future();
+
+    std::thread(std::move(task), 2, 3).join();
+    std::cout << "sum: " << sum.get() << '\n';
+}
+```
+
+What's going on:
+
+- **`promise.get_future()`**: creates the shared state and the future that reads from it. Each promise hands out exactly one future.
+- **`[p = std::move(promise)]() mutable`**: promises can't be copied, only moved, so the lambda takes ownership with a move-capture. `mutable` is needed because `set_value` modifies the captured promise.
+- **`answer.get()`**: blocks the main thread until the worker calls `set_value`, then returns the value. `get()` can be called only once; it moves the result out.
+- **`std::packaged_task<int(int, int)>`**: the template argument is the callable's signature. The task *is* the promise side: calling it runs the lambda and stores its return value, or any exception it throws, in the shared state.
+- **`std::thread(std::move(task), 2, 3).join()`**: run the task on a thread with arguments `2` and `3`. Tasks are move-only too.
+- **Exceptions travel too**: if the worker throws (or calls `set_exception`), `get()` rethrows it in the waiting thread, so errors from background work don't vanish.
+
 ```mermaid
 graph LR
     A[Worker function] -->|set_value / set_exception| B[std::promise]
@@ -221,7 +319,7 @@ You can control how `std::async` launches the task using a launch policy:
 - `std::launch::deferred` defers execution until you call `get()` or `wait()` on the future.
 
 To avoid ambiguity across implementations, it is a good practice to specify `std::launch::async` explicitly when you truly want parallelism.
-A subtle but important safety guarantee is that the future's destructor will block until the asynchronous task completes, preventing the program from exiting while work is still in flight.
+A subtle but important guarantee applies only to futures returned by `std::async`: their destructor blocks until the task completes, so work launched this way can't outlive the future. That also means `std::async(std::launch::async, f);` without keeping the returned future runs synchronously, because the temporary future is destroyed (and waits) immediately. Futures from `std::promise` or `std::packaged_task` don't block in their destructor.
 
 ## 7. Timed waits with `std::future::wait_for`
 

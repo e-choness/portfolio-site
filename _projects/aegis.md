@@ -1,5 +1,4 @@
 ---
-layout: project
 title: "Aegis AI Gateway"
 description: "A plugin-first AI gateway framework. A small kernel plus seven contracts puts a governed, observable, provider-agnostic pipeline between your apps and any LLM. Built with FastAPI, LangGraph, and Docker."
 image: "assets/images/projects/aegis.jpg"
@@ -10,7 +9,6 @@ technologies:
   - Docker
   - PostgreSQL
 categories:
-  - Python
   - AI/ML
   - Framework
   - Fullstack

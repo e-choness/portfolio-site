@@ -13,7 +13,17 @@ permalink: /assets/data/content.json
     "about": {{ site.data.profile.about.description | split_paragraphs | jsonify }},
     "portrait": {{ site.data.profile.about.image | relative_url | jsonify }},
     "resumeUrl": {{ site.data.profile.about.resume_url | relative_url | jsonify }},
-    "stats": {{ site.data.profile.stats | jsonify }},
+    "siteUrl": {{ "/" | absolute_url | jsonify }},
+    "stats": [
+    {% for s in site.data.profile.stats %}
+      {% case s.count %}
+        {% when 'projects' %}{% assign v = site.projects | size %}
+        {% when 'posts' %}{% assign v = site.posts | size %}
+        {% else %}{% assign v = s.value %}
+      {% endcase %}
+      {"label": {{ s.label | jsonify }}, "value": {{ v | jsonify }}, "display": {{ s.display | default: v | jsonify }}}{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+    ],
     "social": [
       {"label": "GitHub", "url": {{ site.data.profile.social.github | jsonify }}},
       {"label": "LinkedIn", "url": {{ site.data.profile.social.linkedin | jsonify }}},
@@ -36,7 +46,8 @@ permalink: /assets/data/content.json
   {% endfor %}
   ],
   "projects": [
-  {% for p in site.projects %}
+  {% assign sorted_projects = site.projects | sort: "order" %}
+  {% for p in sorted_projects %}
     {
       "title": {{ p.title | jsonify }},
       "slug": {{ p.slug | jsonify }},
@@ -45,8 +56,11 @@ permalink: /assets/data/content.json
       "tech": {{ p.technologies | jsonify }},
       "cat": {{ p.categories | first | jsonify }},
       "demo": {{ p.live_url | jsonify }},
+      "demoLabel": {{ p.live_label | default: "Live Demo" | jsonify }},
       "repo": {{ p.github_url | jsonify }},
+      "website": {{ p.website_url | jsonify }},
       "image": {{ p.image | relative_url | jsonify }},
+      "video": {{ p.video | relative_url | jsonify }},
       "featured": {{ p.featured | default: false | jsonify }}
     }{% unless forloop.last %},{% endunless %}
   {% endfor %}
@@ -57,7 +71,7 @@ permalink: /assets/data/content.json
       "group": {{ g.name | jsonify }},
       "items": [
       {% for s in g.skills %}
-        {"name": {{ s.name | jsonify }}, "level": {{ s.level }}, "years": {{ s.years | default: 0 }}}{% unless forloop.last %},{% endunless %}
+        {"name": {{ s.name | jsonify }}, "years": {{ s.years | default: 0 }}}{% unless forloop.last %},{% endunless %}
       {% endfor %}
       ]
     }{% unless forloop.last %},{% endunless %}
@@ -69,6 +83,7 @@ permalink: /assets/data/content.json
       "degree": {{ ed.degree | jsonify }},
       "school": {{ ed.institution | jsonify }},
       "duration": {{ ed.duration | jsonify }},
+      "gpa": {{ ed.gpa | jsonify }},
       "location": {{ ed.location | jsonify }},
       "logo": {{ ed.logo | relative_url | jsonify }},
       "desc": {{ ed.description | jsonify }},

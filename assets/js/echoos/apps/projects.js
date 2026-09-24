@@ -13,6 +13,26 @@ const state = { sel: null };
 // Deep-link / router listener, replaced on every render (see blog.js onOpenPost).
 let onOpenProject = null;
 
+// Outbound links, in display order: live/store, repository, website.
+function projectLinks(p, className) {
+  const links = document.createElement('div');
+  links.className = className;
+  const add = (href, cls, text) => {
+    if (!href) return;
+    const a = document.createElement('a');
+    a.className = cls;
+    a.href = href;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = `${text} ↗`;
+    links.appendChild(a);
+  };
+  add(p.demo, 'os-proj-demo', p.demoLabel || 'Live Demo');
+  add(p.repo, 'os-proj-repo', 'GitHub');
+  add(p.website, 'os-proj-repo', 'Website');
+  return links;
+}
+
 export function renderProjects(bodyEl, { content }) {
   const projects = content.projects || [];
 
@@ -86,26 +106,7 @@ export function renderProjects(bodyEl, { content }) {
       body.appendChild(ul);
     }
 
-    const links = document.createElement('div');
-    links.className = 'os-proj-links';
-    if (p.demo) {
-      const a = document.createElement('a');
-      a.className = 'os-proj-demo';
-      a.href = p.demo;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.textContent = 'Live Demo ↗';
-      links.appendChild(a);
-    }
-    if (p.repo) {
-      const a = document.createElement('a');
-      a.className = 'os-proj-repo';
-      a.href = p.repo;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.textContent = 'GitHub ↗';
-      links.appendChild(a);
-    }
+    const links = projectLinks(p, 'os-proj-links');
     if (links.childElementCount) body.appendChild(links);
 
     article.appendChild(body);
@@ -126,7 +127,23 @@ export function renderProjects(bodyEl, { content }) {
     const detail = document.createElement('div');
     detail.className = 'os-proj-detail';
 
-    if (p.image) {
+    if (p.video) {
+      // Animated previews ship as video (a GIF of the same loop was 30× the
+      // size). Cards show only the poster; the clip loads here. Reduced motion
+      // gets controls instead of autoplay.
+      const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const vid = document.createElement('video');
+      vid.className = 'os-proj-detail-img';
+      vid.src = p.video;
+      if (p.image) vid.poster = p.image;
+      vid.muted = true;
+      vid.loop = true;
+      vid.playsInline = true;
+      vid.autoplay = !still;
+      vid.controls = still;
+      vid.setAttribute('aria-label', `${p.title} gameplay`);
+      detail.appendChild(vid);
+    } else if (p.image) {
       const img = document.createElement('img');
       img.className = 'os-proj-detail-img';
       img.src = p.image;
@@ -156,26 +173,7 @@ export function renderProjects(bodyEl, { content }) {
     detail.appendChild(h1);
 
     // Links sit right under the title so they're visible without scrolling.
-    const links = document.createElement('div');
-    links.className = 'os-proj-detail-links';
-    if (p.demo) {
-      const a = document.createElement('a');
-      a.className = 'os-proj-demo';
-      a.href = p.demo;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.textContent = 'Live Demo ↗';
-      links.appendChild(a);
-    }
-    if (p.repo) {
-      const a = document.createElement('a');
-      a.className = 'os-proj-repo';
-      a.href = p.repo;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.textContent = 'GitHub ↗';
-      links.appendChild(a);
-    }
+    const links = projectLinks(p, 'os-proj-detail-links');
     if (links.childElementCount) detail.appendChild(links);
 
     if (p.desc) {
