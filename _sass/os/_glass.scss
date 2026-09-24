@@ -6,7 +6,8 @@
 // (notification panel, welcome card, toasts), and the per-tile blurs on the
 // desktop / tab bar / home icons were dropped (up to 9 layers on mobile). Deliberately no SVG
 // displacement/refraction filters — costly per frame over the animated
-// wallpaper, and Chromium-only. Windows and Spotlight stay solid for reading.
+// wallpaper, and Chromium-only. Window bodies and Spotlight stay solid for
+// reading; only the 42px window title bar is glass (one small layer each).
 
 // ── translucent bars and cards ─────────────────────────────────────────────
 .os-menubar,
@@ -82,9 +83,23 @@
   transition-duration: 0.12s;
 }
 
-// Windows: a faint specular top edge so they sit in the same material family.
+// Windows: glass title bar over a solid body. The window itself goes
+// transparent so the bar's blur reaches the desktop (and windows) behind it;
+// the body carries the solid surface. The border and specular edge stay on the
+// window so it still reads as one sheet.
 .os-win {
+  background: transparent;
   box-shadow: var(--shadow), inset 0 1px 0 var(--glass-lo);
+}
+.os-win-body {
+  background: var(--surface);
+}
+.os-win-bar {
+  background:
+    linear-gradient(180deg, var(--glass-sheen), transparent 70%),
+    var(--glass);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
 }
 
 // Accessibility: users who ask for less transparency get solid surfaces.
@@ -95,7 +110,8 @@
   .os-welcome,
   .os-toast,
   .os-tabbar,
-  .os-dock-label {
+  .os-dock-label,
+  .os-win-bar {
     background: var(--surface);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;

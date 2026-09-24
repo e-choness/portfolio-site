@@ -70,7 +70,7 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   // the next touch. Dropping the blur for one frame forces those layers to be
   // rebuilt with the new colours.
   function refreshGlass() {
-    const els = root.querySelectorAll('.os-menubar, .os-dock, .os-tabbar, .os-notif, .os-welcome, .os-toast');
+    const els = root.querySelectorAll('.os-menubar, .os-dock, .os-tabbar, .os-notif, .os-welcome, .os-toast, .os-win-bar');
     for (const el of els) {
       el.style.webkitBackdropFilter = 'none';
       el.style.backdropFilter = 'none';
