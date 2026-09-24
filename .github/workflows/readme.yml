@@ -1,0 +1,43 @@
+name: Refresh README
+
+# Regenerates the README's "Latest writing" and "Featured projects" sections
+# (scripts/update-readme.mjs) whenever posts or projects change, and commits
+# the result only if something actually changed. Commits made with
+# GITHUB_TOKEN don't trigger other workflows, so this never re-deploys the site.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "_posts/**"
+      - "_projects/**"
+      - "_config.yml"
+      - "scripts/update-readme.mjs"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: readme
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Regenerate README sections
+        run: node scripts/update-readme.mjs
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- README.md; then
+            echo "README already up to date"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "docs(readme): refresh latest posts and featured projects"
+          git push
