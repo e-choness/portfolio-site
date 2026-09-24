@@ -10,6 +10,7 @@ const GAME_IDS = {{ site.data.arcade | map: 'id' | jsonify }};
 // clear, date, ls, echo, neofetch, vim/vi, exit, hi/hello, sudo, games.
 import { store } from './store.js';
 import { sfx } from './sound.js';
+import { loadStats, fmt as num, ago } from './stats-data.js';
 
 export function createTerminal(content, wm, { apps }) {
   let outEl = null;
@@ -278,6 +279,29 @@ export function createTerminal(content, wm, { apps }) {
         print({ text: fmt(TERMINAL.cmd_strings.neofetch_host, { host: TERMINAL.neofetch.host }), kind: 'muted' });
         print({ text: fmt(TERMINAL.cmd_strings.neofetch_shell, { shell: TERMINAL.neofetch.shell }), kind: 'muted' });
         print({ text: fmt(TERMINAL.cmd_strings.neofetch_uptime, { uptime, projects: (content.projects || []).length, posts: (content.posts || []).length }), kind: 'muted' });
+        break;
+      }
+
+      case 'stats': {
+        // Visit statistics from the nightly stats.json, plus build-time site facts.
+        const site = content.site || {};
+        loadStats(content).then((st) => {
+          if (st && st.visits) {
+            print({ text: `visits: ${num(st.visits.last7)} this week · ${num(st.visits.last30)} in 30 days · ${num(st.visits.allTime)} all time`, kind: 'out' });
+            const top = (st.top && st.top.posts && st.top.posts[0]) || null;
+            if (top) {
+              const post = (content.posts || []).find((p) => `/blog/${p.slug}` === top.path);
+              print({ text: `most read: ${(post && post.title) || top.title} (${num(top.count)})`, kind: 'out' });
+            }
+            const app = st.apps && st.apps[0];
+            if (app) print({ text: `most opened window: ${app.id} (${num(app.count)})`, kind: 'out' });
+            print({ text: `updated ${ago(st.generatedAt)}`, kind: 'muted' });
+          } else {
+            print({ text: 'visit stats: not collected yet (the nightly update fills them in)', kind: 'muted' });
+          }
+          print({ text: `site: ${num(site.posts)} posts · ${num(site.projects)} projects · ${num(site.words)} words · ${num(site.diagrams)} diagrams`, kind: 'muted' });
+          print({ text: 'open stats for the full activity monitor', kind: 'muted' });
+        });
         break;
       }
 

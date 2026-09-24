@@ -49,14 +49,6 @@
   desktop_icon: true
   desktop_icon_order: 2
   tab_bar: true
-- id: term
-  label: Terminal
-  glyph: ">_"
-  title: "terminal — echo-sh"
-  x: 240
-  y: 120
-  w: 780
-  h: 500
 - id: arcade
   label: Arcade
   glyph: "▲"
@@ -68,6 +60,22 @@
   desktop_icon: true
   desktop_icon_order: 1
   tab_bar: true
+- id: term
+  label: Terminal
+  glyph: ">_"
+  title: "terminal — echo-sh"
+  x: 240
+  y: 120
+  w: 780
+  h: 500
+- id: stats
+  label: Stats
+  glyph: "↗"
+  title: "stats — activity monitor"
+  x: 220
+  y: 70
+  w: 760
+  h: 660
 - id: guide
   label: Guide
   glyph: "?"

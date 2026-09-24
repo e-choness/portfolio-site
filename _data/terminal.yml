@@ -3,7 +3,7 @@
 
 help:
   - "help · about · whoami · skills · projects · blog · contact"
-  - "open <app> · theme · sound · neofetch · date · ls · clear · reset-windows · exit"
+  - "open <app> · stats · theme · sound · neofetch · date · ls · clear · reset-windows · exit"
   # {games} is filled in from _data/arcade.yml at print time
   - "games: {games}"
   - "fun: git · ping · uname · man · ps · fortune · cat · curl · matrix · coffee"
@@ -41,7 +41,7 @@ cmd_strings:
   profile_line: "{name} — {title} · {location}"
   neofetch_host: "host: {host}"
   neofetch_shell: "shell: {shell}"
-  neofetch_uptime: "uptime: {uptime} years in AI · packages: {projects} projects, {posts} posts"
+  neofetch_uptime: "uptime: {uptime} years in software · packages: {projects} projects, {posts} posts"
   list_item: "• {value}"
   experience_item: "• {role} — {company}"
   education_item: "• {degree} — {school}"

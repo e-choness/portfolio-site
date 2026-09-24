@@ -80,3 +80,5 @@ docs/reference/
 NOTES.md
 PATCH-DIAGNOSIS.md
 # End of https://www.toptal.com/developers/gitignore/api/jekyll
+# Visit stats, fetched by the deploy workflow (scripts/fetch-stats.mjs)
+assets/data/stats.json

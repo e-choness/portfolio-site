@@ -35,7 +35,7 @@
   <link href="{{ '/assets/css/os.css' | relative_url }}" rel="stylesheet" />
 </head>
 <body>
-  <div id="echoos-root" data-base="{{ site.baseurl }}" data-content="{{ '/assets/data/content.json' | relative_url }}"{% if page.notfound %} data-notfound="true"{% endif %}></div>
+  <div id="echoos-root" data-base="{{ site.baseurl }}" data-content="{{ '/assets/data/content.json' | relative_url }}"{% if page.notfound %} data-notfound="true"{% endif %}{% if site.goatcounter != "" and site.goatcounter %} data-goatcounter="{{ site.goatcounter }}"{% endif %}></div>
 
   <!-- Static summary for crawlers, link previewers and no-JS visitors, built
        from the same _data as the OS. Hidden whenever JS runs (html.js). -->

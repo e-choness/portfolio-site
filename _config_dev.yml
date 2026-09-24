@@ -1,3 +1,6 @@
 # Development overrides — loaded after _config.yml for local/dev use
 # Serves site at root (/) instead of /portfolio-site/ for local dev
 baseurl: ""
+
+# Local builds never report visits
+goatcounter: ""

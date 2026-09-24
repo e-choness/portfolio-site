@@ -33,13 +33,22 @@ function write() {
   history.replaceState(null, '', next);
 }
 
+// onItemChange(fn) — fn(app, item) whenever an app starts showing a different
+// item (a post, a project, a game). Re-renders of the same item don't fire it.
+let itemListener = null;
+export function onItemChange(fn) {
+  itemListener = fn;
+}
+
 // writeRoute(app)        — focus changed to `app` (null: nothing focused).
 // writeRoute(app, item)  — `app` is now showing `item` (null: its list/grid).
 export function writeRoute(app, item) {
   if (item === undefined) {
     current = app || null;
   } else if (app) {
+    const prev = items.get(app) || null;
     items.set(app, item || null);
+    if (item && item !== prev && itemListener) itemListener(app, item);
     if (app !== current) return;
   }
   write();

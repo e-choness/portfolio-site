@@ -405,6 +405,7 @@ body:has(#echoos-root) {
   right: 22px;
   display: flex;
   flex-direction: column;
+  align-items: flex-end; // icons stay on the right edge above the wider ticker
   gap: 18px;
   pointer-events: none; // hits pass through the layer; icons opt back in
   z-index: 10;
@@ -554,6 +555,140 @@ body:has(#echoos-root) {
 .os-home {
   display: none;
 }
+// ── desktop telemetry ticker (ticker.js) ──────────────────────────────────
+// A glass readout under the desktop icons; lines scroll upward on a loop.
+.os-ticker {
+  pointer-events: auto;
+  position: relative;
+  width: 228px;
+  margin-top: 6px;
+  padding: 8px 10px 6px;
+  border: 1px solid color-mix(in oklab, var(--accent) 35%, var(--line));
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, var(--glass-sheen), transparent 60%),
+    var(--glass);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+  box-shadow: inset 0 1px 0 var(--glass-hi), 0 8px 24px -12px rgba(30, 20, 60, 0.35);
+  font: 500 10.5px/1 var(--font-mono);
+  color: var(--ink);
+  cursor: pointer;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.4s ease, border-color 0.15s ease;
+}
+.os-ticker.is-ready {
+  opacity: 1;
+}
+.os-ticker:hover {
+  border-color: var(--accent);
+}
+// Faint scanlines over the readout
+.os-ticker::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0 2px,
+    color-mix(in oklab, var(--accent) 7%, transparent) 2px 3px
+  );
+}
+.os-ticker-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 0 0 7px;
+  margin-bottom: 4px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  font: 600 10px var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  cursor: pointer;
+}
+.os-ticker-head:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.os-ticker-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+  animation: os-ticker-pulse 1.6s ease-in-out infinite;
+}
+.os-ticker-live {
+  margin-left: auto;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+}
+.os-ticker-window {
+  height: 116px;
+  overflow: hidden;
+  // fade lines in at the bottom and out at the top
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+}
+.os-ticker-reel {
+  animation: os-ticker-scroll var(--ticker-duration, 40s) linear infinite;
+}
+.os-ticker:hover .os-ticker-reel,
+.os-ticker:focus-within .os-ticker-reel {
+  animation-play-state: paused;
+}
+.os-ticker-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.os-ticker-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 0;
+  white-space: nowrap;
+}
+.os-ticker-label {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.os-ticker-value {
+  color: var(--ink);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@keyframes os-ticker-scroll {
+  to {
+    transform: translateY(-50%); // exactly one of the two identical lists
+  }
+}
+@keyframes os-ticker-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+// Still list for reduced motion; hidden where there's no room for it.
+@media (prefers-reduced-motion: reduce) {
+  .os-ticker-reel,
+  .os-ticker-dot {
+    animation: none;
+  }
+}
+@media (max-height: 640px) {
+  .os-ticker {
+    display: none;
+  }
+}
+
 @media (max-width: 760px) {
   // Desktop icons are redundant under the mobile home grid.
   .os-desktop {

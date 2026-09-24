@@ -1741,3 +1741,259 @@
   background: var(--accent);
   filter: brightness(1.08);
 }
+
+// ── stats (activity monitor) ─────────────────────────────────────────────
+// Same vocabulary as the Skills monitor: mono section heads in the accent,
+// 7px bars on a surface2 track, values in text colours (never the bar colour).
+.os-win[data-app="stats"] .os-win-body {
+  padding: 18px 22px;
+}
+.os-stats-top {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.os-stats-tiles {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.os-stats-tiles li {
+  padding: 12px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.os-stats-tiles strong {
+  display: block;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.os-stats-tiles span {
+  display: block;
+  font: 500 10px var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.os-stats-section {
+  margin-bottom: 18px;
+}
+.os-stats-head {
+  margin: 0 0 8px;
+  font: 600 10.5px var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+// Daily visits column chart
+.os-stats-chart {
+  position: relative;
+  max-width: 720px;
+  border-radius: var(--r-ctl);
+}
+.os-stats-chart:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+.os-stats-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.os-stats-baseline {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.os-stats-col {
+  fill: color-mix(in oklab, var(--accent) 45%, var(--surface));
+  transition: fill 0.12s ease;
+}
+.os-stats-col.is-latest,
+.os-stats-colgroup.is-active .os-stats-col {
+  fill: var(--accent);
+}
+.os-stats-hit {
+  fill: transparent;
+}
+.os-stats-tip {
+  position: absolute;
+  top: -6px;
+  transform: translate(-50%, -100%);
+  padding: 4px 8px;
+  font: 600 11px var(--font-mono);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.os-stats-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font: 500 10.5px var(--font-mono);
+  color: var(--muted);
+}
+.os-stats-table {
+  margin-top: 8px;
+  font: 500 11px var(--font-mono);
+  color: var(--muted);
+}
+.os-stats-table summary {
+  cursor: pointer;
+}
+.os-stats-table table {
+  margin-top: 6px;
+  border-collapse: collapse;
+}
+.os-stats-table td,
+.os-stats-table th {
+  padding: 2px 16px 2px 0;
+  text-align: left;
+  color: var(--ink);
+}
+
+// Horizontal bars: apps, games, countries
+.os-stats-bars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.os-stats-bar {
+  display: grid;
+  grid-template-columns: minmax(90px, 160px) 1fr 48px;
+  align-items: center;
+  gap: 12px;
+}
+.os-stats-bar-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.os-stats-bar-track {
+  height: 7px;
+  background: var(--surface2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.os-stats-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 0 4px 4px 0;
+}
+.os-stats-bar-value {
+  font: 600 11px var(--font-mono);
+  color: var(--muted);
+  text-align: right;
+}
+
+// Ranked posts / projects: number · title · count on one baseline
+.os-stats-rank {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  counter-reset: rank;
+}
+.os-stats-rank li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  counter-increment: rank;
+}
+.os-stats-rank li::before {
+  content: counter(rank) ".";
+  flex: none;
+  width: 18px;
+  font: 600 11px var(--font-mono);
+  color: var(--muted);
+}
+.os-stats-rank-title {
+  flex: 1;
+  min-width: 0;
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+a.os-stats-rank-title:hover {
+  color: var(--accent);
+}
+.os-stats-rank-count {
+  flex: none;
+  font: 600 11px var(--font-mono);
+  color: var(--muted);
+}
+
+.os-stats-facts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.os-stats-facts strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+.os-stats-note {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 18px;
+}
+.os-stats-foot {
+  font: 500 10.5px/1.6 var(--font-mono);
+  color: var(--muted);
+  margin: 4px 0 0;
+}
+
+@media (max-width: 760px) {
+  .os-stats-tiles {
+    gap: 6px;
+  }
+  .os-stats-tiles li {
+    padding: 10px;
+  }
+  .os-stats-tiles strong {
+    font-size: 16px;
+  }
+  .os-stats-tiles span {
+    font-size: 9px;
+    letter-spacing: 0.04em;
+  }
+  .os-stats-bar {
+    grid-template-columns: 96px 1fr 40px;
+  }
+}
+
+// Blog read counts (nightly stats / live counter); empty until a count exists.
+.os-blog-row-reads {
+  display: block;
+  font: 500 10.5px var(--font-mono);
+  color: var(--muted);
+  margin-top: 3px;
+}
+.os-blog-row-reads:empty {
+  display: none;
+}

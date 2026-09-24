@@ -109,5 +109,25 @@ permalink: /assets/data/content.json
   {% endfor %}
   ],
   "apps": {{ site.data.apps | jsonify }},
-  "guide": {{ site.data.guide | jsonify }}
+  "guide": {{ site.data.guide | jsonify }},
+  {%- comment -%} Build-time facts for the Stats app. Posts are rendered before
+  this page, so post.content is HTML here. {%- endcomment -%}
+  {%- assign words = 0 -%}{%- assign diagrams = 0 -%}
+  {%- for post in site.posts -%}
+    {%- assign w = post.content | strip_html | number_of_words -%}
+    {%- assign words = words | plus: w -%}
+    {%- assign d = post.content | split: 'language-mermaid' | size | minus: 1 -%}
+    {%- assign diagrams = diagrams | plus: d -%}
+  {%- endfor %}
+  "site": {
+    "posts": {{ site.posts | size }},
+    "projects": {{ site.projects | size }},
+    "words": {{ words }},
+    "diagrams": {{ diagrams }},
+    "commits": {{ site.build_stats.commits | jsonify }},
+    "lastCommit": {{ site.build_stats.last_commit | jsonify }},
+    "builtAt": {{ site.time | date_to_xmlschema | jsonify }},
+    "statsUrl": {{ '/assets/data/stats.json' | relative_url | jsonify }}
+  },
+  "gameNames": { {% for g in site.data.arcade %}{{ g.id | jsonify }}: {{ g.name | jsonify }}{% unless forloop.last %}, {% endunless %}{% endfor %} }
 }

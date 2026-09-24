@@ -15,10 +15,13 @@ import { renderAbout } from './apps/about.js';
 import { renderExperience } from './apps/experience.js';
 import { renderProjects } from './apps/projects.js';
 import { renderSkills } from './apps/skills.js';
+import { renderStats } from './apps/stats.js';
+import { initTicker } from './ticker.js';
 import { renderBlog } from './apps/blog.js';
 import { renderArcade } from './apps/arcade.js';
 import { renderNotFound } from './apps/notfound.js';
-import { readRoute, writeRoute } from './router.js';
+import { readRoute, writeRoute, onItemChange } from './router.js';
+import { trackView, trackEvent } from './analytics.js';
 
 const root = document.getElementById('echoos-root');
 if (!root) throw new Error('EchoOS: #echoos-root not found');
@@ -120,6 +123,18 @@ function initOS(content, route = null, missing = null) {
   // System apps (the 404 window) never appear in Spotlight or the terminal.
   const launchable = apps.filter((a) => !a.system);
 
+  // Visit counting (analytics.js): one view per load, then one per post or
+  // project opened, one event per game started or resume shown.
+  const openedApps = new Set();
+  trackView(missing !== null ? '/404' : '/', missing !== null ? missing : 'Desktop');
+  const titleOf = (list, slug) => ((list || []).find((x) => x.slug === slug) || {}).title;
+  onItemChange((app, item) => {
+    if (app === 'blog') trackView(`/blog/${item}`, titleOf(content.posts, item));
+    else if (app === 'proj') trackView(`/projects/${item}`, titleOf(content.projects, item));
+    else if (app === 'arcade') trackEvent(`game:${item}`);
+    else if (app === 'exp' && item === 'resume') trackEvent('resume:view');
+  });
+
   const notifications = initNotifications(root, {
     portrait: content.profile && content.profile.portrait,
     stats: (content.profile && content.profile.stats) || [],
@@ -144,12 +159,19 @@ function initOS(content, route = null, missing = null) {
     },
     onWindowsChanged: (openIds, minIds) => {
       if (shellRef.current) shellRef.current.setOpenApps(openIds, minIds);
+      // Count each window as it opens (not on focus changes or re-renders).
+      for (const id of openIds) {
+        if (!openedApps.has(id) && launchable.some((a) => a.id === id)) trackEvent(`app:${id}`);
+      }
+      openedApps.clear();
+      for (const id of openIds) openedApps.add(id);
     },
     renderers: {
       about: renderAbout,
       exp: renderExperience,
       proj: renderProjects,
       skills: renderSkills,
+      stats: renderStats,
       blog: renderBlog,
       arcade: renderArcade,
       guide: (bodyEl, ctx) => renderGuide(bodyEl, { wm, openSpotlight: () => spotlight.toggle(), content: ctx.content }),
@@ -190,6 +212,9 @@ function initOS(content, route = null, missing = null) {
   });
   shellRef.current = shell;
 
+  // Desktop telemetry panel under the desktop icons; opens the Stats app.
+  initTicker(root, { content, onOpen: () => wm.openApp('stats') });
+
   function openRoute(r) {
     wm.openApp(r.app);
     const ev = r.item && ITEM_EVENTS[r.app] && ITEM_EVENTS[r.app](r.item);
@@ -200,6 +225,13 @@ function initOS(content, route = null, missing = null) {
   // but those are only redirect stubs now. Links to them inside the OS (chapter
   // links in posts, project write-ups, the resume) open the item in its window
   // instead of loading the stub. Modified clicks (new tab etc.) are left alone.
+  // The resume download counts however it's clicked (including new-tab clicks).
+  const onResumeDownload = (e) => {
+    if (e.target.closest('.os-resume-dl')) trackEvent('resume:download');
+  };
+  root.addEventListener('click', onResumeDownload);
+  root.addEventListener('auxclick', onResumeDownload);
+
   const inApp = new Map();
   for (const p of content.posts || []) if (p.url) inApp.set(p.url, { app: 'blog', item: p.slug });
   for (const p of content.projects || []) if (p.url) inApp.set(p.url, { app: 'proj', item: p.slug });

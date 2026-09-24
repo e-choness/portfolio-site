@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: "17 7 * * *"          # nightly rebuild to refresh visit stats (07:17 UTC)
 
 permissions:
   contents: read
@@ -29,6 +31,14 @@ jobs:
 
       - id: pages
         uses: actions/configure-pages@v5
+
+      # Visit stats for the Stats app (assets/data/stats.json, git-ignored).
+      # A GoatCounter outage or missing token must never block a deploy.
+      - name: Fetch visit stats
+        continue-on-error: true
+        env:
+          GOATCOUNTER_TOKEN: ${{ secrets.GOATCOUNTER_TOKEN }}
+        run: node scripts/fetch-stats.mjs echoness
 
       - name: Build site
         env:

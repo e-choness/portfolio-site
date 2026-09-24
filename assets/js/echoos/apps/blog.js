@@ -9,6 +9,8 @@
 // the current site" note + link remains as the fallback.
 import { url, base } from '../base.js';
 import { writeRoute } from '../router.js';
+import { loadStats, fmt } from '../stats-data.js';
+import { liveCount } from '../analytics.js';
 
 function esc(s) {
   const d = document.createElement('div');
@@ -234,6 +236,7 @@ export function renderBlog(bodyEl, { content, toast }) {
         <span class="os-blog-row-main">
           <span class="os-blog-row-title">${esc(p.title)}</span>
           <span class="os-blog-row-excerpt">${esc(p.excerpt || '')}</span>
+          <span class="os-blog-row-reads" data-path="/blog/${esc(p.slug)}"></span>
         </span>`;
       row.addEventListener('click', () => {
         state.sel = posts.indexOf(p);
@@ -241,6 +244,15 @@ export function renderBlog(bodyEl, { content, toast }) {
       });
       rowsEl.appendChild(row);
     }
+
+    // Read counts from the nightly stats (all time); rows stay clean without them.
+    loadStats(content).then((stats) => {
+      const pages = (stats && stats.pages) || {};
+      for (const el of rowsEl.querySelectorAll('.os-blog-row-reads')) {
+        const n = pages[el.dataset.path];
+        if (n) el.textContent = `${fmt(n)} read${n === 1 ? '' : 's'}`;
+      }
+    });
 
     // Pagination
     if (totalPages <= 1) return;
@@ -301,7 +313,7 @@ export function renderBlog(bodyEl, { content, toast }) {
         <button type="button" class="os-blog-back">‹ all posts</button>
         <button type="button" class="os-blog-back os-blog-copy">copy link</button>
       </div>
-      <div class="os-blog-meta">${catOf(post) ? esc(catOf(post)) + ' · ' : ''}${esc(post.date || '')}</div>
+      <div class="os-blog-meta">${catOf(post) ? esc(catOf(post)) + ' · ' : ''}${esc(post.date || '')}<span class="os-blog-meta-reads"></span></div>
       <h1 class="os-blog-h1">${esc(post.title)}</h1>
       ${imageHtml}
       <div class="os-blog-loading">Loading…</div>
@@ -342,6 +354,17 @@ export function renderBlog(bodyEl, { content, toast }) {
     });
 
     const updateProgress = trackProgress();
+
+    // Read count: live from GoatCounter's public counter, else the nightly total.
+    const readsEl = app.querySelector('.os-blog-meta-reads');
+    const readsPath = `/blog/${post.slug}`;
+    liveCount(readsPath).then(async (n) => {
+      if (n == null) {
+        const stats = await loadStats(content);
+        n = stats && stats.pages && stats.pages[readsPath];
+      }
+      if (n && readsEl && readsEl.isConnected) readsEl.textContent = ` · ${fmt(n)} read${n === 1 ? '' : 's'}`;
+    });
 
     const heroImg = app.querySelector('.os-blog-image');
     if (heroImg) heroImg.addEventListener('error', () => heroImg.remove(), { once: true });

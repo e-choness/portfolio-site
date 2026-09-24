@@ -4,6 +4,10 @@ baseurl: "/portfolio-site" # the subpath of your site, e.g. /blog
 repository: e-choness/portfolio-site
 url: "https://e-choness.github.io" # hostname + protocol; baseurl is the subpath
 
+# Visit statistics (GoatCounter site code). Empty in _config_dev.yml, so local
+# builds never count. See assets/js/echoos/analytics.js.
+goatcounter: echoness
+
 # Build settings
 markdown: kramdown
 highlighter: rouge
@@ -26,6 +30,7 @@ exclude:
   - vendor/
   - docs/
   - .github/
+  - scripts/
 
 # Collections
 collections:
