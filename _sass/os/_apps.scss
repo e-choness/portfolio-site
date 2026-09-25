@@ -588,6 +588,11 @@
 .os-proj-demo:hover {
   color: var(--accent);
 }
+.os-proj-demo.is-pending {
+  color: var(--muted);
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 .os-proj-repo {
   color: var(--muted);
 }

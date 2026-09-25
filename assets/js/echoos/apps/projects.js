@@ -13,7 +13,8 @@ const state = { sel: null };
 // Deep-link / router listener, replaced on every render (see blog.js onOpenPost).
 let onOpenProject = null;
 
-// Outbound links, in display order: live/store, repository, website.
+// Outbound links, in display order: live/store, docs, repository, website.
+// `live_pending` shows the demo link greyed out until there is a live_url.
 function projectLinks(p, className) {
   const links = document.createElement('div');
   links.className = className;
@@ -27,7 +28,16 @@ function projectLinks(p, className) {
     a.textContent = `${text} ↗`;
     links.appendChild(a);
   };
-  add(p.demo, 'os-proj-demo', p.demoLabel || 'Live Demo');
+  if (p.demo) add(p.demo, 'os-proj-demo', p.demoLabel || 'Live Demo');
+  else if (p.demoPending) {
+    const s = document.createElement('span');
+    s.className = 'os-proj-demo is-pending';
+    s.title = 'Not deployed yet';
+    s.setAttribute('aria-disabled', 'true');
+    s.textContent = `${p.demoLabel || 'Live Demo'} ↗`;
+    links.appendChild(s);
+  }
+  add(p.docs, 'os-proj-repo', 'Docs');
   add(p.repo, 'os-proj-repo', 'GitHub');
   add(p.website, 'os-proj-repo', 'Website');
   return links;

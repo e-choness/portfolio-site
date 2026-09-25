@@ -77,6 +77,7 @@ const firstSentence = (s = '') => {
 const links = (p) =>
   [
     `[open in EchoOS](${site}#/proj/${p.slug})`,
+    p.docs_url && `[docs](${p.docs_url})`,
     p.github_url && `[code](${p.github_url})`,
     p.live_url && `[${(p.live_label || 'live').toLowerCase()}](${p.live_url})`,
   ].filter(Boolean).join(' · ');

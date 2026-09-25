@@ -57,6 +57,8 @@ permalink: /assets/data/content.json
       "cat": {{ p.categories | first | jsonify }},
       "demo": {{ p.live_url | jsonify }},
       "demoLabel": {{ p.live_label | default: "Live Demo" | jsonify }},
+      "demoPending": {{ p.live_pending | default: false | jsonify }},
+      "docs": {{ p.docs_url | jsonify }},
       "repo": {{ p.github_url | jsonify }},
       "website": {{ p.website_url | jsonify }},
       "image": {{ p.image | relative_url | jsonify }},
