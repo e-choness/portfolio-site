@@ -1,6 +1,6 @@
 ---
 title: "Aegis AI Gateway"
-description: "A plugin-first AI gateway framework. A small kernel plus seven contracts puts a governed, observable, provider-agnostic pipeline between your apps and any LLM. Built with FastAPI, LangGraph, and Docker."
+description: "A self-hosted AI gateway that shows its work. Guardrails, human approvals, and a tamper-evident audit trail between your apps and any LLM, behind an OpenAI-compatible endpoint and configured in one YAML file. Built with FastAPI, LangGraph, and Docker."
 image: "assets/images/projects/aegis.jpg"
 technologies:
   - Python
@@ -19,49 +19,51 @@ order: 2
 ---
 ## Project Overview
 
-**Aegis is the governed gateway where every safeguard is a plugin.** It sits between your applications and any LLM provider and turns fragmented, ungoverned model calls into a single auditable pipeline — guardrails, PII masking, routing, budgets, and tool governance — without locking you into any one vendor or any one policy.
+**Aegis is a self-hosted AI gateway that shows its work.** It sits between your applications and any LLM provider and tells you exactly why a request was blocked, masked, or paused. It also keeps a hash-chained record of every one of those decisions. That kind of structured audit is a paid-tier feature on most gateways. In Aegis it's on by default from the moment the server starts.
 
-The v2 rewrite is built on one structural bet: the kernel knows *nothing* about what the pipeline does. It discovers plugins, validates typed config, resolves secrets, and compiles the request lifecycle into a LangGraph state machine. Everything with an opinion — providers, guardrails, RAG stores, secret backends, telemetry, authenticators — implements one of seven published contracts. Aegis's own governance features ship as optional policy packs built on those same public contracts, which is the permanent proof the plugin API is complete.
+It's one install: `pip install aegis-gateway`, then `aegis init` and `aegis serve`. Point any OpenAI client at it and the `model` field picks an Aegis route. Routes, providers, guardrails, and approval rules all live in one `aegis.yaml`, so no code changes are needed.
+
+The kernel knows *nothing* about what the pipeline does. It discovers plugins, validates typed config, and compiles the request lifecycle into a LangGraph state machine. Everything with an opinion implements a public contract, including Aegis's own policy packs. That is the proof that the plugin API is complete.
 
 [Detailed documentation](https://e-choness.github.io/aegis/)
 
 ## Features
 
-- **Plugin-first kernel**: Seven contracts (providers, guardrails, RAG, secrets, telemetry, pipeline nodes, authenticators) discovered via Python entry points — extend the gateway without touching core.
-- **Pipeline as a graph**: Request lifecycle is a LangGraph `StateGraph`, so compliance rules are auditable edges, not buried `if` statements.
-- **Configurable guardrails**: Four-verdict model (allow / block / sanitize / require_approval) behind one contract; LLM Guard ships as the default adapter, anything else plugs in.
-- **Provider hot-swapping**: LiteLLM-backed default provider plus a generic OpenAI-compatible type; switch models per request, per route, or from the CLI.
-- **Governed tool & RAG traffic**: MCP tool calls and retrieved documents pass the same guard chain — the traffic most gateways ignore.
-- **Human-in-the-loop**: Any guard can pause a run; runs checkpoint, survive restarts, and resume from API or CLI.
-- **Drop-in compatibility**: An OpenAI-compatible endpoint means existing SDKs, CLIs, and chat UIs adopt Aegis by changing one base URL.
-- **Optional policy packs**: Data classification, residency (fail-closed routing), per-team budgets, and Presidio-based PII masking — install only what you need.
-- **Observability**: OpenTelemetry core with Prometheus/Grafana and tracing exporters as opt-in plugins.
+- **Four verdicts, nothing else**: Every guardrail returns `allow`, `sanitize`, `block`, or `require_approval`. Every verdict is recorded, including `allow`.
+- **Human-in-the-loop**: A guard can pause a run for a named reviewer. The run is checkpointed and resumes from the CLI, REST, or the `/approvals` page.
+- **Evidence ledger**: A hash-chained record of route inventory and run evidence. `aegis audit export` / `verify` proves the history is intact offline, without trusting the server. Masked PII never reaches the ledger.
+- **`aegis explain`**: A per-run verdict trail that shows which guard fired, why, who signed off, and whether the provider was ever called.
+- **Compliance reporting**: `aegis report summary` and `GET /v1/audit/report` roll up route inventory, run stats, and chain length. The reports follow OSFI E-23 model-risk expectations, and each route has an owner, a risk rating, and a review interval.
+- **Policy packs**: PII masking (Presidio), residency (fail-closed routing), classification, budgets, and an LLM Guard adapter. They are pip-installable, so you only install what you need.
+- **Drop-in compatibility**: `/v1/chat/completions` with SSE streaming, plus a native `/v1/runs` API with approvers and background runs.
+- **Plugin-first**: A guardrail is a class with a `scan()` method. `aegis plugin new` scaffolds one with contract tests that already pass.
+- **Honest status**: Aegis is at 2.0.0a0 (alpha). The docs keep a table of what's wired into `aegis serve` and what's only available as a Python API so far.
 
 ## Tech Stack
 
 ### Framework Core
 
-- **Language**: Python 3.12, fully typed
-- **Pipeline**: LangGraph 1.x state machine over a typed `RunState`
+- **Language**: Python 3.12, fully typed (ruff + pyright), uv workspace of 10 packages
+- **Pipeline**: LangGraph 1.x state machine over a typed `RunState`, with `ingress` / `egress` guard stages and per-route overrides
 - **Plugins**: `importlib.metadata` entry points + pluggy hooks
-- **Config**: pydantic v2 + pydantic-settings, `secret://` references
+- **Config**: pydantic v2 + pydantic-settings, `secret://` references, and a SHA-256 config digest stamped on every run
 
 ### Serving & Identity
 
-- **API**: FastAPI — native `/v1/runs` plus OpenAI-compatible `/v1/chat/completions`
-- **Streaming**: SSE with compile-time guardrail capability negotiation
-- **Identity**: Virtual API keys resolving to a `Principal` (level L2; principal-aware, not multi-tenant)
+- **API**: FastAPI with OpenAI-compatible `/v1/chat/completions`, native `/v1/runs`, and `/v1/audit`
+- **Streaming**: SSE with guardrail capability negotiation (true streaming vs buffered)
+- **Identity**: `aeg-…` virtual API keys that resolve to a `Principal`
 
 ### Integrations
 
-- **Providers**: LiteLLM (~100 providers) + OpenAI-compatible generic
-- **Guardrails**: LLM Guard adapter (default), Presidio PII pack
-- **Tools**: Model Context Protocol — Aegis consumes MCP tools and exposes itself as an MCP server
-- **RAG**: own thin Protocols with a LangChain store adapter; Chroma (dev), pgvector (prod)
+- **Providers**: LiteLLM-backed (Anthropic and others), OpenAI-compatible generic, and a `fake` provider for zero-credential demos
+- **Guardrails**: Presidio PII, residency, classification, budgets, and LLM Guard packs
+- **Tools**: Model Context Protocol, where Aegis consumes MCP tools and exposes itself as an MCP server
+- **RAG**: thin retrieval Protocols with a LangChain store adapter, Chroma (dev) and pgvector (prod)
 
 ### Infrastructure
 
-- **Persistence**: PostgreSQL (SQLite for dev), SQLAlchemy 2 + Alembic
-- **Checkpointing**: LangGraph savers (SQLite / Postgres) for durable, resumable runs
-- **Containerization**: Docker Compose, observability as an opt-in profile
-- **SDKs**: first-party Python + TypeScript; published OpenAPI spec for generated clients
+- **Evidence**: SQLite hash-chained ledger with canonical-JSON `sha256` records
+- **Checkpointing**: LangGraph savers (SQLite / Postgres) for durable, resumable approvals
+- **Containerization**: Docker Compose, with observability as an opt-in profile
+- **Tooling**: `aegis` CLI, Python + TypeScript SDKs, a published OpenAPI spec, and contract test kits
