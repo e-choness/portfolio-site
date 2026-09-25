@@ -14,6 +14,10 @@ Jekyll::Hooks.register :site, :post_write do |site|
       "date"  => post.date.strftime("%b %-d, %Y"),
       "html"  => converter.convert(post.content)
     }
+    # Front-matter excerpt (a String; Jekyll's auto excerpt is an object and
+    # would only repeat the first paragraph) becomes the reader's lede, untruncated.
+    excerpt = post.data["excerpt"]
+    payload["excerpt"] = excerpt.strip if excerpt.is_a?(String)
     # Include image if present in frontmatter, prefixed with baseurl
     if post.data["image"]
       payload["image"] = File.join(site.config["baseurl"].to_s, post.data["image"].sub(%r{\A/}, ''))

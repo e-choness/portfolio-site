@@ -1,7 +1,7 @@
 // apps/blog.js — Blog window, prototype layout (EchoOS.dc.html lines 260-316):
 // toolbar (⌕ search, category dropdown with ✓ marks, filtered/total count),
 // flat post rows (82px date / title / 2-line clamp excerpt / cat badge) and a
-// reading view (‹ all posts, cat · date, h1, hero image) followed by the full
+// reading view (‹ all posts, cat · date, h1, hero image, excerpt lede) then the full
 // markdown post rendered in-window from the per-post JSON
 // (_plugins/post_json.rb → assets/data/posts/<slug>.json). Mermaid and markmap
 // blocks are transformed exactly like the classic route so existing markdown
@@ -385,7 +385,7 @@ export function renderBlog(bodyEl, { content, toast }) {
       const data = await res.json();
       const article = document.createElement('article');
       article.className = 'os-post';
-      article.innerHTML = `<div class="os-post-body">${data.html || ''}</div>`;
+      article.innerHTML = `${data.excerpt ? `<p class="os-blog-excerpt">${esc(data.excerpt)}</p>` : ''}<div class="os-post-body">${data.html || ''}</div>`;
       holder.innerHTML = '';
       holder.appendChild(article);
       await renderDiagrams(article);
