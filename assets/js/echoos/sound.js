@@ -7,12 +7,20 @@ function ensureCtx() {
   const AC = window.AudioContext || window.webkitAudioContext;
   if (!AC) return null;
   if (!ctx) ctx = new AC();
-  if (ctx.state === 'suspended') ctx.resume();
+  // 'suspended' before a gesture; iOS also parks it in 'interrupted' after a
+  // call or a trip to the background.
+  if (ctx.state !== 'running') {
+    const p = ctx.resume();
+    if (p) p.catch(() => {});
+  }
   return ctx;
 }
 
 export function beep(freq = 700, dur = 0.06, type = 'sine') {
   if (store.get().sound !== 'on') return;
+  // Before any gesture a new context would start suspended (the boot chirp on
+  // a phone), so skip it instead of queueing a beep that plays late.
+  if (!ctx && navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
   const ac = ensureCtx();
   if (!ac) return;
   try {
@@ -44,10 +52,24 @@ export const sfx = {
   bootB: () => beep(880, 0.1),
 };
 
-export function resumeAudio() {
-  if (ctx && ctx.state === 'suspended') ctx.resume();
+// Unlock audio on a user gesture. Browsers only let a context start from a
+// user activation, and for touch that is pointerup/touchend — not pointerdown,
+// which is why sound never started on phones. The listeners stay until the
+// context runs, so a failed or interrupted unlock retries on the next tap.
+function unlockAudio() {
+  if (ctx && ctx.state === 'running') return;
+  if (store.get().sound !== 'on') return;
+  const ac = ensureCtx();
+  if (!ac) return;
+  // Older iOS only unmutes once a source has started inside the gesture.
+  try {
+    const src = ac.createBufferSource();
+    src.buffer = ac.createBuffer(1, 1, 22050);
+    src.connect(ac.destination);
+    src.start(0);
+  } catch { /* decorative */ }
 }
 
-// Resume a suspended AudioContext on the first user gesture.
-document.addEventListener('pointerdown', resumeAudio, { once: true });
-document.addEventListener('keydown', resumeAudio, { once: true });
+for (const type of ['pointerup', 'touchend', 'click', 'keydown']) {
+  document.addEventListener(type, unlockAudio, { capture: true, passive: true });
+}

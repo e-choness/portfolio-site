@@ -1,0 +1,82 @@
+// os/_cursor.scss — EchoOS cursor set. One slim pointer shape shared by the
+// default and link states (link = accent fill + dot), with ring/dot glyphs for
+// grab, text, resize, crosshair and not-allowed. Each is an inline SVG with a
+// halo stroke so it reads on both glass and wallpaper. Data URIs can't read
+// CSS variables, so the set is emitted once per theme as --cur-* tokens with
+// the colours below mirrored from abstracts/tokens. Every token ends with the
+// native keyword as a fallback.
+@use "sass:map";
+@use "sass:string";
+
+$cursor-themes: (
+  light: (ink: #1d1a2c, accent: #6a5ad6, muted: #645f7b, halo: #ffffff),
+  dark:  (ink: #ecebf5, accent: #a597f2, muted: #a09bbb, halo: #0f0f19),
+);
+
+@function _replace($s, $from, $to) {
+  $i: string.index($s, $from);
+  @while $i {
+    $s: string.slice($s, 1, $i - 1) + $to + string.slice($s, $i + string.length($from));
+    $i: string.index($s, $from);
+  }
+  @return $s;
+}
+
+@function _svg($body) {
+  $s: "<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32' fill='none' stroke-linecap='round' stroke-linejoin='round'>#{$body}</svg>";
+  $s: _replace($s, "%", "%25");
+  $s: _replace($s, "#", "%23");
+  $s: _replace($s, "<", "%3C");
+  $s: _replace($s, ">", "%3E");
+  @return string.unquote('url("data:image/svg+xml,#{$s}")');
+}
+
+// Shared shapes (32×32 canvas).
+$_arrow: "M6 4v17.5l4.8-4.4 7.7-.4z";
+$_ibeam: "M12.5 6.5c1.8 0 3 .5 3.5 1.5.5-1 1.7-1.5 3.5-1.5M16 8v16M12.5 25.5c1.8 0 3-.5 3.5-1.5.5 1 1.7 1.5 3.5 1.5M13.5 16h5";
+$_resize: "M10 10l12 12M10 10h5M10 10v5M22 22h-5M22 22v-5";
+$_cross: "M16 6v6M16 20v6M6 16h6M20 16h6";
+$_block: "M11.2 20.8l9.6-9.6";
+
+@mixin _cursor-tokens($c) {
+  $ink: map.get($c, ink);
+  $acc: map.get($c, accent);
+  $mut: map.get($c, muted);
+  $halo: map.get($c, halo);
+
+  --cur-default: #{_svg("<path d='#{$_arrow}' fill='#{$ink}' stroke='#{$halo}' stroke-width='1.6'/>")} 6 4, default;
+  --cur-pointer: #{_svg("<path d='#{$_arrow}' fill='#{$acc}' stroke='#{$halo}' stroke-width='1.6'/><circle cx='20' cy='22' r='2.6' fill='#{$acc}' stroke='#{$halo}' stroke-width='1.4'/>")} 6 4, pointer;
+  --cur-text: #{_svg("<path d='#{$_ibeam}' stroke='#{$halo}' stroke-width='4'/><path d='#{$_ibeam}' stroke='#{$ink}' stroke-width='1.6'/>")} 16 16, text;
+  --cur-grab: #{_svg("<circle cx='16' cy='16' r='7' stroke='#{$halo}' stroke-width='4.4'/><circle cx='16' cy='16' r='7' stroke='#{$acc}' stroke-width='2'/><circle cx='16' cy='16' r='1.8' fill='#{$acc}' stroke='#{$halo}' stroke-width='1.2'/>")} 16 16, grab;
+  --cur-grabbing: #{_svg("<circle cx='16' cy='16' r='5' fill='#{$acc}' stroke='#{$halo}' stroke-width='1.6'/><circle cx='16' cy='16' r='9' stroke='#{$acc}' stroke-opacity='.35' stroke-width='1.4'/>")} 16 16, grabbing;
+  --cur-resize: #{_svg("<path d='#{$_resize}' stroke='#{$halo}' stroke-width='4.4'/><path d='#{$_resize}' stroke='#{$ink}' stroke-width='1.8'/>")} 16 16, nwse-resize;
+  --cur-crosshair: #{_svg("<path d='#{$_cross}' stroke='#{$halo}' stroke-width='4'/><path d='#{$_cross}' stroke='#{$acc}' stroke-width='1.6'/><circle cx='16' cy='16' r='1.6' fill='#{$acc}'/>")} 16 16, crosshair;
+  --cur-not-allowed: #{_svg("<circle cx='16' cy='16' r='6.8' stroke='#{$halo}' stroke-width='4.2'/><path d='#{$_block}' stroke='#{$halo}' stroke-width='4.2'/><circle cx='16' cy='16' r='6.8' stroke='#{$mut}' stroke-width='1.8'/><path d='#{$_block}' stroke='#{$mut}' stroke-width='1.8'/>")} 16 16, not-allowed;
+}
+
+:root {
+  @include _cursor-tokens(map.get($cursor-themes, light));
+}
+[data-echo-theme="dark"] {
+  @include _cursor-tokens(map.get($cursor-themes, dark));
+}
+
+// Base states. Component rules use var(--cur-*) directly; these cover the
+// elements that otherwise fall back to the native auto cursor. A custom
+// default can't switch to an I-beam over text by itself the way `auto` does,
+// so selectable copy inside windows opts into --cur-text explicitly.
+body {
+  cursor: var(--cur-default);
+}
+:where(a[href], summary, label[for]) {
+  cursor: var(--cur-pointer);
+}
+:where(input:not([type="button"], [type="submit"], [type="checkbox"], [type="radio"], [type="range"]), textarea, [contenteditable="true"]) {
+  cursor: var(--cur-text);
+}
+:where(.os-win-body) :where(p, li:not([role="button"]), h1, h2, h3, h4, h5, h6, blockquote, pre, td, th, dd, dt, figcaption) {
+  cursor: var(--cur-text);
+}
+:where(:disabled) {
+  cursor: var(--cur-default);
+}

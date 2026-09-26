@@ -40,7 +40,7 @@
   background: var(--surface2);
   border: 1px solid var(--line);
   border-radius: 12px;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   text-align: left;
   font: inherit;
   transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
@@ -154,7 +154,7 @@
   border: 1px solid var(--line);
   border-radius: 6px;
   padding: 4px 8px;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: color 0.15s ease, border-color 0.15s ease;
 }
 .os-arcade-back:hover {
@@ -191,7 +191,7 @@
   border: 1px solid var(--line);
   border-radius: 6px;
   padding: 4px 8px;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: color 0.15s ease, border-color 0.15s ease;
   &:hover {
     color: var(--accent);
@@ -212,7 +212,7 @@
   border: 0;
   border-radius: 8px;
   padding: 6px 12px;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: filter 0.15s ease;
 }
 .os-arcade-restart:hover {
@@ -282,7 +282,7 @@
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--surface2);
-  cursor: crosshair;
+  cursor: var(--cur-crosshair);
   touch-action: none;
 }
 
@@ -316,7 +316,7 @@
   color: var(--accent);
   touch-action: none;
   user-select: none;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: background 0.1s ease, border-color 0.1s ease;
 }
 .os-pad-btn:active {

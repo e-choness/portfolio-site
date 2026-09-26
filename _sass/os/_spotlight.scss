@@ -82,7 +82,7 @@
   background: none;
   border: 0;
   border-radius: 9px;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   text-align: left;
 }
 .os-spotlight-item:hover,

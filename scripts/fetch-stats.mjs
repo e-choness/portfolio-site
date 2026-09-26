@@ -14,7 +14,10 @@ const token = process.env.GOATCOUNTER_TOKEN;
 const outFile = new URL('../assets/data/stats.json', import.meta.url);
 
 if (!token) {
-  console.log('fetch-stats: GOATCOUNTER_TOKEN is not set; skipping.');
+  // In CI a missing token means the Stats app ships empty; say so on the run
+  // page instead of passing silently.
+  const msg = 'fetch-stats: GOATCOUNTER_TOKEN is not set; skipping.';
+  console.log(process.env.GITHUB_ACTIONS ? `::warning::${msg} The Stats app will show no visit data.` : msg);
   process.exit(0);
 }
 

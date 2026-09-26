@@ -21,7 +21,7 @@
   gap: 6px;
   background: none;
   border: 0;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
 }
 .os-dock-item:hover .os-dock-tile {
   border-color: var(--accent);

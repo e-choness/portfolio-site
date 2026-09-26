@@ -16,7 +16,7 @@
   font-size: 12px;
   font-weight: 600;
   text-decoration: none;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: filter 0.15s ease;
 }
 .os-btn:hover {
@@ -56,7 +56,7 @@
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 4px 10px;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 .os-chip-btn:hover {
@@ -79,7 +79,7 @@
   border: 1px solid var(--line);
   background: transparent;
   color: var(--muted);
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 .os-tab-btn[aria-selected="true"] {
@@ -447,7 +447,7 @@
   color: var(--ink);
   text-decoration: none;
   display: block;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   background: none;
   border: 0;
   padding: 0;
@@ -496,7 +496,7 @@
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 5px 10px;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   margin: 4px 0 14px;
   white-space: nowrap;
 }
@@ -591,7 +591,7 @@
 .os-proj-demo.is-pending {
   color: var(--muted);
   opacity: 0.45;
-  cursor: not-allowed;
+  cursor: var(--cur-not-allowed);
 }
 .os-proj-repo {
   color: var(--muted);
@@ -741,7 +741,7 @@
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 6px 10px;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   white-space: nowrap;
 }
 .os-blog-cat-btn:hover {
@@ -785,7 +785,7 @@
   border: 0;
   border-radius: 7px;
   padding: 7px 9px;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   white-space: nowrap;
 }
 .os-blog-cat-opt:hover {
@@ -824,7 +824,7 @@
   width: 100%;
   text-align: left;
   background: none;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   font-family: inherit;
 }
 .os-blog-row:hover {
@@ -909,7 +909,7 @@
   border-radius: 6px;
   background: transparent;
   color: var(--fg);
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 .os-blog-page-btn:hover:not(:disabled):not(.is-active) {
@@ -921,12 +921,12 @@
   background: var(--accent);
   color: var(--accent-ink);
   border-color: var(--accent);
-  cursor: default;
+  cursor: var(--cur-default);
 }
 .os-blog-page-btn:disabled {
   color: var(--muted);
   opacity: 0.35;
-  cursor: default;
+  cursor: var(--cur-default);
 }
 .os-blog-page-ellipsis {
   font-family: var(--font-mono);
@@ -947,7 +947,7 @@
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 5px 10px;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   margin: 4px 0 14px;
   white-space: nowrap;
 }
@@ -1036,7 +1036,7 @@
   border-radius: 8px;
   background: transparent;
   color: var(--fg);
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 .os-blog-nav-btn:hover:not(:disabled) {
@@ -1047,7 +1047,7 @@
 .os-blog-nav-btn:disabled {
   color: var(--muted);
   opacity: 0.35;
-  cursor: default;
+  cursor: var(--cur-default);
 }
 
 .os-blog-note-link {
@@ -1060,7 +1060,7 @@
   background: none;
   border: 0;
   padding: 0;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
 }
 
 // Rendered markdown (post reader + project detail). Body copy is --ink-soft so
@@ -1297,7 +1297,7 @@
   border-radius: 8px;
   padding: 4px 10px;
   margin-left: 6px;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: background 0.15s ease;
   text-decoration: none;
   display: inline-block;
@@ -1635,7 +1635,7 @@
   border: none;
   border-radius: 9px;
   padding: 8px 14px;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
 }
 .os-guide-action:hover {
   opacity: 0.88;
@@ -1649,7 +1649,7 @@
   background: transparent;
   border-radius: 9px;
   padding: 8px 14px;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: border-color 0.15s ease, color 0.15s ease;
 }
 .os-guide-next {
@@ -1816,7 +1816,7 @@
   border: 1px solid var(--line);
   border-radius: var(--r-ctl);
   padding: 8px 14px;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: border-color 0.15s ease, background 0.15s ease;
 }
 .os-nf-btn:hover {
@@ -1947,7 +1947,7 @@
   color: var(--muted);
 }
 .os-stats-table summary {
-  cursor: pointer;
+  cursor: var(--cur-pointer);
 }
 .os-stats-table table {
   margin-top: 6px;

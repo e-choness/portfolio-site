@@ -25,13 +25,13 @@
 }
 
 .os-dragging {
-  cursor: grabbing;
+  cursor: var(--cur-grabbing);
 }
 .os-resizing {
-  cursor: nwse-resize;
+  cursor: var(--cur-resize);
 }
 body.os-dragging-cursor {
-  cursor: grabbing;
+  cursor: var(--cur-grabbing);
 }
 
 // Prototype chrome (EchoOS.dc.html line 84): 42px bar on surface2 tint,
@@ -47,10 +47,10 @@ body.os-dragging-cursor {
   padding: 0 10px 0 16px;
   border-bottom: 1px solid var(--line);
   background: var(--surface2);
-  cursor: grab;
+  cursor: var(--cur-grab);
 }
 .os-dragging .os-win-bar {
-  cursor: grabbing;
+  cursor: var(--cur-grabbing);
 }
 
 .os-win-dot {
@@ -98,7 +98,7 @@ body.os-dragging-cursor {
   color: var(--muted);
   font-size: 14px;
   line-height: 1;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
   margin-left: 0;
 }
@@ -157,7 +157,7 @@ body.os-dragging-cursor {
   width: 18px;
   height: 18px;
   z-index: 20;
-  cursor: nwse-resize;
+  cursor: var(--cur-resize);
   touch-action: none;
   border-right: 2px solid var(--muted);
   border-bottom: 2px solid var(--muted);

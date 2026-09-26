@@ -37,7 +37,7 @@ iframe {
 }
 
 :where(button, [role="button"], .cta-button, .filter-btn) {
-  cursor: pointer;
+  cursor: var(--cur-pointer);
 }
 
 /* Reduced motion preferences */

@@ -47,7 +47,7 @@ body:has(#echoos-root) {
   align-items: center;
   justify-content: center;
   gap: 20px;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: opacity 0.3s ease;
 }
 .os-boot-done {
@@ -149,7 +149,7 @@ body:has(#echoos-root) {
   border: 1px solid var(--line);
   padding: 4px 9px;
   border-radius: var(--r-ctl);
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
 .os-mb-btn:hover {
@@ -250,7 +250,7 @@ body:has(#echoos-root) {
   font-weight: 700;
   border-radius: var(--r-ctl);
   padding: 6px 11px;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
 }
 .os-welcome-tour {
   background: var(--accent);
@@ -299,7 +299,7 @@ body:has(#echoos-root) {
   color: var(--muted);
   font-size: 14px;
   line-height: 1;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: color 0.15s ease, background 0.15s ease;
 }
 .os-notif-close:hover { color: var(--accent); background: var(--accent-soft); }
@@ -389,7 +389,7 @@ body:has(#echoos-root) {
   border: none;
   border-radius: 10px;
   padding: 10px;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: opacity 0.15s ease;
 }
 .os-notif-tour:hover {
@@ -419,7 +419,7 @@ body:has(#echoos-root) {
   width: 74px;
   background: transparent;
   border: 0;
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   transition: opacity 0.15s ease;
 }
 .os-desk-icon:hover {
@@ -518,7 +518,7 @@ body:has(#echoos-root) {
     background: none;
     border: 0;
     padding: 8px 12px;
-    cursor: pointer;
+    cursor: var(--cur-pointer);
   }
   .os-tabbar-tile {
     width: 38px;
@@ -573,7 +573,7 @@ body:has(#echoos-root) {
   box-shadow: inset 0 1px 0 var(--glass-hi), 0 8px 24px -12px rgba(30, 20, 60, 0.35);
   font: 500 10.5px/1 var(--font-mono);
   color: var(--ink);
-  cursor: pointer;
+  cursor: var(--cur-pointer);
   overflow: hidden;
   opacity: 0;
   transition: opacity 0.4s ease, border-color 0.15s ease;
@@ -610,7 +610,7 @@ body:has(#echoos-root) {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--accent);
-  cursor: pointer;
+  cursor: var(--cur-pointer);
 }
 .os-ticker-head:focus-visible {
   outline: 2px solid var(--accent);
@@ -712,7 +712,7 @@ body:has(#echoos-root) {
     padding: 12px 6px 8px;
     background: none;
     border: 0;
-    cursor: pointer;
+    cursor: var(--cur-pointer);
   }
   .os-home-tile {
     width: 52px;
