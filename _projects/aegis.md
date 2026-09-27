@@ -2,6 +2,7 @@
 title: "Aegis AI Gateway"
 description: "A self-hosted AI gateway that shows its work. Guardrails, human approvals, and a tamper-evident audit trail between your apps and any LLM, behind an OpenAI-compatible endpoint and configured in one YAML file. Built with FastAPI, LangGraph, and Docker."
 image: "assets/images/projects/aegis.jpg"
+banner: "assets/images/projects/aegis.svg"
 technologies:
   - Python
   - FastAPI

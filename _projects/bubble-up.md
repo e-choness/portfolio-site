@@ -2,7 +2,7 @@
 title: "Bubble UP!"
 description: "A vibrant puzzle game built with Unity, challenging players with fast-paced, Tetris-inspired gameplay. Master chain reactions and aim for high scores in this bubbly, arcade-style adventure."
 image: "assets/images/projects/bubble-up.jpg"
-video: "assets/images/projects/bubble-up.mp4"
+banner: "assets/images/projects/bubble-up.svg"
 technologies:
   - Unity
   - C#
