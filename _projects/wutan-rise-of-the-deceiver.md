@@ -2,6 +2,7 @@
 title: "Wu-Tang: Rise of the Deceiver"
 description: "An online co-op Action RPG where players team up with the legendary Wu-Tang Clan. Built with Unreal Engine 5, C++, and C#. This game features a robust 3-player multiplayer system set in a unique Afro-surrealist world."
 image: "assets/images/projects/wutan-rise-of-the-deceiver.jpg"
+banner: "assets/images/projects/wutan-rise-of-the-deceiver.svg"
 technologies:
   - Unreal Engine 5
   - C++
@@ -13,12 +14,15 @@ categories:
   - Fullstack
 live_url: "https://store.steampowered.com/app/3763470/WuTang_Rise_of_the_Deceiver/"
 live_label: "Steam"
+store_url: "https://store.epicgames.com/p/wutang-rise-of-the-deceiver-53c680"
+store_label: "Epic Games"
+website_url: "https://brasslionentertainment.com/"
 featured: false
 order: 6
 ---
 ## Wu-Tang: Rise of the Deceiver
 
-**Platform:** PC (Steam)
+**Platform:** PC (Steam, Epic Games Store)
 **Genre:** Co-op Action RPG
 **Setting:** A unique blend of Afro-surrealism and anime aesthetics, set in the mystical world of Shaolin and the Medium.
 **Core Premise:** Players join forces with the legendary Wu-Tang Clan to combat the invading forces of the Deceiver and restore balance to Shaolin.

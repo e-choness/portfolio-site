@@ -80,6 +80,8 @@ const links = (p) =>
     p.docs_url && `[docs](${p.docs_url})`,
     p.github_url && `[code](${p.github_url})`,
     p.live_url && `[${(p.live_label || 'live').toLowerCase()}](${p.live_url})`,
+    p.store_url && `[${(p.store_label || 'store').toLowerCase()}](${p.store_url})`,
+    p.website_url && `[website](${p.website_url})`,
   ].filter(Boolean).join(' · ');
 const projectRows = [
   '| Project | What it is | Stack | Links |',

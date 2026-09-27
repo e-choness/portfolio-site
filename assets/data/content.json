@@ -58,6 +58,8 @@ permalink: /assets/data/content.json
       "demo": {{ p.live_url | jsonify }},
       "demoLabel": {{ p.live_label | default: "Live Demo" | jsonify }},
       "demoPending": {{ p.live_pending | default: false | jsonify }},
+      "store": {{ p.store_url | jsonify }},
+      "storeLabel": {{ p.store_label | default: "Store" | jsonify }},
       "docs": {{ p.docs_url | jsonify }},
       "repo": {{ p.github_url | jsonify }},
       "website": {{ p.website_url | jsonify }},
