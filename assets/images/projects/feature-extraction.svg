@@ -1,0 +1,241 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" role="img" aria-labelledby="t d">
+  <title id="t">Feature ELM</title>
+  <desc id="d">Extreme Learning Machines in C++20 and CUDA. An 8 by 8 digit passes through a random hidden layer to class scores, and Batch ELM training with 2048 hidden nodes runs about 27 times faster on an RTX 4080 than on the CPU.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a0f09"/><stop offset="1" stop-color="#061219"/>
+    </linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#76b900"/><stop offset="1" stop-color="#00b4d8"/>
+    </linearGradient>
+    <radialGradient id="glowL" cx="0.25" cy="0.62" r="0.42">
+      <stop offset="0" stop-color="#76b900" stop-opacity="0.20"/><stop offset="1" stop-color="#76b900" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowR" cx="0.82" cy="0.3" r="0.4">
+      <stop offset="0" stop-color="#00b4d8" stop-opacity="0.14"/><stop offset="1" stop-color="#00b4d8" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#fff" stroke-opacity="0.03"/>
+    </pattern>
+    <style>
+      text { font-family: "Segoe UI", Inter, Helvetica, Arial, sans-serif; }
+      .title { font-size: 112px; font-weight: 800; fill: url(#brand); letter-spacing: -2px; }
+      .tag { font-size: 34px; fill: #dfe8d6; }
+      .muted { font-size: 22px; fill: #8f9d88; }
+      .label { font-size: 22px; fill: #b9c6b1; letter-spacing: 2px; }
+      .chip { font-size: 22px; fill: #c3cfbb; }
+      .chip-bg { fill: #fff; fill-opacity: 0.05; stroke: #fff; stroke-opacity: 0.12; }
+      .cell { fill: #eaffd0; opacity: 0; animation: cell 6s ease-out infinite; }
+      @keyframes cell { 0% { opacity: 0; } 12% { opacity: var(--o); } 88% { opacity: var(--o); } 100% { opacity: 0; } }
+      .edge { stroke: #7fd0a0; stroke-opacity: 0.10; stroke-width: 1.3; }
+      .flow { fill: none; stroke: url(#brand); stroke-width: 3; stroke-linecap: round;
+              stroke-dasharray: 16 420; stroke-dashoffset: 436; animation: flow 6s linear infinite; }
+      @keyframes flow { 0%, 15% { stroke-dashoffset: 436; opacity: 0; } 17% { opacity: 1; } 45% { stroke-dashoffset: 0; opacity: 1; } 50%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+      .node { fill: #0f1a12; stroke: url(#brand); stroke-width: 3; animation: node 6s ease-in-out infinite; }
+      @keyframes node { 0%, 25% { fill: #0f1a12; } 40% { fill: #3d7a10; } 60%, 100% { fill: #0f1a12; } }
+      .bar-track { fill: #fff; fill-opacity: 0.05; }
+      .score { fill: #3987e5; transform-box: fill-box; transform-origin: left center; transform: scaleX(0); animation: score 6s ease-out infinite; }
+      .score.win { fill: #76b900; }
+      @keyframes score { 0%, 45% { transform: scaleX(0); } 65%, 92% { transform: scaleX(1); } 100% { transform: scaleX(0); } }
+      .digit-label { font-size: 24px; fill: #9fb096; font-weight: 600; }
+      .win-label { fill: #ffffff; animation: win 6s ease-out infinite; }
+      @keyframes win { 0%, 60% { fill: #9fb096; } 68%, 92% { fill: #ffffff; } 100% { fill: #9fb096; } }
+      .pred { font-size: 150px; font-weight: 800; fill: #fff; opacity: 0; animation: pred 6s ease-out infinite; }
+      @keyframes pred { 0%, 62% { opacity: 0; } 70%, 92% { opacity: 1; } 100% { opacity: 0; } }
+      .race-cpu { fill: #3987e5; transform-box: fill-box; transform-origin: left center; animation: raceCpu 6s linear infinite; }
+      .race-gpu { fill: #76b900; transform-box: fill-box; transform-origin: left center; animation: raceGpu 6s ease-out infinite; }
+      @keyframes raceCpu { 0% { transform: scaleX(0); } 80%, 100% { transform: scaleX(1); } }
+      @keyframes raceGpu { 0% { transform: scaleX(0); } 3%, 100% { transform: scaleX(1); } }
+      .race-val { font-size: 30px; font-weight: 700; fill: #fff; }
+      .race-late { opacity: 0; animation: late 6s ease-out infinite; }
+      @keyframes late { 0%, 78% { opacity: 0; } 84%, 100% { opacity: 1; } }
+      .speed { font-size: 120px; font-weight: 800; fill: url(#brand); }
+      @media (prefers-reduced-motion: reduce) {
+        .cell { animation: none; opacity: var(--o); }
+        .flow { animation: none; stroke-dasharray: none; stroke-opacity: 0.25; }
+        .node, .score, .win-label, .pred, .race-cpu, .race-gpu, .race-late { animation: none; }
+        .score, .race-cpu, .race-gpu { transform: none; }
+        .pred, .race-late { opacity: 1; }
+      }
+    </style>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <rect width="1920" height="1080" fill="url(#grid)"/>
+  <rect width="1920" height="1080" fill="url(#glowL)"/>
+  <rect width="1920" height="1080" fill="url(#glowR)"/>
+  <text x="150" y="215" class="title">Feature ELM</text>
+  <text x="154" y="275" class="tag">Extreme Learning Machines in C++20 · trained in one solve, on CPU or CUDA</text>
+  <text x="150" y="366" class="label">INPUT 8×8</text>
+  <text x="650" y="366" class="label">RANDOM HIDDEN LAYER</text>
+  <text x="1010" y="366" class="label">CLASS SCORES</text>
+  <path class="edge" d="M432 513 720 400 M432 513 720 458 M432 513 720 516 M432 513 720 574 M432 513 720 632 M432 513 720 690 M432 513 720 748 M432 513 720 806 M432 513 720 864 M432 547 720 400 M432 547 720 458 M432 547 720 516 M432 547 720 574 M432 547 720 632 M432 547 720 690 M432 547 720 748 M432 547 720 806 M432 547 720 864 M432 581 720 400 M432 581 720 458 M432 581 720 516 M432 581 720 574 M432 581 720 632 M432 581 720 690 M432 581 720 748 M432 581 720 806 M432 581 720 864 M432 615 720 400 M432 615 720 458 M432 615 720 516 M432 615 720 574 M432 615 720 632 M432 615 720 690 M432 615 720 748 M432 615 720 806 M432 615 720 864 M432 649 720 400 M432 649 720 458 M432 649 720 516 M432 649 720 574 M432 649 720 632 M432 649 720 690 M432 649 720 748 M432 649 720 806 M432 649 720 864 M432 683 720 400 M432 683 720 458 M432 683 720 516 M432 683 720 574 M432 683 720 632 M432 683 720 690 M432 683 720 748 M432 683 720 806 M432 683 720 864 M432 717 720 400 M432 717 720 458 M432 717 720 516 M432 717 720 574 M432 717 720 632 M432 717 720 690 M432 717 720 748 M432 717 720 806 M432 717 720 864 M432 751 720 400 M432 751 720 458 M432 751 720 516 M432 751 720 574 M432 751 720 632 M432 751 720 690 M432 751 720 748 M432 751 720 806 M432 751 720 864 M720 400 970 402 M720 400 970 454 M720 400 970 506 M720 400 970 558 M720 400 970 610 M720 400 970 662 M720 400 970 714 M720 400 970 766 M720 400 970 818 M720 400 970 870 M720 458 970 402 M720 458 970 454 M720 458 970 506 M720 458 970 558 M720 458 970 610 M720 458 970 662 M720 458 970 714 M720 458 970 766 M720 458 970 818 M720 458 970 870 M720 516 970 402 M720 516 970 454 M720 516 970 506 M720 516 970 558 M720 516 970 610 M720 516 970 662 M720 516 970 714 M720 516 970 766 M720 516 970 818 M720 516 970 870 M720 574 970 402 M720 574 970 454 M720 574 970 506 M720 574 970 558 M720 574 970 610 M720 574 970 662 M720 574 970 714 M720 574 970 766 M720 574 970 818 M720 574 970 870 M720 632 970 402 M720 632 970 454 M720 632 970 506 M720 632 970 558 M720 632 970 610 M720 632 970 662 M720 632 970 714 M720 632 970 766 M720 632 970 818 M720 632 970 870 M720 690 970 402 M720 690 970 454 M720 690 970 506 M720 690 970 558 M720 690 970 610 M720 690 970 662 M720 690 970 714 M720 690 970 766 M720 690 970 818 M720 690 970 870 M720 748 970 402 M720 748 970 454 M720 748 970 506 M720 748 970 558 M720 748 970 610 M720 748 970 662 M720 748 970 714 M720 748 970 766 M720 748 970 818 M720 748 970 870 M720 806 970 402 M720 806 970 454 M720 806 970 506 M720 806 970 558 M720 806 970 610 M720 806 970 662 M720 806 970 714 M720 806 970 766 M720 806 970 818 M720 806 970 870 M720 864 970 402 M720 864 970 454 M720 864 970 506 M720 864 970 558 M720 864 970 610 M720 864 970 662 M720 864 970 714 M720 864 970 766 M720 864 970 818 M720 864 970 870"/>
+  <path class="flow" d="M432 547 L720 458 L970 766" style="animation-delay:0.00s"/>
+  <path class="flow" d="M432 615 L720 574 L970 766" style="animation-delay:0.09s"/>
+  <path class="flow" d="M432 649 L720 690 L970 558" style="animation-delay:0.18s"/>
+  <path class="flow" d="M432 683 L720 748 L970 766" style="animation-delay:0.27s"/>
+  <path class="flow" d="M432 581 L720 400 L970 506" style="animation-delay:0.36s"/>
+  <path class="flow" d="M432 717 L720 806 L970 766" style="animation-delay:0.45s"/>
+  <path class="flow" d="M432 513 L720 516 L970 870" style="animation-delay:0.54s"/>
+  <path class="flow" d="M432 751 L720 864 L970 766" style="animation-delay:0.63s"/>
+  <path class="flow" d="M432 615 L720 632 L970 662" style="animation-delay:0.72s"/>
+  <rect x="151" y="497" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="185" y="497" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="219" y="497" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="219" y="497" width="32" height="32" rx="3" style="--o:0.44;animation-delay:0.02s"/>
+  <rect x="253" y="497" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="253" y="497" width="32" height="32" rx="3" style="--o:0.50;animation-delay:0.02s"/>
+  <rect x="287" y="497" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="287" y="497" width="32" height="32" rx="3" style="--o:0.81;animation-delay:0.03s"/>
+  <rect x="321" y="497" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="321" y="497" width="32" height="32" rx="3" style="--o:1.00;animation-delay:0.04s"/>
+  <rect x="355" y="497" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="355" y="497" width="32" height="32" rx="3" style="--o:0.94;animation-delay:0.05s"/>
+  <rect x="389" y="497" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="389" y="497" width="32" height="32" rx="3" style="--o:0.06;animation-delay:0.05s"/>
+  <rect x="151" y="531" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="185" y="531" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="219" y="531" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="219" y="531" width="32" height="32" rx="3" style="--o:0.44;animation-delay:0.08s"/>
+  <rect x="253" y="531" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="253" y="531" width="32" height="32" rx="3" style="--o:0.44;animation-delay:0.09s"/>
+  <rect x="287" y="531" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="287" y="531" width="32" height="32" rx="3" style="--o:0.25;animation-delay:0.09s"/>
+  <rect x="321" y="531" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="321" y="531" width="32" height="32" rx="3" style="--o:0.69;animation-delay:0.10s"/>
+  <rect x="355" y="531" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="355" y="531" width="32" height="32" rx="3" style="--o:0.75;animation-delay:0.11s"/>
+  <rect x="389" y="531" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="151" y="565" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="185" y="565" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="219" y="565" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="253" y="565" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="287" y="565" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="287" y="565" width="32" height="32" rx="3" style="--o:0.50;animation-delay:0.16s"/>
+  <rect x="321" y="565" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="321" y="565" width="32" height="32" rx="3" style="--o:0.81;animation-delay:0.16s"/>
+  <rect x="355" y="565" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="355" y="565" width="32" height="32" rx="3" style="--o:0.06;animation-delay:0.17s"/>
+  <rect x="389" y="565" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="151" y="599" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="185" y="599" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="185" y="599" width="32" height="32" rx="3" style="--o:0.25;animation-delay:0.20s"/>
+  <rect x="219" y="599" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="219" y="599" width="32" height="32" rx="3" style="--o:0.50;animation-delay:0.20s"/>
+  <rect x="253" y="599" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="253" y="599" width="32" height="32" rx="3" style="--o:0.50;animation-delay:0.21s"/>
+  <rect x="287" y="599" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="287" y="599" width="32" height="32" rx="3" style="--o:0.94;animation-delay:0.22s"/>
+  <rect x="321" y="599" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="321" y="599" width="32" height="32" rx="3" style="--o:0.94;animation-delay:0.23s"/>
+  <rect x="355" y="599" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="355" y="599" width="32" height="32" rx="3" style="--o:0.38;animation-delay:0.23s"/>
+  <rect x="389" y="599" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="151" y="633" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="185" y="633" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="185" y="633" width="32" height="32" rx="3" style="--o:0.13;animation-delay:0.26s"/>
+  <rect x="219" y="633" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="219" y="633" width="32" height="32" rx="3" style="--o:0.69;animation-delay:0.27s"/>
+  <rect x="253" y="633" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="253" y="633" width="32" height="32" rx="3" style="--o:0.94;animation-delay:0.27s"/>
+  <rect x="287" y="633" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="287" y="633" width="32" height="32" rx="3" style="--o:0.94;animation-delay:0.28s"/>
+  <rect x="321" y="633" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="321" y="633" width="32" height="32" rx="3" style="--o:0.25;animation-delay:0.29s"/>
+  <rect x="355" y="633" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="389" y="633" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="151" y="667" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="185" y="667" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="219" y="667" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="253" y="667" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="253" y="667" width="32" height="32" rx="3" style="--o:1.00;animation-delay:0.34s"/>
+  <rect x="287" y="667" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="287" y="667" width="32" height="32" rx="3" style="--o:0.31;animation-delay:0.34s"/>
+  <rect x="321" y="667" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="355" y="667" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="389" y="667" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="151" y="701" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="185" y="701" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="219" y="701" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="219" y="701" width="32" height="32" rx="3" style="--o:0.56;animation-delay:0.39s"/>
+  <rect x="253" y="701" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="253" y="701" width="32" height="32" rx="3" style="--o:0.94;animation-delay:0.40s"/>
+  <rect x="287" y="701" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="287" y="701" width="32" height="32" rx="3" style="--o:0.06;animation-delay:0.41s"/>
+  <rect x="321" y="701" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="355" y="701" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="389" y="701" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="151" y="735" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="185" y="735" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="219" y="735" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="219" y="735" width="32" height="32" rx="3" style="--o:0.81;animation-delay:0.45s"/>
+  <rect x="253" y="735" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect class="cell" x="253" y="735" width="32" height="32" rx="3" style="--o:0.31;animation-delay:0.46s"/>
+  <rect x="287" y="735" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="321" y="735" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="355" y="735" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <rect x="389" y="735" width="32" height="32" rx="3" fill="#fff" fill-opacity="0.04"/>
+  <circle class="node" cx="720" cy="400" r="15" style="animation-delay:0.00s"/>
+  <circle class="node" cx="720" cy="458" r="15" style="animation-delay:0.06s"/>
+  <circle class="node" cx="720" cy="516" r="15" style="animation-delay:0.12s"/>
+  <circle class="node" cx="720" cy="574" r="15" style="animation-delay:0.18s"/>
+  <circle class="node" cx="720" cy="632" r="15" style="animation-delay:0.24s"/>
+  <circle class="node" cx="720" cy="690" r="15" style="animation-delay:0.30s"/>
+  <circle class="node" cx="720" cy="748" r="15" style="animation-delay:0.36s"/>
+  <circle class="node" cx="720" cy="806" r="15" style="animation-delay:0.42s"/>
+  <circle class="node" cx="720" cy="864" r="15" style="animation-delay:0.48s"/>
+  <text x="988" y="410" text-anchor="end" class="digit-label">0</text>
+  <rect class="bar-track" x="1010" y="390" width="250" height="24" rx="6"/>
+  <rect class="score" x="1010" y="390" width="13" height="24" rx="6"/>
+  <text x="988" y="462" text-anchor="end" class="digit-label">1</text>
+  <rect class="bar-track" x="1010" y="442" width="250" height="24" rx="6"/>
+  <rect class="score" x="1010" y="442" width="30" height="24" rx="6"/>
+  <text x="988" y="514" text-anchor="end" class="digit-label">2</text>
+  <rect class="bar-track" x="1010" y="494" width="250" height="24" rx="6"/>
+  <rect class="score" x="1010" y="494" width="70" height="24" rx="6"/>
+  <text x="988" y="566" text-anchor="end" class="digit-label">3</text>
+  <rect class="bar-track" x="1010" y="546" width="250" height="24" rx="6"/>
+  <rect class="score" x="1010" y="546" width="83" height="24" rx="6"/>
+  <text x="988" y="618" text-anchor="end" class="digit-label">4</text>
+  <rect class="bar-track" x="1010" y="598" width="250" height="24" rx="6"/>
+  <rect class="score" x="1010" y="598" width="15" height="24" rx="6"/>
+  <text x="988" y="670" text-anchor="end" class="digit-label">5</text>
+  <rect class="bar-track" x="1010" y="650" width="250" height="24" rx="6"/>
+  <rect class="score" x="1010" y="650" width="38" height="24" rx="6"/>
+  <text x="988" y="722" text-anchor="end" class="digit-label">6</text>
+  <rect class="bar-track" x="1010" y="702" width="250" height="24" rx="6"/>
+  <rect class="score" x="1010" y="702" width="5" height="24" rx="6"/>
+  <text x="988" y="774" text-anchor="end" class="digit-label win-label">7</text>
+  <rect class="bar-track" x="1010" y="754" width="250" height="24" rx="6"/>
+  <rect class="score win" x="1010" y="754" width="230" height="24" rx="6"/>
+  <text x="988" y="826" text-anchor="end" class="digit-label">8</text>
+  <rect class="bar-track" x="1010" y="806" width="250" height="24" rx="6"/>
+  <rect class="score" x="1010" y="806" width="25" height="24" rx="6"/>
+  <text x="988" y="878" text-anchor="end" class="digit-label">9</text>
+  <rect class="bar-track" x="1010" y="858" width="250" height="24" rx="6"/>
+  <rect class="score" x="1010" y="858" width="45" height="24" rx="6"/>
+  <text x="1305" y="672.4000000000001" class="pred">7</text>
+  <text x="1500" y="366" class="label">TRAINING, 2,048 HIDDEN</text>
+  <text x="1500" y="436" class="chip">CPU</text>
+  <rect class="bar-track" x="1500" y="452" width="290" height="30" rx="8"/>
+  <rect class="race-cpu" x="1500" y="452" width="290" height="30" rx="8"/>
+  <text x="1500" y="522" class="race-val race-late">1.48 s</text>
+  <text x="1500" y="586" class="chip">GPU</text>
+  <rect class="bar-track" x="1500" y="602" width="290" height="30" rx="8"/>
+  <rect class="race-gpu" x="1500" y="602" width="11" height="30" rx="8"/>
+  <text x="1500" y="672" class="race-val">55 ms</text>
+  <text x="1494" y="816" class="speed race-late">~27×</text>
+  <text x="1500" y="861" class="muted race-late">RTX 4080 vs single-threaded CPU</text>
+  <rect class="chip-bg" x="150" y="960" width="93" height="48" rx="24"/>
+  <text x="196" y="992" text-anchor="middle" class="chip">C++20</text>
+  <rect class="chip-bg" x="258.5" y="960" width="143" height="48" rx="24"/>
+  <text x="330" y="992" text-anchor="middle" class="chip">CUDA 13.4</text>
+  <rect class="chip-bg" x="417" y="960" width="243" height="48" rx="24"/>
+  <text x="538" y="992" text-anchor="middle" class="chip">cuBLAS · cuSOLVER</text>
+  <rect class="chip-bg" x="675.5" y="960" width="293" height="48" rx="24"/>
+  <text x="822" y="992" text-anchor="middle" class="chip">OS-ELM · ML-ELM · RBF</text>
+  <rect class="chip-bg" x="984" y="960" width="105" height="48" rx="24"/>
+  <text x="1037" y="992" text-anchor="middle" class="chip">Docker</text>
+  <rect class="chip-bg" x="1105" y="960" width="68" height="48" rx="24"/>
+  <text x="1139" y="992" text-anchor="middle" class="chip">MIT</text>
+  <text x="1770" y="992" text-anchor="end" class="muted">github.com/e-choness/feature_extraction_cuda_elm</text>
+</svg>

@@ -37,7 +37,7 @@
 ## A quick tour
 
 <div align="center">
-  <img src=".github/readme/tour.webp" alt="EchoOS tour: boot screen, Spotlight search opening a blog post with a diagram, switching to dark mode, a round of Blockfall in the Arcade, and neofetch in the terminal" width="100%">
+  <img src=".github/readme/tour.webp" alt="EchoOS tour: boot screen, Spotlight search opening a blog post with a diagram, switching to dark mode, the Feature ELM project page, a round of Blockfall in the Arcade, and neofetch in the terminal" width="100%">
 </div>
 
 The home page is a desktop: a menu bar, a dock, draggable windows, an animated wallpaper and a command palette. Each window is an app, and every app deep-links, so `…/#/blog/<post>` or `…/#/arcade/tetris` opens straight to it. Nothing reloads the page. It works on phones too, where windows become full-screen sheets with a tab bar.
@@ -88,7 +88,7 @@ Also on the desktop:
 <!-- PROJECTS:START -->
 | Project | What it is | Stack | Links |
 |---|---|---|---|
-| **CUDA ELM Feature Extraction Benchmark** | GPU-accelerated Extreme Learning Machine feature-extraction and benchmarking toolkit. | C++, CUDA, CMake, GoogleTest | [open in EchoOS](https://e-choness.github.io/portfolio-site/#/proj/feature-extraction) · [code](https://github.com/e-choness/feature_extraction_cuda_elm) · [live](https://e-choness.github.io/feature_extraction_cuda_elm) |
+| **Feature ELM** | Extreme Learning Machines in C++20, trained in one least-squares solve on CPU or CUDA. | C++, CUDA, cuBLAS, cuSOLVER | [open in EchoOS](https://e-choness.github.io/portfolio-site/#/proj/feature-extraction) · [docs](https://e-choness.github.io/feature_extraction_cuda_elm/) · [code](https://github.com/e-choness/feature_extraction_cuda_elm) · [live](https://huggingface.co/spaces/echoness/cuda-feature-extraction-elm) |
 | **Aegis AI Gateway** | A self-hosted AI gateway that shows its work. | Python, FastAPI, LangGraph, Docker | [open in EchoOS](https://e-choness.github.io/portfolio-site/#/proj/aegis) · [docs](https://e-choness.github.io/aegis/) · [code](https://github.com/e-choness/aegis) · [live](https://huggingface.co/spaces/echoness/aegis-server) |
 | **EcoManage** | A full-stack renewable energy and resource management dashboard to monitor, analyze, and optimize consumption. | TypeScript, React, Node.js, MongoDB | [open in EchoOS](https://e-choness.github.io/portfolio-site/#/proj/eco-manage) · [code](https://github.com/e-choness/eco-manage) |
 | **NeighborIQ** | Rental-property analysis for small investors in Canadian cities: fair value from comparable listings, cash flow under Canadian mortgage rules, and neighbourhood open data. | FastAPI, Vue 3, PostgreSQL, PostGIS | [open in EchoOS](https://e-choness.github.io/portfolio-site/#/proj/neighbor-iq) · [docs](https://e-choness.github.io/NeighborIQ/) · [code](https://github.com/e-choness/NeighborIQ) |
