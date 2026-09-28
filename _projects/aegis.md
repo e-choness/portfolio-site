@@ -23,6 +23,8 @@ order: 2
 
 **Aegis is a self-hosted AI gateway that shows its work.** It sits between your applications and any LLM provider and tells you exactly why a request was blocked, masked, or paused. It also keeps a hash-chained record of every one of those decisions. That kind of structured audit is a paid-tier feature on most gateways. In Aegis it's on by default from the moment the server starts.
 
+![terminal-demo](../assets/images/projects/aegis-terminal-demo.svg)
+
 It's one install: `pip install aegis-gateway`, then `aegis init` and `aegis serve`. Point any OpenAI client at it and the `model` field picks an Aegis route. Routes, providers, guardrails, tools, and approval rules all live in one `aegis.yaml`, so no code changes are needed.
 
 The kernel knows *nothing* about what the pipeline does. It discovers plugins, validates typed config, and compiles the request lifecycle into a LangGraph state machine. Everything with an opinion implements a public contract, including Aegis's own policy packs. That is the proof that the plugin API is complete.

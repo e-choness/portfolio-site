@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="899" viewBox="0 0 1100 899" role="img" aria-labelledby="t d">
+<title id="t">Aegis CLI tour</title>
+<desc id="d">aegis plugin list shows the installed policy packs. A prompt containing an API key is blocked; a clean question to the underwriting route is answered; one carrying a Canadian SIN pauses for approval because the route's model is in us-east-1. Reviewer jane denies it, aegis explain shows the verdict trail, and the exported evidence ledger verifies offline.</desc>
+<style>
+text{font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;font-size:14px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+.cursor{animation:blink 1s steps(1) infinite}@keyframes blink{50%{opacity:0}}
+.l0{animation:l0 25.33s linear infinite}@keyframes l0{0%,3.55%{opacity:0}3.59%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.t0{animation:t0 25.33s infinite}@keyframes t0{0%,3.55%{transform:translateX(0);animation-timing-function:steps(37,end)}6.18%,100%{transform:translateX(341.54999999999995px)}}
+.l1{animation:l1 25.33s linear infinite}@keyframes l1{0%,7.96%{opacity:0}8.00%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l2{animation:l2 25.33s linear infinite}@keyframes l2{0%,8.51%{opacity:0}8.55%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l3{animation:l3 25.33s linear infinite}@keyframes l3{0%,9.06%{opacity:0}9.10%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l4{animation:l4 25.33s linear infinite}@keyframes l4{0%,9.62%{opacity:0}9.66%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l5{animation:l5 25.33s linear infinite}@keyframes l5{0%,10.17%{opacity:0}10.21%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l6{animation:l6 25.33s linear infinite}@keyframes l6{0%,10.72%{opacity:0}10.76%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l7{animation:l7 25.33s linear infinite}@keyframes l7{0%,11.27%{opacity:0}11.31%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l9{animation:l9 25.33s linear infinite}@keyframes l9{0%,14.20%{opacity:0}14.23%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.t9{animation:t9 25.33s infinite}@keyframes t9{0%,14.20%{transform:translateX(0);animation-timing-function:steps(94,end)}20.51%,100%{transform:translateX(823.1999999999999px)}}
+.l10{animation:l10 25.33s linear infinite}@keyframes l10{0%,22.29%{opacity:0}22.33%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l11{animation:l11 25.33s linear infinite}@keyframes l11{0%,22.84%{opacity:0}22.88%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l12{animation:l12 25.33s linear infinite}@keyframes l12{0%,25.37%{opacity:0}25.41%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.t12{animation:t12 25.33s infinite}@keyframes t12{0%,25.37%{transform:translateX(0);animation-timing-function:steps(67,end)}30.13%,100%{transform:translateX(595.05px)}}
+.l13{animation:l13 25.33s linear infinite}@keyframes l13{0%,31.90%{opacity:0}31.94%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l14{animation:l14 25.33s linear infinite}@keyframes l14{0%,34.43%{opacity:0}34.47%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.t14{animation:t14 25.33s infinite}@keyframes t14{0%,34.43%{transform:translateX(0);animation-timing-function:steps(95,end)}40.75%,100%{transform:translateX(831.65px)}}
+.l15{animation:l15 25.33s linear infinite}@keyframes l15{0%,42.52%{opacity:0}42.56%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l16{animation:l16 25.33s linear infinite}@keyframes l16{0%,43.08%{opacity:0}43.12%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l17{animation:l17 25.33s linear infinite}@keyframes l17{0%,45.60%{opacity:0}45.64%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.t17{animation:t17 25.33s infinite}@keyframes t17{0%,45.60%{transform:translateX(0);animation-timing-function:steps(76,end)}51.00%,100%{transform:translateX(671.0999999999999px)}}
+.l18{animation:l18 25.33s linear infinite}@keyframes l18{0%,52.78%{opacity:0}52.82%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l20{animation:l20 25.33s linear infinite}@keyframes l20{0%,55.70%{opacity:0}55.74%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.t20{animation:t20 25.33s infinite}@keyframes t20{0%,55.70%{transform:translateX(0);animation-timing-function:steps(50,end)}59.25%,100%{transform:translateX(451.4px)}}
+.l21{animation:l21 25.33s linear infinite}@keyframes l21{0%,61.03%{opacity:0}61.07%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l22{animation:l22 25.33s linear infinite}@keyframes l22{0%,61.58%{opacity:0}61.62%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l23{animation:l23 25.33s linear infinite}@keyframes l23{0%,62.13%{opacity:0}62.17%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l24{animation:l24 25.33s linear infinite}@keyframes l24{0%,62.69%{opacity:0}62.73%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l25{animation:l25 25.33s linear infinite}@keyframes l25{0%,63.24%{opacity:0}63.28%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l26{animation:l26 25.33s linear infinite}@keyframes l26{0%,63.79%{opacity:0}63.83%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l27{animation:l27 25.33s linear infinite}@keyframes l27{0%,64.35%{opacity:0}64.38%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l28{animation:l28 25.33s linear infinite}@keyframes l28{0%,64.90%{opacity:0}64.94%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l29{animation:l29 25.33s linear infinite}@keyframes l29{0%,65.45%{opacity:0}65.49%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l30{animation:l30 25.33s linear infinite}@keyframes l30{0%,66.00%{opacity:0}66.04%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l32{animation:l32 25.33s linear infinite}@keyframes l32{0%,68.92%{opacity:0}68.96%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.t32{animation:t32 25.33s infinite}@keyframes t32{0%,68.92%{transform:translateX(0);animation-timing-function:steps(69,end)}73.83%,100%{transform:translateX(611.9499999999999px)}}
+.l33{animation:l33 25.33s linear infinite}@keyframes l33{0%,75.60%{opacity:0}75.64%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+.l34{animation:l34 25.33s linear infinite}@keyframes l34{0%,76.16%{opacity:0}76.20%,94.47%{opacity:1}97.63%,100%{opacity:0}}
+</style>
+<rect width="1100" height="899" rx="12" fill="#0b1220" stroke="#1e2d45"/>
+<rect width="1100" height="36" rx="12" fill="#111b2e"/><rect y="24" width="1100" height="12" fill="#111b2e"/>
+<circle cx="22" cy="18" r="6" fill="#ff5f57"/><circle cx="42" cy="18" r="6" fill="#febc2e"/><circle cx="62" cy="18" r="6" fill="#28c840"/>
+<text x="550" y="23" fill="#6f86ab" text-anchor="middle" style="font-size:13px">aegis — scripts/cli-tour.sh</text>
+<g class="l0"><text x="24" y="64" fill="#ff7a2e">$</text><text x="40.9" y="64" fill="#e6edf3" xml:space="preserve">aegis plugin list --group aegis.packs</text><rect class="t0" transform="translate(341.54999999999995 0)" x="40.9" y="48" width="341.54999999999995" height="22" fill="#0b1220"/></g>
+<text class="l1" x="24" y="87" fill="#5f7190" xml:space="preserve">  Name                  Package                                Version</text>
+<text class="l2" x="24" y="110" fill="#9fb0c8" xml:space="preserve">  aegis.budgets         aegis-gateway-pack-budgets             2.0.0a5</text>
+<text class="l3" x="24" y="133" fill="#9fb0c8" xml:space="preserve">  aegis.classification  aegis-gateway-pack-classification      2.0.0a5</text>
+<text class="l4" x="24" y="156" fill="#67e8f9" xml:space="preserve">  aegis.content         aegis-gateway-pack-content             2.0.0a5</text>
+<text class="l5" x="24" y="179" fill="#9fb0c8" xml:space="preserve">  aegis.pii             aegis-gateway-pack-pii                 2.0.0a5</text>
+<text class="l6" x="24" y="202" fill="#67e8f9" xml:space="preserve">  aegis.policy          aegis-gateway-pack-classification      2.0.0a5</text>
+<text class="l7" x="24" y="225" fill="#9fb0c8" xml:space="preserve">  aegis.residency       aegis-gateway-pack-residency           2.0.0a5</text>
+<g class="l9"><text x="24" y="271" fill="#ff7a2e">$</text><text x="40.9" y="271" fill="#e6edf3" xml:space="preserve">aegis runs create "Why is api_key: 8f14e45fceea167a5a36dedd4bea2543 rejected?" --route default</text><rect class="t9" transform="translate(823.1999999999999 0)" x="40.9" y="255" width="823.1999999999999" height="22" fill="#0b1220"/></g>
+<text class="l10" x="24" y="294" fill="#9fb0c8" xml:space="preserve">run_id: 19b3e7e5-7017-4c7e-9732-497a378831ce</text>
+<text class="l11" x="24" y="317" fill="#f87171" xml:space="preserve">status: blocked</text>
+<g class="l12"><text x="24" y="340" fill="#ff7a2e">$</text><text x="40.9" y="340" fill="#e6edf3" xml:space="preserve">aegis runs create "What is our refund policy?" --route underwriting</text><rect class="t12" transform="translate(595.05 0)" x="40.9" y="324" width="595.05" height="22" fill="#0b1220"/></g>
+<text class="l13" x="24" y="363" fill="#4ade80" xml:space="preserve">status: completed   response: Risk: low.</text>
+<g class="l14"><text x="24" y="386" fill="#ff7a2e">$</text><text x="40.9" y="386" fill="#e6edf3" xml:space="preserve">aegis runs create "Applicant SIN 046-454-286, assess risk" --route underwriting --approver jane</text><rect class="t14" transform="translate(831.65 0)" x="40.9" y="370" width="831.65" height="22" fill="#0b1220"/></g>
+<text class="l15" x="24" y="409" fill="#9fb0c8" xml:space="preserve">run_id: 83a0c623-103a-4e8e-8177-9ae2a5cc5175</text>
+<text class="l16" x="24" y="432" fill="#fbbf24" xml:space="preserve">status: paused</text>
+<g class="l17"><text x="24" y="455" fill="#ff7a2e">$</text><text x="40.9" y="455" fill="#e6edf3" xml:space="preserve">AEGIS_API_KEY=$JANE_KEY aegis runs deny 83a0c623-103a-4e8e-8177-9ae2a5cc5175</text><rect class="t17" transform="translate(671.0999999999999 0)" x="40.9" y="439" width="671.0999999999999" height="22" fill="#0b1220"/></g>
+<text class="l18" x="24" y="478" fill="#9fb0c8" xml:space="preserve">Run 83a0c623-103a-4e8e-8177-9ae2a5cc5175 denied: status=denied</text>
+<g class="l20"><text x="24" y="524" fill="#ff7a2e">$</text><text x="40.9" y="524" fill="#e6edf3" xml:space="preserve">aegis explain 83a0c623-103a-4e8e-8177-9ae2a5cc5175</text><rect class="t20" transform="translate(451.4 0)" x="40.9" y="508" width="451.4" height="22" fill="#0b1220"/></g>
+<text class="l21" x="24" y="547" fill="#e6edf3" xml:space="preserve">run 83a0c623  route=underwriting  principal=svc-underwriting  status=denied</text>
+<text class="l22" x="24" y="570" fill="#5f7190" xml:space="preserve">config=sha256:3fc4c49815668ae0b7364b246258f4904762966ea2ff5a24f56ff12efde7a521</text>
+<line class="l23" x1="24" x2="1076" y1="588" y2="588" stroke="#2a3a55" stroke-dasharray="2 3"/>
+<text class="l24" x="24" y="616" fill="#4ade80" xml:space="preserve">  guard         no_secrets                ALLOW</text>
+<text class="l25" x="24" y="639" fill="#67e8f9" xml:space="preserve">  ingress       pii.mask                  SANITIZE  reason=masked 1 CA_SIN — the model sees placeholders, never the values</text>
+<text class="l26" x="24" y="662" fill="#fbbf24" xml:space="preserve">  guard         residency_ca              REQUIRE_APPROVAL  reason=residency: region 'us-east-1' for route</text>
+<text class="l27" x="24" y="685" fill="#fbbf24" xml:space="preserve">                                          'underwriting' is not in the allowed set ['ca-central-1']</text>
+<text class="l28" x="24" y="708" fill="#f87171" xml:space="preserve">  ingress       residency_ca              DENIED  reason=run denied by reviewer</text>
+<line class="l29" x1="24" x2="1076" y1="726" y2="726" stroke="#2a3a55" stroke-dasharray="2 3"/>
+<text class="l30" x="24" y="754" fill="#5f7190" xml:space="preserve">  short-circuited at ingress/residency_ca · provider never called</text>
+<g class="l32"><text x="24" y="800" fill="#ff7a2e">$</text><text x="40.9" y="800" fill="#e6edf3" xml:space="preserve">aegis audit export -o ledger.jsonl &amp;&amp; aegis audit verify ledger.jsonl</text><rect class="t32" transform="translate(611.9499999999999 0)" x="40.9" y="784" width="611.9499999999999" height="22" fill="#0b1220"/></g>
+<text class="l33" x="24" y="823" fill="#9fb0c8" xml:space="preserve">Exported 6 record(s) to ledger.jsonl</text>
+<text class="l34" x="24" y="846" fill="#4ade80" xml:space="preserve">OK  6 record(s) verified — chain is intact.</text>
+<text x="24" y="869" fill="#ff7a2e">$ <tspan class="cursor" fill="#e6edf3">▍</tspan></text>
+</svg>

@@ -27,6 +27,8 @@ order: 1
 
 **Feature ELM is a C++20 library for Extreme Learning Machines: single-hidden-layer networks whose hidden layer is random and never trained.** Learning is one regularised least-squares solve for the output weights, so there's no back-propagation and there are no epochs. On top of that core, the library adds online, drift-aware and hierarchical variants, and a CUDA backend (cuBLAS GEMM for the hidden layer, cuSOLVER QR for the solve) behind a single `Backend::kGpu` switch.
 
+![feature-elm-demo](../assets/images/projects/feature-elm-demo.gif)
+
 It started as an academic project and has been rebuilt around two small interfaces, `FeatureMap` and `Solver`, so every model is a feature stack plus a solver. Version 0.2.0 is the first release verified end to end on a real GPU. Before it, the CUDA path had never run successfully: 9 of 77 tests failed as soon as a GPU was present. Now CPU/GPU parity tests hold every activation and matrix shape to the CPU reference.
 
 **Try it in your browser.** The [live demo](https://huggingface.co/spaces/echoness/cuda-feature-extraction-elm) runs the real C++/CUDA library on a Hugging Face ZeroGPU Space. Draw a digit on an 8×8 pad and watch it get classified live, train Batch ELM, OS-ELM or ML-ELM on the UCI digits dataset with accuracy and a confusion matrix, and compare CPU and GPU training time on a log-scale sweep.
