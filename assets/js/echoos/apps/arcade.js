@@ -164,8 +164,15 @@ export function renderArcade(bodyEl, { toast }) {
   });
 
   // --- canvas / runner ------------------------------------------------------
-  canvas.width = 620;
-  canvas.height = 400;
+  // Most games share one 620×400 field; an entry's `size` overrides it (the
+  // dino runs on Chrome's long, low strip). The CSS aspect-ratio follows.
+  const DEFAULT_SIZE = [620, 400];
+  function sizeCanvas([w, h]) {
+    if (canvas.width !== w) canvas.width = w;
+    if (canvas.height !== h) canvas.height = h;
+    canvas.style.aspectRatio = `${w} / ${h}`;
+  }
+  sizeCanvas(DEFAULT_SIZE);
 
   function arcXY(e, type) {
     if (!runner) return;
@@ -272,6 +279,7 @@ export function renderArcade(bodyEl, { toast }) {
     bodyEl.scrollTop = 0;
     stage.scrollTop = 0;
     renderExhibit(game);
+    sizeCanvas(game.size || DEFAULT_SIZE);
     fitCanvas();
     startRunner(game);
   }

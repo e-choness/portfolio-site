@@ -51,7 +51,7 @@ The home page is a desktop: a menu bar, a dock, draggable windows, an animated w
 | `{}` | **Projects** | Project cards, write-ups, links, gameplay video |
 | `%` | **Skills** | A "system monitor" of skills by years used |
 | `¶` | **Blog** | Posts with Mermaid diagrams, code highlighting, read counts and in-window links between posts |
-| `▲` | **Arcade** | Canvas games (Blockfall, Snake, Invaders, a raycast Labyrinth, a pixel-shaded Orrery, all nine stages of Cat Mario, Gemfall…) with hi-scores and a museum plaque for each |
+| `▲` | **Arcade** | Canvas games (Blockfall, Snake, Invaders, a raycast Labyrinth, a pixel-shaded Orrery, all nine stages of Cat Mario, Gemfall, Dino Run…) with hi-scores and a museum plaque for each |
 | `>_` | **Terminal** | `echo-sh`: `help`, `open`, `stats`, `neofetch`, `theme`, `games`, and a few easter eggs |
 | `↗` | **Stats** | An activity monitor: visits, most-read posts, windows opened, Arcade runs, where visitors come from |
 | `?` | **Guide** | A first-run tour |

@@ -4,6 +4,7 @@
 #
 # id     must match assets/js/games/<id>.js, which the runner imports on demand
 # pad    on-screen buttons for touch; omit for pointer-only games
+# size   [width, height] of the canvas; omit for the shared 620×400
 #
 # Consumed by arcade.js via: const ARCADE = {{ site.data.arcade | jsonify }};
 
@@ -221,3 +222,26 @@
       url: https://en.wikipedia.org/wiki/Bejeweled
     - label: Shariki – Wikipedia
       url: https://en.wikipedia.org/wiki/Shariki
+
+- id: dino
+  name: "Dino Run"
+  tag: "chrome offline"
+  glyph: "ᐱ"
+  hint: "space / ↑ jump (hold for height) · ↓ duck · or tap"
+  size: [600, 150]
+  pad: [{ key: "ArrowDown", label: "↓", hold: true }, { key: " ", label: "▲", hold: true }]
+  credit: "Sebastien Gabriel, Alan Bettes & Edward Jung · Google Chrome · 2014"
+  origin: >-
+    Chrome's UX team built the game for the "No internet" page in 2014: a T-Rex, because
+    being offline felt like being back in the prehistoric age. Rules and numbers here follow
+    Chromium's open-source offline.js — speed climbing from 6 to 13, pterodactyls once it
+    passes 8.5, a chime every hundred points and night falling every seven hundred.
+  fact: >-
+    Internally it was "Project Bolan", after Marc Bolan, frontman of the band T. Rex. By 2018
+    Google counted around 270 million games a month, and anyone with a working connection
+    can still reach it by typing chrome://dino.
+  sources:
+    - label: Dinosaur Game – Wikipedia
+      url: https://en.wikipedia.org/wiki/Dinosaur_Game
+    - label: offline.js (Chromium source)
+      url: https://source.chromium.org/chromium/chromium/src/+/main:components/neterror/resources/offline.js
