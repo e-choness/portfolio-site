@@ -1,8 +1,15 @@
 // games/tetris.js — Blockfall.
 // Factory: takes the runner env, returns { key?, pointer?, tick }.
+// Two modes, picked by the tab strip above the canvas (arcade.yml `modes`):
+// classic Tetris, and Cubetris, which lives in tetris/cubetris.js.
 import { R, clear } from './common.js';
+import cubetris from './tetris/cubetris.js';
 
 export default function tetris(env){
+  return env.mode==='cube'?cubetris(env):classic(env);
+}
+
+function classic(env){
   const {ctx,W,H,T,beep,addScore,gameOver,isOver}=env;
   const COLS=10,ROWS=18,C=Math.floor((H-24)/ROWS),BX=Math.max(8,Math.floor((W-COLS*C)/2)-60),BY=Math.floor((H-ROWS*C)/2);
   const SHAPES=[[[1,1,1,1]],[[1,1],[1,1]],[[0,1,0],[1,1,1]],[[1,0,0],[1,1,1]],[[0,0,1],[1,1,1]],[[1,1,0],[0,1,1]],[[0,1,1],[1,1,0]]];

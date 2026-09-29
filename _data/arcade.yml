@@ -5,6 +5,9 @@
 # id     must match assets/js/games/<id>.js, which the runner imports on demand
 # pad    on-screen buttons for touch; omit for pointer-only games
 # size   [width, height] of the canvas; omit for the shared 620×400
+# modes  optional tabs above the canvas: [{ id, label, …overrides }]. The game gets
+#        env.mode; a mode may override hint, pad, size and the exhibit fields, and
+#        each mode keeps its own high score (the first one under the bare id)
 #
 # Consumed by arcade.js via: const ARCADE = {{ site.data.arcade | jsonify }};
 
@@ -27,6 +30,23 @@
       url: https://en.wikipedia.org/wiki/Tetris
     - label: Tetris.com
       url: https://tetris.com/
+  modes:
+    - id: classic
+      label: Classic
+    - id: cube
+      label: Cubetris
+      hint: "← → move · ↑ rotate · ↓ soft drop · space magnet slam · 5 in a row clears"
+      credit: "Cubetris · cubetris.netlify.app"
+      origin: >-
+        A web variant of Tetris played around a 3×3 core in the middle of a 25×25 field. Every
+        piece that joins the core spins the whole mass a quarter turn, blocks the spin leaves
+        loose are pulled back to it magnetically, and five in a row, across or down, clears.
+      fact: >-
+        The spin goes the way the piece landed: left of centre turns the mass anti-clockwise,
+        right of centre turns it clockwise. Where you drop a piece decides the next board.
+      sources:
+        - label: Cubetris
+          url: https://cubetris.netlify.app/
 
 - id: snake
   name: "Snake"

@@ -78,6 +78,7 @@ export function renderArcade(bodyEl, { toast }) {
             <button type="button" class="os-arcade-restart">restart</button>
           </div>
         </div>
+        <div class="os-arcade-modes" role="tablist" aria-label="Game mode" hidden></div>
         <div class="os-arcade-canvas-wrap"><canvas class="os-arcade-canvas" tabindex="0"></canvas></div>
         <p class="os-arcade-hint"></p>
         <div class="os-arcade-pad"></div>
@@ -96,13 +97,14 @@ export function renderArcade(bodyEl, { toast }) {
   const exhibitEl = bodyEl.querySelector('.os-arcade-exhibit');
   const hudEl = bodyEl.querySelector('.os-arcade-hud');
   const wrapEl = bodyEl.querySelector('.os-arcade-canvas-wrap');
+  const modesEl = bodyEl.querySelector('.os-arcade-modes');
 
   // Fit the canvas into the stage: as wide as the window allows, but never
   // taller than the height left after the HUD, hint and touch pad — so a
   // maximized window shows the whole play field (the exhibit scrolls below).
   function fitCanvas() {
     if (stage.hidden) return;
-    const chrome = hudEl.offsetHeight + hintEl.offsetHeight + padEl.offsetHeight;
+    const chrome = hudEl.offsetHeight + modesEl.offsetHeight + hintEl.offsetHeight + padEl.offsetHeight;
     const availH = stage.clientHeight - chrome - 2; // 2 = canvas border
     const availW = wrapEl.clientWidth;
     const w = Math.max(200, Math.min(availW, availH * (canvas.width / canvas.height)));
@@ -132,8 +134,34 @@ export function renderArcade(bodyEl, { toast }) {
       </div>`;
   }
 
+  // --- modes -----------------------------------------------------------------
+  // A game may list `modes` in arcade.yml. The chosen one is remembered per
+  // game, passed to the module as env.mode, and may override the entry's hint,
+  // pad, size and exhibit. Each mode keeps its own high score: the first under
+  // the bare game id (so existing scores carry over), the rest as <id>-<mode>.
+  const MODE_KEY = 'echoos-arcade-modes';
+  const MODE_FIELDS = ['hint', 'pad', 'size', 'credit', 'origin', 'fact', 'sources'];
+  const savedModes = () => { try { return JSON.parse(localStorage.getItem(MODE_KEY) || '{}'); } catch { return {}; } };
+  function modeOf(game) {
+    if (!game.modes || !game.modes.length) return null;
+    return game.modes.find((m) => m.id === savedModes()[game.id]) || game.modes[0];
+  }
+  function setMode(game, id) {
+    try { localStorage.setItem(MODE_KEY, JSON.stringify({ ...savedModes(), [game.id]: id })); } catch { /* private mode */ }
+  }
+  const scoreIdOf = (game, mode) => (!mode || mode === game.modes[0] ? game.id : `${game.id}-${mode.id}`);
+  // The game as it should be shown right now: the entry, with the mode's overrides.
+  function viewOf(game) {
+    const mode = modeOf(game);
+    const view = { ...game };
+    if (mode) for (const f of MODE_FIELDS) if (mode[f] !== undefined) view[f] = mode[f];
+    return view;
+  }
+
   // --- grid ----------------------------------------------------------------
   const hiscores = () => (window.EchoGames ? window.EchoGames.highscores() : {});
+  // A card's "best" is the best across all of its modes.
+  const bestOf = (game, hs) => Math.max(0, ...(game.modes || [null]).map((m) => hs[scoreIdOf(game, m)] || 0));
   const hiLabel = (h) => (h ? `best ${h}` : 'new');
   const setHi = (el, h) => { el.textContent = hiLabel(h); el.classList.toggle('is-best', !!h); };
   for (const game of games) {
@@ -145,7 +173,7 @@ export function renderArcade(bodyEl, { toast }) {
     b.querySelector('.os-arcade-card-glyph').textContent = game.glyph || '▪';
     b.querySelector('.os-arcade-card-name').textContent = game.name;
     b.querySelector('.os-arcade-card-tag').textContent = game.tag;
-    setHi(b.querySelector('.os-arcade-card-hi'), hiscores()[game.id] || 0);
+    setHi(b.querySelector('.os-arcade-card-hi'), bestOf(game, hiscores()));
     b.addEventListener('click', () => startGame(game));
     // Hover or keyboard focus is a good enough signal to go and fetch the module.
     const warm = () => window.EchoGames.preload([game.id], game.data ? [game.data] : []);
@@ -224,7 +252,9 @@ export function renderArcade(bodyEl, { toast }) {
   function startRunner(game) {
     const token = ++startToken;
     if (runner) { runner.stop(); runner = null; }
-    const hi = hiscores()[game.id] || 0;
+    const mode = modeOf(game);
+    const scoreId = scoreIdOf(game, mode);
+    const hi = hiscores()[scoreId] || 0;
     setScore(0, hi);
     // An already-fetched module resolves on a microtask, so only announce the
     // wait if there actually is one — otherwise every restart would flash.
@@ -232,7 +262,7 @@ export function renderArcade(bodyEl, { toast }) {
     setTimeout(() => { if (waiting && token === startToken) canvasNotice('loading…'); }, 120);
     window.EchoGames.start(canvas, game.id, buildTheme(), (s, over, h) => {
       setScore(s, h);
-    }, game.data).then((r) => {
+    }, game.data, { mode: mode && mode.id, scoreId }).then((r) => {
       waiting = false;
       if (token !== startToken || !alive) { r.stop(); return; }
       runner = r;
@@ -244,6 +274,32 @@ export function renderArcade(bodyEl, { toast }) {
     });
   }
 
+  // The mode tabs reuse the OS tab button. Picking one restarts the game in
+  // that mode and hands focus back to the canvas, so space and the arrows go
+  // to the game rather than re-pressing the tab.
+  function renderModes(game) {
+    modesEl.innerHTML = '';
+    modesEl.hidden = !game.modes;
+    if (!game.modes) return;
+    const active = modeOf(game);
+    for (const m of game.modes) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'os-tab-btn';
+      b.setAttribute('role', 'tab');
+      b.setAttribute('aria-selected', String(m === active));
+      b.textContent = m.label;
+      b.addEventListener('click', () => {
+        if (m === modeOf(game)) return;
+        setMode(game, m.id);
+        beep(700, 0.04);
+        startGame(game);
+        canvas.focus({ preventScroll: true });
+      });
+      modesEl.appendChild(b);
+    }
+  }
+
   function startGame(game) {
     current = game;
     writeRoute('arcade', game.id);
@@ -251,11 +307,13 @@ export function renderArcade(bodyEl, { toast }) {
     footnote.hidden = true;
     stage.hidden = false;
     nameEl.textContent = game.name;
-    hintEl.textContent = game.hint || '';
+    const view = viewOf(game);
+    renderModes(game);
+    hintEl.textContent = view.hint || '';
     padEl.innerHTML = '';
-    if (game.pad) {
+    if (view.pad) {
       const frag = document.createDocumentFragment();
-      for (const { key, label, hold } of game.pad) {
+      for (const { key, label, hold } of view.pad) {
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'os-pad-btn';
@@ -278,8 +336,8 @@ export function renderArcade(bodyEl, { toast }) {
     }
     bodyEl.scrollTop = 0;
     stage.scrollTop = 0;
-    renderExhibit(game);
-    sizeCanvas(game.size || DEFAULT_SIZE);
+    renderExhibit(view);
+    sizeCanvas(view.size || DEFAULT_SIZE);
     fitCanvas();
     startRunner(game);
   }
@@ -296,7 +354,7 @@ export function renderArcade(bodyEl, { toast }) {
     // Refresh hi score display on all cards after a game session.
     const hi = hiscores();
     for (const b of grid.querySelectorAll('.os-arcade-card')) {
-      setHi(b.querySelector('.os-arcade-card-hi'), hi[b.dataset.game] || 0);
+      setHi(b.querySelector('.os-arcade-card-hi'), bestOf(games.find((g) => g.id === b.dataset.game), hi));
     }
   }
 

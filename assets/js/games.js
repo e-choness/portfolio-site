@@ -7,7 +7,7 @@
 // tags, glyphs, hints, pads and exhibit copy all live in _data/arcade.yml and
 // reach the grid through apps/arcade.js.
 //
-// window.EchoGames.start(canvas, id, theme, onScore, dataName?)
+// window.EchoGames.start(canvas, id, theme, onScore, dataName?, { mode?, scoreId? })
 //   -> Promise<{ stop(), pointer(x, y, type), key(k), hold(k, down) }>
 // window.EchoGames.preload([id, ...], [dataName, ...])  — warm, ignore failures
 (function(){
@@ -61,14 +61,17 @@
     for(const n of dataNames||[])loadData(n).catch(()=>{});
   }
 
-  function makeRunner(canvas, gameId, theme, onScore, factory, data){
+  // A game with modes gets env.mode, and each mode keeps its own high score
+  // under scoreId (the first mode keeps the bare game id).
+  function makeRunner(canvas, gameId, theme, onScore, factory, data, opts){
+    const hsId=(opts&&opts.scoreId)||gameId;
     const ctx=canvas.getContext('2d'), W=canvas.width, H=canvas.height;
     const T=theme, beep=(f,d)=>{if(T.beep)T.beep(f,d)};
     let score=0, over=false, dead=false;
-    const report=()=>{setHs(gameId,score);onScore(score,over,Math.max(score,hs()[gameId]||0))};
+    const report=()=>{setHs(hsId,score);onScore(score,over,Math.max(score,hs()[hsId]||0))};
     const addScore=(n)=>{score+=n;report()};
     const gameOver=()=>{if(over)return;over=true;beep(160,.3);report()};
-    const G=factory({ctx,W,H,T,beep,addScore,gameOver,isOver:()=>over,data});
+    const G=factory({ctx,W,H,T,beep,addScore,gameOver,isOver:()=>over,data,mode:opts&&opts.mode});
     let raf=null,last=0;
     const kd=e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].indexOf(e.key)>-1)e.preventDefault();if(over){canvas.dispatchEvent(new CustomEvent('echoos:game-restart',{bubbles:true}));}else if(G.key)G.key(e.key,true)};
     const ku=e=>{if(G.key)G.key(e.key,false)};
@@ -88,9 +91,9 @@
   }
 
   // The module and its data are fetched together, not one after the other.
-  function start(canvas, gameId, theme, onScore, dataName){
+  function start(canvas, gameId, theme, onScore, dataName, opts){
     return Promise.all([load(gameId), dataName?loadData(dataName):null])
-      .then(([factory,data])=>makeRunner(canvas,gameId,theme,onScore,factory,data));
+      .then(([factory,data])=>makeRunner(canvas,gameId,theme,onScore,factory,data,opts));
   }
 
   window.EchoGames={start, load, preload, highscores:hs};
