@@ -13,12 +13,21 @@ const state = { sel: null };
 // Deep-link / router listener, replaced on every render (see blog.js onOpenPost).
 let onOpenProject = null;
 
-// Outbound links, in display order: live/store, second store, docs,
-// repository, website.
+// Links, in display order: the in-OS Arcade port, then outbound ones —
+// live/store, second store, docs, repository, website.
 // `live_pending` shows the demo link greyed out until there is a live_url.
 function projectLinks(p, className) {
   const links = document.createElement('div');
   links.className = className;
+  // A plain hash link: the router's hashchange handler opens the Arcade on
+  // that game, and a middle-click opens the same deep link in a new tab.
+  if (p.arcade) {
+    const a = document.createElement('a');
+    a.className = 'os-proj-demo os-proj-play';
+    a.href = `#/arcade/${encodeURIComponent(p.arcade)}`;
+    a.textContent = '▶ Play in Arcade';
+    links.appendChild(a);
+  }
   const add = (href, cls, text) => {
     if (!href) return;
     const a = document.createElement('a');

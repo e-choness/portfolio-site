@@ -14,12 +14,15 @@ categories:
 live_url: "https://store.steampowered.com/app/3655340/Bubble_UP/"
 live_label: "Steam"
 website_url: "https://www.bubbleupgame.com/"
+arcade: bubbleup
 featured: false
 order: 7
 ---
 ## **What is Bubble UP!**
 
 "Bubble UP!" is a vibrant and exhilarating puzzle game that takes the timeless appeal of Tetris-inspired mechanics and injects it with a fresh, bubbly twist. Crafted by our dedicated team, this game challenges players to think fast, react quicker, and master the art of the chain reaction. With its intuitive yet deeply strategic gameplay, "Bubble UP!" is designed to deliver endless hours of arcade-style fun, where every pop brings you closer to a dazzling high score.
+
+> **Try it here:** a pure-code port of Bubble UP! is in this site's [Arcade](#/arcade/bubbleup), with the same rules: the hex grid, coyote time, combos, Bubble Mania, Multibubble and the powerup picks, drawn in canvas with no art assets.
 
 ## **Gameplay Experience**
 

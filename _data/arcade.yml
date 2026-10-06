@@ -289,3 +289,30 @@
       url: https://en.wikipedia.org/wiki/Peggle
     - label: The Making of Peggle (PC Gamer)
       url: https://www.pcgamer.com/the-making-of-peggle/
+
+- id: bubbleup
+  name: "Bubble UP!"
+  tag: "match at the rim"
+  glyph: "⊚"
+  hint: "← → rotate the Main Bubble · ↓ hurry the incoming bubble · land it on its own colour at the rim · touch: hold left / middle / right"
+  pad: [{ key: "ArrowLeft", label: "↺", hold: true }, { key: "ArrowDown", label: "⇣", hold: true }, { key: "ArrowRight", label: "↻", hold: true }]
+  credit: "Roger Hatfull (Sub Pixel Luck), Neal Wagram & Beili (Echo) Yin · Global Game Jam 2025"
+  origin: >-
+    Built in Unity for Global Game Jam 2025, whose theme was simply "Bubble", then grown into
+    a Steam release. Bubbles fall in toward a Main Bubble that you turn. Land one on the rim
+    touching its own colour and the whole group pops; land it with nothing to match and you
+    have 0.6 seconds of coyote time before the game is over. Pop the centre for a combo,
+    clear the board for Multibubble, squeeze what's left into the middle for Bubble Mania.
+    This port keeps the original's numbers, from the 55-cell hex grid to the 650°/s² spin.
+  fact: >-
+    At Game Con Canada the team learned the game is best explained in two words: "match
+    colours". Players expected bubbles leaving the Main Bubble to be bad, as in Tetris,
+    when that was the only way to score, so the tutorial went unheard. A snap bonus for
+    growing big same-colour groups followed, to teach the rule by rewarding it.
+  sources:
+    - label: Bubble UP! on Steam
+      url: https://store.steampowered.com/app/3655340/Bubble_UP/
+    - label: bubbleupgame.com
+      url: https://www.bubbleupgame.com/
+    - label: Global Game Jam 2025 entry
+      url: https://globalgamejam.org/games/2025/bubble-0-11

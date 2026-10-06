@@ -63,6 +63,7 @@ permalink: /assets/data/content.json
       "docs": {{ p.docs_url | jsonify }},
       "repo": {{ p.github_url | jsonify }},
       "website": {{ p.website_url | jsonify }},
+      "arcade": {{ p.arcade | jsonify }},
       "image": {{ p.banner | default: p.image | relative_url | jsonify }},
       "video": {{ p.video | relative_url | jsonify }},
       "featured": {{ p.featured | default: false | jsonify }}

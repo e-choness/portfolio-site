@@ -51,7 +51,7 @@ The home page is a desktop: a menu bar, a dock, draggable windows, an animated w
 | `{}` | **Projects** | Project cards, write-ups, links, gameplay video |
 | `%` | **Skills** | A "system monitor" of skills by years used |
 | `¶` | **Blog** | Posts with Mermaid diagrams, code highlighting, read counts and in-window links between posts |
-| `▲` | **Arcade** | Canvas games (Blockfall with a Cubetris mode, Snake, Invaders, a raycast Labyrinth, a pixel-shaded Orrery, all nine stages of Cat Mario, Gemfall, Dino Run, Peggle…) with hi-scores and a museum plaque for each |
+| `▲` | **Arcade** | Canvas games (Blockfall with a Cubetris mode, Snake, Invaders, a raycast Labyrinth, a pixel-shaded Orrery, all nine stages of Cat Mario, Gemfall, Dino Run, Peggle, Bubble UP!…) with hi-scores and a museum plaque for each |
 | `>_` | **Terminal** | `echo-sh`: `help`, `open`, `stats`, `neofetch`, `theme`, `games`, and a few easter eggs |
 | `↗` | **Stats** | An activity monitor: visits, most-read posts, windows opened, Arcade runs, where visitors come from |
 | `?` | **Guide** | A first-run tour |
@@ -217,6 +217,7 @@ The custom plugins mean the site can't use GitHub Pages' built-in Jekyll builder
 - **Projects**: one file per project in `_projects/`:
   - `title`, `description`, `technologies`, `categories`
   - links: `github_url`, `docs_url`, `live_url` + `live_label` (or `live_pending: true` for a greyed-out demo link), `website_url`
+  - `arcade`: an Arcade game id (as in `_data/arcade.yml`) adds a "Play in Arcade" link that opens the game in its window
   - media: `image` or `video`
   - `featured` and `order` control the Projects window and this README.
 - **Posts**: `_posts/YYYY-MM-DD-slug.md` with `title`, `date`, `category`, `tags`, `excerpt` and an optional 16:9 `image`. Link to another post with `{% post_url 2025-07-10-chapter-1-1-docker-basics %}`; inside the OS it opens in the same window.
