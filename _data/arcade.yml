@@ -265,3 +265,27 @@
       url: https://en.wikipedia.org/wiki/Dinosaur_Game
     - label: offline.js (Chromium source)
       url: https://source.chromium.org/chromium/chromium/src/+/main:components/neterror/resources/offline.js
+
+- id: peggle
+  name: "Peggle"
+  tag: "peg pachinko"
+  glyph: "◍"
+  hint: "aim with the mouse, click to fire · or ← → aim, space fire · drag and release on touch"
+  size: [600, 450]
+  pad: [{ key: "ArrowLeft", label: "↺", hold: true }, { key: " ", label: "●" }, { key: "ArrowRight", label: "↻", hold: true }]
+  credit: "Sukhbir Sidhu & Brian Rothstein · PopCap Games · 2007"
+  origin: >-
+    Studio director Sukhbir Sidhu wanted pachinko without the pure luck, crossed it with
+    Breakout on a 2D engine by programmer Brian Rothstein, and the pair spent two years on it.
+    The rules here are PopCap's: ten balls to clear twenty-five orange pegs, a purple peg
+    worth fifty blues that moves every turn, green pegs for Bjorn's Super Guide, a free ball
+    for 25,000 in one shot, and Extreme Fever buckets of up to 100,000 for the last orange.
+  fact: >-
+    Before it was Peggle it was Thunderball, a much darker game themed on the god Thor. The
+    team swapped the thunder god for unicorns and rainbows, and the last orange peg for a
+    burst of Beethoven's Ode to Joy.
+  sources:
+    - label: Peggle – Wikipedia
+      url: https://en.wikipedia.org/wiki/Peggle
+    - label: The Making of Peggle (PC Gamer)
+      url: https://www.pcgamer.com/the-making-of-peggle/
