@@ -316,3 +316,28 @@
       url: https://www.bubbleupgame.com/
     - label: Global Game Jam 2025 entry
       url: https://globalgamejam.org/games/2025/bubble-0-11
+
+- id: zuma
+  name: "Zuma"
+  tag: "marble chain"
+  glyph: "◎"
+  hint: "aim with the mouse, click to fire · click the frog to swap · or ← → aim, space fire, ↓ swap"
+  size: [600, 450]
+  pad: [{ key: "ArrowLeft", label: "↺", hold: true }, { key: "ArrowDown", label: "⇅" }, { key: " ", label: "●" }, { key: "ArrowRight", label: "↻", hold: true }]
+  credit: "PopCap Games · 2003 · after Puzz Loop (Mitchell Corporation · 1998)"
+  origin: >-
+    Mitchell's arcade game Puzz Loop invented the rolling chain: coloured balls winding
+    toward a hole, and a shooter that slots more into the line. PopCap rebuilt it as Zuma,
+    with a stone frog idol in the middle of a temple. The rules here are PopCap's: three of
+    a colour vanish, a gap whose two ends match pulls itself closed and pops again for a
+    combo, matching shot after shot builds a chain bonus, and once the Zuma bar fills no
+    more balls come.
+  fact: >-
+    The frog only ever offers colours still in the chain, so the last few balls of a level
+    can always be cleared, and the chain slows as it nears the hole to give you one more
+    chance. The unused track left over when you clear a level is paid out as a bonus.
+  sources:
+    - label: Zuma – Wikipedia
+      url: https://en.wikipedia.org/wiki/Zuma_(video_game)
+    - label: Puzz Loop – Wikipedia
+      url: https://en.wikipedia.org/wiki/Puzz_Loop
