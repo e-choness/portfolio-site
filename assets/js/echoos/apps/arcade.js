@@ -202,6 +202,10 @@ export function renderArcade(bodyEl, { toast }) {
   }
   sizeCanvas(DEFAULT_SIZE);
 
+  // What is still held once the event is over: bit 1 for the left button or
+  // first finger, bit 2 for the right button or a second finger. Games that
+  // drag or have a secondary action read it; the rest ignore it.
+  const heldOf = (e) => (e.touches ? (e.touches.length ? 1 | (e.touches.length > 1 ? 2 : 0) : 0) : e.buttons & 3);
   function arcXY(e, type) {
     if (!runner) return;
     const r = canvas.getBoundingClientRect();
@@ -209,23 +213,33 @@ export function renderArcade(bodyEl, { toast }) {
     const src = e.touches && e.touches.length ? e.touches[0] : e;
     const x = (src.clientX - r.left) * (canvas.width / r.width);
     const y = (src.clientY - r.top) * (canvas.height / r.height);
-    runner.pointer(x, y, type);
+    runner.pointer(x, y, type, heldOf(e));
   }
 
   const onCanvasDown = (e) => { canvas.focus({ preventScroll: true }); arcXY(e, 'down'); };
   const onCanvasMove = (e) => arcXY(e, 'move');
+  // A drag that leaves the canvas keeps moving while a button is down.
+  const onWindowMove = (e) => { if (e.buttons && e.target !== canvas) arcXY(e, 'move'); };
   const onCanvasTouch = (e) => { e.preventDefault(); arcXY(e, e.type === 'touchstart' ? 'down' : 'move'); };
   // 'up' is delivered for games that track a drag. It goes on the window so a
   // release outside the canvas still ends the drag; games that only care about
-  // 'down' and 'move' ignore it.
-  const onUp = (e) => { if (runner) runner.pointer(0, 0, 'up'); void e; };
+  // 'down' and 'move' ignore it. Lifting one of two fingers is a move, not an up.
+  const onUp = (e) => {
+    if (!runner) return;
+    if (e.touches && e.touches.length) arcXY(e, 'move');
+    else runner.pointer(0, 0, 'up', heldOf(e));
+  };
+  // The right button is a game control on the canvas, not a menu.
+  const onMenu = (e) => e.preventDefault();
 
   canvas.addEventListener('mousedown', onCanvasDown);
   canvas.addEventListener('mousemove', onCanvasMove);
+  canvas.addEventListener('contextmenu', onMenu);
   canvas.addEventListener('touchstart', onCanvasTouch, { passive: false });
   canvas.addEventListener('touchmove', onCanvasTouch, { passive: false });
   canvas.addEventListener('touchend', onUp);
   canvas.addEventListener('touchcancel', onUp);
+  window.addEventListener('mousemove', onWindowMove);
   window.addEventListener('mouseup', onUp);
   canvas.addEventListener('echoos:game-restart', () => { if (current && alive) startGame(current); });
 
@@ -394,10 +408,12 @@ export function renderArcade(bodyEl, { toast }) {
     document.removeEventListener('echoos:open-game', onStart);
     canvas.removeEventListener('mousedown', onCanvasDown);
     canvas.removeEventListener('mousemove', onCanvasMove);
+    canvas.removeEventListener('contextmenu', onMenu);
     canvas.removeEventListener('touchstart', onCanvasTouch);
     canvas.removeEventListener('touchmove', onCanvasTouch);
     canvas.removeEventListener('touchend', onUp);
     canvas.removeEventListener('touchcancel', onUp);
+    window.removeEventListener('mousemove', onWindowMove);
     window.removeEventListener('mouseup', onUp);
   };
 }

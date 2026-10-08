@@ -294,7 +294,7 @@
   name: "Bubble UP!"
   tag: "match at the rim"
   glyph: "⊚"
-  hint: "← → rotate the Main Bubble · ↓ hurry the incoming bubble · land it on its own colour at the rim · touch: hold left / middle / right"
+  hint: "drag the Main Bubble to turn it, or ← → · right-click or ↓ hurries the incoming bubble · land it on its own colour at the rim · touch: drag, a second finger hurries"
   pad: [{ key: "ArrowLeft", label: "↺", hold: true }, { key: "ArrowDown", label: "⇣", hold: true }, { key: "ArrowRight", label: "↻", hold: true }]
   credit: "Roger Hatfull (Sub Pixel Luck), Neal Wagram & Beili (Echo) Yin · Global Game Jam 2025"
   origin: >-

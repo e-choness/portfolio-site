@@ -78,9 +78,12 @@ export default function bubbleup(env) {
   let phase = 'play', cards = [], sel = 1, dying = 0;
   let cam = { x: 0, y: 0, zoom: 1 }, shakes = [], flash = null, clearFx = null;
   let floats = [], parts = [], notes = [], banner = null, clock = 0;
-  const RIM_N = 48, rim = new Float32Array(RIM_N), rimV = new Float32Array(RIM_N);
+  const RIM_N = 48, RIM_H = 1 / 240, rim = new Float32Array(RIM_N), rimV = new Float32Array(RIM_N);
   const keys = {};
-  let touchSide = 0;
+  // Pointer: any held button or finger drags the grid round; the right button
+  // or a second finger hurries the bubbles in. A flick keeps spinning.
+  let drag = null, dragTurn = 0, dragV = 0, hurryPtr = false;
+  const DRAG_MAX = 12, DRAG_MIN_R = MB / 3, FLICK_MAX = 360;   // rad/s, units, °/s
 
   const make = (c, kind, o) => ({ id: nextId++, c, kind, st: 'snap', x: 0, y: 0, vx: 0, vy: 0, lx: 0, ly: 0, cell: null, t: 0, trail: [], ...o });
   const rot = (x, y, a) => [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)];
@@ -322,6 +325,7 @@ export default function bubbleup(env) {
       cards.push(pool.splice(i, 1)[0]);
     }
     sel = 1; phase = 'pick';
+    drag = null; dragTurn = 0; dragV = 0; hurryPtr = false;
     play([523, 659, 784], .07);
   }
   function choose(i) {
@@ -377,7 +381,7 @@ export default function bubbleup(env) {
   }
   function physics(dt) {
     const loose = bubbles.filter((b) => b.st === 'fall');
-    const accel = (keys.ArrowDown || touchSide === 2 || (keys.ArrowLeft && keys.ArrowRight)) && !mania;
+    const accel = (keys.ArrowDown || hurryPtr || (keys.ArrowLeft && keys.ArrowRight)) && !mania;
     let vmax = 0;
     for (const b of loose) { b.touch = null; b.accel = accel && !b.collided; vmax = Math.max(vmax, Math.hypot(b.vx, b.vy)); }
     const n = Math.min(30, Math.max(1, Math.ceil((vmax * dt + Math.abs(omega) * MB * dt) / 1.5)));
@@ -504,6 +508,22 @@ export default function bubbleup(env) {
     return !bubbles.some((b) => b.st === 'fall' && b.joined);
   }
 
+  // The turn about the centre that carries the point (ax, ay) to (bx, by).
+  // Near the centre a straight pull turns it instead, continuous at the join,
+  // so a drag across the middle of the Main Bubble stays steady.
+  function turnBetween(ax, ay, bx, by) {
+    const cross = ax * by - ay * bx;
+    if (Math.hypot(ax, ay) >= DRAG_MIN_R && Math.hypot(bx, by) >= DRAG_MIN_R) return Math.atan2(cross, ax * bx + ay * by);
+    return cross / (DRAG_MIN_R * DRAG_MIN_R);
+  }
+  // Letting go hands the drag's speed to the key spin, which winds it down.
+  function endDrag() {
+    if (!drag) return;
+    const v = Math.max(-FLICK_MAX, Math.min(FLICK_MAX, dragV * 180 / Math.PI));
+    vl = Math.max(0, -v); vr = Math.max(0, v);
+    drag = null; dragTurn = 0; dragV = 0;
+  }
+
   function pluck(a, f) {
     const i0 = Math.round(((a % TAU) + TAU) % TAU / TAU * RIM_N);
     for (let k = -3; k <= 3; k++) rimV[(i0 + k + RIM_N) % RIM_N] += f * (1 - Math.abs(k) / 4);
@@ -521,10 +541,17 @@ export default function bubbleup(env) {
     // Each direction speeds up at 650°/s² to a cap that grows with the speed
     // of the bubbles, and spins down the same way. Holding both cancels out.
     const cap = CAP0 + (CAP1 - CAP0) * Math.min(1, (grav - 100) / 50);
-    const L = keys.ArrowLeft || touchSide === -1, Rt = keys.ArrowRight || touchSide === 1;
-    vl = L ? Math.min(cap, vl + ACCEL * dt) : Math.max(0, vl - ACCEL * dt);
-    vr = Rt ? Math.min(cap, vr + ACCEL * dt) : Math.max(0, vr - ACCEL * dt);
-    omega = dying ? 0 : (vr - vl) * Math.PI / 180;
+    vl = keys.ArrowLeft ? Math.min(cap, vl + ACCEL * dt) : Math.max(0, vl - ACCEL * dt);
+    vr = keys.ArrowRight ? Math.min(cap, vr + ACCEL * dt) : Math.max(0, vr - ACCEL * dt);
+    if (drag) {
+      // A drag turns the grid under the pointer. It may lag a fast flick, so
+      // the turn not yet made carries over to the next frame.
+      const w = Math.max(-DRAG_MAX, Math.min(DRAG_MAX, dragTurn / Math.max(dt, 1e-3)));
+      dragTurn = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, dragTurn - w * dt));
+      dragV += (w - dragV) * Math.min(1, dt * 12);
+      vl = vr = 0;
+      omega = dying ? 0 : w;
+    } else omega = dying ? 0 : (vr - vl) * Math.PI / 180;
 
     if (dying) {
       for (const b of bubbles) { b.x += b.vx * dt; b.y += b.vy * dt; }
@@ -577,13 +604,18 @@ export default function bubbleup(env) {
 
     comboR += ((nCombos ? COMBO_R1 : COMBO_R0) - comboR) * Math.min(1, dt * 6);
 
-    // Soft rim: radial springs at 7 Hz, coupled to their neighbours.
+    // Soft rim: radial springs at 7 Hz, coupled to their neighbours. Stepped
+    // at 240 Hz whatever the frame rate: at a phone's 30 fps the springs are
+    // stiff enough that a whole-frame step blows up into a zig-zag.
     const k = (TAU * 7) ** 2;
-    for (let i = 0; i < RIM_N; i++) {
-      const lap = rim[(i + 1) % RIM_N] + rim[(i - 1 + RIM_N) % RIM_N] - 2 * rim[i];
-      rimV[i] += (-k * rim[i] - 9 * rimV[i] + 600 * lap) * rdt;
+    for (let left = rdt; left > 0; left -= RIM_H) {
+      const h = Math.min(RIM_H, left);
+      for (let i = 0; i < RIM_N; i++) {
+        const lap = rim[(i + 1) % RIM_N] + rim[(i - 1 + RIM_N) % RIM_N] - 2 * rim[i];
+        rimV[i] += (-k * rim[i] - 9 * rimV[i] + 600 * lap) * h;
+      }
+      for (let i = 0; i < RIM_N; i++) rim[i] = Math.max(-6, Math.min(6, rim[i] + rimV[i] * h));
     }
-    for (let i = 0; i < RIM_N; i++) rim[i] = Math.max(-6, Math.min(6, rim[i] + rimV[i] * rdt));
 
     // Camera: Frenzy zooms in, coyote time leans toward the culprit, the
     // Multibubble flash pulls in close.
@@ -856,7 +888,7 @@ export default function bubbleup(env) {
     if (queued.length) line(`next: ${queued[0] === 'multi' ? '×2' : queued[0]}`);
     if (gt < 6 && phase === 'play') {
       ctx.textAlign = 'center'; ctx.fillStyle = T.muted;
-      ctx.fillText('match colours at the rim · ← → rotate · ↓ hurry', W / 2, H - 14);
+      ctx.fillText('match colours at the rim · drag or ← → to turn · right-click or ↓ to hurry', W / 2, H - 14);
     }
     if (banner) {
       ctx.globalAlpha = Math.min(1, banner.t / .3, (banner.t0 - banner.t) / .12 + .2);
@@ -900,15 +932,22 @@ export default function bubbleup(env) {
       }
       keys[k] = down;
     },
-    // Touch or click: hold the left third to turn left, the right third to turn
-    // right, the middle to hurry the bubbles in.
-    pointer(x, y, type) {
+    // Drag anywhere to turn the grid under the pointer; the right button or a
+    // second finger hurries the bubbles in. `held` is what is still pressed
+    // after the event (1 primary, 2 secondary); a press, a release of one of
+    // two, or a change of fingers re-anchors the drag rather than turning.
+    pointer(x, y, type, held = type === 'up' ? 0 : 1) {
       if (phase === 'pick') {
         if (type === 'down') for (let i = 0; i < 3; i++) if (x >= cardX(i) && x <= cardX(i) + CW && y >= CY && y <= CY + CH) choose(i);
         return;
       }
-      if (type === 'down') touchSide = x < W / 3 ? -1 : x > W * 2 / 3 ? 1 : 2;
-      else if (type === 'up') touchSide = 0;
+      hurryPtr = !!(held & 2);
+      if (!held) return endDrag();
+      const Z = S * cam.zoom, wx = (x - W / 2) / Z + cam.x, wy = (y - H / 2) / Z + cam.y;
+      if (!drag) { drag = { held, x: wx, y: wy, fresh: type === 'up' }; dragV = 0; dragTurn = 0; return; }
+      if (type !== 'move' || drag.held !== held || drag.fresh) { Object.assign(drag, { held, x: wx, y: wy, fresh: type === 'up' }); return; }
+      dragTurn += turnBetween(drag.x, drag.y, wx, wy);
+      drag.x = wx; drag.y = wy;
     },
     tick(dt) { update(dt); draw(); },
   };
