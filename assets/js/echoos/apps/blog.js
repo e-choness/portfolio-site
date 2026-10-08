@@ -18,7 +18,7 @@ function esc(s) {
   return d.innerHTML;
 }
 
-const MERMAID_CDN = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const MERMAID_CDN = 'https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.esm.min.mjs';
 const MARKMAP_AUTOLOADER = 'https://cdn.jsdelivr.net/npm/markmap-autoloader@0.16';
 
 let mermaidPromise = null;
@@ -74,7 +74,7 @@ async function renderDiagrams(container) {
     const mermaid = await loadMermaid();
     if (mermaid) {
       try {
-        mermaid.initialize({ startOnLoad: false, theme: document.documentElement.dataset.echoTheme === 'dark' ? 'dark' : 'default' });
+        mermaid.initialize({ startOnLoad: false, theme: document.documentElement.dataset.echoTheme === 'dark' ? 'redux-dark-color' : 'redux-color' });
         await mermaid.run({ nodes: container.querySelectorAll('pre.mermaid') });
       } catch { /* diagram failed — show source */ }
     }

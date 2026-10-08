@@ -142,7 +142,7 @@ flowchart LR
 | Static site | Jekyll 4.4.1 + six small Ruby plugins (`_plugins/`) |
 | Styles | Dart Sass (`sass-embedded`) via `jekyll-sass-converter` 3.1 |
 | OS shell | Vanilla ES modules, no framework and no bundler |
-| Diagrams | Mermaid 11 and Markmap, loaded only when a post needs them |
+| Diagrams | Mermaid 12 and Markmap, loaded only when a post needs them |
 | Analytics | GoatCounter (cookieless) + a nightly stats job |
 | Hosting | GitHub Pages, deployed by GitHub Actions |
 | Local dev | Docker Compose, or `bundle exec jekyll serve` |
