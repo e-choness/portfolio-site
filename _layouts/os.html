@@ -21,12 +21,8 @@
   <meta name="theme-color" content="#11111b" media="(prefers-color-scheme: dark)" />
 
   <!-- Fonts (§4) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
-    rel="stylesheet"
-  />
+  <!-- Self-hosted (_sass/base/_fonts.scss); preload the latin Archivo file every page renders with -->
+  <link rel="preload" href="{{ '/assets/fonts/archivo-var-latin.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin />
 
   {% seo title=false %}
   {% if page.notfound %}<meta name="robots" content="noindex" />{% endif %}

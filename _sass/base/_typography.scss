@@ -40,9 +40,9 @@ code {
 
 /* Links */
 a {
-  color: var(--primary-color);
+  color: var(--accent);
   text-decoration: none;
 }
 a:hover {
-  color: var(--accent-color);
+  color: color-mix(in srgb, var(--accent) 75%, var(--ink));
 }

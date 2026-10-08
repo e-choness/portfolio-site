@@ -3,11 +3,11 @@
 // EchoOS stylesheet (Patch 88): only what the OS route needs — no classic
 // components/layout/pages and no Bricolage Grotesque request. The base
 // partials stay because the OS depends on them: the `*` reset, the type scale
-// used by rendered posts and link colours (abstracts/variables). OS keyframes
-// live in os/motion.
+// used by rendered posts and link colours (now read from abstracts/tokens).
+// Fonts are self-hosted (base/fonts). OS keyframes live in os/motion.
 @use "abstracts/tokens";
-@use "abstracts/variables";
 
+@use "base/fonts";
 @use "base/base";
 @use "base/typography";
 

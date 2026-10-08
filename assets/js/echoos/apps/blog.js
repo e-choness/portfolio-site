@@ -19,7 +19,7 @@ function esc(s) {
 }
 
 const MERMAID_CDN = 'https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.esm.min.mjs';
-const MARKMAP_AUTOLOADER = 'https://cdn.jsdelivr.net/npm/markmap-autoloader@0.16';
+const MARKMAP_AUTOLOADER = 'https://cdn.jsdelivr.net/npm/markmap-autoloader@0.18';
 
 let mermaidPromise = null;
 function loadMermaid() {
