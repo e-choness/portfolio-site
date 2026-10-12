@@ -60,7 +60,7 @@ boot.addEventListener('click', finishBoot);
 
 async function main() {
   // Kick off the content fetch in parallel with the boot animation.
-  const contentPromise = fetch(root.dataset.content)
+  const contentPromise = fetch(root.dataset.content, { cache: 'no-cache' })
     .then((r) => (r.ok ? r.json() : null))
     .catch(() => null);
   const content = await contentPromise;

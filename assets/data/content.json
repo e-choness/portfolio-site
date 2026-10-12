@@ -132,7 +132,8 @@ permalink: /assets/data/content.json
     "commits": {{ site.build_stats.commits | jsonify }},
     "lastCommit": {{ site.build_stats.last_commit | jsonify }},
     "builtAt": {{ site.time | date_to_xmlschema | jsonify }},
-    "statsUrl": {{ '/assets/data/stats.json' | relative_url | jsonify }}
+    {% assign stats_file = site.static_files | where: "path", "/assets/data/stats.json" | first %}
+    "statsUrl": {% if stats_file %}{{ '/assets/data/stats.json' | relative_url | jsonify }}{% else %}null{% endif %}
   },
   "gameNames": { {% for g in site.data.arcade %}{{ g.id | jsonify }}: {{ g.name | jsonify }}{% unless forloop.last %}, {% endunless %}{% endfor %} }
 }

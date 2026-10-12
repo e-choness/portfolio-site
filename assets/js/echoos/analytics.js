@@ -22,6 +22,10 @@ const enabled = Boolean(code) && !optedOut;
 
 const queue = [];
 let ready = false;
+let unavailable = false;
+let resolveTracker;
+const trackerLoaded = new Promise((resolve) => { resolveTracker = resolve; });
+const counts = new Map();
 
 if (enabled) {
   // count.js reads its settings from window.goatcounter before it loads;
@@ -33,9 +37,17 @@ if (enabled) {
   s.dataset.goatcounter = `https://${code}.goatcounter.com/count`;
   s.addEventListener('load', () => {
     ready = true;
+    resolveTracker(true);
     for (const hit of queue.splice(0)) send(hit);
   });
+  s.addEventListener('error', () => {
+    unavailable = true;
+    queue.length = 0;
+    resolveTracker(false);
+  });
   document.head.appendChild(s);
+} else {
+  resolveTracker(false);
 }
 
 function send(hit) {
@@ -43,7 +55,7 @@ function send(hit) {
 }
 
 function hit(h) {
-  if (!enabled) return;
+  if (!enabled || unavailable) return;
   if (ready) send(h);
   else queue.push(h);
 }
@@ -60,14 +72,22 @@ export function trackEvent(name, title) {
 // a number, or null when counting is off, the setting is disabled, or the
 // request fails, so callers can simply hide the count.
 export async function liveCount(path) {
-  if (!code) return null;
+  // A blocked tracker is a signal to leave analytics alone. Reuse requests for
+  // repeated post visits and stop after a counter endpoint fails.
+  if (!enabled || unavailable || !(await trackerLoaded) || unavailable) return null;
+  if (!counts.has(path)) counts.set(path, fetchCount(path));
+  return counts.get(path);
+}
+
+async function fetchCount(path) {
   try {
     const res = await fetch(`https://${code}.goatcounter.com/counter/${encodeURIComponent(path)}.json`);
-    if (!res.ok) return null;
+    if (!res.ok) { unavailable = true; return null; }
     const data = await res.json();
     const n = Number(String(data.count ?? '').replace(/[^\d]/g, ''));
     return Number.isFinite(n) ? n : null;
   } catch {
+    unavailable = true;
     return null;
   }
 }
