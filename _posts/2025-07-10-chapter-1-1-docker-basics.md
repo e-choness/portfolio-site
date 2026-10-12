@@ -71,7 +71,7 @@ These two words carry the whole model:
 The relationship between them, and the commands that move between them:
 
 ```mermaid
-flowchart LR
+flowchart TD
   df[Dockerfile] -- "docker build" --> img[(Image)]
   img -- "docker run" --> c1[Container]
   img -- "docker run" --> c2[Container]

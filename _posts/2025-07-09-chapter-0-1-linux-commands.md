@@ -79,16 +79,16 @@ cd               # home (same as cd ~)
 The Linux filesystem is one tree starting at `/`. You'll keep coming back to the same few branches:
 
 ```mermaid
-flowchart TD
-  root["/"] --> etc["/etc<br/>system configuration"]
-  root --> var["/var<br/>changing data"]
-  var --> log["/var/log<br/>log files"]
-  var --> lib["/var/lib<br/>service data (docker, mysql)"]
-  root --> home["/home/you<br/>your files, ~"]
-  root --> usr["/usr/bin, /usr/local/bin<br/>installed programs"]
-  root --> opt["/opt<br/>self-contained third-party software"]
-  root --> tmp["/tmp<br/>scratch, wiped on reboot"]
-  root --> proc["/proc, /sys<br/>live kernel and process info"]
+flowchart LR
+  root["/"] --> etc["/etc · system configuration"]
+  root --> var["/var · changing data"]
+  var --> log["/var/log · log files"]
+  var --> lib["/var/lib · service data (docker, mysql)"]
+  root --> home["/home/you · your files, ~"]
+  root --> usr["/usr/bin, /usr/local/bin · installed programs"]
+  root --> opt["/opt · self-contained third-party software"]
+  root --> tmp["/tmp · scratch, wiped on reboot"]
+  root --> proc["/proc, /sys · live kernel and process info"]
 ```
 
 When a service misbehaves, its config is almost always under `/etc`, its logs under `/var/log` (or in the journal, below), and its data under `/var/lib`.
@@ -174,14 +174,13 @@ When "it works in my terminal but not in cron", `which` usually shows a differen
 This is where the command line stops being a list of commands and becomes a language. Every process starts with three streams: **standard input** (0), **standard output** (1) and **standard error** (2). By default all three are your terminal; the operators below re-point them.
 
 ```mermaid
-flowchart LR
+flowchart TD
   kb([keyboard]) -- "stdin (0)" --> cmd[command]
   in[(file)] -- "< file" --> cmd
-  cmd -- "stdout (1)" --> term([terminal])
-  cmd -- "stderr (2)" --> term
-  cmd -- "> file  (overwrite)<br/>>> file  (append)" --> out[(file)]
+  cmd -- "stdout (1)<br/>stderr (2)" --> term([terminal])
+  cmd -- "> file overwrite<br/>>> file append" --> out[(file)]
   cmd -- "2> errors.log" --> err[(file)]
-  cmd -- "| pipe: stdout → stdin" --> next[next command]
+  cmd -- "| stdout → stdin" --> next[next command]
   next -- "tee copy.txt" --> both([terminal + file])
 ```
 

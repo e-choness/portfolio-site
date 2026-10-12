@@ -137,7 +137,7 @@ The payoff for getting the contract right shows up somewhere most gateways never
 When the model decides to call a tool (over the Model Context Protocol, in Aegis's case), that call is model *output*. It can carry a masked PII placeholder out to an external service (an exfiltration path), or it can be a destructive action (`delete_record`). So it passes a tool-call guard on the way out. The tool's result is untrusted *input*, and tool output is the prime prompt-injection vector in agentic systems, because it's content the model will read and act on that you didn't write. So it passes a tool-result guard on the way back in.
 
 ```mermaid
-flowchart LR
+flowchart TD
     M[Model node] -- tool call --> TG[Tool-call guard]
     TG -- exfil / approval check --> MCP[MCP tool · external]
     MCP -- result --> TR[Tool-result guard]

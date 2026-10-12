@@ -30,9 +30,9 @@ If you find `docker-compose` (with a hyphen) in old scripts: that's Compose v1, 
 We'll extend the app from [Chapter 1.1]({% post_url 2025-07-10-chapter-1-1-docker-basics %}) to count visits in Redis, and put Nginx in front of it:
 
 ```mermaid
-flowchart LR
+flowchart TD
   b([Browser]) -- "localhost:8080" --> proxy
-  subgraph P["Compose project: shop (network shop_default)"]
+  subgraph P["Compose project: shop<br/>(network shop_default)"]
     proxy["proxy<br/>nginx:1.27"] -- "api:3000" --> api["api<br/>built from ./Dockerfile"]
     api -- "redis:6379" --> redis["redis<br/>redis:8.0"]
   end

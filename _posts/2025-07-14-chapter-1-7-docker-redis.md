@@ -133,16 +133,22 @@ docker run --rm -v redis_data:/data -v "$PWD":/backup alpine \
 Newer Redis versions read older RDB and AOF files, but not the other way round. So the plan is: keep the old container around until the new one has proven itself, and have a backup for the moment you can't go back.
 
 ```mermaid
-flowchart TD
-  A[Back up /data] --> B[docker pull redis:8.0.3]
-  B --> C[docker stop redis]
-  C --> D[docker rename redis redis-old]
-  D --> E[Compare redis.conf with the new<br/>version's example file]
-  E --> F[docker run new container<br/>same volume and config]
-  F --> G{Version, DBSIZE<br/>and app checks OK?}
-  G -- yes --> H[docker rm redis-old]
-  G -- no --> I[Stop the new container<br/>restore the backup into the volume]
-  I --> J[docker start redis-old]
+flowchart LR
+  subgraph prep["Prepare"]
+    direction TB
+    A[Back up /data] --> B[docker pull redis:8.0.3]
+    B --> C[docker stop redis]
+    C --> D[docker rename redis redis-old]
+    D --> E[Compare redis.conf with the<br/>new version's example file]
+  end
+  subgraph swap["Swap and verify"]
+    direction TB
+    F[docker run new container<br/>same volume and config] --> G{Version, DBSIZE<br/>and app checks OK?}
+    G -- yes --> H[docker rm redis-old]
+    G -- no --> I[Stop the new container, restore<br/>the backup into the volume]
+    I --> J[docker start redis-old]
+  end
+  prep --> swap
 ```
 
 Checks after the switch:

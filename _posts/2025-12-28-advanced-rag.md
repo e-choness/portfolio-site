@@ -38,17 +38,23 @@ Modern hybrid retrieval goes beyond simply stitching two lists of results togeth
 The process begins with text preprocessing for the sparse engine: the user query and the document chunks are tokenized and stripped of stop words, so BM25 scores only the terms that carry meaning. The dense engine embeds the raw text, since the embedding model was trained on natural sentences.
 
 ```mermaid
-flowchart LR
-  q([Query]) --> emb[Embed query]
-  q --> tok[Tokenize +<br/>drop stop words]
-  emb --> dense[FAISS top-k<br/>cosine]
-  tok --> sparse[BM25 top-k]
-  dense --> pool[Candidate pool<br/>union of both]
-  sparse --> pool
-  pool --> fuse["Score each candidate on both scales<br/>min-max normalize, 0.6 dense + 0.4 sparse"]
-  fuse --> rr[Cross-encoder rerank<br/>query + chunk together]
-  rr --> top[Top 4 chunks]
-  top --> llm[LLM answer]
+flowchart TB
+  subgraph retrieve["Retrieve: two searches, one pool"]
+    direction LR
+    q([Query]) --> emb[Embed query]
+    q --> tok[Tokenize +<br/>drop stop words]
+    emb --> dense[FAISS top-k<br/>cosine]
+    tok --> sparse[BM25 top-k]
+    dense --> pool[Candidate pool<br/>union of both]
+    sparse --> pool
+  end
+  subgraph rank["Rank and answer"]
+    direction LR
+    fuse["Fuse scores<br/>min-max, 0.6 dense + 0.4 sparse"] --> rr[Cross-encoder rerank<br/>query + chunk together]
+    rr --> top[Top 4 chunks]
+    top --> llm[LLM answer]
+  end
+  retrieve -- "each candidate scored on both scales" --> rank
 ```
 
 Next, the system executes parallel dual engine retrieval. The query is sent simultaneously to the dense vector engine to fetch the top semantic matches and to the BM25 engine to pull the top keyword matches. Running these searches concurrently preserves low latency.

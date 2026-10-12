@@ -168,10 +168,10 @@ docker login registry.example.com
 GitLab only coordinates CI; jobs run on a **runner**. We'll run the runner as a container on a separate machine (ideally, since builds are heavy) or on the same host.
 
 ```mermaid
-flowchart LR
+flowchart TD
   dev([git push]) --> GL[GitLab]
   GL -- "job for branch/tag" --> R[gitlab-runner]
-  R -- "starts job container<br/>docker:27-cli" --> J[CI job]
+  R -- "starts job container docker:27-cli" --> J[CI job]
   J -- "/var/run/docker.sock" --> D[(Host Docker daemon)]
   D -- "docker build" --> I[image]
   J -- "docker push" --> REG[(GitLab Container Registry)]
@@ -265,16 +265,22 @@ build-image:
 GitLab upgrades have **required stops**: you can't jump from any version to any other, because database migrations must run in order. The official [Upgrade Path tool](https://gitlab-com.gitlab.io/support/toolbox/upgrade-path/) lists the exact versions to pass through for your starting point.
 
 ```mermaid
-flowchart TD
-  A[Back up: gitlab-backup + config/] --> B[Look up the path in the Upgrade Path tool]
-  B --> C[Set image: to the next stop in compose.yml]
-  C --> D[docker compose up -d]
-  D --> E[Follow the logs until migrations finish<br/>and the UI answers]
-  E --> F{Background migrations<br/>done? Admin → Monitoring}
-  F -- no --> F
-  F -- yes --> G{More stops?}
-  G -- yes --> C
-  G -- no --> H[Done]
+flowchart LR
+  subgraph prep["Prepare"]
+    direction TB
+    A[Back up: gitlab-backup + config/] --> B[Look up the path in the Upgrade Path tool]
+  end
+  subgraph stop["For each upgrade stop"]
+    direction TB
+    C[Set image: to the next stop in compose.yml] --> D[docker compose up -d]
+    D --> E[Follow the logs until migrations finish and the UI answers]
+    E --> F@{ shape: hex, label: "Migrations done?" }
+    F -- "no: check Admin → Monitoring" --> F
+    F -- yes --> G@{ shape: hex, label: "More stops?" }
+    G -- yes --> C
+    G -- no --> H[Done]
+  end
+  prep --> stop
 ```
 
 - **One stop at a time.** Change the `image:` tag to the next version on the path, then `docker compose up -d`. The container runs the migrations on start.

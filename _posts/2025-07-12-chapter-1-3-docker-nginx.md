@@ -109,9 +109,8 @@ For a public site you need a domain pointing at your server and a certificate. L
 The layout keeps everything on the host and mounts it into the container read-only:
 
 ```mermaid
-flowchart LR
-  u([Browser]) -- "http :80" --> n
-  u -- "https :443" --> n
+flowchart TD
+  u([Browser]) -- "http :80<br/>https :443" --> n
   le([Let's Encrypt]) -- "http :80<br/>/.well-known/acme-challenge" --> n
   subgraph C["nginx container"]
     n[nginx]
@@ -120,6 +119,7 @@ flowchart LR
     conf["~/nginx/conf.d"]
     acme["/srv/certbot<br/>challenge files"]
     certs["/etc/letsencrypt<br/>certificates, renewed by certbot"]
+    conf ~~~ acme ~~~ certs
   end
   conf -. "/etc/nginx/conf.d" .-> n
   acme -. "/var/www/certbot" .-> n

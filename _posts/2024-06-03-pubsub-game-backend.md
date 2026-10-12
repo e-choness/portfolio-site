@@ -203,11 +203,11 @@ A typical event dispatch cycle might look like this:
 
 ```mermaid
 graph TD
-    E[NotifyEvent called] --> C{Already dispatching?}
-    C -- yes --> Q[Step 1: Queue it as a derived event<br/>and return]
-    C -- no --> H[Step 2: Main event to every subscriber<br/>registered for its type]
+    E[NotifyEvent called] --> C@{ shape: hex, label: "Dispatching?" }
+    C -- yes --> Q[Step 1: queue as derived event, return]
+    C -- no --> H[Step 2: send to every subscriber of its type]
     H -. handlers raise new events .-> Q
-    H --> DQ{Step 3: Derived queue empty?}
+    H --> DQ@{ shape: hex, label: "Step 3: queue empty?" }
     DQ -- no --> N[Dispatch the next queued event]
     N --> DQ
     DQ -- yes --> X[Done]

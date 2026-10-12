@@ -532,13 +532,17 @@
 }
 
 // detail view wrapper
+// Shared by the blog reader and project detail: wide enough for diagrams and
+// tables (~105 characters of 13.5px body text), centred in wider windows.
+$reading-column: 860px;
+
 // Same centred reading column as the blog reader (.os-blog-heading etc.).
 .os-proj-detail {
   display: flex;
   flex-direction: column;
   gap: 12px;
   width: 100%;
-  max-width: 720px;
+  max-width: $reading-column;
   margin-inline: auto;
 }
 // Banners are 2:1 or 16:9 with text baked in. Keep their own ratio (the 16:9
@@ -1041,14 +1045,14 @@
   display: block;
 }
 
-// Reading column: heading, article and pager share one measure (~75
-// characters at 13.5px) centred in wide windows; the cover stays full-bleed.
+// Reading column: heading, article and pager share one measure
+// ($reading-column), centred in wide windows; the cover stays full-bleed.
 .os-blog-heading,
 .os-blog-body,
 .os-blog-loading,
 .os-blog-nav {
   width: 100%;
-  max-width: 680px;
+  max-width: $reading-column;
   margin-inline: auto;
 }
 .os-blog-heading {

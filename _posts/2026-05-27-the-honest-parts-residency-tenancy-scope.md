@@ -18,18 +18,24 @@ Geolocating a provider's API endpoint tells you where the nearest edge node or l
 So Aegis doesn't detect. It enforces what's *declared*, verifies what's *verifiable*, and labels which is which. Four layers, fail-closed by default:
 
 ```mermaid
-flowchart TD
-    REQ[Request + classification label] --> POL{Residency policy active?}
-    POL -- no --> ANY[All providers eligible]
-    ANY --> ROUTE
-    POL -- yes --> FILTER[Filter providers by declared region]
-    FILTER --> UNK{Any candidate region unknown?}
-    UNK -- yes --> DROP[Drop unknown — fail closed]
-    UNK -- no --> OK[Eligible compliant set]
-    DROP --> OK
-    OK --> EMPTY{Set empty?}
-    EMPTY -- yes --> BLOCK[Block + audit]
-    EMPTY -- no --> ROUTE[Route to compliant provider]
+flowchart LR
+    subgraph eligible["Which providers are eligible?"]
+        direction TB
+        REQ[Request + classification label] --> POL@{ shape: hex, label: "Policy on?" }
+        POL -- no --> ANY[All providers eligible]
+        POL -- yes --> FILTER[Filter by declared region]
+        FILTER --> UNK@{ shape: hex, label: "Unknown region?" }
+        UNK -- yes --> DROP[Drop it: fail closed]
+        UNK -- no --> OK[Eligible compliant set]
+        DROP --> OK
+    end
+    subgraph decide["Route or block"]
+        direction TB
+        EMPTY@{ shape: hex, label: "Set empty?" }
+        EMPTY -- yes --> BLOCK[Block + audit]
+        EMPTY -- no --> ROUTE[Route to compliant provider]
+    end
+    eligible --> decide
 ```
 
 1. **Declared metadata.** Every provider profile carries `residency: {region, jurisdiction, source_url}`, sourced from the provider's own documentation. Unset means `unknown`.

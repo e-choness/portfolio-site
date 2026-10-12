@@ -301,7 +301,7 @@ What's going on:
 - **Exceptions travel too**: if the worker throws (or calls `set_exception`), `get()` rethrows it in the waiting thread, so errors from background work don't vanish.
 
 ```mermaid
-graph LR
+graph TD
     A[Worker function] -->|set_value / set_exception| B[std::promise]
     B --> C[Shared state]
     C --> D[std::future]

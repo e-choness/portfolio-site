@@ -66,7 +66,7 @@ A few terms do a lot of work in this design. Worth being precise about them:
 ## The Basic Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     A[Data Pipeline Exception] --> B[In-Memory Diagnostic Handler]
     B --> C[Field Classification<br/>Presidio]
     C --> D[Tokenize Tracking IDs<br/>Keyed HMAC]
@@ -234,19 +234,25 @@ The dashboard hides this complexity—user types a name, picks a date range, and
 The full stack, end to end:
 
 ```mermaid
-flowchart TB
-    A[Pipeline Exception] --> B[Presidio Field Classification]
-    B --> C{PII field?}
-    C -->|Tracking ID| D[AES-SIV Tokenize<br/>+ Tenant AAD tweak<br/>+ Epoch-derived key]
-    C -->|Data value| E[Strip value, extract shape metadata]
-    D --> F[tok:epoch:ciphertext]
-    E --> G[type/precision/scale/nulls]
-    F --> H[Structured JSON Envelope]
-    G --> H
-    H --> I[Log Aggregator]
-    I --> J[14-day retention]
-    J --> K[Crypto-shred incident key]
-    K --> L[Logs decay to noise]
+flowchart LR
+    subgraph capture["At the exception"]
+        direction TB
+        A[Pipeline Exception] --> B[Presidio Field Classification]
+        B --> C{PII field?}
+        C -->|Tracking ID| D[AES-SIV tokenize · tenant AAD tweak · epoch-derived key]
+        C -->|Data value| E[Strip value, extract shape metadata]
+        D --> F[tok:epoch:ciphertext]
+        E --> G[type/precision/scale/nulls]
+        F --> H[Structured JSON Envelope]
+        G --> H
+    end
+    subgraph decay["Afterwards"]
+        direction TB
+        I[Log Aggregator] --> J[14-day retention]
+        J --> K[Crypto-shred incident key]
+        K --> L[Logs decay to noise]
+    end
+    capture --> decay
 ```
 
 None of these pieces work well alone—metadata-only logging loses traceability, deterministic tokens alone are fingerprintable, and time rotation alone breaks without epoch tagging. Stacked together, you get a system where engineers can debug real production incidents in real time, and six months later the same logs are cryptographically inert.

@@ -54,23 +54,26 @@ RAG is often described as complex, but the core idea is simple. It is just stori
 The work splits into two paths. Indexing runs once per document set; the query path runs on every question.
 
 ```mermaid
-flowchart LR
+flowchart TB
   subgraph Index["Indexing: once per document set"]
     direction LR
     D[PDFs / docs] --> C[Chunk<br/>500-1000 chars, overlap]
     C --> E1[Embed chunks]
     E1 --> V[(Vector store<br/>FAISS)]
   end
-  subgraph Query["Query: every question"]
+  subgraph Retrieve["Query: retrieve, every question"]
     direction LR
     Q[Question] --> E2[Embed question<br/>same model]
     E2 --> S[Similarity search<br/>top-k]
-    V --> S
     S --> R[Rerank<br/>cross-encoder]
-    R --> P[Grounded prompt<br/>+ sources]
-    P --> L[LLM]
+  end
+  subgraph Answer["Query: answer"]
+    direction LR
+    P[Grounded prompt<br/>+ sources] --> L[LLM]
     L --> A[Answer with citations]
   end
+  Index -- "search reads the vector store" --> Retrieve
+  Retrieve -- "top chunks" --> Answer
 ```
 
 ### Step 1: Data preparation

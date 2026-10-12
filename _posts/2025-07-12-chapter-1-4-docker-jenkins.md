@@ -20,14 +20,14 @@ Docker removes that problem at both ends:
 The Jenkins container doesn't run Docker *inside* itself. It gets the host's Docker socket mounted in, so when a pipeline asks for a `node:22` container, the host's daemon starts it as a **sibling** of Jenkins:
 
 ```mermaid
-flowchart LR
+flowchart TD
   dev([Developer]) -- "Build with Parameters" --> J
-  subgraph Host["Server (Docker host)"]
-    J["jenkins container<br/>Docker CLI only"] -- "/var/run/docker.sock" --> D[(Host Docker daemon)]
-    D -- "docker run" --> N["node:22 build container<br/>workspace shared"]
-    D -- "docker run" --> M["maven build container<br/>~/.m2 cache mounted"]
-  end
   G[(Git server)] -- checkout --> J
+  subgraph Host["Server (Docker host)"]
+    J["jenkins container · Docker CLI only"] -- "/var/run/docker.sock" --> D[(Host Docker daemon)]
+    D -- "docker run" --> N["node:22 build container · workspace shared"]
+    D -- "docker run" --> M["maven build container · ~/.m2 cache mounted"]
+  end
   N -- "scp dist/" --> T[(Deploy target)]
   M -- "scp jar + ssh restart" --> T
 ```

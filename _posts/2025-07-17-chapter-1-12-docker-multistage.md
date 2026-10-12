@@ -89,13 +89,13 @@ ENTRYPOINT ["/pingsvc"]
 The result: **7.24 MB**, about 180 times smaller.
 
 ```mermaid
-flowchart LR
+flowchart TD
   subgraph S1["Stage 1: build (golang:1.22-alpine)"]
     src[source + go.mod] --> dl[go mod download]
     dl --> b[go build]
     b --> bin["/out/pingsvc"]
   end
-  subgraph S2["Stage 2: runtime (scratch) → the image you ship"]
+  subgraph S2["Stage 2: runtime (scratch)<br/>the image you ship"]
     certs[CA certificates]
     app["/pingsvc"]
   end

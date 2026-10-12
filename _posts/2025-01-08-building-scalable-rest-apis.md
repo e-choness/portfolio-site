@@ -65,21 +65,19 @@ module.exports = connectDB;
 Every request passes through the same middleware chain before it reaches a controller. The order matters: security headers and CORS first, the rate limiter before any expensive work, body parsing only once the request is allowed in, and the error handler last so it can catch whatever the controllers throw.
 
 ```mermaid
-flowchart LR
-  req([Request]) --> helmet[helmet<br/>security headers]
-  helmet --> cors[cors<br/>origin check]
-  cors --> limit[rate limiter<br/>/api/*]
-  limit --> parse[compression +<br/>body parsing]
-  parse --> auth[authenticate<br/>+ authorize]
+flowchart TD
+  req([Request]) --> sec[helmet + cors: headers, origin check]
+  sec --> limit[rate limiter: /api/*]
+  limit --> parse[compression + body parsing]
+  parse --> auth[authenticate + authorize]
   auth --> valid[validators]
   valid --> ctrl[controller]
-  ctrl --> svc[(services /<br/>MongoDB / Redis)]
+  ctrl --> svc[(services / MongoDB / Redis)]
   ctrl --> res([Response])
   limit -. 429 .-> res
   auth -. 401 / 403 .-> res
   valid -. 400 .-> res
-  ctrl -. throws .-> err[errorHandler]
-  err --> res
+  ctrl -. "throws → errorHandler" .-> res
 ```
 
 ```javascript

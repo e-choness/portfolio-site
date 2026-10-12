@@ -97,7 +97,7 @@ What you gain over the default bridge:
 A container can be on several networks at once. That lets you build a front door that only the proxy passes through:
 
 ```mermaid
-flowchart LR
+flowchart TD
   u([Internet]) -- ":443 published" --> proxy
   subgraph FE["network: frontend"]
     proxy[nginx]

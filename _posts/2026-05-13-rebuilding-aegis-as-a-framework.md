@@ -40,16 +40,21 @@ flowchart TD
         REST[REST API · native + OpenAI-compat]
         MCPS[MCP server]
         SDK[SDKs · Python + TypeScript]
+        CLI ~~~ MCPS
+        REST ~~~ SDK
     end
     AUTH[Auth middleware — resolves Principal]
     subgraph PR[Pipeline runtime — LangGraph]
+        direction LR
         IN[Ingress guards] --> RX[Route + execute] --> EG[Egress guards]
     end
     subgraph K[Plugin kernel]
-        REG[Registry — entry points]
+        REG[Registry · entry points]
         CFG[Typed config + secrets]
         ASM[Graph assembler]
-        HK[Hooks — pluggy]
+        HK[Hooks · pluggy]
+        REG ~~~ ASM
+        CFG ~~~ HK
     end
     subgraph C[Seven plugin contracts]
         MP[ModelProvider]
@@ -59,12 +64,17 @@ flowchart TD
         TE[Telemetry exporter]
         PN[PipelineNode]
         AU[Authenticator]
+        MP ~~~ TE
+        GP ~~~ PN
+        RG ~~~ AU
     end
     subgraph PP[Optional policy packs]
         CL[Classification]
         RES[Residency]
         BUD[Budgets]
         PII[PII mask]
+        CL ~~~ BUD
+        RES ~~~ PII
     end
     IF --> AUTH --> PR --> K --> C
     PP -. implements .-> C
@@ -107,19 +117,20 @@ The old call chain had a subtler problem than rigidity. It couldn't express cond
 In v2 the request lifecycle is a LangGraph `StateGraph`. The compliance rule becomes an *edge* in a graph: a thing you can draw, lint, and show an auditor. A request flows through a staged spine (ingress guards, then route, then execute, then egress guards), and each stage is populated from ordered node lists in `aegis.yaml`. The assembler compiles one graph per route at startup, so there is no per-request assembly cost and misconfiguration is caught at load, not in production.
 
 ```mermaid
-flowchart LR
-    REQ([Request]) --> AUTH{Auth}
+flowchart TD
+    REQ([Request]) --> AUTH@{ shape: hex, label: "Auth" }
     AUTH -- no principal --> R401([401])
     AUTH --> IN[Ingress guards]
-    IN -- block --> REF([Refused + audit])
+    IN -- block --> REF1([Refused + audit])
     IN -- require_approval --> HOLD([Paused — HITL])
     HOLD -- approved --> RT
     IN -- allow / sanitize --> RT[Route]
-    RT -- no compliant provider --> REF
+    RT -- no compliant provider --> REF2([Refused + audit])
     RT --> EX[Execute]
-    EX -- tool call --> TG[Tool-call guard] --> MCP[MCP tool] --> TR[Tool-result guard] --> EX
+    EX -- tool call --> TOOL[Tool-call guard → MCP tool → Tool-result guard]
+    TOOL -- result --> EX
     EX --> EG[Egress guards]
-    EG -- block --> REF
+    EG -- block --> REF3([Refused + audit])
     EG -- allow / sanitize --> RESP([Response + audit])
 ```
 

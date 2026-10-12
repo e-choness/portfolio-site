@@ -291,20 +291,20 @@ Once everything is set up, click "Next." Here is what happens behind that button
 ```mermaid
 sequenceDiagram
   actor Dev as Developer
-  participant UI as Backstage frontend :3000
-  participant BE as Backstage backend :7007
+  participant UI as Frontend :3000
+  participant BE as Backend :7007
   participant GH as GitHub
-  participant CAT as Software Catalog
-  Dev->>UI: Create → pick template, fill in the form
-  UI->>BE: run template (parameters + secrets)
-  BE->>BE: fetch:template renders ./skeleton
-  BE->>GH: publish:github creates the repo, pushes files,<br/>sets GITGUARDIAN_API_KEY secret
+  participant CAT as Catalog
+  Dev->>UI: Create: pick template,<br/>fill in the form
+  UI->>BE: run template<br/>(parameters + secrets)
+  BE->>BE: fetch:template<br/>renders ./skeleton
+  BE->>GH: publish:github: create repo,<br/>push files, set secret
   GH-->>BE: repoContentsUrl
-  BE->>CAT: catalog:register reads catalog-info.yaml
-  GH->>GH: push triggers Actions: tests + ggshield scan
+  BE->>CAT: catalog:register<br/>reads catalog-info.yaml
+  GH->>GH: push runs Actions:<br/>tests + ggshield
   Dev->>UI: open the new component
   UI->>CAT: owner, docs, links
-  UI->>GH: CI status for the component
+  UI->>GH: CI status
 ```
 
 The new service appears in the catalog with its owner and the rendered files, and its page shows the CI runs.

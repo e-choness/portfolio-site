@@ -23,19 +23,27 @@ I decided early on that Aegis needed to be the single point of control for all A
 Here is the path every request takes; the rest of this post walks through each stage:
 
 ```mermaid
-flowchart TD
-  app([App / SDK]) -- "submit, get job ID" --> cls[Classify data<br/>regex, ~0.2 ms]
-  cls --> r{RESTRICTED?}
-  r -- yes --> local[Local Ollama only<br/>never leaves the network]
-  r -- no --> pii[Mask PII<br/>Presidio + CA SIN]
-  pii --> bud{Pre-flight budget<br/>estimate OK?}
-  bud -- no --> rej([Rejected before any LLM call])
-  bud -- yes --> route[Route by task:<br/>Haiku / Sonnet / Opus]
-  route --> cb[Circuit breaker chain<br/>Anthropic → Azure OpenAI → Ollama]
-  cb --> scan[Scan response for new PII<br/>restore placeholders]
-  local --> audit
-  scan --> audit[(Audit log: TimescaleDB<br/>metrics: Prometheus)]
-  audit --> done([Job complete: client polls result])
+flowchart LR
+  subgraph intake["1 · Intake"]
+    direction TB
+    app([App / SDK]) -- "submit, get job ID" --> cls[Classify data<br/>regex, ~0.2 ms]
+    cls --> r@{ shape: hex, label: "RESTRICTED?" }
+    r -- yes --> local[Local Ollama only<br/>never leaves the<br/>network, still audited]
+  end
+  subgraph guard["2 · Before any LLM call"]
+    direction TB
+    pii[Mask PII<br/>Presidio + CA SIN] --> bud@{ shape: hex, label: "Budget<br/>estimate OK?" }
+    bud -- no --> rej([Rejected before<br/>any LLM call])
+  end
+  subgraph record["3 · Call and record"]
+    direction TB
+    route[Route by task<br/>Haiku / Sonnet / Opus] --> cb[Circuit breakers<br/>Anthropic → Azure<br/>OpenAI → Ollama]
+    cb --> scan[Scan response for<br/>new PII, restore<br/>placeholders]
+    scan --> audit[(Audit: TimescaleDB<br/>metrics: Prometheus)]
+    audit --> done([Job complete:<br/>client polls result])
+  end
+  intake -- "not restricted" --> guard
+  guard -- "within budget" --> record
 ```
 
 ## Provider Agnosticism: The Foundation

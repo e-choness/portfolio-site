@@ -21,6 +21,14 @@ function esc(s) {
 const MERMAID_CDN = 'https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.esm.min.mjs';
 const MARKMAP_AUTOLOADER = 'https://cdn.jsdelivr.net/npm/markmap-autoloader@0.18';
 
+// Tuned so diagrams fit the reading column: flowchart labels wrap at 280px
+// instead of 200 (fewer lines, shorter diagrams), and sequence diagrams have
+// less space between messages and no repeated actor row at the bottom.
+// (Flowchart node/rank spacing isn't set: mermaid 12's default look ignores it.)
+const MERMAID_LAYOUT = {
+  flowchart: { wrappingWidth: 280 },
+  sequence: { mirrorActors: false, messageMargin: 28, boxMargin: 8, noteMargin: 8 },
+};
 let mermaidPromise = null;
 function loadMermaid() {
   if (!mermaidPromise) {
@@ -74,7 +82,12 @@ async function renderDiagrams(container) {
     const mermaid = await loadMermaid();
     if (mermaid) {
       try {
-        mermaid.initialize({ startOnLoad: false, theme: document.documentElement.dataset.echoTheme === 'dark' ? 'redux-dark-color' : 'redux-color' });
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: document.documentElement.dataset.echoTheme === 'dark' ? 'redux-dark-color' : 'redux-color',
+          ...MERMAID_LAYOUT,
+          fontFamily: getComputedStyle(document.documentElement).getPropertyValue('--font-sans').trim() || 'sans-serif',
+        });
         await mermaid.run({ nodes: container.querySelectorAll('pre.mermaid') });
       } catch { /* diagram failed — show source */ }
     }

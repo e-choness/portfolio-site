@@ -33,18 +33,18 @@ Below is a simple conceptual diagram of how a TCP client and server interact via
 ```mermaid
 graph LR
     subgraph Client Host
-        CApp[Client App]
-        CSocket[Client Socket]
+        CApp[Client app]
+        CSocket[Socket]
     end
 
     subgraph Server Host
-        SApp[Server App]
-        SSocket[Server Listening Socket]
-        SConn[Server Connected Socket]
+        SSocket[Listening socket]
+        SConn[Connected socket]
+        SApp[Server app]
     end
 
     CApp --> CSocket
-    CSocket <-->|TCP Connection| SSocket
+    CSocket <-->|TCP| SSocket
     SSocket --> SConn
     SConn --> SApp
 
