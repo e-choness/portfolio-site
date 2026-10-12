@@ -1,0 +1,3 @@
+# Everything text is stored and checked out as LF (the index already is), so
+# core.autocrlf=true on Windows stops warning on every touched file.
+* text=auto eol=lf

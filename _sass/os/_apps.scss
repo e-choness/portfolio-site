@@ -458,31 +458,57 @@
   color: var(--accent);
 }
 
+// Reader nav: no band. A zero-height sticky bar whose two buttons float as
+// frosted pills over the cover (and the text, once scrolled).
 .os-blog-back-bar {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: var(--surface);
-  padding-bottom: 4px;
+  height: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
+  pointer-events: none;
+}
+.os-blog-back-bar .os-blog-back {
+  pointer-events: auto;
+  margin: 6px 0 0;
+  border-color: color-mix(in srgb, var(--line) 70%, transparent);
+  background: color-mix(in srgb, var(--surface) 62%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  backdrop-filter: blur(10px) saturate(1.2);
+  border-radius: 999px;
+}
+.os-blog-back-bar .os-blog-back:hover {
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+}
+// Without a cover the heading would sit under the pills.
+.os-blog-back-bar + .os-blog-heading {
+  padding-top: 44px;
 }
 // Reading progress: 2px accent bar pinned to the top of the scroller. Drawn
 // above the (also sticky) back bar, hence z-index 11 rather than 1.
 .os-blog-progress {
+  appearance: none;
+  display: block;
   position: sticky;
   top: 0;
+  width: 100%;
   height: 2px;
+  border: 0;
+  border-radius: 0;
   background: transparent;
+  color: var(--accent);
   z-index: 11;
 }
-.os-blog-progress > span {
-  display: block;
-  height: 100%;
+.os-blog-progress::-webkit-progress-bar {
+  background: transparent;
+}
+.os-blog-progress::-webkit-progress-value {
   background: var(--accent);
-  transform-origin: 0 50%;
-  transform: scaleX(0);
+}
+.os-blog-progress::-moz-progress-bar {
+  background: var(--accent);
 }
 
 // back button (detail view)
@@ -506,17 +532,24 @@
 }
 
 // detail view wrapper
+// Same centred reading column as the blog reader (.os-blog-heading etc.).
 .os-proj-detail {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
 }
+// Banners are 2:1 or 16:9 with text baked in. Keep their own ratio (the 16:9
+// fallback only reserves space until a video loads); the column caps the
+// width. A capped height on a full-width box used to crop and zoom them.
 .os-proj-detail-img {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  max-height: min(360px, 45vh); // wide windows: trim a little rather than fill the view
-  object-fit: cover;
+  height: auto;
+  aspect-ratio: auto 16 / 9;
+  object-fit: contain;
   border-radius: var(--r-ctl);
   border: 1px solid var(--line);
 }
@@ -525,7 +558,6 @@
   align-items: center;
   justify-content: center;
   aspect-ratio: 16 / 9;
-  max-height: min(360px, 45vh);
   border-radius: var(--r-ctl);
   border: 1px solid var(--line);
   background: repeating-linear-gradient(
@@ -971,25 +1003,63 @@
 }
 .os-blog-h1 {
   font-family: var(--font-sans);
-  font-size: 21px;
+  font-size: 24px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  line-height: 1.25;
-  margin: 8px 0 14px;
+  line-height: 1.2;
+  margin: 6px 0 0;
   color: var(--ink);
+  text-wrap: balance;
 }
-// Post heroes are 16:9 (a few 2:1) artwork. Frame them at 16:9 instead of a
-// fixed 140px strip, which cut ~40% of every image; the width cap keeps the
-// text close to the top of the reading view.
+// Full-width cover bleeding through the blog body padding (14px 20px) and
+// the 2px progress bar, so it meets the title bar; the nav pills float over
+// it. A real alpha mask fades it into the reader's surface in both themes,
+// including translucent window backgrounds. Banners are 4:1
+// (assets/images/blogs/*-banner.webp, made from the 16:9 post images), so the
+// strip crops backdrop, not the subject.
+.os-blog-cover {
+  width: calc(100% + 40px);
+  height: clamp(150px, 24vw, 260px);
+  margin: -16px -20px 0;
+  -webkit-mask-image: linear-gradient(to bottom, #000 45%, rgba(0, 0, 0, .85) 65%, rgba(0, 0, 0, .3) 86%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 45%, rgba(0, 0, 0, .85) 65%, rgba(0, 0, 0, .3) 86%, transparent 100%);
+}
 .os-blog-image {
   display: block;
   width: 100%;
-  max-width: 560px;
-  aspect-ratio: 16 / 9;
-  border-radius: var(--r-ctl);
-  margin: 8px auto 14px;
+  max-width: none;
+  height: 100%;
   object-fit: cover;
-  border: 1px solid var(--line);
+  object-position: center 45%;
+}
+// Light/dark banner pair: show the one for the current theme.
+.os-blog-image[data-theme="dark"],
+[data-echo-theme="dark"] .os-blog-image[data-theme="light"] {
+  display: none;
+}
+[data-echo-theme="dark"] .os-blog-image[data-theme="dark"] {
+  display: block;
+}
+
+// Reading column: heading, article and pager share one measure (~75
+// characters at 13.5px) centred in wide windows; the cover stays full-bleed.
+.os-blog-heading,
+.os-blog-body,
+.os-blog-loading,
+.os-blog-nav {
+  width: 100%;
+  max-width: 680px;
+  margin-inline: auto;
+}
+.os-blog-heading {
+  padding: 4px 0 16px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+// Heading rides up into the cover's faded lower edge.
+.os-blog-cover + .os-blog-heading {
+  position: relative;
+  margin-top: -44px;
 }
 
 .os-blog-body {
@@ -997,12 +1067,11 @@
   line-height: 1.7;
   color: var(--ink);
 }
-// Front-matter excerpt as the post's lede, set off from the body by a rule.
+// Front-matter excerpt as the post's lede; the heading's rule already sets
+// the article off, so the lede only steps up in size.
 .os-blog-excerpt {
-  margin: 0 0 18px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--line);
-  font-size: 14px;
+  margin: 0 0 20px;
+  font-size: 15px;
   line-height: 1.6;
   color: var(--muted);
 }
@@ -1028,6 +1097,7 @@
 .os-blog-nav {
   display: flex;
   justify-content: space-between;
+  gap: 12px;
   padding: 20px 0 8px;
   border-top: 1px solid var(--line);
   margin-top: 32px;
@@ -1044,6 +1114,31 @@
   color: var(--fg);
   cursor: var(--cur-pointer);
   transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  max-width: 48%;
+  white-space: nowrap;
+}
+.os-blog-nav-next {
+  margin-left: auto;
+}
+// Adjacent post title, one line, truncated; dropped on phones.
+.os-blog-nav-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+@media (max-width: 480px) {
+  .os-blog-nav-title {
+    display: none;
+  }
 }
 .os-blog-nav-btn:hover:not(:disabled) {
   color: var(--accent);
@@ -1072,7 +1167,7 @@
 // Rendered markdown (post reader + project detail). Body copy is --ink-soft so
 // headings and <strong> in full --ink carry the hierarchy. Heading sizes are
 // set here, not left to the global type scale (base/typography), and all sit
-// below the 21px window title (.os-blog-h1 / .os-proj-detail-title).
+// below the window titles (.os-blog-h1 24px / .os-proj-detail-title 21px).
 .os-post-body {
   font-size: 13.5px;
   line-height: 1.7;

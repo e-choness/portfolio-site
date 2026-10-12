@@ -10,9 +10,10 @@ function setup({ privacy = false, code = 'example', fetcher } = {}) {
   const listeners = {};
   const requests = [];
   const scripts = [];
+  const hits = [];
   const context = {
     navigator: { globalPrivacyControl: privacy },
-    window: {},
+    window: { goatcounter: { count: hit => hits.push(hit) } },
     document: {
       getElementById: () => ({ dataset: { goatcounter: code } }),
       createElement: () => ({ dataset: {}, addEventListener: (event, fn) => { listeners[event] = fn; } }),
@@ -24,7 +25,7 @@ function setup({ privacy = false, code = 'example', fetcher } = {}) {
     },
   };
   runInNewContext(source, context);
-  return { api: context.api, listeners, requests, scripts };
+  return { api: context.api, listeners, requests, scripts, hits };
 }
 
 test('privacy opt-out and disabled analytics make no requests', async () => {
@@ -57,11 +58,22 @@ test('healthy counters deduplicate concurrent and repeat requests', async () => 
 });
 
 test('failed counters stop later requests for other posts', async () => {
-  for (const fetcher of [async () => { throw Error('blocked'); }, async () => ({ ok: false })]) {
+  for (const fetcher of [async () => { throw Error('blocked'); }, async () => ({ ok: false, status: 500 })]) {
     const env = setup({ fetcher });
     env.listeners.load();
     assert.equal(await env.api.liveCount('/blog/first'), null);
     assert.equal(await env.api.liveCount('/blog/second'), null);
     assert.equal(env.requests.length, 1);
   }
+});
+
+test('a post with no views yet does not disable counters or tracking', async () => {
+  const env = setup({ fetcher: async url => (url.includes('new')
+    ? { ok: false, status: 404 }
+    : { ok: true, json: async () => ({ count: '7' }) }) });
+  env.listeners.load();
+  assert.equal(await env.api.liveCount('/blog/new'), null);
+  assert.equal(await env.api.liveCount('/blog/old'), 7);
+  env.api.trackView('/blog/new');
+  assert.equal(env.hits.length, 1);
 });

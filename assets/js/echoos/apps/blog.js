@@ -1,7 +1,7 @@
 // apps/blog.js — Blog window, prototype layout (EchoOS.dc.html lines 260-316):
 // toolbar (⌕ search, category dropdown with ✓ marks, filtered/total count),
 // flat post rows (82px date / title / 2-line clamp excerpt / cat badge) and a
-// reading view (‹ all posts, cat · date, h1, hero image, excerpt lede) then the full
+// reading view (‹ all posts, banner, cat · date, h1, excerpt lede) then the full
 // markdown post rendered in-window from the per-post JSON
 // (_plugins/post_json.rb → assets/data/posts/<slug>.json). Mermaid and markmap
 // blocks are transformed exactly like the classic route so existing markdown
@@ -131,12 +131,12 @@ export function renderBlog(bodyEl, { content, toast }) {
   }
   function trackProgress() {
     clearProgress();
-    const bar = app.querySelector('.os-blog-progress > span');
+    const bar = app.querySelector('.os-blog-progress');
     const scroller = bodyEl;
     const update = () => {
       const max = scroller.scrollHeight - scroller.clientHeight;
-      const p = max > 0 ? Math.min(1, scroller.scrollTop / max) : 1;
-      bar.style.transform = `scaleX(${p})`;
+      const p = max > 0 ? Math.max(0, Math.min(1, scroller.scrollTop / max)) : 1;
+      bar.value = p;
     };
     scroller.addEventListener('scroll', update, { passive: true });
     offProgress = () => scroller.removeEventListener('scroll', update);
@@ -306,20 +306,20 @@ export function renderBlog(bodyEl, { content, toast }) {
     const idx = state.sel;
     const prevPost = posts[idx + 1] || null; // older = previous
     const nextPost = posts[idx - 1] || null; // newer = next
-    const imageHtml = post.image ? `<img class="os-blog-image" src="${esc(post.image)}" alt="">` : '';
     app.innerHTML = `
-      <div class="os-blog-progress"><span></span></div>
+      <progress class="os-blog-progress" max="1" value="0" aria-label="Reading progress"></progress>
       <div class="os-blog-back-bar">
         <button type="button" class="os-blog-back">‹ all posts</button>
         <button type="button" class="os-blog-back os-blog-copy">copy link</button>
       </div>
-      <div class="os-blog-meta">${catOf(post) ? esc(catOf(post)) + ' · ' : ''}${esc(post.date || '')}<span class="os-blog-meta-reads"></span></div>
-      <h1 class="os-blog-h1">${esc(post.title)}</h1>
-      ${imageHtml}
+      <header class="os-blog-heading">
+        <div class="os-blog-meta">${catOf(post) ? esc(catOf(post)) + ' · ' : ''}${esc(post.date || '')}<span class="os-blog-meta-reads"></span></div>
+        <h1 class="os-blog-h1">${esc(post.title)}</h1>
+      </header>
       <div class="os-blog-loading">Loading…</div>
       <div class="os-blog-nav">
-        <button type="button" class="os-blog-nav-btn os-blog-nav-prev"${!prevPost ? ' disabled' : ''}>‹ Previous</button>
-        <button type="button" class="os-blog-nav-btn os-blog-nav-next"${!nextPost ? ' disabled' : ''}>Next ›</button>
+        <button type="button" class="os-blog-nav-btn os-blog-nav-prev"${!prevPost ? ' disabled' : ''}>‹ Previous${prevPost ? `<span class="os-blog-nav-title">${esc(prevPost.title)}</span>` : ''}</button>
+        <button type="button" class="os-blog-nav-btn os-blog-nav-next"${!nextPost ? ' disabled' : ''}>${nextPost ? `<span class="os-blog-nav-title">${esc(nextPost.title)}</span>` : ''}Next ›</button>
       </div>`;
 
     app.querySelector('.os-blog-back-bar .os-blog-back').addEventListener('click', () => {
@@ -366,8 +366,29 @@ export function renderBlog(bodyEl, { content, toast }) {
       if (n && readsEl && readsEl.isConnected) readsEl.textContent = ` · ${fmt(n)} read${n === 1 ? '' : 's'}`;
     });
 
-    const heroImg = app.querySelector('.os-blog-image');
-    if (heroImg) heroImg.addEventListener('error', () => heroImg.remove(), { once: true });
+    // Banner above the heading: the generated 4:1 light/dark pair when there
+    // is one (CSS shows the one for the current theme), else the post image.
+    // Comes from content.json now, or from the post JSON below when only the
+    // post's own front matter has an image.
+    const addBanner = (light, dark) => {
+      const cover = document.createElement('div');
+      cover.className = 'os-blog-cover';
+      for (const [src, theme] of [[light, 'light'], [dark, 'dark']]) {
+        if (!src) continue;
+        const img = document.createElement('img');
+        img.className = 'os-blog-image';
+        if (dark) img.dataset.theme = theme;
+        img.src = src;
+        img.alt = '';
+        img.addEventListener('error', () => {
+          img.remove();
+          if (!cover.querySelector('img')) cover.remove();
+        }, { once: true });
+        cover.appendChild(img);
+      }
+      app.querySelector('.os-blog-heading').before(cover);
+    };
+    if (post.image) addBanner(post.banner || post.image, post.bannerDark);
 
     const holder = app.querySelector('.os-blog-loading');
     holder.className = 'os-blog-body';
@@ -389,14 +410,7 @@ export function renderBlog(bodyEl, { content, toast }) {
       holder.innerHTML = '';
       holder.appendChild(article);
       await renderDiagrams(article);
-      if (!post.image && data.image) {
-        const img = document.createElement('img');
-        img.className = 'os-blog-image';
-        img.src = data.image;
-        img.alt = '';
-        img.addEventListener('error', () => img.remove(), { once: true });
-        app.querySelector('.os-blog-h1').after(img);
-      }
+      if (!post.image && data.image) addBanner(data.image);
       updateProgress();
     } catch {
       if (toast) toast('Could not load post');

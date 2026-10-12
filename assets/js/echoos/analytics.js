@@ -22,7 +22,8 @@ const enabled = Boolean(code) && !optedOut;
 
 const queue = [];
 let ready = false;
-let unavailable = false;
+let unavailable = false; // count.js failed to load: send nothing
+let countsOff = false; // counter endpoint failed: stop asking, keep tracking
 let resolveTracker;
 const trackerLoaded = new Promise((resolve) => { resolveTracker = resolve; });
 const counts = new Map();
@@ -73,8 +74,8 @@ export function trackEvent(name, title) {
 // request fails, so callers can simply hide the count.
 export async function liveCount(path) {
   // A blocked tracker is a signal to leave analytics alone. Reuse requests for
-  // repeated post visits and stop after a counter endpoint fails.
-  if (!enabled || unavailable || !(await trackerLoaded) || unavailable) return null;
+  // repeated post visits and stop after the counter endpoint fails.
+  if (!enabled || !(await trackerLoaded) || countsOff) return null;
   if (!counts.has(path)) counts.set(path, fetchCount(path));
   return counts.get(path);
 }
@@ -82,12 +83,15 @@ export async function liveCount(path) {
 async function fetchCount(path) {
   try {
     const res = await fetch(`https://${code}.goatcounter.com/counter/${encodeURIComponent(path)}.json`);
-    if (!res.ok) { unavailable = true; return null; }
+    // 404 just means no recorded views for this path yet (new post, or hits
+    // still being processed); anything else means the counter is off or down.
+    if (res.status === 404) return null;
+    if (!res.ok) { countsOff = true; return null; }
     const data = await res.json();
     const n = Number(String(data.count ?? '').replace(/[^\d]/g, ''));
     return Number.isFinite(n) ? n : null;
   } catch {
-    unavailable = true;
+    countsOff = true;
     return null;
   }
 }

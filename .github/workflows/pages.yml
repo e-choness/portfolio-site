@@ -32,6 +32,10 @@ jobs:
       - id: pages
         uses: actions/configure-pages@v6
 
+      # Node is preinstalled on the runner; scripts/test-*.mjs use node:test.
+      - name: Unit tests
+        run: node --test scripts/test-*.mjs
+
       # Visit stats for the Stats app (assets/data/stats.json, git-ignored).
       # A GoatCounter outage or missing token must never block a deploy.
       - name: Fetch visit stats

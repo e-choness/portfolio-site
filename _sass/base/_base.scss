@@ -37,6 +37,12 @@ iframe {
   cursor: var(--cur-pointer);
 }
 
+// Form controls don't inherit the page font by default; without this any
+// button that doesn't set one renders in the browser's Arial.
+:where(button, input, select, textarea) {
+  font-family: inherit;
+}
+
 /* Reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
   * {

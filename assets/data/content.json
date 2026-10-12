@@ -107,6 +107,14 @@ permalink: /assets/data/content.json
       "dateISO": {{ post.date | date_to_xmlschema | jsonify }},
       "excerpt": {{ post.excerpt | strip_html | strip_newlines | truncate: 220 | jsonify }},
       "image": {{ post.image | relative_url | jsonify }},
+      {%- comment -%} Reader banner: the 4:1 light/dark pair generated next to
+      the 16:9 image (which stays the social preview), when it exists. {%- endcomment -%}
+      {% assign light = post.image | prepend: '/' | replace: '//', '/' | replace: '.webp', '-banner.webp' %}
+      {% assign dark = light | replace: '-banner.webp', '-banner-dark.webp' %}
+      {% assign has_light = site.static_files | where: "path", light | size %}
+      {% assign has_dark = site.static_files | where: "path", dark | size %}
+      "banner": {% if post.image and has_light > 0 %}{{ light | relative_url | jsonify }}{% else %}null{% endif %},
+      "bannerDark": {% if post.image and has_dark > 0 %}{{ dark | relative_url | jsonify }}{% else %}null{% endif %},
       "categories": {{ post.categories | jsonify }},
       "tags": {{ post.tags | jsonify }},
       "readTime": {{ post.content | number_of_words | divided_by: 200 | plus: 1 }}
