@@ -1,0 +1,109 @@
+{
+  "generator": "Built-in image_gen",
+  "format": "WebP",
+  "width": 1120,
+  "height": 630,
+  "quality": 78,
+  "covers": [
+    {
+      "file": "assets/images/blogs/game-backend.webp",
+      "prompt": "Use case: stylized-concept. Asset type: elegant blog cover for a software engineer's portfolio. Generate one wide 16:9 editorial illustration, no text. Subject: publish-subscribe software architecture represented by one small central ceramic hub with three fine branching lines ending at separate geometric blocks. Style: extremely simple sculptural paper and matte ceramic forms, refined editorial still life, generous negative space, subtle soft shadows, warm off-white background with a whisper of lavender, muted sage and dusty violet accents. Site context: pale lavender UI, fine borders, dark violet typography; artwork should harmonize without being monochrome purple. Main composition within central 65% so it crops safely. Avoid lettering, logos, code, busy diagrams, glowing effects, gradients with vivid colors, decorative clutter. Output a single finished landscape artwork."
+    },
+    {
+      "file": "assets/images/blogs/server-client.webp",
+      "prompt": "Use case: stylized-concept. Asset: one wide 16:9 blog cover. Subject: two small ceramic blocks connected by a single looping cable, symbolizing a TCP client and server. Extremely simple elegant editorial still life using matte ceramic and folded paper forms, subtle tactile texture, warm off-white backdrop with faint lavender tint, dusty blue and sage accents. Soft studio daylight and delicate shadows. Spacious balanced composition with objects confined to central 65%, large negative space. Harmonize with refined lavender software portfolio UI. No text, letters, logos, watermarks, code, busy details or glow."
+    },
+    {
+      "file": "assets/images/blogs/cpp-20-multithread.webp",
+      "prompt": "Use case: stylized-concept. Asset: one wide 16:9 blog cover. Subject: three parallel slender ribbons weaving through a single small ceramic ring, representing concurrent threads. Extremely simple elegant editorial still life using matte ceramic and folded paper forms, subtle tactile texture, warm off-white backdrop with faint lavender tint, dusty violet and slate blue accents. Soft studio daylight and delicate shadows. Spacious balanced composition with objects confined to central 65%, large negative space. Harmonize with refined lavender software portfolio UI. No text, letters, logos, watermarks, code, busy details or glow."
+    },
+    {
+      "file": "assets/images/blogs/rest-apis.webp",
+      "prompt": "Use case: stylized-concept. Asset: one wide 16:9 blog cover. Subject: three ascending ceramic modules connected by a clean stepped line, representing scalable API services. Extremely simple elegant editorial still life using matte ceramic and folded paper forms, subtle tactile texture, warm off-white backdrop with faint lavender tint, sage and muted blue accents. Soft studio daylight and delicate shadows. Spacious balanced composition with objects confined to central 65%, large negative space. Harmonize with refined lavender software portfolio UI. No text, letters, logos, watermarks, code, busy details or glow."
+    },
+    {
+      "file": "assets/images/blogs/local-rag.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: a few folded document sheets beside a small ceramic search ring and a single cube, representing local document retrieval. Minimal matte ceramic sculpture and folded paper, warm off-white background, dusty violet and warm sand accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/backstage.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: an open architectural arch framing three neatly arranged small tiles, representing an internal developer portal. Minimal matte ceramic sculpture and folded paper, warm off-white background, sage and dusty violet accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/linux-commands.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: a sculptural terminal prompt chevron beside a short horizontal ceramic bar, minimal command line metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, slate blue and warm sand accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/docker-basics.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: one open matte ceramic cube holding a smaller contrasting cube, portable container metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, muted blue and sage accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/docker-advanced.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: one ceramic cube beside a thin circular orbit and two small checkpoints, container lifecycle metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, dusty violet and muted blue accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/docker-nginx.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: one upright ceramic gateway dividing a single incoming line into two outgoing paths. Minimal matte ceramic sculpture and folded paper, warm off-white background, sage and warm sand accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/docker-jenkins.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: three small ceramic blocks arranged along a simple conveyor-like ribbon, clean build pipeline metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, muted clay and dusty violet accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/docker-gitlab.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: two slim branching ribbons converging beside a small protective ceramic cube, source control and runner metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, muted terracotta and sage accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/docker-mysql.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: a simple stack of three ceramic disks on a square foundation, durable database storage metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, slate blue and warm sand accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/docker-redis.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: three thin floating ceramic tiles over a small solid base, fast cache with persistence metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, muted clay and dusty pink accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/docker-network.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: four small ceramic cubes linked by thin lines in one spare square arrangement, container networking metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, sage and muted blue accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/docker-compose.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: three differently shaped small ceramic modules neatly fitting together on one tray, application composition metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, dusty violet and sage accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/docker-machine.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: two distant small ceramic platforms connected by a graceful single cable, remote hosts metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, muted blue and warm sand accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/docker-swarm.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: three miniature ceramic towers on separate round bases, joined by a thin triangular connection, cluster metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, sage and dusty violet accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/docker-multistage.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: three progressively smaller ceramic frames ending in one tiny polished cube, build reduction metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, muted blue and dusty violet accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/aegis-gateway.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: one elegant ceramic arch with a small sphere passing through and a subtle branching path beyond, AI gateway metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, dusty violet and warm sand accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/advanced-rag.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: two slender ceramic tracks converging through a ring into three precisely ordered small tiles, hybrid retrieval and reranking metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, sage and muted blue accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/aegis-framework.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: a small ceramic central cube with three separated precisely fitting modular pieces, extensible framework metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, dusty violet and sage accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/streaming-guardrails.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: a thin flowing ribbon passing through two upright ceramic gate frames, streaming safety metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, muted blue and sage accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/residency-tenancy.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: two separate ceramic courtyards with a small sphere contained inside one, clear residency boundaries metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, warm sand and dusty violet accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    },
+    {
+      "file": "assets/images/blogs/pii-masking.webp",
+      "prompt": "Use case: stylized-concept. One 16:9 editorial blog illustration. Subject: a folded ceramic envelope with a single opaque band covering its center, private data protection metaphor. Minimal matte ceramic sculpture and folded paper, warm off-white background, sage and dusty violet accents. Refined simple forms, delicate shadows, soft studio light, generous negative space. Main objects central 65%. Complements lavender UI. No text, logos, glow, extra decoration, plants, busy details."
+    }
+  ]
+}

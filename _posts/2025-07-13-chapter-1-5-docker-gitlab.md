@@ -4,6 +4,7 @@ date: "2025-07-13"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
+image: "assets/images/blogs/docker-gitlab.webp"
 excerpt: "Run GitLab CE in a container with Docker Compose, give it working SSH clone URLs, attach a CI runner that builds and pushes Docker images, and set up the parts people skip until it's too late: backups that include the secrets, restores, and version upgrades that follow the required path."
 ---
 

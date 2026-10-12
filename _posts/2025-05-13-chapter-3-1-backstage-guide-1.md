@@ -4,6 +4,7 @@ date: "2025-05-13"
 category: "devops"
 tags: ["Platform Engineering", "Backstage", "Chapter Three"]
 author: "Echo Yin"
+image: "assets/images/blogs/backstage.webp"
 # The template examples use GitHub-style ${{ }} expressions; without this,
 # Liquid swallows them and every one renders as a bare "$".
 render_with_liquid: false

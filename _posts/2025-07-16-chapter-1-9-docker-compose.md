@@ -4,6 +4,7 @@ date: "2025-07-16"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
+image: "assets/images/blogs/docker-compose.webp"
 excerpt: "Replace pages of docker run commands with one compose.yml: a proxy, an app and Redis wired together by name, health-checked startup order, scaling, a live-reload development loop, environment files and profiles. Every key in the file is explained."
 ---
 

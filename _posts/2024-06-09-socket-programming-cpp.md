@@ -4,7 +4,7 @@ date: 2024-06-09
 category: networking
 tags: ["sockets", "tcp", "server-client", "linux", "networking", "c", "c++"]
 author: "Echo Yin"
-image: "assets/images/blogs/server-client.jpg"
+image: "assets/images/blogs/server-client.webp"
 excerpt: "A practical walkthrough of TCP socket programming in C/C++, from basic concepts to a working echo server and client."
 ---
 > When developing networked applications in C/C++, understanding the fundamentals of sockets is crucial. A socket is an endpoint for communication between two machines, identified by an IP address, a port, and a transport protocol (TCP or UDP).

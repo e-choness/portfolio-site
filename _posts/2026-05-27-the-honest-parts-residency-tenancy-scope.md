@@ -4,7 +4,7 @@ date: 2026-05-27 09:00:00 -0000
 category: ai
 tags: [ai, llm, compliance, data-residency, architecture, scope]
 author: "Echo Yin"
-image: "assets/images/projects/aegis.jpg"
+image: "assets/images/blogs/residency-tenancy.webp"
 excerpt: "You cannot reliably detect where an LLM runs inference. Any product claiming otherwise is overclaiming. This is about the Aegis design decisions that required admitting limits — the residency model built on declared metadata and fail-closed routing, the multi-tenancy deliberately deferred, and why the non-goals list is as load-bearing as the feature list."
 ---
 Most of building Aegis was deciding what to build. But the decisions I'm most confident about, looking back, were decisions to *not* build something or to build it while being loud about its limits. In a governance tool, overclaiming is the cardinal sin: a guarantee you can't actually keep is worse than an absent feature, because someone will build on top of it and find out the hard way that the floor wasn't there. This post is about three places where the honest answer shaped the design more than the ambitious one would have.

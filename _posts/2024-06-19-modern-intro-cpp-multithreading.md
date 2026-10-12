@@ -4,7 +4,7 @@ date: 2024-06-19
 category: backend
 tags: ["c++11", "c++17", "c++20", "multithreading", "concurrency", "std::thread", "std::async"]
 author: "Echo Yin"
-image: "assets/images/blogs/cpp-20-multithread.jpg"
+image: "assets/images/blogs/cpp-20-multithread.webp"
 excerpt: "An opinionated, modern tour of C++11–C++20 multithreading primitives, from std::thread and mutexes to futures, async, and atomics."
 ---
 > The C++11 standard revolutionized C++ by introducing a standardized, platform-independent memory model and a comprehensive library for multithreading, making concurrent programming more accessible and portable.

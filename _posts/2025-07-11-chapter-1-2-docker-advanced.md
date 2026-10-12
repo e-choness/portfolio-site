@@ -4,6 +4,7 @@ date: "2025-07-11"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
+image: "assets/images/blogs/docker-advanced.webp"
 excerpt: "The day-to-day side of Docker: the container lifecycle, the docker run flags that matter in practice, how to inspect and debug a running container, keeping disk usage under control, running your own registry, and the errors you'll hit first."
 ---
 

@@ -4,7 +4,7 @@ date: 2025-12-28 22:26:10 -0600
 category: ai
 tags: [ai, rag, hybrid-search, llm]
 author: "Echo Yin"
-image: "assets/images/blogs/advanced-rag.jpg"
+image: "assets/images/blogs/advanced-rag.webp"
 excerpt: "Learn how to upgrade your RAG system with hybrid search combining sparse (BM25) and dense (vector) retrieval, enhanced with cross encoder reranking for maximum precision in document question answering."
 ---
 In a [previous guide]({% post_url 2025-01-15-building-local-rag-system %}), we built a basic PDF question answering system in thirty minutes. Many developers noticed that while it handles straightforward queries well, it struggles when encountering specialized terminology, lengthy corporate documents, or phrasing that deviates from the source text. The system can pull the wrong data, miss critical context, or completely fail to surface relevant answers.

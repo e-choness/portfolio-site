@@ -4,6 +4,7 @@ date: "2025-07-14"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
+image: "assets/images/blogs/docker-network.webp"
 excerpt: "How containers actually get an IP address, find each other by name and reach the outside world, and when to use each of Docker's network modes. Includes a frontend/backend isolation setup, what -p really does to your firewall, and hands-on checks for each mode."
 ---
 

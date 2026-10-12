@@ -4,6 +4,7 @@ date: "2025-07-13"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
+image: "assets/images/blogs/docker-mysql.webp"
 excerpt: "Run MySQL 8.4 in a container the way you'd want to run it in production: data in a volume, credentials out of your shell history, a my.cnf that doesn't stop the server from starting, health checks, consistent backups and upgrades. Plus the first-start behaviour that surprises almost everyone."
 ---
 

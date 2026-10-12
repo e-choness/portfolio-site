@@ -4,7 +4,7 @@ date: 2026-05-13 09:00:00 -0000
 category: ai
 tags: [ai, llm, architecture, langgraph, plugins, gateway]
 author: "Echo Yin"
-image: "assets/images/projects/aegis.jpg"
+image: "assets/images/blogs/aegis-framework.webp"
 excerpt: "The first version of Aegis worked, and that was the problem. Every governance feature was hardcoded into one request path, so every change was a core change. This is the story of throwing out the architecture and rebuilding around a small kernel and seven plugin contracts — what that bought, what it cost, and the decisions I'd defend."
 ---
 The first version of Aegis worked. It routed LLM traffic across providers, masked PII, classified data by sensitivity, and enforced per-team budgets. It also had a fixed pipeline — classify, then mask, then route, then call the provider, then scan the output — hardcoded as a single call chain inside one orchestration service. Adding a guardrail meant editing that service. Swapping the PII engine meant editing that service. Supporting a new provider meant editing that service.

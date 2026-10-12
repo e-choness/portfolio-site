@@ -4,6 +4,7 @@ date: "2025-07-16"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
+image: "assets/images/blogs/docker-machine.webp"
 excerpt: "Drive Docker on any number of servers from your laptop: provision a host with Docker Engine by hand or with cloud-init, connect to it with a Docker context over SSH, run Compose projects remotely, and avoid the traps (remote bind mounts, slow SSH, exposed daemons). This is the modern replacement for the retired Docker Machine."
 ---
 

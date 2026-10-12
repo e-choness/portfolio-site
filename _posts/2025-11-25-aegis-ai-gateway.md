@@ -4,7 +4,7 @@ date: 2025-11-25 12:00:00 -0000
 category: ai
 tags: [ai, python, llm, enterprise, infrastructure, security, compliance, pipeda]
 author: "Echo Yin"
-image: "assets/images/projects/aegis.jpg"
+image: "assets/images/blogs/aegis-gateway.webp"
 excerpt: "How to build an enterprise-grade AI gateway: a provider-agnostic LLM routing layer with deterministic compliance, PII protection, and intelligent cost optimization."
 ---
 

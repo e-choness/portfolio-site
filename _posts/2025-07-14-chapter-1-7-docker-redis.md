@@ -4,6 +4,7 @@ date: "2025-07-14"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
+image: "assets/images/blogs/docker-redis.webp"
 excerpt: "Run Redis in a container with a configuration you understand: which persistence mode fits a cache versus a queue, why the stock config file makes a published port unreachable, memory limits and eviction, passwords, backups, and an upgrade you can roll back."
 ---
 

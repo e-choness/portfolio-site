@@ -4,6 +4,7 @@ date: "2025-07-10"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
+image: "assets/images/blogs/docker-basics.webp"
 excerpt: 'What a container actually is, how it differs from a virtual machine, and the handful of Docker commands you need to build, run, inspect and share one. We package a small Node.js service from scratch and go through the Dockerfile line by line.'
 ---
 

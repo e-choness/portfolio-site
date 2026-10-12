@@ -4,7 +4,7 @@ date: 2025-01-08 14:30:00 -0000
 category: backend
 tags: [nodejs, api, rest, backend, scalability]
 author: "Echo Yin"
-image: "assets/images/blogs/rest-apis.jpg"
+image: "assets/images/blogs/rest-apis.webp"
 excerpt: "A comprehensive guide to building robust and scalable REST APIs using Node.js, Express, and modern best practices for enterprise applications."
 ---
 

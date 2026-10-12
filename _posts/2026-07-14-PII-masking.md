@@ -4,7 +4,7 @@ date: 2026-07-14 21:00:00 -0000
 category: ai
 tags: [data-engineering, observability, architecture]
 author: "Echo Yin"
-image: "assets/images/blogs/pii-masking.jpg"
+image: "assets/images/blogs/pii-masking.webp"
 excerpt: "When a production data pipeline crashes on regulated customer data, engineers can't ask for logs and customers can't share samples. This is a design for capturing debuggable signal — deterministic tokenization, structural metadata over raw values, and a key-rotation architecture that lets historical logs decay into cryptographic noise — plus the trade-offs it deliberately accepts."
 ---
 

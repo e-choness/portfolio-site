@@ -4,6 +4,7 @@ date: "2025-07-17"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
+image: "assets/images/blogs/docker-swarm.webp"
 excerpt: "Join three machines into a Docker Swarm cluster, run replicated services behind the routing mesh, and deploy the Compose project from the previous chapters as a stack, with rolling updates, automatic rollback, configs, secrets and the rules for stateful services. Every command and stack key is explained."
 ---
 

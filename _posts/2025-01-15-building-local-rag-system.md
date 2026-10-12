@@ -4,7 +4,7 @@ date: 2025-01-15 22:03:37 -0600
 category: ai
 tags: [ai, rag, llm, python]
 author: "Echo Yin"
-image: "assets/images/blogs/local-rag.jpg"
+image: "assets/images/blogs/local-rag.webp"
 excerpt: "A practical guide to building a retrieval-augmented generation system for document question answering using local LLMs. Learn how to overcome outdated knowledge, hallucination risks, and privacy concerns with RAG."
 ---
 Many developers run into the same problems when using large language models on professional documents. I hit this myself while building an internal knowledge base. When dealing with company policies or product manuals, a standard model often just says it does not know because its training data is outdated. When asked about internal rules or workflows that require precision, it tends to confidently produce incorrect answers or even hallucinate. That makes it unusable for compliance level tasks.

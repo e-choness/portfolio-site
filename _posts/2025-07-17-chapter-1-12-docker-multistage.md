@@ -4,6 +4,7 @@ date: "2025-07-17"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
+image: "assets/images/blogs/docker-multistage.webp"
 excerpt: "Build with the full toolchain, ship only the result. A Go service goes from 1.31 GB to 7.24 MB with a two-stage Dockerfile, explained line by line, plus distroless and Alpine runtime choices, a Node.js frontend served by Nginx, BuildKit cache mounts, and running tests as a build stage."
 ---
 

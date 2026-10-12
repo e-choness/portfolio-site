@@ -4,7 +4,7 @@ date: 2026-05-20 09:00:00 -0000
 category: ai
 tags: [ai, llm, guardrails, streaming, safety, architecture]
 author: "Echo Yin"
-image: "assets/images/projects/aegis.jpg"
+image: "assets/images/blogs/streaming-guardrails.webp"
 excerpt: "A guardrail that silently runs at reduced fidelity is worse than no guardrail, because you've stopped watching. The hardest design problem in the Aegis rewrite was keeping safety honest under streaming. Here is the four-verdict model, the capability negotiation that resolved the streaming conflict, and how the same contract ends up governing tool calls."
 ---
 A guardrail that silently does less than you think is worse than no guardrail, because you've stopped watching the thing you believe is being watched for you. The hardest design problem in rebuilding Aegis wasn't writing scanners — good ones already exist, and reinventing them would have been hubris. It was designing a contract that stays honest about what it can actually guarantee, especially in the one place where honesty is expensive: streaming.

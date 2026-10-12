@@ -4,7 +4,7 @@ date: 2024-06-03
 category: backend
 tags: ["game development", "backend", "architecture"]
 author: "Echo Yin"
-image: "assets/images/blogs/game-backend.jpg"
+image: "assets/images/blogs/game-backend.webp"
 excerpt: "How the publish-subscribe pattern helps decouple game backend modules, reduce tangled dependencies, and keep business logic maintainable under changing requirements."
 ---
 > The publish-subscribe (event listener) pattern is one of the most effective tools I have used to decouple game backend modules and keep business code maintainable under heavy change pressure.

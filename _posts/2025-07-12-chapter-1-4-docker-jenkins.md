@@ -4,6 +4,7 @@ date: "2025-07-12"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
+image: "assets/images/blogs/docker-jenkins.webp"
 excerpt: "Run Jenkins as a container and have every pipeline build inside a disposable container of its own: Node.js and Maven builds without installing either on the server, cached dependencies, SSH deploys, and how to get it all onto a server that can't reach Docker Hub. Each Jenkinsfile is broken down block by block."
 ---
 

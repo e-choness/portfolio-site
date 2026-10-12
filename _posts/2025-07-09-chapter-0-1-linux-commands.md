@@ -4,6 +4,7 @@ date: "2025-07-09"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter Zero", "Linux"]
 author: "Echo Yin"
+image: "assets/images/blogs/linux-commands.webp"
 excerpt: "Before containers, pipelines or clusters, there's a shell on a Linux box. This chapter covers the commands I reach for every day, grouped by the job you're trying to do: moving around, reading and finding things, chaining tools with pipes, permissions, processes, services, disks, networks and archives, with every non-obvious flag explained."
 ---
 

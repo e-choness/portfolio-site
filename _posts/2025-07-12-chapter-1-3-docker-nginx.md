@@ -4,6 +4,7 @@ date: "2025-07-12"
 category: "devops"
 tags: ["Platform Engineering", "DevOps", "Chapter One", "Docker"]
 author: "Echo Yin"
+image: "assets/images/blogs/docker-nginx.webp"
 excerpt: "Run Nginx as a container three ways: serving a static site, proxying to an app container over a Docker network, and terminating HTTPS with Let's Encrypt certificates that renew without downtime. Every config block is explained line by line."
 ---
 
