@@ -29,6 +29,50 @@ const MERMAID_LAYOUT = {
   flowchart: { wrappingWidth: 280 },
   sequence: { mirrorActors: false, messageMargin: 28, boxMargin: 8, noteMargin: 8 },
 };
+// Mermaid's neo theme, recoloured from the site tokens so diagrams sit on the
+// reading surface in either theme: card nodes, accent→rose gradient borders,
+// muted edges. Posts mark nodes with `class X accent|rose|soft` (no classDef,
+// no hex): the theme CSS below fills those, so they follow light/dark too.
+const MERMAID_ROSE = { light: '#c2569b', dark: '#e48bbf' };
+function mermaidTheme() {
+  const dark = document.documentElement.dataset.echoTheme === 'dark';
+  const css = getComputedStyle(document.documentElement);
+  const v = (name) => css.getPropertyValue(name).trim();
+  const ink = v('--ink'), muted = v('--muted'), accent = v('--accent');
+  const accentInk = v('--accent-ink'), accentSoft = v('--accent-soft');
+  const surface = v('--surface'), surface2 = v('--surface2');
+  const rose = dark ? MERMAID_ROSE.dark : MERMAID_ROSE.light;
+  const node = dark ? surface2 : '#ffffff';
+  const fill = (cls, bg, border, text) => `
+    .node.${cls} :is(rect, path, polygon, circle, ellipse) { fill: ${bg} !important; stroke: ${border} !important; }
+    .node.${cls} :is(.nodeLabel, .nodeLabel p, span, text) { color: ${text} !important; fill: ${text} !important; }`;
+  return {
+    theme: dark ? 'neo-dark' : 'neo',
+    look: 'neo',
+    themeVariables: {
+      darkMode: dark,
+      background: surface,
+      primaryColor: node, mainBkg: node, nodeBkg: node, secondaryColor: surface2, tertiaryColor: surface2,
+      primaryBorderColor: accent, nodeBorder: accent, stateBorder: accent,
+      useGradient: true, gradientStart: accent, gradientStop: rose,
+      dropShadow: dark ? 'drop-shadow(0 1px 2px rgba(0,0,0,.45))' : 'drop-shadow(0 1px 2px rgba(40,30,90,.14))',
+      primaryTextColor: ink, secondaryTextColor: ink, tertiaryTextColor: ink, textColor: ink,
+      nodeTextColor: ink, titleColor: ink, labelTextColor: ink, loopTextColor: ink,
+      lineColor: muted, arrowheadColor: muted, defaultLinkColor: muted, edgeLabelBackground: surface,
+      clusterBkg: accentSoft, clusterBorder: accent,
+      noteBkgColor: accentSoft, noteBorderColor: accent, noteTextColor: ink,
+      actorBkg: node, actorBorder: accent, actorTextColor: ink, actorLineColor: muted,
+      signalColor: muted, signalTextColor: ink,
+      labelBoxBkgColor: surface2, labelBoxBorderColor: accent,
+      activationBkgColor: surface2, activationBorderColor: accent,
+      sequenceNumberColor: accentInk,
+    },
+    themeCSS: fill('accent', accent, accent, accentInk)
+      + fill('rose', rose, rose, accentInk)
+      + fill('soft', accentSoft, accent, ink),
+  };
+}
+
 let mermaidPromise = null;
 function loadMermaid() {
   if (!mermaidPromise) {
@@ -66,6 +110,33 @@ function clearOutsideClickListener() {
   }
 }
 
+// Diagram source per <pre>, kept so a theme switch can re-render in place.
+const mermaidSource = new WeakMap();
+
+async function runMermaid(container) {
+  const mermaid = await loadMermaid();
+  if (!mermaid) return;
+  try {
+    mermaid.initialize({
+      startOnLoad: false,
+      ...mermaidTheme(),
+      ...MERMAID_LAYOUT,
+      fontFamily: getComputedStyle(document.documentElement).getPropertyValue('--font-sans').trim() || 'sans-serif',
+    });
+    await mermaid.run({ nodes: container.querySelectorAll('pre.mermaid') });
+  } catch { /* diagram failed — show source */ }
+}
+
+async function rerenderDiagrams(container) {
+  const pres = [...container.querySelectorAll('pre.mermaid')].filter((pre) => mermaidSource.has(pre));
+  if (!pres.length) return;
+  for (const pre of pres) {
+    pre.removeAttribute('data-processed');
+    pre.textContent = mermaidSource.get(pre);
+  }
+  await runMermaid(container);
+}
+
 async function renderDiagrams(container) {
   // Rouge wraps unknown lexers as <div class="language-X highlighter-rouge">…<code>
   // (no class on the code element); plain Kramdown uses <pre><code class="language-X">.
@@ -76,22 +147,10 @@ async function renderDiagrams(container) {
     const pre = document.createElement('pre');
     pre.className = 'mermaid';
     pre.textContent = code.textContent;
+    mermaidSource.set(pre, code.textContent);
     (code.closest('.highlighter-rouge') || code.closest('pre')).replaceWith(pre);
   }
-  if (mermaidBlocks.length) {
-    const mermaid = await loadMermaid();
-    if (mermaid) {
-      try {
-        mermaid.initialize({
-          startOnLoad: false,
-          theme: document.documentElement.dataset.echoTheme === 'dark' ? 'redux-dark-color' : 'redux-color',
-          ...MERMAID_LAYOUT,
-          fontFamily: getComputedStyle(document.documentElement).getPropertyValue('--font-sans').trim() || 'sans-serif',
-        });
-        await mermaid.run({ nodes: container.querySelectorAll('pre.mermaid') });
-      } catch { /* diagram failed — show source */ }
-    }
-  }
+  if (mermaidBlocks.length) await runMermaid(container);
 
   const markmapBlocks = container.querySelectorAll(
     'pre code.language-markmap, .language-markmap.highlighter-rouge pre code'
@@ -113,6 +172,7 @@ async function renderDiagrams(container) {
 // Spotlight post selection (boot.js) asks the open reader to jump to a post.
 // Kept at module scope so re-renders replace the listener instead of stacking.
 let onOpenPost = null;
+let onThemeChange = null;
 // Module-scope UI state (prototype S.blog*): survives window re-renders.
 const state = { query: '', cat: 'All categories', catOpen: false, sel: null, page: 1 };
 
@@ -122,6 +182,7 @@ export function renderBlog(bodyEl, { content, toast }) {
   const cats = ['All categories', ...new Set(posts.map(catOf).filter(Boolean))];
 
   if (onOpenPost) document.removeEventListener('echoos:open-post', onOpenPost);
+  if (onThemeChange) document.removeEventListener('echoos:theme', onThemeChange);
 
   bodyEl.innerHTML = '<div class="os-blog"></div>';
   const app = bodyEl.querySelector('.os-blog');
@@ -452,10 +513,17 @@ export function renderBlog(bodyEl, { content, toast }) {
   };
   document.addEventListener('echoos:open-post', onOpenPost);
 
+  onThemeChange = () => {
+    const article = app.querySelector('.os-post');
+    if (article) rerenderDiagrams(article);
+  };
+  document.addEventListener('echoos:theme', onThemeChange);
+
   // Return teardown function (Patch 23 contract)
   return () => {
     clearProgress();
     clearOutsideClickListener();
     document.removeEventListener('echoos:open-post', onOpenPost);
+    document.removeEventListener('echoos:theme', onThemeChange);
   };
 }

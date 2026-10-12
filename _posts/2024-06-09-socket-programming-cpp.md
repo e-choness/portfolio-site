@@ -48,11 +48,8 @@ graph LR
     SSocket --> SConn
     SConn --> SApp
 
-    classDef host fill:#1f77b4,stroke:#0b3a5e,color:#fff;
-    classDef sock fill:#ff7f0e,stroke:#b35500,color:#fff;
-
-    class CApp,SApp host;
-    class CSocket,SSocket,SConn sock;
+    class CApp,SApp soft
+    class CSocket,SSocket,SConn accent
 ```
 
 The client uses its socket to connect to the server's listening socket.

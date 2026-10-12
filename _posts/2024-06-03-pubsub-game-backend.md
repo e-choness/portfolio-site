@@ -116,13 +116,9 @@ graph LR
     D -->|"OnEventUpdate(event)"| S1[Subscriber: LogicRolePartner]
     D -->|"OnEventUpdate(event)"| S2[Other Subscribers]
 
-    classDef pub fill:#1f77b4,stroke:#0b3a5e,color:#fff;
-    classDef sub fill:#2ca02c,stroke:#165a1c,color:#fff;
-    classDef disp fill:#ff7f0e,stroke:#b35500,color:#fff;
-
-    class P1,P2 pub;
-    class S1,S2 sub;
-    class D disp;
+    class P1,P2 accent
+    class D rose
+    class S1,S2 soft
 ```
 
 Each module subscribes only to the events it cares about and implements its own `OnEventUpdate` logic.
@@ -174,10 +170,7 @@ graph LR
     C --> D[ClassA::UpdateStats]
     D --> A
 
-    style A fill:#1f77b4,stroke:#0b3a5e,color:#fff;
-    style B fill:#aec7e8,stroke:#486491;
-    style C fill:#ffbb78,stroke:#b26f00;
-    style D fill:#ff7f0e,stroke:#b35500,color:#fff;
+    class A,D accent
 ```
 
 This circular chain is stressful to change: adding a feature to `ClassA::UseItem()` means understanding the entire loop and relying on fragile guard flags.
@@ -212,10 +205,9 @@ graph TD
     N --> DQ
     DQ -- yes --> X[Done]
 
-    style E fill:#ff7f0e,stroke:#b35500,color:#fff;
-    style Q fill:#fdd0a2,stroke:#c97c3a;
-    style H fill:#2ca02c,stroke:#165a1c,color:#fff;
-    style N fill:#98df8a,stroke:#4a7b3a;
+    class E rose
+    class H accent
+    class Q,N soft
 ```
 
 Developers working on business logic mostly care about:

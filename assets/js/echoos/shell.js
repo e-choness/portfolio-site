@@ -63,7 +63,10 @@ export function initShell(root, { apps, wm, notifications, onSpotlight }) {
     const changed = document.documentElement.dataset.echoTheme !== theme;
     document.documentElement.dataset.echoTheme = theme;
     mbTheme.textContent = theme === 'dark' ? '☀' : '☾';
-    if (changed) refreshGlass();
+    if (changed) {
+      refreshGlass();
+      document.dispatchEvent(new CustomEvent('echoos:theme', { detail: { theme } }));
+    }
   }
 
   // iOS Safari keeps painting backdrop-filter layers with the old theme until
