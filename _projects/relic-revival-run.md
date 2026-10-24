@@ -26,8 +26,6 @@ Every object in Relic Revival Run carries the memory of the people who made it, 
 
 The game is a **remake** of Studio Jojo's 2023 entry for the [Mini Game Work Jam](https://itch.io/jam/mini-game-work-jam-2023), a jam that advocates against the illicit traffic of cultural property. The remake keeps the original's concept and design and is a new web-based build, with almost none of the original assets.
 
-![The field guide matches each damage to its tool before a run](../assets/images/projects/relic-revival-run-field-guide.jpg)
-
 ## **Gameplay Experience**
 
 ![Gameplay: the lynx restorer runs along the Portuguese coast, switching tools and treating damage on the beat](../assets/images/projects/relic-revival-run-gameplay.gif)
@@ -40,13 +38,9 @@ Damage arrives on the beat of each culture's own soundtrack, and each culture af
 - **A field-journal HUD:** small paper slips at the screen edges, including a taped polaroid of the artifact that clears as you restore it, leave the art visible.
 - **An illustrated museum:** restored artifacts go on show with the conservation notes you've learned, and finishing all twelve unlocks the ending.
 
-![Egypt: running through the dark tomb by lamplight](../assets/images/projects/relic-revival-run-egypt.jpg)
-
 ## **A Soundtrack for Each Culture**
 
 Every culture plays in its own tradition's meter, rhythm cycle and ensemble roles: a Mexican son in 6/8 against 3/4, Egyptian maqsum, Greek syrtos, huayno, teental with a tihai, Nigerian call and response over the standard bell, Khmer pinpeat, the Mande kora's kumbengo. Each arrangement is written as data (meter, themes, harmony, bass, counter-voices and drum cycles, with the energy level at which each part joins) and turned into timed events played on CC0 samples. The music is reactive: the tune is always complete, and accompaniment, counter-voices and drums join as your combo grows, while low condition adds tension.
-
-![The twelve restorers](../assets/images/projects/relic-revival-run-cast.jpg)
 
 ## **Technical Foundation**
 
@@ -55,8 +49,6 @@ Every culture plays in its own tradition's meter, rhythm cycle and ensemble role
 - **Testing:** unit tests, balance regression tests that check every culture's pacing and survival at 80% accuracy, and a Playwright smoke test covering touch controls, menus, focus loss, final care, results and the ending.
 - **Media kit:** generated from the game itself. One script redraws the banners, logos, store art and character renders, and captures fresh screenshots and gameplay video.
 - **Accessibility:** keyboard and mouse, touch and gamepad, remappable keys, menus you can navigate without a mouse, chill mode and reduced-motion support.
-
-![The museum shows every artifact as clean as your best run](../assets/images/projects/relic-revival-run-museum.jpg)
 
 ## **Credits**
 
