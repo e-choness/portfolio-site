@@ -17,7 +17,7 @@ live_pending: true
 docs_url: "https://e-choness.github.io/NeighborIQ/"
 github_url: "https://github.com/e-choness/NeighborIQ"
 featured: true
-order: 4
+order: 2
 ---
 ## Project Overview
 

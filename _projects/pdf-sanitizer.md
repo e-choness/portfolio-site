@@ -13,7 +13,7 @@ categories:
 live_url: "https://e-choness.github.io/pdf-sanitizer/"
 github_url: "https://github.com/e-choness/pdf-sanitizer"
 featured: true
-order: 5
+order: 9
 ---
 ## Project Overview
 

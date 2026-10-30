@@ -18,7 +18,7 @@ store_url: "https://hopinto.fun/g/7068ee90-c375-4f47-9619-396449e53933/details"
 store_label: "hopinto.fun"
 github_url: "https://github.com/e-choness/relic-revival-run"
 featured: false
-order: 8
+order: 11
 ---
 ## **What is Relic Revival Run**
 

@@ -20,7 +20,7 @@ live_url: "https://huggingface.co/spaces/echoness/cuda-feature-extraction-elm"
 docs_url: "https://e-choness.github.io/feature_extraction_cuda_elm/"
 github_url: "https://github.com/e-choness/feature_extraction_cuda_elm"
 featured: true
-order: 1
+order: 8
 ---
 
 ## Project Overview

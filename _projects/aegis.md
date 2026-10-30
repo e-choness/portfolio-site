@@ -17,7 +17,7 @@ live_url: "https://huggingface.co/spaces/echoness/aegis-server"
 docs_url: "https://e-choness.github.io/aegis/"
 github_url: "https://github.com/e-choness/aegis"
 featured: true
-order: 2
+order: 7
 ---
 ## Project Overview
 
