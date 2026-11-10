@@ -17,7 +17,7 @@ categories:
 docs_url: "https://e-choness.github.io/eco-manage/"
 github_url: "https://github.com/e-choness/eco-manage"
 featured: true
-order: 3
+order: 4
 ---
 ## Project Overview
 

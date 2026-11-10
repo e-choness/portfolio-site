@@ -1311,6 +1311,16 @@ $reading-column: 860px;
   max-width: 100%;
   border-radius: var(--r-ctl);
 }
+// Embedded video players (YouTube): full column width at 16:9.
+.os-post-body iframe {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  margin: 0 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl);
+}
 .os-post-body .mermaid,
 .os-post-body .markmap {
   margin: 12px 0;

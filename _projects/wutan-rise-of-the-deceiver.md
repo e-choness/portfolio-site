@@ -18,7 +18,7 @@ store_url: "https://store.epicgames.com/p/wutang-rise-of-the-deceiver-53c680"
 store_label: "Epic Games"
 website_url: "https://brasslionentertainment.com/"
 featured: false
-order: 6
+order: 7
 ---
 ## Wu-Tang: Rise of the Deceiver
 

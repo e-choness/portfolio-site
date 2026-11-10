@@ -18,7 +18,7 @@ store_url: "https://e-choness.github.io/the-order-of-elf/"
 store_label: "GitHub Pages"
 github_url: "https://github.com/e-choness/the-order-of-elf"
 featured: false
-order: 4
+order: 5
 ---
 ## **What is The Order of E.L.F.**
 

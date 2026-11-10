@@ -18,7 +18,7 @@ store_url: "https://e-choness.github.io/the-order-of-boo/"
 store_label: "GitHub Pages"
 github_url: "https://github.com/e-choness/the-order-of-boo"
 featured: false
-order: 5
+order: 6
 ---
 ## **What is The Order of B.O.O.**
 
