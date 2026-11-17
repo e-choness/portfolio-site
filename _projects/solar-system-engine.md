@@ -34,7 +34,9 @@ It is a ground-up remake of the original 2021 Unity game, rebuilt on WebGPU with
 
 ## **Exploring**
 
-![Tour: the whole system at today's date, a flight to Earth, its live data panel and search](../assets/images/projects/solar-system-engine-walkthrough.webp)
+<iframe src="https://www.youtube-nocookie.com/embed/lws2zHLaU5o" title="Solar System Engine trailer" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+The trailer is captured frame by frame from the live app and scored with the original game's soundtrack.
 
 Click any world to open a glass panel with live distance, speed and light-time, physical data, discovery history, missions and facts. Search flies you anywhere, and time runs forwards or backwards across four centuries.
 

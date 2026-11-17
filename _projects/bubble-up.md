@@ -16,7 +16,7 @@ live_label: "Steam"
 website_url: "https://www.bubbleupgame.com/"
 arcade: bubbleup
 featured: false
-order: 11
+order: 12
 ---
 ## **What is Bubble UP!**
 
