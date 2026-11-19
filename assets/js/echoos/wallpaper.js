@@ -136,9 +136,18 @@ export function initWallpaper(root, { count = 110, isAnyOpen } = {}) {
     cancelAnimationFrame(raf);
   }
 
+  // Under reduced motion nothing redraws on its own: repaint the static frame
+  // after a resize (setting the canvas size clears it) and in the new colours
+  // after a theme switch.
+  function redrawStill() {
+    if (reduced && running) render(0);
+  }
+  const onResize = () => { resize(); redrawStill(); };
+
   const onVisibility = () => (document.hidden ? stop() : start());
   document.addEventListener('visibilitychange', onVisibility);
-  window.addEventListener('resize', resize);
+  document.addEventListener('echoos:theme', redrawStill);
+  window.addEventListener('resize', onResize);
 
   start();
 
@@ -150,8 +159,9 @@ export function initWallpaper(root, { count = 110, isAnyOpen } = {}) {
     },
     destroy() {
       stop();
-      window.removeEventListener('resize', resize);
+      window.removeEventListener('resize', onResize);
       document.removeEventListener('visibilitychange', onVisibility);
+      document.removeEventListener('echoos:theme', redrawStill);
       canvas.remove();
     },
   };

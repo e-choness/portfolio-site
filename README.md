@@ -2,14 +2,10 @@
 
 <a href="https://e-choness.github.io/portfolio-site/">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset=".github/readme/banner-dark.jpg">
-    <img src=".github/readme/banner-light.jpg" alt="EchoOS: a desktop in the browser with the Blog, Terminal and Arcade windows open" width="100%">
+    <source media="(prefers-color-scheme: dark)" srcset=".github/readme/banner-dark.webp">
+    <img src=".github/readme/banner-light.webp" alt="EchoOS: Echo Yin's portfolio, built as a desktop operating system that runs in your browser. The Blog, Terminal and Projects windows are open on the desktop." width="100%">
   </picture>
 </a>
-
-# EchoOS
-
-**Echo Yin's portfolio, built as a desktop operating system that runs in your browser.**
 
 <a href="https://e-choness.github.io/portfolio-site/">
   <img src="https://readme-typing-svg.demolab.com?font=IBM+Plex+Mono&weight=600&size=20&pause=1200&color=6A5AD6&center=true&vCenter=true&width=560&lines=Senior+A.I.+Engineer+%C2%B7+Calgary;A+portfolio+that+boots+like+an+OS;Blog+%C2%B7+Projects+%C2%B7+Arcade+%C2%B7+Terminal+%C2%B7+Stats;Jekyll+%2B+vanilla+ES+modules%2C+no+framework" alt="Senior A.I. Engineer · A portfolio that boots like an OS · Blog, Projects, Arcade, Terminal, Stats · Jekyll + vanilla ES modules" />
@@ -37,7 +33,7 @@
 ## A quick tour
 
 <div align="center">
-  <img src=".github/readme/tour.webp" alt="EchoOS tour: boot screen, Spotlight search opening a blog post with a diagram, switching to dark mode, the Feature ELM project page, a round of Blockfall in the Arcade, and neofetch in the terminal" width="100%">
+  <img src=".github/readme/tour.webp" alt="EchoOS tour: the boot screen, Spotlight search opening a blog post, its Mermaid diagram redrawn in dark mode, the SongForge project page, the Orrery in the Arcade, and neofetch in the terminal" width="100%">
 </div>
 
 The home page is a desktop: a menu bar, a dock, draggable windows, an animated wallpaper and a command palette. Each window is an app, and every app deep-links, so `…/#/blog/<post>` or `…/#/arcade/tetris` opens straight to it. Nothing reloads the page. It works on phones too, where windows become full-screen sheets with a tab bar.
@@ -168,6 +164,7 @@ flowchart LR
 │   ├── vendor/mermaid/<version>/   # self-hosted Mermaid (scripts/vendor-mermaid.mjs)
 │   ├── images/, fonts/, resume.pdf, manifest.webmanifest
 ├── scripts/                        # fetch-stats.mjs · update-readme.mjs · vendor-mermaid.mjs · test-*.mjs
+│   └── readme-media/               #   captures the README banner and tour (see below)
 ├── index.html · 404.html           # the two pages; both are the OS layout (404 opens "Not found")
 ├── Dockerfile · docker-compose.yml # dev server and build environment
 └── .github/                        # workflows (deploy, README refresh) · readme/ (banner, tour)
@@ -238,6 +235,16 @@ The custom plugins mean the site can't use GitHub Pages' built-in Jekyll builder
 1. Build and serve the site (production build).
 2. Open `…/#/exp/resume` in Chrome and print to PDF: **Letter**, margins **None**, background graphics **on**. The print stylesheet (`_sass/os/_print.scss`) lays it out as one page. Headless: dispatch `beforeprint`, then `page.pdf({ format: 'Letter', margin: 0 })`.
 3. Check it's still one page, then replace `assets/resume.pdf`.
+
+### Refreshing the README banner and tour
+
+`.github/readme/` holds the banner (a light and a dark version) and the animated tour. Both are captured from the real site by headless Chromium in a throwaway container, in about four minutes:
+
+```bash
+docker compose run --rm --no-deps jekyll sh scripts/readme-media/run.sh   # or: … run.sh banner | tour
+```
+
+The banner's window layout, the post and project it shows, and the tour's steps are at the top of each section in `scripts/readme-media/capture.mjs`. Neither file uses lossy WebP (the banner is lossless, the tour near-lossless), so text and gradients stay free of compression blocks. `Math.random` is seeded, so a re-run only changes what the site changed.
 
 ### Adding an app
 
