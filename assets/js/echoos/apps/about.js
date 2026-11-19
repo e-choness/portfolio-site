@@ -1,6 +1,7 @@
 // apps/about.js — tabs: profile / education (§6.5).
 import { store } from '../store.js';
 import { url } from '../base.js';
+import { esc } from '../util.js';
 
 const SOCIAL_ICON_FILES = {
   GitHub:       'github.svg',
@@ -8,12 +9,6 @@ const SOCIAL_ICON_FILES = {
   'Twitter / X':'twitter.svg',
   Email:        'email.svg',
 };
-
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s == null ? '' : String(s);
-  return d.innerHTML;
-}
 
 export function renderAbout(bodyEl, { content, titlebar }) {
   const p = content.profile;

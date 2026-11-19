@@ -1,12 +1,7 @@
 // apps/projects.js — card gallery with in-window detail view (patch 73+77).
 import { url } from '../base.js';
 import { writeRoute } from '../router.js';
-
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s == null ? '' : String(s);
-  return d.innerHTML;
-}
+import { esc } from '../util.js';
 
 // Module-scope: survives window re-renders (same pattern as blog.js).
 const state = { sel: null };

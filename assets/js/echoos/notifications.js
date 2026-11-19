@@ -1,8 +1,7 @@
----
----
-const NOTIF = {{ site.data.notifications | jsonify }};
 // notifications.js — toast + notification panel (§6.1).
-export function initNotifications(root, { portrait = '', stats = [], onTour } = {}) {
+export function initNotifications(root, { copy = {}, portrait = '', stats = [], onTour } = {}) {
+  // Panel and welcome-card text: _data/notifications.yml, via content.json.
+  const NOTIF = { panel: {}, welcome_card: {}, ...copy };
   const toasts = document.createElement('div');
   toasts.className = 'os-toasts';
   toasts.setAttribute('aria-live', 'polite');

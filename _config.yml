@@ -16,21 +16,23 @@ plugins:
   - jekyll-sitemap
   - jekyll-seo-tag
 
-# Exclude from processing
+# Atom feed at /feed.xml (linked from every page's head)
+feed:
+  posts_limit: 20
+
+# Not part of the site. Jekyll adds its own defaults (Gemfile, Gemfile.lock,
+# node_modules, vendor/bundle, …) and skips dotfiles such as .github/.
 exclude:
-  - Gemfile
-  - Gemfile.lock
   - README.md
+  - LICENSE
   - NOTES.md
-  - IMPLEMENTATION-PLAN.md
-  - PATCH-1.md
+  - PATCH-DIAGNOSIS.md
   - Dockerfile
   - docker-compose.yml
-  - node_modules
   - vendor/
   - docs/
-  - .github/
   - scripts/
+  - tmp/
 
 # Collections
 collections:

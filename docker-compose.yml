@@ -1,3 +1,6 @@
+# `docker compose up` serves the site at http://localhost:4000 with live reload
+# (the image's CMD: jekyll serve with _config_dev.yml). One-off tasks reuse the
+# same service, e.g. `docker compose run --rm jekyll node --test scripts/`.
 services:
   jekyll:
     build: .
@@ -8,4 +11,3 @@ services:
       - .:/srv/jekyll
     environment:
       - JEKYLL_ENV=development
-    command: bundle exec jekyll serve --host 0.0.0.0 --livereload --config _config.yml,_config_dev.yml

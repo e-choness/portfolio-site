@@ -1,11 +1,6 @@
 // shell.js — menu bar, clock, dock, desktop icons, mobile home grid (§6.1).
 import { store } from './store.js';
-
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s == null ? '' : String(s);
-  return d.innerHTML;
-}
+import { esc } from './util.js';
 
 export function initShell(root, { apps, wm, notifications, onSpotlight }) {
   const MENU = document.createElement('header');

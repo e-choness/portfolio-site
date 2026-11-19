@@ -77,3 +77,15 @@ test('a post with no views yet does not disable counters or tracking', async () 
   env.api.trackView('/blog/new');
   assert.equal(env.hits.length, 1);
 });
+
+test('ranged counters ask for that range and are cached separately', async () => {
+  const env = setup();
+  env.listeners.load();
+  await env.api.liveCount('TOTAL', 'week');
+  await env.api.liveCount('TOTAL', 'week');
+  await env.api.liveCount('TOTAL');
+  assert.deepEqual(env.requests, [
+    'https://example.goatcounter.com/counter/TOTAL.json?start=week',
+    'https://example.goatcounter.com/counter/TOTAL.json',
+  ]);
+});

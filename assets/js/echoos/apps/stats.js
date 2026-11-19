@@ -1,15 +1,9 @@
 // apps/stats.js — "activity monitor": visit statistics plus facts about the
-// site itself. Visits come from the nightly stats.json (stats-data.js) and the
-// live all-time counter (analytics.js); site facts come from content.json and
-// work even before any visits have been counted.
-import { loadStats, fmt, ago } from '../stats-data.js';
-import { liveCount } from '../analytics.js';
-
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s == null ? '' : String(s);
-  return d.innerHTML;
-}
+// site itself. Totals come live from GoatCounter's counter where it answers,
+// the breakdowns from the nightly stats.json (both via stats-data.js); site
+// facts come from content.json and work even before any visits are counted.
+import { loadStats, loadVisits, fmt, ago, gameName } from '../stats-data.js';
+import { esc } from '../util.js';
 
 const dayLabel = (iso) =>
   new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
@@ -123,19 +117,18 @@ export function renderStats(bodyEl, { content }) {
   const site = content.site || {};
   bodyEl.innerHTML = '<div class="os-stats"><div class="os-stats-top">echo-stats — loading…</div></div>';
 
-  Promise.all([loadStats(content), liveCount('TOTAL')]).then(([stats, liveTotal]) => {
+  Promise.all([loadStats(content), loadVisits(content)]).then(([stats, visits]) => {
     const wrap = document.createElement('div');
     wrap.className = 'os-stats';
     const parts = [];
-    const v = (stats && stats.visits) || {};
-    const allTime = liveTotal ?? v.allTime;
+    const tile = (n, label) => `<li><strong>${n != null ? fmt(n) : '—'}</strong><span>${label}</span></li>`;
 
-    parts.push(`<div class="os-stats-top">echo-stats — ${stats ? `updated ${esc(ago(stats.generatedAt))}` : 'visit data pending'} · approximate, privacy-friendly</div>`);
+    parts.push(`<div class="os-stats-top">echo-stats — ${stats ? `breakdowns updated ${esc(ago(stats.generatedAt))}` : 'breakdowns pending'} · approximate, privacy-friendly</div>`);
 
     parts.push(`<ul class="os-stats-tiles">
-      <li><strong>${stats ? fmt(v.last7) : '—'}</strong><span>visits · 7 days</span></li>
-      <li><strong>${stats ? fmt(v.last30) : '—'}</strong><span>visits · 30 days</span></li>
-      <li><strong>${allTime != null ? fmt(allTime) : '—'}</strong><span>visits · all time</span></li>
+      ${tile(visits.last7, 'visits · 7 days')}
+      ${tile(visits.last30, 'visits · 30 days')}
+      ${tile(visits.allTime, 'visits · all time')}
     </ul>`);
 
     if (stats && Array.isArray(stats.daily) && stats.daily.length) {
@@ -158,8 +151,7 @@ export function renderStats(bodyEl, { content }) {
       const apps = (stats.apps || []).map((a) => ({ label: appLabel(a.id), count: a.count }));
       if (apps.length) parts.push(section('Windows opened · 30 days', barRows(apps)));
 
-      const names = content.gameNames || {};
-      const games = (stats.games || []).map((g) => ({ label: names[g.id] || g.id, count: g.count }));
+      const games = (stats.games || []).map((g) => ({ label: gameName(content, g.id), count: g.count }));
       if (games.length) parts.push(section('Arcade runs · 30 days', barRows(games)));
 
       const countries = (stats.countries || []).map((c) => ({ label: c.name, count: c.count }));
@@ -169,7 +161,7 @@ export function renderStats(bodyEl, { content }) {
         parts.push(`<p class="os-stats-note">Resume: ${fmt(stats.resume.views)} views, ${fmt(stats.resume.downloads)} downloads in 30 days.</p>`);
       }
     } else {
-      parts.push(`<p class="os-stats-note">Visit statistics appear here after the first nightly update.</p>`);
+      parts.push(`<p class="os-stats-note">Daily chart, top posts, windows, games and countries appear after the next nightly sync.</p>`);
     }
 
     const built = site.lastCommit ? `last change ${esc(ago(site.lastCommit))}` : `built ${esc(ago(site.builtAt))}`;

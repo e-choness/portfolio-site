@@ -24,9 +24,9 @@ jobs:
         with:
           fetch-depth: 0            # jekyll-seo-tag / last-modified need history
 
+      # Ruby version: .ruby-version (setup-ruby's default source).
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version-file: .ruby-version
           bundler-cache: true
 
       - id: pages
@@ -37,11 +37,14 @@ jobs:
         run: node --test scripts/test-*.mjs
 
       # Visit stats for the Stats app (assets/data/stats.json, git-ignored).
-      # A GoatCounter outage or missing token must never block a deploy.
+      # A GoatCounter outage or missing token must never block a deploy: the
+      # script reports problems as warnings on the run and, if the API fails,
+      # redeploys the snapshot the live site already serves.
       - name: Fetch visit stats
         continue-on-error: true
         env:
           GOATCOUNTER_TOKEN: ${{ secrets.GOATCOUNTER_TOKEN }}
+          STATS_FALLBACK_URL: ${{ steps.pages.outputs.base_url }}/assets/data/stats.json
         run: node scripts/fetch-stats.mjs echoness
 
       - name: Build site
@@ -57,6 +60,8 @@ jobs:
           test -f _site/index.html
           test -f _site/assets/data/content.json
           test -f _site/404.html
+          test -f _site/feed.xml
+          ls _site/assets/vendor/mermaid/*/mermaid.esm.min.mjs
 
       - uses: actions/upload-pages-artifact@v5
         with:

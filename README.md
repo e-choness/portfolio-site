@@ -130,7 +130,7 @@ A few design choices hold it together:
 flowchart LR
   v([Visitor]) -- "views, app opens, game starts<br/>(no cookies; DNT respected)" --> gc[(GoatCounter)]
   gc -- "nightly: scripts/fetch-stats.mjs<br/>with a read-only token" --> s["assets/data/stats.json"]
-  gc -- "public counter" --> live["live read counts"]
+  gc -- "public counter" --> live["live totals and read counts"]
   s --> ui["Stats app · telemetry panel ·<br/>Blog read counts · stats command"]
   live --> ui
 ```
@@ -139,13 +139,13 @@ flowchart LR
 
 | Layer | Choice |
 |---|---|
-| Static site | Jekyll 4.4.1 + six small Ruby plugins (`_plugins/`) |
+| Static site | Jekyll 4.4 on Ruby 4.0, plus small Ruby plugins (`_plugins/`) |
 | Styles | Dart Sass (`sass-embedded`) via `jekyll-sass-converter` 3.1 |
 | OS shell | Vanilla ES modules, no framework and no bundler |
-| Diagrams | Mermaid 12 and Markmap, loaded only when a post needs them |
+| Diagrams | Mermaid 12.3, self-hosted in `assets/vendor/`, loaded only when a post has a diagram |
 | Analytics | GoatCounter (cookieless) + a nightly stats job |
 | Hosting | GitHub Pages, deployed by GitHub Actions |
-| Local dev | Docker Compose, or `bundle exec jekyll serve` |
+| Local dev | Docker Compose (nothing to install but Docker) |
 
 ## Project structure
 
@@ -153,19 +153,23 @@ flowchart LR
 ├── _config.yml / _config_dev.yml   # site settings; dev clears baseurl and analytics
 ├── _data/                          # content as YAML: profile, experience, skills, education,
 │                                   #   apps (dock/registry), arcade (games), solar (Orrery)
-├── _posts/                         # blog posts (Markdown; Mermaid and Markmap supported)
+├── _posts/                         # blog posts (Markdown; Mermaid diagrams supported)
 ├── _projects/                      # projects (front matter + write-up)
 ├── _layouts/                       # os.html (the desktop) · redirect.html (old-URL stubs)
-├── _plugins/                       # profile_config · site_stats · apps_titles ·
-│                                   #   echoos_filters · post_json · project_json
-├── _sass/                          # abstracts (tokens) · base (post typography) · os/ (the UI)
+├── _includes/                      # head (shared meta/SEO/feed) · importmap · static summary + styles
+├── _plugins/                       # profile_config · apps_titles · site_stats · social_image ·
+│                                   #   asset_version · echoos_filters · window_json
+├── _sass/                          # abstracts (tokens) · base (post typography) ·
+│                                   #   os/ (shell, windows, dock…) · os/apps/ (one partial per app)
 ├── assets/
 │   ├── js/echoos/                  # the OS (module map below)
 │   ├── js/games.js, js/games/      # Arcade runner + one module per game
 │   ├── data/content.json           # everything the OS needs, generated at build time
-│   ├── images/, resume.pdf, manifest.webmanifest
-├── scripts/                        # fetch-stats.mjs (nightly stats) · update-readme.mjs
-├── index.html · 404.html · feed.xml
+│   ├── vendor/mermaid/<version>/   # self-hosted Mermaid (scripts/vendor-mermaid.mjs)
+│   ├── images/, fonts/, resume.pdf, manifest.webmanifest
+├── scripts/                        # fetch-stats.mjs · update-readme.mjs · vendor-mermaid.mjs · test-*.mjs
+├── index.html · 404.html           # the two pages; both are the OS layout (404 opens "Not found")
+├── Dockerfile · docker-compose.yml # dev server and build environment
 └── .github/                        # workflows (deploy, README refresh) · readme/ (banner, tour)
 ```
 
@@ -182,29 +186,34 @@ flowchart LR
 | `terminal.js` | `echo-sh` command interpreter |
 | `ticker.js` | The desktop telemetry panel |
 | `analytics.js` | GoatCounter counting (production only; skipped under Do Not Track) |
-| `stats-data.js` | Loads the nightly `stats.json` for the Stats app, Blog and terminal |
-| `notifications.js`, `sound.js`, `store.js`, `guide.js`, `base.js` | Toasts, UI sounds, persisted settings, the first-run tour, base-URL helper |
+| `stats-data.js` | Visit numbers for the Stats app, telemetry panel, Blog and terminal: live totals, else the nightly `stats.json` |
+| `notifications.js`, `sound.js`, `store.js`, `guide.js`, `base.js`, `util.js` | Toasts, UI sounds, persisted settings, the first-run tour, base-URL helper, HTML escaping |
 | `apps/*.js` | One renderer per window: `about`, `experience`, `projects`, `skills`, `blog`, `arcade`, `stats`, `notfound` |
 
 ## Local development
+
+Everything runs in Docker; nothing else needs installing.
 
 ```bash
 docker compose up
 # → http://localhost:4000 (live reload)
 ```
 
-or, with Ruby installed:
+`_config_dev.yml` serves the site at `/` and switches analytics off, so local browsing is never counted. The live site uses the `/portfolio-site/` base URL. Unit tests, and a production build that should finish with zero warnings (into `tmp/`, git-ignored, so it never touches the dev server's `_site/`):
 
 ```bash
-bundle install
-bundle exec jekyll serve --config _config.yml,_config_dev.yml
+docker compose run --rm jekyll node --test scripts/
+docker compose run --rm -e JEKYLL_ENV=production jekyll bundle exec jekyll build -d tmp/build --trace
 ```
 
-`_config_dev.yml` serves the site at `/` and switches analytics off, so local browsing is never counted. The live site uses the `/portfolio-site/` base URL. A production build should finish with zero warnings:
+On Windows Git Bash, prefix commands that pass container paths with `MSYS_NO_PATHCONV=1`.
 
-```bash
-JEKYLL_ENV=production bundle exec jekyll build --trace
-```
+### Updating dependencies
+
+- **Ruby**: bump `.ruby-version` (read by GitHub Actions) and the `FROM ruby:<version>-slim` line in the `Dockerfile` together.
+- **Gems**: `docker compose run --rm jekyll bundle update`, then `docker compose build` so the image installs the new `Gemfile.lock`. Rouge and terminal-table are capped by Jekyll 4.4's own requirements.
+- **Mermaid**: `docker compose run --rm jekyll node scripts/vendor-mermaid.mjs <version>` replaces `assets/vendor/mermaid/` (checked against the npm registry's sha512) and updates `MERMAID_VERSION` in `apps/blog.js`. Check a few diagram-heavy posts afterwards; the diagrams are tuned to the pinned version.
+- **Actions**: the workflow pins major versions (`actions/checkout@v7`, …).
 
 The custom plugins mean the site can't use GitHub Pages' built-in Jekyll builder. It's built by the Actions workflow, so keep Pages set to **GitHub Actions** as the source.
 
@@ -246,7 +255,7 @@ The custom plugins mean the site can't use GitHub Pages' built-in Jekyll builder
 
 2. **Write the renderer**, `assets/js/echoos/apps/myapp.js`, exporting `renderMyApp(bodyEl, ctx)`. `ctx.content` is the parsed `content.json`. `apps/about.js` is the simplest template.
 3. **Wire it up** in `boot.js`: import it and add `myapp: renderMyApp` to the `renderers` map.
-4. **Style it** in `_sass/os/_apps.scss` with the design tokens (`--ink`, `--muted`, `--accent`, `--surface2`, `--line`, `--r-ctl`…).
+4. **Style it** in a new `_sass/os/apps/_myapp.scss`, added to `_sass/os/apps/_index.scss`, with the design tokens (`--ink`, `--muted`, `--accent`, `--surface2`, `--line`, `--r-ctl`…).
 
 The dock icon, window title, desktop icon and Spotlight entry all follow from `apps.yml`.
 
@@ -296,8 +305,9 @@ That's the whole job. The grid card, HUD, touch pad, exhibit plaque, terminal la
 1. **Counting** (`analytics.js`) runs only on the production site, and only when the browser doesn't send Do Not Track or Global Privacy Control.
    - Page views: desktop loads, posts, projects and 404s.
    - Events: windows opened (`app:<id>`), games started (`game:<id>`), résumé views and downloads.
-2. **Nightly aggregates**: `scripts/fetch-stats.mjs` runs in the deploy workflow (every push, and nightly at 07:17 UTC) and writes `assets/data/stats.json`, which isn't committed. Without a token it skips, and the OS shows a "pending" state.
-3. **Setup:**
+2. **Live totals**: the visit tiles (7 days, 30 days, all time) and per-post read counts come straight from GoatCounter's public counter, so they're current and don't depend on the nightly job.
+3. **Nightly breakdowns**: `scripts/fetch-stats.mjs` runs in the deploy workflow (every push, and nightly at 07:17 UTC) and writes `assets/data/stats.json`, which isn't committed: the daily chart, top posts and projects, windows, games, countries and résumé counts. It spaces its API calls to stay under GoatCounter's rate limit, and if the API fails it redeploys the snapshot the live site already serves. Problems show as warnings on the Actions run instead of failing the deploy. "synced" in the telemetry panel is the snapshot's age; "pending" means there isn't one yet.
+4. **Setup:**
    - Create a GoatCounter API token with only the **Read statistics** permission, and save it as the repository secret `GOATCOUNTER_TOKEN`.
    - For live per-post counts and the visits badge, enable *Settings → "Allow adding visitor counts on your website"* in GoatCounter.
 

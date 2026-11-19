@@ -1,0 +1,72 @@
+// ── profile: contact section ("say hello") ───────────────────────────────
+// Formerly the Contact app. Sits at the end of About → Profile: eyebrow,
+// pitch, then 2×2 tiles (icon · label ↗ / address); one column on mobile.
+.os-about-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 12px;
+}
+.os-contact-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.os-contact-blurb {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.os-contact-social {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.os-contact-social-link {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 2px;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl);
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.os-contact-social-link:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.os-contact-social-link .os-about-social-icon {
+  grid-row: 1 / span 2;
+}
+.os-contact-social-label {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+  transition: color 0.15s ease;
+}
+.os-contact-social-link:hover .os-contact-social-label {
+  color: var(--accent);
+}
+.os-contact-social-host {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .os-contact-social {
+    grid-template-columns: 1fr;
+  }
+}

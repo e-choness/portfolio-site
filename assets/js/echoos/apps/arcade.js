@@ -1,7 +1,5 @@
----
----
 // apps/arcade.js — game grid + canvas runner + HUD + touch pad (§6.7).
-// Reads the registry from _data/arcade.yml and drives games.js, which fetches a
+// Reads the registry (_data/arcade.yml, via content.json) and drives games.js, which fetches a
 // game's module on demand; the theme object is built from the live computed
 // custom properties every time a game starts.
 import { store } from '../store.js';
@@ -52,13 +50,11 @@ function buildTheme() {
   };
 }
 
-// The whole arcade registry: card, HUD and exhibit copy for every game, in the
-// order they appear. games.js only knows how to run an id — everything a human
-// would want to edit lives in _data/arcade.yml.
-const ARCADE = {{ site.data.arcade | jsonify }};
-
-export function renderArcade(bodyEl, { toast }) {
-  const games = ARCADE;
+export function renderArcade(bodyEl, { content, toast }) {
+  // The whole arcade registry: card, HUD and exhibit copy for every game, in the
+  // order they appear. games.js only knows how to run an id — everything a human
+  // would want to edit lives in _data/arcade.yml.
+  const games = content.arcade || [];
   let current = null;
   let runner = null;
   let alive = true;

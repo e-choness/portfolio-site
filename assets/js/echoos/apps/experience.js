@@ -4,15 +4,10 @@
 //   Resume     — the typeset resume card (formerly its own Resume app)
 // The window's title bar holds the site's single resume download link.
 import { writeRoute } from '../router.js';
+import { esc } from '../util.js';
 
 // Module-scope: the chosen tab survives window re-renders.
 const state = { tab: 'experience' };
-
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s == null ? '' : String(s);
-  return d.innerHTML;
-}
 
 // "Nov. 2025 – May 2026" → one span per end, so narrow screens can break the
 // range at the dash instead of squeezing the role column.

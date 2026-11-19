@@ -26,11 +26,8 @@ import { trackView, trackEvent } from './analytics.js';
 const root = document.getElementById('echoos-root');
 if (!root) throw new Error('EchoOS: #echoos-root not found');
 
-// Apply persisted appearance before first paint of the OS.
-const initial = store.get();
-if (initial.theme) document.documentElement.dataset.echoTheme = initial.theme;
-if (initial.accent) document.documentElement.style.setProperty('--accent', initial.accent);
-
+// The saved theme and accent are already applied: _layouts/os.html does it in
+// <head>, before first paint.
 const firstVisit = !store.get().visited;
 store.set({ visited: true });
 
@@ -86,8 +83,8 @@ async function main() {
 }
 
 // A route counts only if it names a known app — and, for blog/proj, a known
-// item. Anything else is ignored silently (normal boot). Arcade ids live in
-// arcade.js (Liquid-inlined), not content.json: an unknown id leaves the grid.
+// item. Anything else is ignored silently (normal boot). An unknown Arcade id
+// still opens the Arcade, which shows its grid.
 function resolveRoute(r, content) {
   if (!r || !content) return null;
   // Old one-page anchors (#about, #experience, …) from links shared before EchoOS.
@@ -136,6 +133,7 @@ function initOS(content, route = null, missing = null) {
   });
 
   const notifications = initNotifications(root, {
+    copy: content.notifications,
     portrait: content.profile && content.profile.portrait,
     stats: (content.profile && content.profile.stats) || [],
     onTour: () => wm.openApp('guide'),

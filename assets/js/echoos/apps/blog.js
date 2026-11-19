@@ -3,23 +3,20 @@
 // flat post rows (82px date / title / 2-line clamp excerpt / cat badge) and a
 // reading view (‹ all posts, banner, cat · date, h1, excerpt lede) then the full
 // markdown post rendered in-window from the per-post JSON
-// (_plugins/post_json.rb → assets/data/posts/<slug>.json). Mermaid and markmap
-// blocks are transformed exactly like the classic route so existing markdown
-// support is preserved. On fetch failure the prototype's "read the full post on
-// the current site" note + link remains as the fallback.
+// (_plugins/window_json.rb → assets/data/posts/<slug>.json), with ```mermaid
+// blocks drawn as diagrams. If the post can't be fetched, a retry note shows.
 import { url, base } from '../base.js';
 import { writeRoute } from '../router.js';
 import { loadStats, fmt } from '../stats-data.js';
 import { liveCount } from '../analytics.js';
+import { esc } from '../util.js';
 
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s == null ? '' : String(s);
-  return d.innerHTML;
-}
-
-const MERMAID_CDN = 'https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.esm.min.mjs';
-const MARKMAP_AUTOLOADER = 'https://cdn.jsdelivr.net/npm/markmap-autoloader@0.18';
+// Mermaid is self-hosted and pinned: a CDN copy fails wherever that CDN is
+// blocked (firewalls such as Portmaster, DNS blocklists, office proxies), and a
+// floating version can change how the tuned diagrams look. Upgrade with
+// scripts/vendor-mermaid.mjs, which also updates this line.
+const MERMAID_VERSION = '12.3.0';
+const MERMAID_URL = url(`/assets/vendor/mermaid/${MERMAID_VERSION}/mermaid.esm.min.mjs`);
 
 // Tuned so diagrams fit the reading column: flowchart labels wrap at 280px
 // instead of 200 (fewer lines, shorter diagrams), and sequence diagrams have
@@ -73,41 +70,20 @@ function mermaidTheme() {
   };
 }
 
+// Imported the first time a post has a diagram. A failed load is logged and
+// forgotten, so the next post tries again; until then the source stays visible.
 let mermaidPromise = null;
 function loadMermaid() {
   if (!mermaidPromise) {
-    mermaidPromise = import(/* webpackIgnore: true */ MERMAID_CDN)
+    mermaidPromise = import(MERMAID_URL)
       .then((m) => m.default || m)
-      .catch(() => null);
+      .catch((err) => {
+        console.warn('EchoOS: could not load Mermaid; diagrams stay as source.', err);
+        mermaidPromise = null;
+        return null;
+      });
   }
   return mermaidPromise;
-}
-
-let outsideClickListener = null;
-function registerOutsideClickListener(app) {
-  if (outsideClickListener) {
-    document.removeEventListener('pointerdown', outsideClickListener);
-  }
-  outsideClickListener = (e) => {
-    const catEl = app.querySelector('.os-blog-cat');
-    if (catEl && !catEl.contains(e.target)) {
-      state.catOpen = false;
-      // Re-render to close the menu
-      const rows = app.closest('.os-blog');
-      if (rows && !state.sel) {
-        document.removeEventListener('pointerdown', outsideClickListener);
-        outsideClickListener = null;
-      }
-    }
-  };
-  document.addEventListener('pointerdown', outsideClickListener);
-}
-
-function clearOutsideClickListener() {
-  if (outsideClickListener) {
-    document.removeEventListener('pointerdown', outsideClickListener);
-    outsideClickListener = null;
-  }
 }
 
 // Diagram source per <pre>, kept so a theme switch can re-render in place.
@@ -123,8 +99,11 @@ async function runMermaid(container) {
       ...MERMAID_LAYOUT,
       fontFamily: getComputedStyle(document.documentElement).getPropertyValue('--font-sans').trim() || 'sans-serif',
     });
-    await mermaid.run({ nodes: container.querySelectorAll('pre.mermaid') });
-  } catch { /* diagram failed — show source */ }
+    // suppressErrors: one diagram that fails to parse doesn't stop the rest.
+    await mermaid.run({ nodes: container.querySelectorAll('pre.mermaid'), suppressErrors: true });
+  } catch (err) {
+    console.warn('EchoOS: Mermaid failed to render.', err);
+  }
 }
 
 async function rerenderDiagrams(container) {
@@ -137,6 +116,7 @@ async function rerenderDiagrams(container) {
   await runMermaid(container);
 }
 
+// ```mermaid blocks → <pre class="mermaid"> with the source, then render them.
 async function renderDiagrams(container) {
   // Rouge wraps unknown lexers as <div class="language-X highlighter-rouge">…<code>
   // (no class on the code element); plain Kramdown uses <pre><code class="language-X">.
@@ -151,28 +131,18 @@ async function renderDiagrams(container) {
     (code.closest('.highlighter-rouge') || code.closest('pre')).replaceWith(pre);
   }
   if (mermaidBlocks.length) await runMermaid(container);
-
-  const markmapBlocks = container.querySelectorAll(
-    'pre code.language-markmap, .language-markmap.highlighter-rouge pre code'
-  );
-  if (markmapBlocks.length && !window.markmap) {
-    const s = document.createElement('script');
-    s.src = MARKMAP_AUTOLOADER;
-    s.defer = true;
-    document.head.appendChild(s);
-  }
-  for (const code of markmapBlocks) {
-    const div = document.createElement('div');
-    div.className = 'markmap';
-    div.textContent = code.textContent;
-    (code.closest('.highlighter-rouge') || code.closest('pre')).replaceWith(div);
-  }
 }
 
 // Spotlight post selection (boot.js) asks the open reader to jump to a post.
 // Kept at module scope so re-renders replace the listener instead of stacking.
 let onOpenPost = null;
 let onThemeChange = null;
+// Closes the category menu on a press outside it (one listener at a time).
+let offOutside = null;
+function clearOutside() {
+  if (offOutside) offOutside();
+  offOutside = null;
+}
 // Module-scope UI state (prototype S.blog*): survives window re-renders.
 const state = { query: '', cat: 'All categories', catOpen: false, sel: null, page: 1 };
 
@@ -278,9 +248,21 @@ export function renderBlog(bodyEl, { content, toast }) {
         });
         menu.appendChild(opt);
       }
-      registerOutsideClickListener(app);
+      // Hide the menu in place rather than re-rendering: rebuilding the list
+      // under the pointer would swallow the click that closed it.
+      clearOutside();
+      const onDown = (e) => {
+        const cat = app.querySelector('.os-blog-cat');
+        if (!cat || cat.contains(e.target)) return;
+        state.catOpen = false;
+        menu.hidden = true;
+        cat.querySelector('.os-blog-cat-btn').setAttribute('aria-expanded', 'false');
+        clearOutside();
+      };
+      document.addEventListener('pointerdown', onDown);
+      offOutside = () => document.removeEventListener('pointerdown', onDown);
     } else {
-      clearOutsideClickListener();
+      clearOutside();
     }
 
     // Rows with month/year separators
@@ -376,6 +358,7 @@ export function renderBlog(bodyEl, { content, toast }) {
 
   async function renderReading(post) {
     state.catOpen = false;
+    clearOutside();
     writeRoute('blog', post.slug);
     const idx = state.sel;
     const prevPost = posts[idx + 1] || null; // older = previous
@@ -522,7 +505,7 @@ export function renderBlog(bodyEl, { content, toast }) {
   // Return teardown function (Patch 23 contract)
   return () => {
     clearProgress();
-    clearOutsideClickListener();
+    clearOutside();
     document.removeEventListener('echoos:open-post', onOpenPost);
     document.removeEventListener('echoos:theme', onThemeChange);
   };

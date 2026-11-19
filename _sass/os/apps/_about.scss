@@ -1,0 +1,236 @@
+// ── about (profile + education tabs) ───────────────────────────────────────
+// Title-bar tab buttons (moved from body per Patch 38)
+.os-tab-btn {
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  cursor: var(--cur-pointer);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.os-tab-btn[aria-selected="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+.os-tab-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+// Profile panel mirrors EchoOS.dc.html lines 95-119: header row (84px
+// portrait, name 25px/800, title mono accent uppercase, location), bio
+// paragraphs, flex stats cells, then accent resume + bordered social links.
+// Body padding per Patch 38: 24px 26px
+.os-about-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.os-about-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.os-about-portrait-wrap {
+  flex: none;
+  padding: 3px;
+  border-radius: 25px;
+  background: linear-gradient(135deg, var(--accent), #a855f7, var(--accent));
+  background-size: 200% 200%;
+  animation: portrait-ring 4s ease infinite;
+}
+@keyframes portrait-ring {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.os-about-portrait {
+  width: 84px;
+  height: 84px;
+  border-radius: 22px;
+  border: none;
+  object-fit: cover;
+  display: block;
+}
+.os-about-name {
+  font-family: var(--font-sans);
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.os-about-title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-top: 3px;
+}
+.os-about-loc {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.os-about-bio p {
+  margin: 0 0 12px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--ink);
+}
+.os-about-stats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 10px;
+}
+.os-about-stats li {
+  flex: 1;
+  padding: 12px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.os-about-stats strong {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent);
+}
+.os-about-stats span {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.os-about-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.os-about-badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  flex: none;
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+  50%       { box-shadow: 0 0 0 4px rgba(34,197,94,0); }
+}
+.os-about-social-icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+[data-echo-theme="dark"] .os-about-social-icon {
+  filter: invert(1);
+}
+
+.os-edu-card {
+  padding: 14px 16px;
+  background: var(--surface2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-win);
+  margin-bottom: 10px;
+}
+.os-edu-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.os-edu-logo,
+.os-exp-logo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.os-edu-meta h4,
+.os-exp-meta h4 {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.os-edu-school,
+.os-edu-duration,
+.os-exp-company,
+.os-exp-duration {
+  margin: 1px 0 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+.os-edu-desc {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.os-edu-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.os-edu-tag {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 3px 7px;
+}
+
+.os-edu-notes {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.os-edu-notes li {
+  margin-bottom: 3px;
+}
+
+// ── responsive: single-column about ────────────────────────────────────────
+@media (max-width: 760px) {
+  .os-about-header {
+    gap: 12px;
+  }
+  .os-about-portrait-wrap {
+    border-radius: 19px;
+  }
+  .os-about-portrait {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+  }
+  .os-about-name {
+    font-size: 21px;
+  }
+}

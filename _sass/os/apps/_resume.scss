@@ -1,0 +1,251 @@
+// ── resume ─────────────────────────────────────────────────────────────────
+// os-resume: title-bar download button
+// Title-bar download link (Experience window). Outlined, not filled, so it
+// never reads as a selected tab next to the Experience / Resume tabs.
+.os-resume-dl {
+  font: 600 11px var(--font-mono);
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 4px 10px;
+  margin-left: 6px;
+  cursor: var(--cur-pointer);
+  transition: background 0.15s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+.os-resume-dl::before {
+  content: "↓ ";
+}
+.os-resume-dl:hover {
+  background: var(--accent-soft);
+}
+.os-resume-dl:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+// os-resume-body: scrollable body wrapper; os-resume-card: typeset card
+// The resume pane is a size container: the card fills the window width (up to
+// a 1100px reading cap) and its type/padding scale with it via cqi, so the
+// document grows with the window instead of sitting at a fixed 520px.
+.os-resume-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 22px;
+  background: var(--surface2);
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  container-type: inline-size;
+}
+
+.os-resume-card {
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 1100px;
+  margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: clamp(20px, 4cqi, 52px) clamp(18px, 4.4cqi, 60px);
+  box-shadow: 0 6px 24px -10px rgba(30, 20, 50, 0.2);
+}
+
+.os-resume-name {
+  font-size: clamp(22px, 3cqi, 34px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.os-resume-title {
+  font: 600 clamp(11px, 1.25cqi, 13.5px) var(--font-mono);
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 3px;
+}
+
+.os-resume-contact {
+  font: clamp(10.5px, 1.15cqi, 13px) var(--font-mono);
+  color: var(--muted);
+  margin: 6px 0 clamp(16px, 2.2cqi, 26px);
+  word-break: break-all;
+}
+
+.os-resume-section {
+  border-top: 1px solid var(--line);
+  padding-top: clamp(14px, 1.8cqi, 22px);
+  margin-bottom: clamp(14px, 1.8cqi, 22px);
+}
+
+.os-resume-section-head {
+  font: 600 clamp(10px, 1.1cqi, 12.5px) var(--font-mono);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin-bottom: 10px;
+}
+
+.os-resume-item {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  margin-bottom: clamp(5px, 0.8cqi, 9px);
+}
+
+.os-resume-item-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.os-resume-item-right {
+  font: clamp(10px, 1.1cqi, 12.5px) var(--font-mono);
+  color: var(--muted);
+  white-space: nowrap;
+  margin-left: 12px;
+}
+
+// Narrow screens: date ranges break at the dash ("Nov. 2025 –" / "May 2026")
+// so the role/company column keeps most of the width.
+@media (max-width: 760px) {
+  .os-exp-head {
+    align-items: flex-start;
+  }
+  .os-exp-pill {
+    line-height: 1.35;
+    text-align: right;
+  }
+  .os-resume-body {
+    padding: 12px;
+  }
+  .os-resume-item {
+    align-items: flex-start;
+  }
+  .os-resume-item-right {
+    margin-left: 0;
+    line-height: 1.4;
+    text-align: right;
+  }
+  .os-exp-pill .os-dur-part,
+  .os-resume-item-right .os-dur-part {
+    display: block;
+  }
+  // Experience head: logo + role + company on row one, dates on row two.
+  .os-exp-head {
+    flex-wrap: wrap;
+  }
+  .os-exp-pill {
+    order: 3;
+    flex-basis: 100%;
+    text-align: left;
+  }
+  .os-exp-pill .os-dur-part {
+    display: inline;
+  }
+  .os-exp-company {
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+  }
+  // Blog rows: date · category on one line above the title.
+  .os-blog-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .os-blog-row-top {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .os-blog-row-date {
+    width: auto;
+    padding-top: 0;
+  }
+  .os-blog-row-cat {
+    padding-top: 0;
+  }
+}
+
+.os-resume-role {
+  font-size: clamp(12.5px, 1.45cqi, 16px);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.os-resume-company {
+  font-size: clamp(12.5px, 1.45cqi, 16px);
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.os-resume-degree {
+  font-size: clamp(12.5px, 1.45cqi, 16px);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.os-resume-institution {
+  font-size: clamp(12.5px, 1.45cqi, 16px);
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.os-resume-skills {
+  font-size: clamp(12px, 1.35cqi, 15px);
+  line-height: 1.7;
+  color: var(--ink);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px clamp(12px, 1.6cqi, 20px);
+}
+.os-resume-skillgroup b {
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+.os-resume-card a {
+  color: inherit;
+  text-decoration: none;
+}
+.os-resume-card a:hover {
+  color: var(--accent);
+}
+
+.os-resume-summary {
+  font-size: clamp(12.5px, 1.4cqi, 15.5px);
+  line-height: 1.55;
+  color: var(--ink);
+  margin: 0 0 clamp(14px, 1.8cqi, 22px);
+}
+
+.os-resume-entry {
+  margin-bottom: clamp(8px, 1.1cqi, 12px);
+}
+.os-resume-entry .os-resume-item {
+  margin-bottom: 2px;
+}
+
+.os-resume-bullets {
+  margin: 2px 0 0;
+  padding-left: 16px;
+  font-size: clamp(12px, 1.35cqi, 15px);
+  line-height: 1.5;
+  color: var(--ink);
+}
+.os-resume-bullets li::marker {
+  color: var(--accent);
+}
+
+.os-resume-proj {
+  font-size: clamp(12px, 1.35cqi, 15px);
+  line-height: 1.5;
+  color: var(--ink);
+}
+.os-resume-tech {
+  font: clamp(10px, 1.1cqi, 12.5px) var(--font-mono);
+  color: var(--muted);
+  margin-left: 4px;
+}

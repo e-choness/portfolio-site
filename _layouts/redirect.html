@@ -19,23 +19,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  {% include head.html %}
   <script>location.replace({{ target | jsonify }});</script>
   <title>{{ page.title }} · {{ site.title }}</title>
-  {% seo title=false %}
-  {% unless page.image %}
-  <meta property="og:image" content="{{ '/assets/images/og-card.jpg' | absolute_url }}" />
-  <meta name="twitter:image" content="{{ '/assets/images/og-card.jpg' | absolute_url }}" />
-  {% endunless %}
-  <link rel="icon" href="{{ '/assets/favicon.ico' | relative_url }}" type="image/x-icon" />
-  <style>
-    body { max-width: 44rem; margin: 3rem auto; padding: 0 1.5rem; font-family: system-ui, sans-serif; line-height: 1.6; color: #1d1a2c; }
-    pre { overflow-x: auto; background: #f4f2f8; padding: 12px; border-radius: 8px; }
-    img { max-width: 100%; height: auto; }
-  </style>
+  {% include static-style.html %}
 </head>
-<body>
+<body class="static-page">
   <p><a href="{{ target }}">Open this {{ kind }} in EchoOS →</a></p>
   <main>
     <h1>{{ page.title }}</h1>

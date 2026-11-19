@@ -123,6 +123,9 @@ permalink: /assets/data/content.json
   ],
   "apps": {{ site.data.apps | jsonify }},
   "guide": {{ site.data.guide | jsonify }},
+  "arcade": {{ site.data.arcade | jsonify }},
+  "terminal": {{ site.data.terminal | jsonify }},
+  "notifications": {{ site.data.notifications | jsonify }},
   {%- comment -%} Build-time facts for the Stats app. Posts are rendered before
   this page, so post.content is HTML here. {%- endcomment -%}
   {%- assign words = 0 -%}{%- assign diagrams = 0 -%}
@@ -142,6 +145,5 @@ permalink: /assets/data/content.json
     "builtAt": {{ site.time | date_to_xmlschema | jsonify }},
     {% assign stats_file = site.static_files | where: "path", "/assets/data/stats.json" | first %}
     "statsUrl": {% if stats_file %}{{ '/assets/data/stats.json' | relative_url | jsonify }}{% else %}null{% endif %}
-  },
-  "gameNames": { {% for g in site.data.arcade %}{{ g.id | jsonify }}: {{ g.name | jsonify }}{% unless forloop.last %}, {% endunless %}{% endfor %} }
+  }
 }

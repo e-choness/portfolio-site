@@ -1,18 +1,16 @@
----
----
-// terminal.js — echo-sh command interpreter (§6.6, patch 42).
-const TERMINAL = {{ site.data.terminal | jsonify }};
-// Launchable game ids come straight from the arcade registry — just the ids, so
-// none of the exhibit copy is duplicated into this module.
-const GAME_IDS = {{ site.data.arcade | map: 'id' | jsonify }};
+// terminal.js — echo-sh command interpreter (§6.6, patch 42). Its strings come
+// from _data/terminal.yml and the launchable games from _data/arcade.yml, both
+// via content.json.
 // Command set exactly as per prototype spec: help, about, whoami, skills,
 // projects, blog, experience, education, contact, resume, open, theme, sound,
 // clear, date, ls, echo, neofetch, vim/vi, exit, hi/hello, sudo, games.
 import { store } from './store.js';
 import { sfx } from './sound.js';
-import { loadStats, fmt as num, ago } from './stats-data.js';
+import { loadStats, loadVisits, fmt as num, ago } from './stats-data.js';
 
 export function createTerminal(content, wm, { apps }) {
+  const TERMINAL = content.terminal || { messages: {}, cmd_strings: {}, help: [], neofetch: {} };
+  const GAME_IDS = (content.arcade || []).map((g) => g.id);
   let outEl = null;
   let input = null;
   const history = [];
@@ -283,11 +281,15 @@ export function createTerminal(content, wm, { apps }) {
       }
 
       case 'stats': {
-        // Visit statistics from the nightly stats.json, plus build-time site facts.
+        // Visit totals (live, else nightly), the nightly highlights, and
+        // build-time site facts.
         const site = content.site || {};
-        loadStats(content).then((st) => {
-          if (st && st.visits) {
-            print({ text: `visits: ${num(st.visits.last7)} this week · ${num(st.visits.last30)} in 30 days · ${num(st.visits.allTime)} all time`, kind: 'out' });
+        Promise.all([loadStats(content), loadVisits(content)]).then(([st, v]) => {
+          const show = (n) => (n != null ? num(n) : '—');
+          if (v.last7 != null || v.last30 != null || v.allTime != null) {
+            print({ text: `visits: ${show(v.last7)} this week · ${show(v.last30)} in 30 days · ${show(v.allTime)} all time`, kind: 'out' });
+          }
+          if (st) {
             const top = (st.top && st.top.posts && st.top.posts[0]) || null;
             if (top) {
               const post = (content.posts || []).find((p) => `/blog/${p.slug}` === top.path);
@@ -295,9 +297,9 @@ export function createTerminal(content, wm, { apps }) {
             }
             const app = st.apps && st.apps[0];
             if (app) print({ text: `most opened window: ${app.id} (${num(app.count)})`, kind: 'out' });
-            print({ text: `updated ${ago(st.generatedAt)}`, kind: 'muted' });
+            print({ text: `nightly stats synced ${ago(st.generatedAt)}`, kind: 'muted' });
           } else {
-            print({ text: 'visit stats: not collected yet (the nightly update fills them in)', kind: 'muted' });
+            print({ text: 'nightly stats: not synced yet', kind: 'muted' });
           }
           print({ text: `site: ${num(site.posts)} posts · ${num(site.projects)} projects · ${num(site.words)} words · ${num(site.diagrams)} diagrams`, kind: 'muted' });
           print({ text: 'open stats for the full activity monitor', kind: 'muted' });

@@ -1,0 +1,87 @@
+// ── experience cards (patch 40) ───────────────────────────────────────────
+.os-exp-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.os-exp-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 18px;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.os-exp-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.os-exp-logo {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #fff center/cover no-repeat;
+}
+.os-exp-meta {
+  flex: 1;
+  min-width: 0;
+}
+.os-exp-role {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+}
+.os-exp-company {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 2px 0 0;
+}
+.os-exp-pill {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 6px;
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+.os-exp-desc {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--muted);
+  margin: 10px 0 8px;
+}
+.os-exp-bullets {
+  list-style: none;
+  margin: 0 0 10px;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.os-exp-bullets li {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.os-exp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.os-exp-chip {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 3px 7px;
+}

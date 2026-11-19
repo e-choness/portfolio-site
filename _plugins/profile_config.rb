@@ -2,7 +2,7 @@
 # copies it into the site config keys that templates and plugins read, so
 # _config.yml keeps only site infrastructure:
 #   jekyll-seo-tag  title, description, author, social (JSON-LD sameAs), twitter
-#   feed.xml        title, description
+#   jekyll-feed     title, description, author
 # It also composes the title/description of pages that set `profile_meta`
 # (the OS home and 404): "<name> — <title> · <profile_meta>".
 Jekyll::Hooks.register :site, :post_read do |site|

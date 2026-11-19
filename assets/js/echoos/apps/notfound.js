@@ -1,11 +1,7 @@
 // apps/notfound.js — the 404 window. GitHub Pages serves 404.html (the OS
 // layout with data-notfound) for any unknown path; boot.js opens this window
 // instead of About and passes the path that didn't resolve.
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s == null ? '' : String(s);
-  return d.innerHTML;
-}
+import { esc } from '../util.js';
 
 export function renderNotFound(bodyEl, { path, wm, openSpotlight }) {
   bodyEl.innerHTML = `

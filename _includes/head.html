@@ -1,0 +1,15 @@
+{%- comment -%}
+  Head tags every page shares. The layout prints <title> itself; jekyll-seo-tag
+  adds description, canonical, Open Graph and JSON-LD from page and site data
+  (_plugins/profile_config.rb). Pages without their own `image` share the
+  site card.
+{%- endcomment -%}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<link rel="icon" href="{{ '/assets/favicon.ico' | relative_url }}" type="image/x-icon" />
+{% seo title=false %}
+{%- unless page.image %}
+<meta property="og:image" content="{{ '/assets/images/og-card.jpg' | absolute_url }}" />
+<meta name="twitter:image" content="{{ '/assets/images/og-card.jpg' | absolute_url }}" />
+{%- endunless %}
+{% feed_meta %}

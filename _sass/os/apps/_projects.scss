@@ -1,0 +1,260 @@
+// ── projects gallery ───────────────────────────────────────────────────────
+.os-proj-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+.os-proj-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+  transition: border-color 0.15s ease;
+}
+.os-proj-card:hover {
+  border-color: var(--accent);
+}
+.os-proj-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9; // project art is 16:9; a fixed height cropped it
+  object-fit: cover;
+  border-bottom: 1px solid var(--line);
+}
+.os-proj-cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 9;
+  border-bottom: 1px solid var(--line);
+  background: repeating-linear-gradient(
+    45deg,
+    var(--surface2),
+    var(--surface2) 8px,
+    var(--surface) 8px,
+    var(--surface) 16px
+  );
+}
+.os-proj-cover-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.os-proj-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  flex: 1;
+}
+.os-proj-cat {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.os-proj-title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
+  display: block;
+  cursor: var(--cur-pointer);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+.os-proj-title:hover {
+  color: var(--accent);
+}
+
+// Reader nav: no band. A zero-height sticky bar whose two buttons float as
+// frosted pills over the cover (and the text, once scrolled).
+.os-blog-back-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.os-blog-back-bar .os-blog-back {
+  pointer-events: auto;
+  margin: 6px 0 0;
+  border-color: color-mix(in srgb, var(--line) 70%, transparent);
+  background: color-mix(in srgb, var(--surface) 62%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  backdrop-filter: blur(10px) saturate(1.2);
+  border-radius: 999px;
+}
+.os-blog-back-bar .os-blog-back:hover {
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+}
+// Without a cover the heading would sit under the pills.
+.os-blog-back-bar + .os-blog-heading {
+  padding-top: 44px;
+}
+// Reading progress: 2px accent bar pinned to the top of the scroller. Drawn
+// above the (also sticky) back bar, hence z-index 11 rather than 1.
+.os-blog-progress {
+  appearance: none;
+  display: block;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--accent);
+  z-index: 11;
+}
+.os-blog-progress::-webkit-progress-bar {
+  background: transparent;
+}
+.os-blog-progress::-webkit-progress-value {
+  background: var(--accent);
+}
+.os-blog-progress::-moz-progress-bar {
+  background: var(--accent);
+}
+
+// back button (detail view)
+.os-proj-back {
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 5px 10px;
+  cursor: var(--cur-pointer);
+  margin: 4px 0 14px;
+  white-space: nowrap;
+}
+.os-proj-back:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+// detail view wrapper: the same centred reading column as the blog reader (.os-blog-heading etc.).
+.os-proj-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: var(--reading-column);
+  margin-inline: auto;
+}
+// Banners are 2:1 or 16:9 with text baked in. Keep their own ratio (the 16:9
+// fallback only reserves space until a video loads); the column caps the
+// width. A capped height on a full-width box used to crop and zoom them.
+.os-proj-detail-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: auto 16 / 9;
+  object-fit: contain;
+  border-radius: var(--r-ctl);
+  border: 1px solid var(--line);
+}
+.os-proj-detail-cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--r-ctl);
+  border: 1px solid var(--line);
+  background: repeating-linear-gradient(
+    45deg,
+    var(--surface2),
+    var(--surface2) 8px,
+    var(--surface) 8px,
+    var(--surface) 16px
+  );
+}
+.os-proj-detail-title {
+  font-family: var(--font-sans);
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin: 0;
+  color: var(--ink);
+}
+.os-proj-detail .os-proj-desc {
+  flex: none;
+}
+.os-proj-detail-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+.os-proj-page {
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--muted);
+}
+.os-proj-page:hover {
+  color: var(--accent);
+}
+.os-proj-desc {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--muted);
+  flex: 1;
+}
+.os-proj-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 2px;
+}
+.os-proj-demo,
+.os-proj-repo {
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.os-proj-demo {
+  color: var(--ink);
+}
+.os-proj-demo:hover {
+  color: var(--accent);
+}
+.os-proj-play {
+  color: var(--accent);
+}
+.os-proj-play:hover {
+  color: var(--ink);
+}
+.os-proj-demo.is-pending {
+  color: var(--muted);
+  opacity: 0.45;
+  cursor: var(--cur-not-allowed);
+}
+.os-proj-repo {
+  color: var(--muted);
+}
+.os-proj-repo:hover {
+  color: var(--accent);
+}

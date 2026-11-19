@@ -69,20 +69,24 @@ export function trackEvent(name, title) {
   hit({ path: name, title: title || name, event: true });
 }
 
-// Public per-path counter (GoatCounter's "visitor counter" setting). Resolves to
-// a number, or null when counting is off, the setting is disabled, or the
-// request fails, so callers can simply hide the count.
-export async function liveCount(path) {
+// Public per-path counter (GoatCounter's "visitor counter" setting). `path` is a
+// page path or 'TOTAL' for the whole site; `start` limits it to the last 'week'
+// or 'month' (default: all time). Resolves to a number, or null when counting
+// is off, the setting is disabled, or the request fails, so callers can simply
+// hide the count.
+export async function liveCount(path, start = '') {
   // A blocked tracker is a signal to leave analytics alone. Reuse requests for
   // repeated post visits and stop after the counter endpoint fails.
   if (!enabled || !(await trackerLoaded) || countsOff) return null;
-  if (!counts.has(path)) counts.set(path, fetchCount(path));
-  return counts.get(path);
+  const key = `${path}?${start}`;
+  if (!counts.has(key)) counts.set(key, fetchCount(path, start));
+  return counts.get(key);
 }
 
-async function fetchCount(path) {
+async function fetchCount(path, start) {
+  const query = start ? `?start=${start}` : '';
   try {
-    const res = await fetch(`https://${code}.goatcounter.com/counter/${encodeURIComponent(path)}.json`);
+    const res = await fetch(`https://${code}.goatcounter.com/counter/${encodeURIComponent(path)}.json${query}`);
     // 404 just means no recorded views for this path yet (new post, or hits
     // still being processed); anything else means the counter is off or down.
     if (res.status === 404) return null;

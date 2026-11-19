@@ -1,18 +1,14 @@
 // ticker.js — the desktop telemetry panel: a small glass readout under the
-// desktop icons whose lines scroll upward on a loop. Visit numbers come from the
-// nightly stats (stats-data.js), site facts from content.json, and two lines tick
-// live (Calgary time, this session's length). Clicking it opens the Stats app.
+// desktop icons whose lines scroll upward on a loop. Visit totals and the
+// nightly breakdowns come from stats-data.js, site facts from content.json, and
+// two lines tick live (Calgary time, this session's length). "synced" is the
+// age of the nightly stats snapshot. Clicking the panel opens the Stats app.
 //
 // The scroll is one CSS transform over a list rendered twice, so the loop is
 // seamless and runs on the compositor. Hover/focus pauses it; reduced motion
 // gets a still list. Hidden on phones and short screens (os/_shell.scss).
-import { loadStats, fmt, ago } from './stats-data.js';
-
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s == null ? '' : String(s);
-  return d.innerHTML;
-}
+import { loadStats, loadVisits, fmt, ago, gameName } from './stats-data.js';
+import { esc } from './util.js';
 
 const clip = (s, n) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
 const pad = (n) => String(n).padStart(2, '0');
@@ -37,15 +33,15 @@ export function initTicker(root, { content, onOpen }) {
   const reel = panel.querySelector('.os-ticker-reel');
   const started = Date.now();
 
-  loadStats(content).then((stats) => {
+  Promise.all([loadStats(content), loadVisits(content)]).then(([stats, visits]) => {
     const site = content.site || {};
     const lines = [];
     const add = (label, value, key) => lines.push({ label, value, key });
 
-    if (stats && stats.visits) {
-      add('visits / 7d', fmt(stats.visits.last7));
-      add('visits / 30d', fmt(stats.visits.last30));
-      add('visits / all', fmt(stats.visits.allTime));
+    if (visits.last7 != null) add('visits / 7d', fmt(visits.last7));
+    if (visits.last30 != null) add('visits / 30d', fmt(visits.last30));
+    if (visits.allTime != null) add('visits / all', fmt(visits.allTime));
+    if (stats) {
       const top = stats.top && stats.top.posts && stats.top.posts[0];
       if (top) {
         const post = (content.posts || []).find((p) => `/blog/${p.slug}` === top.path);
@@ -59,15 +55,13 @@ export function initTicker(root, { content, onOpen }) {
       const games = stats.games || [];
       if (games.length) {
         add('arcade runs', fmt(games.reduce((sum, g) => sum + g.count, 0)));
-        add('top game', (content.gameNames || {})[games[0].id] || games[0].id);
+        add('top game', gameName(content, games[0].id));
       }
       const countries = (stats.countries || []).slice(0, 3).map((c) => c.name);
       if (countries.length) add('signals from', clip(countries.join(' · '), 26));
       if (stats.resume) add('resume ↓', fmt(stats.resume.downloads));
-      add('uplink', ago(stats.generatedAt));
-    } else {
-      add('uplink', 'awaiting first sync');
     }
+    add('synced', stats ? ago(stats.generatedAt) : 'pending');
     add('posts', fmt(site.posts));
     add('projects', fmt(site.projects));
     add('words', fmt(site.words));

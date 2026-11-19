@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
   <script>
+    // Before first paint: mark JS as on and apply the saved theme and accent
+    // (the same keys store.js persists), so the OS never flashes the default.
     document.documentElement.classList.add('js');
     try {
       var t = localStorage.getItem('echoos-theme');
@@ -10,84 +12,34 @@
       if (a) document.documentElement.style.setProperty('--accent', a);
     } catch (e) { document.documentElement.dataset.echoTheme = 'light'; }
   </script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  {% include head.html %}
   <title>{{ page.title | default: site.title }}</title>
+  {% if page.notfound %}<meta name="robots" content="noindex" />{% endif %}
 
-  <link rel="icon" href="{{ '/assets/favicon.ico' | relative_url }}" type="image/x-icon" />
   <link rel="manifest" href="{{ '/assets/manifest.webmanifest' | relative_url }}" />
   <link rel="apple-touch-icon" href="{{ '/assets/images/icons/app-192.png' | relative_url }}" />
   <meta name="theme-color" content="#e8e4ef" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#11111b" media="(prefers-color-scheme: dark)" />
 
-  <!-- Fonts (§4) -->
-  <!-- Self-hosted (_sass/base/_fonts.scss); preload the latin Gothic A1 weights most text uses (body, labels, titles) -->
-  {% assign font_weights = "400,600,800" | split: "," %}{% for w in font_weights %}<link rel="preload" href="{{ '/assets/fonts/gothic-a1-' | append: w | append: '-latin.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin />
-  {% endfor %}
+  <!-- Self-hosted fonts (_sass/base/_fonts.scss): preload the latin Gothic A1 weights most text uses -->
+  {%- assign font_weights = "400,600,800" | split: "," %}
+  {%- for w in font_weights %}
+  <link rel="preload" href="{{ '/assets/fonts/gothic-a1-' | append: w | append: '-latin.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin />
+  {%- endfor %}
 
-  {% seo title=false %}
-  {% if page.notfound %}<meta name="robots" content="noindex" />{% endif %}
-
-  <!-- Custom CSS -->
   <link href="{{ '/assets/css/os.css' | relative_url }}?v={{ site.asset_version }}" rel="stylesheet" />
+  {% include static-style.html %}
+  <style>
+    html.js #echoos-static { display: none; }
+    html:not(.js) #echoos-root { display: none; } /* the empty, fixed wallpaper would cover the summary */
+  </style>
 </head>
 <body>
   <div id="echoos-root" data-base="{{ site.baseurl }}" data-content="{{ '/assets/data/content.json' | relative_url }}?v={{ site.time | date: '%s' }}"{% if page.notfound %} data-notfound="true"{% endif %}{% if site.goatcounter != "" and site.goatcounter %} data-goatcounter="{{ site.goatcounter }}"{% endif %}></div>
 
-  <!-- Static summary for crawlers, link previewers and no-JS visitors, built
-       from the same _data as the OS. Hidden whenever JS runs (html.js). -->
-  <style>
-    html.js #echoos-static { display: none; }
-    html:not(.js) #echoos-root { display: none; } /* the empty, fixed wallpaper would cover the summary */
-    #echoos-static { max-width: 44rem; margin: 3rem auto; padding: 0 1.5rem; font-family: system-ui, sans-serif; line-height: 1.6; }
-    #echoos-static li { margin-bottom: .5rem; }
-  </style>
-  <main id="echoos-static">
-    <h1>{{ site.data.profile.name }} — {{ site.data.profile.title }}</h1>
-    <p><strong>{{ site.data.profile.tagline }}</strong> · {{ site.data.profile.location }}</p>
-    {{ site.data.profile.about.description | markdownify }}
-    <p>
-      <a href="{{ site.data.profile.about.resume_url | relative_url }}">Résumé (PDF)</a> ·
-      <a href="{{ site.data.profile.social.github }}">GitHub</a> ·
-      <a href="{{ site.data.profile.social.linkedin }}">LinkedIn</a> ·
-      <a href="{{ site.data.profile.social.email }}">Email</a>
-    </p>
-    <noscript><p><em>This site is an interactive desktop; enable JavaScript to use it. Everything below works without it.</em></p></noscript>
+  {% include static-summary.html %}
 
-    <h2>Projects</h2>
-    <ul>
-      {% assign sorted_projects = site.projects | sort: "order" %}
-      {% for p in sorted_projects %}
-      <li><a href="{{ p.url | relative_url }}">{{ p.title }}</a> — {{ p.description }}</li>
-      {% endfor %}
-    </ul>
-
-    <h2>Experience</h2>
-    <ul>
-      {% for e in site.data.experience %}
-      <li>{{ e.position }}, {{ e.company }} ({{ e.duration }})</li>
-      {% endfor %}
-    </ul>
-
-    <h2>Writing</h2>
-    <ul>
-      {% for post in site.posts %}
-      <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a> — {{ post.date | date: "%b %Y" }}</li>
-      {% endfor %}
-    </ul>
-  </main>
-
-  <!-- Version every EchoOS module, not only the entry point: a ?v= on boot.js
-       does not reach the modules it imports. Must precede any module script.
-       Modules with front matter (data baked in) are pages, not static files. -->
-  {% assign static_modules = site.static_files | where_exp: "f", "f.path contains '/assets/js/echoos/'" | where: "extname", ".js" | map: "path" %}
-  {% assign page_modules = site.pages | where_exp: "p", "p.url contains '/assets/js/echoos/'" | map: "url" %}
-  {% assign modules = static_modules | concat: page_modules | sort %}
-  <script type="importmap">
-  { "imports": { {% for m in modules %}
-    {{ m | relative_url | jsonify }}: {{ m | relative_url | append: '?v=' | append: site.asset_version | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}
-  } }
-  </script>
+  {% include importmap.html %}
   <script src="{{ '/assets/js/games.js' | relative_url }}?v={{ site.asset_version }}" defer></script>
   <script type="module" src="{{ '/assets/js/echoos/boot.js' | relative_url }}?v={{ site.asset_version }}"></script>
 </body>

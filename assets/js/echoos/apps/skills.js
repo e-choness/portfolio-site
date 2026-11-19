@@ -1,10 +1,6 @@
 // apps/skills.js — "system monitor": one bar per skill, grouped (§6.5).
 // Bars animate width on open only.
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s == null ? '' : String(s);
-  return d.innerHTML;
-}
+import { esc } from '../util.js';
 
 export function renderSkills(bodyEl, { content }) {
   const wrap = document.createElement('div');

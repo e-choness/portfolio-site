@@ -1,0 +1,17 @@
+// os/apps — one partial per window renderer (assets/js/echoos/apps/*.js),
+// plus what they share. Typography follows the §4 style map (sans headings and
+// prose, mono labels). Order is cascade order: keep new partials after the
+// ones they build on.
+@use "controls";        // .os-btn, chips, tabs: shared by every app
+@use "about";           // About: profile + education tabs
+@use "experience";      // Experience: role cards
+@use "projects";        // Projects: gallery + detail
+@use "skills";          // Skills: bars
+@use "blog";            // Blog: list + reader
+@use "contact";         // About → Profile: contact section
+@use "resume";          // Experience → Resume tab (print layout: os/_print.scss)
+@use "window-padding";  // per-app window body padding
+@use "guide";           // first-run tour
+@use "syntax";          // Rouge highlighting in posts
+@use "notfound";        // 404 window
+@use "stats";           // Stats: activity monitor

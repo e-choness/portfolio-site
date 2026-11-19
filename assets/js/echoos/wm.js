@@ -1,6 +1,7 @@
 // wm.js — window manager: open/close/focus/drag/resize/z-order/clamp (§6.4).
 import { sfx } from './sound.js';
 import { winGeom } from './store.js';
+import { esc } from './util.js';
 
 export function clamp(v, lo, hi) {
   return Math.min(Math.max(v, lo), hi);
@@ -88,12 +89,6 @@ export function createWM(root, opts = {}) {
   }
 
   // --- building windows ---------------------------------------------------
-
-  function esc(s) {
-    const d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-  }
 
   function buildWin(app) {
     const el = document.createElement('section');

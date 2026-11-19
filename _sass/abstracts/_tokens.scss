@@ -35,6 +35,9 @@
   --r-icon:14px;  // desktop icon tile
   --bar-h:40px;   // menu bar height
   --dock-h:70px;  // dock reserve
+  // Blog reader and project detail: wide enough for diagrams and tables
+  // (~105 characters of 13.5px body text), centred in wider windows.
+  --reading-column:860px;
 }
 
 [data-echo-theme="dark"] {

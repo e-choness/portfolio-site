@@ -1,0 +1,39 @@
+{%- comment -%}
+  Static summary for crawlers, link previewers and no-JS visitors, built from
+  the same _data as the OS. Hidden whenever JS runs (html.js, see os.html).
+{%- endcomment -%}
+{%- assign profile = site.data.profile -%}
+<main id="echoos-static" class="static-page">
+  <h1>{{ profile.name }} — {{ profile.title }}</h1>
+  <p><strong>{{ profile.tagline }}</strong> · {{ profile.location }}</p>
+  {{ profile.about.description | markdownify }}
+  <p>
+    <a href="{{ profile.about.resume_url | relative_url }}">Résumé (PDF)</a> ·
+    <a href="{{ profile.social.github }}">GitHub</a> ·
+    <a href="{{ profile.social.linkedin }}">LinkedIn</a> ·
+    <a href="{{ profile.social.email }}">Email</a>
+  </p>
+  <noscript><p><em>This site is an interactive desktop; enable JavaScript to use it. Everything below works without it.</em></p></noscript>
+
+  <h2>Projects</h2>
+  <ul>
+    {%- assign sorted_projects = site.projects | sort: "order" %}
+    {%- for p in sorted_projects %}
+    <li><a href="{{ p.url | relative_url }}">{{ p.title }}</a> — {{ p.description }}</li>
+    {%- endfor %}
+  </ul>
+
+  <h2>Experience</h2>
+  <ul>
+    {%- for e in site.data.experience %}
+    <li>{{ e.position }}, {{ e.company }} ({{ e.duration }})</li>
+    {%- endfor %}
+  </ul>
+
+  <h2>Writing</h2>
+  <ul>
+    {%- for post in site.posts %}
+    <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a> — {{ post.date | date: "%b %Y" }}</li>
+    {%- endfor %}
+  </ul>
+</main>
